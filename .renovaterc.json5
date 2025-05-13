@@ -1,0 +1,95 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommitsDisabled"
+  ],
+  "addLabels": [
+    "renovate"
+  ],
+  "osvVulnerabilityAlerts": true,
+  "postUpdateOptions": [
+    "pnpmDedupe"
+  ],
+  // always bump depdenencies even when are in the range
+  "rangeStrategy": "bump",
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security"
+    ],
+    "rangeStrategy": "bump",
+  },
+  // disable autorebasing to save unecessary workflow runs
+  "rebaseWhen": "conflicted",
+  "ignoreDeps": [
+    // it must be the same as bundled in Electron
+    "node",
+    // it must be the oldest possible version to get binary compatibility with older OSes
+    "ubuntu"
+  ],
+  "packageRules": [
+    // peerDependencies are widen
+    {
+      "matchDepTypes": [
+        "peerDependencies"
+      ],
+      "rangeStrategy": "widen",
+      "semanticCommitScope": "peer-deps"
+    },
+    // non-major updates only
+    {
+      "matchDepNames": [
+        "@types/node",
+        "electron",
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    }
+  ],
+  "customManagers": [
+    // additional engine field in package.json
+    {
+      "customType": "regex",
+      "extractVersionTemplate": "^(?<version>.*)$",
+      "managerFilePatterns": [
+        "/^package\\.json$/"
+      ],
+      "matchStrings": [
+        "\"freelens\"\\s*:\\s*\"(?<currentValue>\\S+)\""
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "freelensapp/freelens",
+      "versioningTemplate": "npm"
+    },
+    // pnpm dlx
+    {
+      "customType": "regex",
+      "extractVersionTemplate": "^(?<version>.*)$",
+      "managerFilePatterns": [
+        "/package\\.json$/"
+      ],
+      "matchStrings": [
+        "pnpm\\s+dlx\\s+(?<depName>\\S+)@(?<currentValue>\\S+?)[\\s\"|<>]"
+      ],
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
+    },
+    // renovate hints after comment
+    {
+      "customType": "regex",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.*\\.ya?ml$/",
+        "/^\\.trunk/trunk.yaml/",
+        "/^\\.tool-versions$/"
+      ],
+      "matchStrings": [
+        "(\\s+|.*?@)(?<currentValue>\\S+)\\s*#\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?(\\s+registryUrl=(?<registryUrl>\\S+))?\\s*\\n"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    }
+  ]
+}

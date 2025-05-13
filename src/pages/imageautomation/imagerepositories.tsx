@@ -1,24 +1,24 @@
-import { Renderer } from '@freelensapp/extensions'
+import { Renderer } from "@freelensapp/extensions";
 
-import { observer } from 'mobx-react'
+import { observer } from "mobx-react";
 
-import React from 'react'
+import React from "react";
 
-import { imageRepositoryStore, ImageRepository } from '../../k8s/fluxcd/image-automation/imagerepository'
-import { getStatusClass, getStatusMessage, getStatusText } from '../../utils'
-import { KubeAge } from '../../components/ui/kube-age'
+import { KubeAge } from "../../components/ui/kube-age";
+import { ImageRepository, imageRepositoryStore } from "../../k8s/fluxcd/image-automation/imagerepository";
+import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
   Component: { KubeObjectListLayout, Badge },
-} = Renderer
+} = Renderer;
 
 enum sortBy {
-  name = 'name',
-  image = 'image',
-  namespace = 'namespace',
-  status = 'status',
-  ready = 'ready',
-  age = 'age',
+  name = "name",
+  image = "image",
+  namespace = "namespace",
+  status = "status",
+  ready = "ready",
+  age = "age",
 }
 
 @observer
@@ -40,12 +40,12 @@ export class FluxCDImageRepositories extends React.Component<{ extension: Render
         searchFilters={[(imageRepository: ImageRepository) => imageRepository.getSearchFields()]}
         renderHeaderTitle="Image Repositories"
         renderTableHeader={[
-          { title: 'Name', className: 'name', sortBy: sortBy.name },
-          { title: 'Namespace', className: 'namespace', sortBy: sortBy.namespace },
-          { title: 'Image', className: 'image', sortBy: sortBy.image },
-          { title: 'Ready', className: 'ready', sortBy: sortBy.ready },
-          { title: 'Status', className: 'status', sortBy: sortBy.status },
-          { title: 'Age', className: 'age', sortBy: sortBy.age },
+          { title: "Name", className: "name", sortBy: sortBy.name },
+          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
+          { title: "Image", className: "image", sortBy: sortBy.image },
+          { title: "Ready", className: "ready", sortBy: sortBy.ready },
+          { title: "Status", className: "status", sortBy: sortBy.status },
+          { title: "Age", className: "age", sortBy: sortBy.age },
         ]}
         renderTableContents={(imageRepository: ImageRepository) => [
           imageRepository.getName(),
@@ -56,12 +56,12 @@ export class FluxCDImageRepositories extends React.Component<{ extension: Render
           <KubeAge timestamp={imageRepository.getCreationTimestamp()} key="age" />,
         ]}
       />
-    )
+    );
   }
 
   renderStatus(imageRepository: ImageRepository) {
-    const className = getStatusClass(imageRepository)
-    const text = getStatusText(imageRepository)
-    return <Badge key="name" label={text} className={className} />
+    const className = getStatusClass(imageRepository);
+    const text = getStatusText(imageRepository);
+    return <Badge key="name" label={text} className={className} />;
   }
 }

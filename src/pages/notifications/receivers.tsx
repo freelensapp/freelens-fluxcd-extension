@@ -1,24 +1,24 @@
-import { Renderer } from '@freelensapp/extensions'
+import { Renderer } from "@freelensapp/extensions";
 
-import { observer } from 'mobx-react'
+import { observer } from "mobx-react";
 
-import React from 'react'
+import React from "react";
 
-import { receiverStore, Receiver } from '../../k8s/fluxcd/notifications/receiver'
-import { getStatusClass, getStatusMessage, getStatusText } from '../../utils'
-import { KubeAge } from '../../components/ui/kube-age'
+import { KubeAge } from "../../components/ui/kube-age";
+import { Receiver, receiverStore } from "../../k8s/fluxcd/notifications/receiver";
+import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
   Component: { KubeObjectListLayout, Badge },
-} = Renderer
+} = Renderer;
 
 enum sortBy {
-  name = 'name',
-  namespace = 'namespace',
-  status = 'status',
-  ready = 'ready',
-  age = 'age',
-  type = 'type',
+  name = "name",
+  namespace = "namespace",
+  status = "status",
+  ready = "ready",
+  age = "age",
+  type = "type",
 }
 
 @observer
@@ -40,12 +40,12 @@ export class FluxCDReceivers extends React.Component<{ extension: Renderer.LensE
         searchFilters={[(receiver: Receiver) => [...receiver.getSearchFields(), receiver.status?.webhookPath]]}
         renderHeaderTitle="Receiver"
         renderTableHeader={[
-          { title: 'Name', className: 'name', sortBy: sortBy.name },
-          { title: 'Namespace', className: 'namespace', sortBy: sortBy.namespace },
-          { title: 'Type', className: 'type', sortBy: sortBy.type },
-          { title: 'Ready', className: 'ready', sortBy: sortBy.ready },
-          { title: 'Status', className: 'status', sortBy: sortBy.status },
-          { title: 'Age', className: 'age', sortBy: sortBy.age },
+          { title: "Name", className: "name", sortBy: sortBy.name },
+          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
+          { title: "Type", className: "type", sortBy: sortBy.type },
+          { title: "Ready", className: "ready", sortBy: sortBy.ready },
+          { title: "Status", className: "status", sortBy: sortBy.status },
+          { title: "Age", className: "age", sortBy: sortBy.age },
         ]}
         renderTableContents={(receiver: Receiver) => [
           receiver.getName(),
@@ -56,12 +56,12 @@ export class FluxCDReceivers extends React.Component<{ extension: Renderer.LensE
           <KubeAge timestamp={receiver.getCreationTimestamp()} key="age" />,
         ]}
       />
-    )
+    );
   }
 
   renderStatus(receiver: Receiver) {
-    const className = getStatusClass(receiver)
-    const text = getStatusText(receiver)
-    return <Badge key="name" label={text} className={className} />
+    const className = getStatusClass(receiver);
+    const text = getStatusText(receiver);
+    return <Badge key="name" label={text} className={className} />;
   }
 }

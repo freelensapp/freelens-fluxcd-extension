@@ -1,0 +1,119 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    name: release on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            arch: x64
+            ref: main
+
+    runs-on: ${{ matrix.os }}
+    environment: publishing
+
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+
+      - name: Check if package version matches
+        run: test "${GITHUB_REF_NAME}" = "v$(jq -r .version package.json)"
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get pnpm cache directory
+        shell: bash
+        run: echo "pnpm_cache_dir=$(pnpm store path)" >> ${GITHUB_ENV}
+
+      - name: Use pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.pnpm_cache_dir }}
+          key: ${{ matrix.os }}-${{ matrix.arch }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.arch }}-node-
+
+      - name: Install pnpm dependencies
+        id: install-pnpm
+        shell: bash
+        run: pnpm install --color=always --prefer-offline --frozen-lockfile
+        continue-on-error: true
+
+      - name: Install pnpm dependencies (retry)
+        if: steps.install-pnpm.outcome == 'failure'
+        shell: bash
+        run: pnpm install --color=always --prefer-offline --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm --color=always --stream build
+
+      - name: Pack packages
+        run: pnpm --color=always --stream pack
+
+      - name: Publish npm packages
+        id: publish-npm
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            *-*) dist_tag=next;;
+            *) dist_tag=latest;;
+          esac
+          pnpm --color=always publish -r \
+            --no-git-checks \
+            --tag ${dist_tag}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true
+
+      - name: Publish npm packages (retry)
+        id: publish-npm-2
+        if: steps.publish-npm.outcome == 'failure'
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            *-*) dist_tag=next;;
+            *) dist_tag=latest;;
+          esac
+          pnpm --color=always publish -r \
+            --no-git-checks \
+            --tag ${dist_tag}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true
+
+      - name: Publish npm packages (retry 2)
+        if: steps.publish-npm-2.outcome == 'failure'
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            *-*) dist_tag=next;;
+            *) dist_tag=latest;;
+          esac
+          pnpm --color=always publish -r \
+            --no-git-checks \
+            --tag ${dist_tag}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          fail_on_unmatched_files: true
+          files: |-
+            *.tgz

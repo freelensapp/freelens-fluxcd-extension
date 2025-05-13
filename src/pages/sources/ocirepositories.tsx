@@ -1,24 +1,24 @@
-import { Renderer } from '@freelensapp/extensions'
+import { Renderer } from "@freelensapp/extensions";
 
-import { observer } from 'mobx-react'
+import { observer } from "mobx-react";
 
-import React from 'react'
+import React from "react";
 
-import { ociRepositoryStore, OCIRepository } from '../../k8s/fluxcd/sources/ocirepository'
-import { getStatusClass, getStatusMessage, getStatusText } from '../../utils'
-import { KubeAge } from '../../components/ui/kube-age'
+import { KubeAge } from "../../components/ui/kube-age";
+import { OCIRepository, ociRepositoryStore } from "../../k8s/fluxcd/sources/ocirepository";
+import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
   Component: { KubeObjectListLayout, Badge },
-} = Renderer
+} = Renderer;
 
 enum sortBy {
-  name = 'name',
-  url = 'url',
-  namespace = 'namespace',
-  status = 'status',
-  ready = 'ready',
-  age = 'age',
+  name = "name",
+  url = "url",
+  namespace = "namespace",
+  status = "status",
+  ready = "ready",
+  age = "age",
 }
 
 @observer
@@ -40,12 +40,12 @@ export class FluxCDOCIRepositories extends React.Component<{ extension: Renderer
         searchFilters={[(ociRepository: OCIRepository) => ociRepository.getSearchFields()]}
         renderHeaderTitle="OCI Repositories"
         renderTableHeader={[
-          { title: 'Name', className: 'name', sortBy: sortBy.name },
-          { title: 'Namespace', className: 'namespace', sortBy: sortBy.namespace },
-          { title: 'Url', className: 'url', sortBy: sortBy.url },
-          { title: 'Ready', className: 'ready', sortBy: sortBy.ready },
-          { title: 'Status', className: 'status', sortBy: sortBy.status },
-          { title: 'Age', className: 'age', sortBy: sortBy.age },
+          { title: "Name", className: "name", sortBy: sortBy.name },
+          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
+          { title: "Url", className: "url", sortBy: sortBy.url },
+          { title: "Ready", className: "ready", sortBy: sortBy.ready },
+          { title: "Status", className: "status", sortBy: sortBy.status },
+          { title: "Age", className: "age", sortBy: sortBy.age },
         ]}
         renderTableContents={(ociRepository: OCIRepository) => [
           ociRepository.getName(),
@@ -56,12 +56,12 @@ export class FluxCDOCIRepositories extends React.Component<{ extension: Renderer
           <KubeAge timestamp={ociRepository.getCreationTimestamp()} key="age" />,
         ]}
       />
-    )
+    );
   }
 
   renderStatus(ociRepository: OCIRepository) {
-    const className = getStatusClass(ociRepository)
-    const text = getStatusText(ociRepository)
-    return <Badge key="name" label={text} className={className} />
+    const className = getStatusClass(ociRepository);
+    const text = getStatusText(ociRepository);
+    return <Badge key="name" label={text} className={className} />;
   }
 }

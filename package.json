@@ -1,7 +1,24 @@
 {
-  "name": "lens-extension-fluxcd",
-  "version": "2.0.2",
-  "description": "Lens extension for FluxCD",
+  "name": "@freelensapp/extension-fluxcd",
+  "version": "3.0.0",
+  "description": "Freelens extension for FluxCD",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freelensapp/freelens-extension-fluxcd.git",
+    "directory": "."
+  },
+  "main": "dist/main.js",
+  "renderer": "dist/renderer.js",
+  "engines": {
+    "node": ">= 22.14.0",
+    "freelens": "^1.2.2"
+  },
+  "copyright": "© 2025 Freelens Authors",
+  "license": "MIT",
+  "author": {
+    "name": "Freelens Authors",
+    "email": "freelens@freelens.app"
+  },
   "contributors": [
     {
       "name": "Stanislaw Wozniak",
@@ -13,63 +30,55 @@
       "url": "https://x.com/okaufmannCH"
     }
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/okaufmann/lens-extension-fluxcd.git",
-    "directory": "fluxcd"
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
-  "engines": {
-    "freelens": "^1.0"
-  },
-  "main": "dist/main.js",
-  "renderer": "dist/renderer.js",
   "scripts": {
-    "start": "webpack --watch",
-    "build": "npm run clean && webpack",
-    "clean": "rm -rf ./dist",
-    "lint": "eslint --ext .js,.ts,.tsx --ignore-path .gitignore .",
-    "lint:fix": "eslint --fix --ext .js,.ts,.tsx --ignore-path .gitignore ."
+    "biome": "pnpm dlx @biomejs/biome@1.9.4",
+    "biome:check": "pnpm biome check",
+    "biome:fix": "pnpm biome check --fix",
+    "build": "pnpm dlx cross-env@7.0.3 NODE_ENV=production webpack --progress",
+    "bump-version": "pnpm version --no-commit-hooks --no-git-tag-version",
+    "clean": "pnpm dlx rimraf@6.0.1 binaries dist static/build",
+    "clean:node_modules": "pnpm dlx rimraf@6.0.1 node_modules",
+    "knip": "pnpm dlx knip@5.55.1 --dependencies",
+    "knip:development": "pnpm knip",
+    "knip:production": "pnpm knip --production --strict",
+    "lint": "pnpm biome:check",
+    "lint:fix": "pnpm biome:fix"
   },
+  "files": [
+    "dist/**/*"
+  ],
   "dependencies": {
-    "mobx": "^6.6.1",
-    "mobx-react": "^7.5.2"
+    "@freelensapp/extensions": "^1.3.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.17.10",
-    "@babel/preset-react": "^7.16.7",
-    "@babel/preset-typescript": "^7.16.7",
-    "@freelensapp/extensions": "^1.0.0",
-    "@freelensapp/kube-object": "^1.0.0",
-    "@types/chart.js": "^2.9.37",
-    "@types/node": "^16.0.0",
-    "@types/react": "^16.9.35",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "css-loader": "^6.7.1",
-    "eslint": "^8.52.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.1",
-    "eslint-plugin-react": "^7.33.2",
-    "prettier": "^3.0.3",
+    "@types/node": "^22.15.17",
+    "@types/react": "^17.0.85",
+    "css-loader": "^7.1.2",
+    "mobx": "^6.13.7",
+    "mobx-react": "^7.6.0",
+    "moment": "^2.30.1",
     "raw-loader": "^4.0.2",
-    "sass": "^1.53.0",
-    "sass-loader": "^13.0.2",
-    "style-loader": "^3.3.1",
-    "ts-loader": "^8.4.0",
-    "typescript": "^4.7.4",
-    "webpack": "^5.73.0",
-    "webpack-cli": "^4.10.0"
-  },
-  "license": "MIT",
-  "homepage": "https://github.com/okaufmann/lens-extension-fluxcd",
-  "bugs": {
-    "url": "https://github.com/okaufmann/lens-extension-fluxcd/issues"
+    "react": "^17.0.2",
+    "sass": "^1.87.0",
+    "sass-loader": "^16.0.5",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.8",
+    "webpack-cli": "^6.0.1"
   },
   "keywords": [
-    "example",
     "extension",
-    "k8slens",
+    "freelensapp",
     "lens",
-    "mirantis",
-    "tutorial"
-  ]
+    "openlens",
+    "freelens",
+    "flux",
+    "fluxcd"
+  ],
+  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977"
 }

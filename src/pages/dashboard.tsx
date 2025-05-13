@@ -1,71 +1,74 @@
-import { Renderer } from '@freelensapp/extensions'
-import { KubeEvent } from '@freelensapp/kube-object'
+import { Renderer } from "@freelensapp/extensions";
+import { KubeEvent } from "@freelensapp/kube-object";
 // import { PieChart } from '../components/pie-chart'
 
-import React from 'react'
+import React from "react";
 const {
   Component: { Tooltip, KubeObjectListLayout },
-} = Renderer
+} = Renderer;
 
 class FluxEventsStore extends Renderer.K8sApi.KubeObjectStore<Renderer.K8sApi.KubeEvent> {
-  api = Renderer.K8sApi.eventApi
+  api = Renderer.K8sApi.eventApi;
 
   protected filterItemsOnLoad(items: Renderer.K8sApi.KubeEvent[]): Renderer.K8sApi.KubeEvent[] {
-    return items.filter((i) => FluxTypes.findIndex((ft) => i.involvedObject.kind === ft.kind) !== -1)
+    return items.filter((i) => FluxTypes.findIndex((ft) => i.involvedObject.kind === ft.kind) !== -1);
   }
 }
 
-const fluxEventsStore = new FluxEventsStore()
+const fluxEventsStore = new FluxEventsStore();
 
-import { gitRepositoryStore, GitRepository } from '../k8s/fluxcd/sources/gitrepository'
-import { helmChartStore, HelmChart } from '../k8s/fluxcd/sources/helmchart'
-import { helmRepositoryStore, HelmRepository } from '../k8s/fluxcd/sources/helmrepository'
-import { helmReleaseStore, HelmRelease } from '../k8s/fluxcd/helm/helmrelease'
-import { kustomizationStore, Kustomization } from '../k8s/fluxcd/kustomization'
-import { bucketStore, Bucket } from '../k8s/fluxcd/sources/bucket'
-import { crdStore } from '../k8s/core/crd'
+import { crdStore } from "../k8s/core/crd";
+import { HelmRelease, helmReleaseStore } from "../k8s/fluxcd/helm/helmrelease";
+import { Kustomization, kustomizationStore } from "../k8s/fluxcd/kustomization";
+import { Bucket, bucketStore } from "../k8s/fluxcd/sources/bucket";
+import { GitRepository, gitRepositoryStore } from "../k8s/fluxcd/sources/gitrepository";
+import { HelmChart, helmChartStore } from "../k8s/fluxcd/sources/helmchart";
+import { HelmRepository, helmRepositoryStore } from "../k8s/fluxcd/sources/helmrepository";
 
-import './fluxcd-dashboard.scss'
+import "./fluxcd-dashboard.scss";
 
-import { makeObservable } from 'mobx'
-import { observer } from 'mobx-react'
-import { OCIRepository, ociRepositoryStore } from '../k8s/fluxcd/sources/ocirepository'
-import { ImageRepository, imageRepositoryStore } from '../k8s/fluxcd/image-automation/imagerepository'
-import { ImagePolicy, imagePolicyStore } from '../k8s/fluxcd/image-automation/imagepolicy'
-import { ImageUpdateAutomation, imageUpdateAutomationStore } from '../k8s/fluxcd/image-automation/imageupdateautomation'
-import { Alert, alertStore } from '../k8s/fluxcd/notifications/alert'
-import { Provider, providerStore } from '../k8s/fluxcd/notifications/provider'
-import { Receiver, receiverStore } from '../k8s/fluxcd/notifications/receiver'
-import { KubeAge } from '../components/ui/kube-age'
+import { makeObservable } from "mobx";
+import { observer } from "mobx-react";
+import { KubeAge } from "../components/ui/kube-age";
+import { ImagePolicy, imagePolicyStore } from "../k8s/fluxcd/image-automation/imagepolicy";
+import { ImageRepository, imageRepositoryStore } from "../k8s/fluxcd/image-automation/imagerepository";
+import {
+  ImageUpdateAutomation,
+  imageUpdateAutomationStore,
+} from "../k8s/fluxcd/image-automation/imageupdateautomation";
+import { Alert, alertStore } from "../k8s/fluxcd/notifications/alert";
+import { Provider, providerStore } from "../k8s/fluxcd/notifications/provider";
+import { Receiver, receiverStore } from "../k8s/fluxcd/notifications/receiver";
+import { OCIRepository, ociRepositoryStore } from "../k8s/fluxcd/sources/ocirepository";
 
 enum columnId {
-  message = 'message',
-  namespace = 'namespace',
-  object = 'object',
-  type = 'type',
-  count = 'count',
-  source = 'source',
-  age = 'age',
-  lastSeen = 'last-seen',
+  message = "message",
+  namespace = "namespace",
+  object = "object",
+  type = "type",
+  count = "count",
+  source = "source",
+  age = "age",
+  lastSeen = "last-seen",
 }
 
 interface FluxCDDashboardState {
-  kustomizations: Kustomization[]
-  gitRepositories: GitRepository[]
-  helmReleases: HelmRelease[]
-  helmCharts: HelmChart[]
-  helmRepositories: HelmRepository[]
-  buckets: Bucket[]
-  ociRepositories: OCIRepository[]
-  imageRepositories: ImageRepository[]
-  imagePolicies: ImagePolicy[]
-  imageUpdateAutomations: ImageUpdateAutomation[]
-  alerts: Alert[]
-  providers: Provider[]
-  receivers: Receiver[]
-  crds: Renderer.K8sApi.CustomResourceDefinition[]
+  kustomizations: Kustomization[];
+  gitRepositories: GitRepository[];
+  helmReleases: HelmRelease[];
+  helmCharts: HelmChart[];
+  helmRepositories: HelmRepository[];
+  buckets: Bucket[];
+  ociRepositories: OCIRepository[];
+  imageRepositories: ImageRepository[];
+  imagePolicies: ImagePolicy[];
+  imageUpdateAutomations: ImageUpdateAutomation[];
+  alerts: Alert[];
+  providers: Provider[];
+  receivers: Receiver[];
+  crds: Renderer.K8sApi.CustomResourceDefinition[];
 
-  selectedTableRowId: string
+  selectedTableRowId: string;
 }
 
 @observer
@@ -85,59 +88,59 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
     providers: [],
     receivers: [],
     crds: [],
-    selectedTableRowId: '',
-  }
+    selectedTableRowId: "",
+  };
 
-  private readonly watches: (() => void)[] = []
-  private readonly abortController = new AbortController()
+  private readonly watches: (() => void)[] = [];
+  private readonly abortController = new AbortController();
 
   constructor(props: { extension: Renderer.LensExtension }) {
-    super(props)
+    super(props);
 
-    makeObservable(this)
+    makeObservable(this);
   }
 
   componentWillUnmount(): void {
-    this.abortController.abort()
+    this.abortController.abort();
     this.watches.forEach((w) => {
-      w()
-    })
-    this.watches.splice(0, this.watches.length)
-    this.watches.length = 0
+      w();
+    });
+    this.watches.splice(0, this.watches.length);
+    this.watches.length = 0;
   }
 
   getCrd(kubeObject: Renderer.K8sApi.KubeObject): Renderer.K8sApi.CustomResourceDefinition {
-    const { crds } = this.state
+    const { crds } = this.state;
 
     if (!kubeObject) {
-      return null
+      return null;
     }
 
     if (!crds) {
-      return null
+      return null;
     }
 
     return crds.find(
-      (crd) => crd.spec.names.kind === kubeObject.kind && crd.spec.group === kubeObject.apiVersion.split('/')[0]
-    )
+      (crd) => crd.spec.names.kind === kubeObject.kind && crd.spec.group === kubeObject.apiVersion.split("/")[0],
+    );
   }
 
   getChart(title: string, objects: Renderer.K8sApi.KubeObject[]) {
     if (!objects || objects.length === 0) {
-      return null
+      return null;
     }
 
-    const crd = this.getCrd(objects[0])
+    const crd = this.getCrd(objects[0]);
     if (!crd) {
-      return null
+      return null;
     }
 
-    return <div className="column">{/* <PieChart title={title} objects={objects} crd={crd} /> */}</div>
+    return <div className="column">{/* <PieChart title={title} objects={objects} crd={crd} /> */}</div>;
   }
 
   async componentDidMount() {
-    crdStore.loadAll().then((l) => this.setState({ crds: l }))
-    ;[
+    crdStore.loadAll().then((l) => this.setState({ crds: l }));
+    [
       kustomizationStore,
       helmReleaseStore,
       gitRepositoryStore,
@@ -152,13 +155,13 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
       providerStore,
       receiverStore,
     ].forEach((store) => {
-      store.loadAll().then(() => this.watches.push(store.subscribe()))
-    })
+      store.loadAll().then(() => this.watches.push(store.subscribe()));
+    });
   }
 
   render() {
     if (this.state.crds.length === 0) {
-      return <div>No Flux components found in the cluster</div>
+      return <div>No Flux components found in the cluster</div>;
     }
 
     return (
@@ -170,20 +173,20 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
 
           {/* add all crd from flux here as chart  */}
           <div className="grid grow algin-center flux-workloads">
-            {this.getChart('Kustomizations', kustomizationStore.items)}
-            {this.getChart('Helm releases', helmReleaseStore.items)}
+            {this.getChart("Kustomizations", kustomizationStore.items)}
+            {this.getChart("Helm releases", helmReleaseStore.items)}
 
-            {this.getChart('Git Repositories', gitRepositoryStore.items)}
-            {this.getChart('Helm Repositories', helmRepositoryStore.items)}
-            {this.getChart('Helm Charts', helmChartStore.items)}
-            {this.getChart('Buckets', bucketStore.items)}
-            {this.getChart('OCI Repositories', ociRepositoryStore.items)}
-            {this.getChart('Image Repositories', imageRepositoryStore.items)}
-            {this.getChart('Image Policies', imagePolicyStore.items)}
-            {this.getChart('Image Automations', imageUpdateAutomationStore.items)}
-            {this.getChart('Alerts', alertStore.items)}
-            {this.getChart('Providers', providerStore.items)}
-            {this.getChart('Receivers', receiverStore.items)}
+            {this.getChart("Git Repositories", gitRepositoryStore.items)}
+            {this.getChart("Helm Repositories", helmRepositoryStore.items)}
+            {this.getChart("Helm Charts", helmChartStore.items)}
+            {this.getChart("Buckets", bucketStore.items)}
+            {this.getChart("OCI Repositories", ociRepositoryStore.items)}
+            {this.getChart("Image Repositories", imageRepositoryStore.items)}
+            {this.getChart("Image Policies", imagePolicyStore.items)}
+            {this.getChart("Image Automations", imageUpdateAutomationStore.items)}
+            {this.getChart("Alerts", alertStore.items)}
+            {this.getChart("Providers", providerStore.items)}
+            {this.getChart("Receivers", receiverStore.items)}
           </div>
 
           <KubeObjectListLayout
@@ -193,7 +196,7 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
               sortSyncWithUrl: false,
               sortByDefault: {
                 sortBy: columnId.lastSeen,
-                orderBy: 'asc',
+                orderBy: "asc",
               },
             }}
             isSelectable={false}
@@ -218,24 +221,24 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
             ]}
             renderHeaderTitle="Flux Events"
             renderTableHeader={[
-              { title: 'Type', className: 'type', sortBy: columnId.type, id: columnId.type },
-              { title: 'Message', className: 'message', id: columnId.message },
-              { title: 'Namespace', className: 'namespace', sortBy: columnId.namespace, id: columnId.namespace },
-              { title: 'Involved Object', className: 'object', sortBy: columnId.object, id: columnId.object },
-              { title: 'Source', className: 'source', id: columnId.source },
-              { title: 'Count', className: 'count', sortBy: columnId.count, id: columnId.count },
-              { title: 'Age', className: 'age', sortBy: columnId.age, id: columnId.age },
-              { title: 'Last Seen', className: 'last-seen', sortBy: columnId.lastSeen, id: columnId.lastSeen },
+              { title: "Type", className: "type", sortBy: columnId.type, id: columnId.type },
+              { title: "Message", className: "message", id: columnId.message },
+              { title: "Namespace", className: "namespace", sortBy: columnId.namespace, id: columnId.namespace },
+              { title: "Involved Object", className: "object", sortBy: columnId.object, id: columnId.object },
+              { title: "Source", className: "source", id: columnId.source },
+              { title: "Count", className: "count", sortBy: columnId.count, id: columnId.count },
+              { title: "Age", className: "age", sortBy: columnId.age, id: columnId.age },
+              { title: "Last Seen", className: "last-seen", sortBy: columnId.lastSeen, id: columnId.lastSeen },
             ]}
             renderTableContents={(event) => {
-              const { involvedObject, type, message } = event
-              const tooltipId = `message-${event.getId()}`
-              const isWarning = event.isWarning()
+              const { involvedObject, type, message } = event;
+              const tooltipId = `message-${event.getId()}`;
+              const isWarning = event.isWarning();
 
               return [
                 type,
                 {
-                  className: isWarning ? 'warning' : '',
+                  className: isWarning ? "warning" : "",
                   title: (
                     <>
                       <span id={tooltipId}>{message}</span>
@@ -252,45 +255,45 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
                 event.count,
                 <KubeAge timestamp={event.getCreationTimestamp()} key={`date`} />,
                 <KubeAge timestamp={new Date(event.lastTimestamp).getTime()} key={`time`} />,
-              ]
+              ];
             }}
           />
         </div>
       </Renderer.Component.TabLayout>
-    )
+    );
   }
 }
 
 const FluxTypes = [
   {
-    kind: 'Kustomization',
+    kind: "Kustomization",
     apiVersions: [
-      'kustomize.toolkit.fluxcd.io/v1beta1',
-      'kustomize.toolkit.fluxcd.io/v1beta2',
-      'kustomize.toolkit.fluxcd.io/v1',
+      "kustomize.toolkit.fluxcd.io/v1beta1",
+      "kustomize.toolkit.fluxcd.io/v1beta2",
+      "kustomize.toolkit.fluxcd.io/v1",
     ],
   },
-  { kind: 'HelmRelease', apiVersions: ['helm.toolkit.fluxcd.io/v2beta1'] },
-  { kind: 'GitRepository', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
-  { kind: 'HelmChart', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
-  { kind: 'HelmRepository', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
-  { kind: 'Bucket', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
-  { kind: 'OciRepository', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
-  { kind: 'ImagePolicy', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
-  { kind: 'ImageRepository', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
+  { kind: "HelmRelease", apiVersions: ["helm.toolkit.fluxcd.io/v2beta1"] },
+  { kind: "GitRepository", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "HelmChart", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "HelmRepository", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "Bucket", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "OciRepository", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "ImagePolicy", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "ImageRepository", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
   {
-    kind: 'ImageUpdateAutomation',
-    apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'],
+    kind: "ImageUpdateAutomation",
+    apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"],
   },
-  { kind: 'Alert', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
-  { kind: 'Provider', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
-  { kind: 'Receiver', apiVersions: ['source.toolkit.fluxcd.io/v1beta1', 'source.toolkit.fluxcd.io/v1beta2'] },
-]
+  { kind: "Alert", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "Provider", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "Receiver", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+];
 
 function onlyFluxEvents(event: KubeEvent) {
   return (
     FluxTypes.findIndex((ft) => {
-      return ft.kind === event.involvedObject.kind && ft.apiVersions.includes(event.involvedObject.apiVersion)
+      return ft.kind === event.involvedObject.kind && ft.apiVersions.includes(event.involvedObject.apiVersion);
     }) !== -1
-  )
+  );
 }

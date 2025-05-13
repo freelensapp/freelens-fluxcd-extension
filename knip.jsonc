@@ -1,0 +1,17 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
+
+  "entry": ["dist/{main,renderer}.js!", "main.ts", "renderer.tsx"],
+  "project": ["*.js", "*.ts", "*.tsx", "dist/**/*.js!", "src/**/*.tsx"],
+
+  "ignoreBinaries": ["build:.*"],
+
+  "typescript": {
+    "config": ["tsconfig.json"]
+  },
+  "webpack": {
+    "config": ["webpack.config.js"]
+  },
+
+  "exclude": ["exports"]
+}

@@ -1,12 +1,18 @@
-# Lens FluxCD Extension
+# @freelensapp/extension-fluxcd
 
-[![npm version](https://badge.fury.io/js/lens-extension-fluxcd.svg)](https://badge.fury.io/js/lens-extension-fluxcd)
-![Linter](https://github.com/okaufmann/lens-extension-fluxcd/actions/workflows/eslint.yml/badge.svg)
-![Release](https://github.com/okaufmann/lens-extension-fluxcd/actions/workflows/release.yml/badge.svg)
+<!-- markdownlint-disable MD013 -->
 
-***NOTE ⚠️: This extension was refactored to make it work with [Freelens](https://github.com/freelensapp/freelens) as in K8S Lens extension API was deprecated.***
+[![Home](https://img.shields.io/badge/%F0%9F%8F%A0-freelens.app-02a7a0)](https://freelens.app)
+[![GitHub](https://img.shields.io/github/stars/freelensapp/freelens?style=flat&label=GitHub%20%E2%AD%90)](https://github.com/freelensapp/freelens)
+[![Release](https://img.shields.io/github/v/release/freelensapp/freelens-extension-fluxcd?display_name=tag&sort=semver)](https://github.com/freelensapp/freelens-extension-fluxcd)
+[![Integration tests](https://github.com/freelensapp/freelens-extension-fluxcd/actions/workflows/integration-tests.yaml/badge.svg?branch=main)](https://github.com/freelensapp/freelens-extension-fluxcd/actions/workflows/integration-tests.yaml)
+[![npm](https://img.shields.io/npm/v/@freelensapp/extension-fluxcd.svg)](https://www.npmjs.com/package/@freelensapp/extension-fluxcd)
 
-This extension integrates FluxCD support into [Freelens](https://github.com/freelensapp/freelens). [FluxCD](https://fluxcd.io/) v2.0.0 or higher is supported.
+<!-- markdownlint-enable MD013 -->
+
+This extension integrates FluxCD support into
+[Freelens](https://github.com/freelensapp/freelens).
+[FluxCD](https://fluxcd.io/) v2.0.0 or higher is supported.
 
 Features include:
 
@@ -19,60 +25,67 @@ Features include:
 ### Dashboard
 ![./docs/images/dashboard.png](./docs/images/dashboard.png)
 
-
 ## Install
 
-To install open Freelens and go to Extensions (CTRL+SHIFT+E or CMD+SHIFT+E), and install `lens-extension-fluxcd`.
+To install open Freelens and go to Extensions (`ctrl`+`shift`+`E` or
+`cmd`+`shift`+`E`), and install `@freelensapp/extension-fluxcd`.
 
-or
+or:
 
-Click on the following link [lens://app/extensions/install/lens-extension-fluxcd](lens://app/extensions/install/lens-extension-fluxcd)
+Use a following URL in the browser:
+[freelens://app/extensions/install/%40freelensapp%2Fextension-fluxcd](freelens://app/extensions/install/%40freelensapp%2Fextension-fluxcd)
 
-## Development
+## Build from the source
 
-To install the extension for development
+You can build the extension using this repository.
 
-```sh
-mkdir -p ~/.k8slens/extensions
-git clone https://github.com/okaufmann/lens-extension-fluxcd.git
-ln -s $(pwd) ~/.k8slens/extensions/lens-extension-fluxcd
-```
+### Prerequisites
 
-Or you can open the Extensions view in Lens and click "Install from URL..." and paste the following:
+Use [NVM](https://github.com/nvm-sh/nvm) or
+[mise-en-place](https://mise.jdx.dev/) or
+[windows-nvm](https://github.com/coreybutler/nvm-windows) to install the
+required Node.js version.
 
-```
-lens-extension-fluxcd
-```
-
-## Build
-
-To build the extension you can use `make` or run the `npm` commands manually:
+From the root of this repository:
 
 ```sh
-make build
+nvm install
+# or
+mise install
+# or
+winget install CoreyButler.NVMforWindows
+nvm install 22.14.0
+nvm use 22.14.0
 ```
 
-OR
+Install Pnpm:
 
 ```sh
-npm install
-npm run build
+corepack install
+# or
+curl -fsSL https://get.pnpm.io/install.sh | sh -
+# or
+winget install pnpm.pnpm
 ```
 
-If you want to watch for any source code changes and automatically rebuild the extension you can use:
+### Build extension
 
 ```sh
-npm run start
+pnpm i
+pnpm build
+pnpm pack
 ```
 
-## Test
+### Install built extension
 
-Open the Lens application and navigate to a cluster. You should see "FluxCD" dashboard in a cluster menu.
+The tarball for the extension will be placed in the current directory. In
+Freelens, navigate to the Extensions list and provide the path to the tarball
+to be loaded, or drag and drop the extension tarball into the Freelens window.
+After loading for a moment, the extension should appear in the list of enabled
+extensions.
 
-## Uninstall
+## License
 
-```sh
-rm ~/.k8slens/extensions/lens-extension-fluxcd
-```
+Copyright (c) 2025 Freelens Authors.
 
-Restart Lens application.
+[MIT License](https://opensource.org/licenses/MIT)

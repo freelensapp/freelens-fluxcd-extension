@@ -1,16 +1,16 @@
-import { Renderer } from '@freelensapp/extensions'
-import React from 'react'
-import { Provider } from '../../../k8s/fluxcd/notifications/provider'
-import { crdStore } from '../../../k8s/core/crd'
+import { Renderer } from "@freelensapp/extensions";
+import React from "react";
+import { crdStore } from "../../../k8s/core/crd";
+import { Provider } from "../../../k8s/fluxcd/notifications/provider";
 
 interface ProviderDetailsState {
-  events: Renderer.K8sApi.KubeEvent[]
-  crds: Renderer.K8sApi.CustomResourceDefinition[]
+  events: Renderer.K8sApi.KubeEvent[];
+  crds: Renderer.K8sApi.CustomResourceDefinition[];
 }
 
 const {
   Component: { DrawerItem },
-} = Renderer
+} = Renderer;
 
 export class FluxCDProviderDetails extends React.Component<
   Renderer.Component.KubeObjectDetailsProps<Provider>,
@@ -19,57 +19,57 @@ export class FluxCDProviderDetails extends React.Component<
   public readonly state: Readonly<ProviderDetailsState> = {
     events: [],
     crds: [],
-  }
+  };
 
   getCrd(kind: string): Renderer.K8sApi.CustomResourceDefinition {
-    const { crds } = this.state
+    const { crds } = this.state;
 
     if (!kind) {
-      return null
+      return null;
     }
 
     if (!crds) {
-      return null
+      return null;
     }
 
-    return crds.find((crd) => crd.spec.names.kind === kind)
+    return crds.find((crd) => crd.spec.names.kind === kind);
   }
 
   sourceUrl(resource: Provider) {
-    const name = resource.spec.secretRef.name
-    const ns = resource.spec.secretRef.namespace ?? resource.metadata.namespace
+    const name = resource.spec.secretRef.name;
+    const ns = resource.spec.secretRef.namespace ?? resource.metadata.namespace;
 
-    const url = `/api/v1/namespaces/${ns}/secrets/${name}`
+    const url = `/api/v1/namespaces/${ns}/secrets/${name}`;
 
-    console.log({ url })
+    console.log({ url });
 
-    return url
+    return url;
   }
 
   async componentDidMount() {
-    crdStore.loadAll().then((l: any) => this.setState({ crds: l as Renderer.K8sApi.CustomResourceDefinition[] }))
+    crdStore.loadAll().then((l: any) => this.setState({ crds: l as Renderer.K8sApi.CustomResourceDefinition[] }));
   }
 
   render() {
-    const { object } = this.props
+    const { object } = this.props;
 
     return (
       <div>
         <DrawerItem name="Type">{object.spec.type}</DrawerItem>
-        <DrawerItem name="Suspended">{object.spec.suspend === true ? 'Yes' : 'No'}</DrawerItem>
+        <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
 
         <DrawerItem name="Resources">
           <a
             href="#"
             onClick={(e) => {
-              e.preventDefault()
-              Renderer.Navigation.showDetails(this.sourceUrl(object), true)
+              e.preventDefault();
+              Renderer.Navigation.showDetails(this.sourceUrl(object), true);
             }}
           >
             Secret:{object.spec.secretRef.name}
           </a>
         </DrawerItem>
       </div>
-    )
+    );
   }
 }

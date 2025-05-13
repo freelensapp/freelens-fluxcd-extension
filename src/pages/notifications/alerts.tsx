@@ -1,23 +1,23 @@
-import { Renderer } from '@freelensapp/extensions'
+import { Renderer } from "@freelensapp/extensions";
 
-import { observer } from 'mobx-react'
+import { observer } from "mobx-react";
 
-import React from 'react'
+import React from "react";
 
-import { alertStore, Alert } from '../../k8s/fluxcd/notifications/alert'
-import { getStatusClass, getStatusMessage, getStatusText } from '../../utils'
-import { KubeAge } from '../../components/ui/kube-age'
+import { KubeAge } from "../../components/ui/kube-age";
+import { Alert, alertStore } from "../../k8s/fluxcd/notifications/alert";
+import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
   Component: { KubeObjectListLayout, Badge },
-} = Renderer
+} = Renderer;
 
 enum sortBy {
-  name = 'name',
-  namespace = 'namespace',
-  status = 'status',
-  ready = 'ready',
-  age = 'age',
+  name = "name",
+  namespace = "namespace",
+  status = "status",
+  ready = "ready",
+  age = "age",
 }
 
 @observer
@@ -38,11 +38,11 @@ export class FluxCDAlerts extends React.Component<{ extension: Renderer.LensExte
         searchFilters={[(alert: Alert) => alert.getSearchFields()]}
         renderHeaderTitle="Alerts"
         renderTableHeader={[
-          { title: 'Name', className: 'name', sortBy: sortBy.name },
-          { title: 'Namespace', className: 'namespace', sortBy: sortBy.namespace },
-          { title: 'Ready', className: 'ready', sortBy: sortBy.ready },
-          { title: 'Status', className: 'status', sortBy: sortBy.status },
-          { title: 'Age', className: 'age', sortBy: sortBy.age },
+          { title: "Name", className: "name", sortBy: sortBy.name },
+          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
+          { title: "Ready", className: "ready", sortBy: sortBy.ready },
+          { title: "Status", className: "status", sortBy: sortBy.status },
+          { title: "Age", className: "age", sortBy: sortBy.age },
         ]}
         renderTableContents={(alert: Alert) => [
           alert.getName(),
@@ -52,12 +52,12 @@ export class FluxCDAlerts extends React.Component<{ extension: Renderer.LensExte
           <KubeAge timestamp={alert.getCreationTimestamp()} key="age" />,
         ]}
       />
-    )
+    );
   }
 
   renderStatus(alert: Alert) {
-    const className = getStatusClass(alert)
-    const text = getStatusText(alert)
-    return <Badge key="name" label={text} className={className} />
+    const className = getStatusClass(alert);
+    const text = getStatusText(alert);
+    return <Badge key="name" label={text} className={className} />;
   }
 }

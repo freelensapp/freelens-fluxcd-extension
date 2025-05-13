@@ -1,24 +1,24 @@
-import { Renderer } from '@freelensapp/extensions'
+import { Renderer } from "@freelensapp/extensions";
 
-import { observer } from 'mobx-react'
+import { observer } from "mobx-react";
 
-import React from 'react'
+import React from "react";
 
-import { helmReleaseStore, HelmRelease } from '../../k8s/fluxcd/helm/helmrelease'
-import { getStatusClass, getStatusMessage, getStatusText } from '../../utils'
-import { KubeAge } from '../../components/ui/kube-age'
+import { KubeAge } from "../../components/ui/kube-age";
+import { HelmRelease, helmReleaseStore } from "../../k8s/fluxcd/helm/helmrelease";
+import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
   Component: { KubeObjectListLayout, Badge },
-} = Renderer
+} = Renderer;
 
 enum sortBy {
-  name = 'name',
-  namespace = 'namespace',
-  status = 'status',
-  ready = 'ready',
-  age = 'age',
-  chartVersion = 'chartVersion',
+  name = "name",
+  namespace = "namespace",
+  status = "status",
+  ready = "ready",
+  age = "age",
+  chartVersion = "chartVersion",
 }
 
 @observer
@@ -41,12 +41,12 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
         searchFilters={[(helmRelease: HelmRelease) => helmRelease.getSearchFields()]}
         renderHeaderTitle="Helm Releases"
         renderTableHeader={[
-          { title: 'Name', className: 'name', sortBy: sortBy.name },
-          { title: 'Namespace', className: 'namespace', sortBy: sortBy.namespace },
-          { title: 'Ready', className: 'ready', sortBy: sortBy.ready },
-          { title: 'Version', className: 'version', sortBy: sortBy.chartVersion },
-          { title: 'Status', className: 'status', sortBy: sortBy.status },
-          { title: 'Age', className: 'age', sortBy: sortBy.age },
+          { title: "Name", className: "name", sortBy: sortBy.name },
+          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
+          { title: "Ready", className: "ready", sortBy: sortBy.ready },
+          { title: "Version", className: "version", sortBy: sortBy.chartVersion },
+          { title: "Status", className: "status", sortBy: sortBy.status },
+          { title: "Age", className: "age", sortBy: sortBy.age },
         ]}
         renderTableContents={(helmRelease: HelmRelease) => [
           helmRelease.getName(),
@@ -57,12 +57,12 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
           <KubeAge timestamp={helmRelease.getCreationTimestamp()} key="age" />,
         ]}
       />
-    )
+    );
   }
 
   renderStatus(helmRelease: HelmRelease) {
-    const className = getStatusClass(helmRelease)
-    const text = getStatusText(helmRelease)
-    return <Badge key="name" label={text} className={className} />
+    const className = getStatusClass(helmRelease);
+    const text = getStatusText(helmRelease);
+    return <Badge key="name" label={text} className={className} />;
   }
 }

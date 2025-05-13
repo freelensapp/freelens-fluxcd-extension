@@ -1,96 +1,90 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require('path')
+const path = require("path");
 
 module.exports = [
   {
-    entry: './main.ts',
+    entry: "./main.ts",
     context: __dirname,
-    target: 'electron-main',
-    mode: 'production',
+    target: "electron-main",
+    mode: "production",
     module: {
       rules: [
         {
           test: /\.tsx?$/,
-          use: 'ts-loader',
+          use: "ts-loader",
           exclude: /node_modules/,
-        },
-        {
-          test: /\.s[ac]ss$/i,
-          use: [
-            // Creates `style` nodes from JS strings
-            'style-loader',
-            // Translates CSS into CommonJS
-            'css-loader',
-            // Compiles Sass to CSS
-            'sass-loader',
-          ],
         },
       ],
     },
     externals: [
       {
-        '@freelensapp/extensions': 'var global.LensExtensions',
-        mobx: 'var global.Mobx',
-        react: 'var global.React',
+        "@freelensapp/extensions": "var global.LensExtensions",
+        mobx: "var global.Mobx",
+        react: "var global.React",
       },
     ],
     resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
+      extensions: [".tsx", ".ts", ".js"],
+    },
+    optimization: {
+      minimize: false,
     },
     output: {
-      libraryTarget: 'commonjs2',
-      filename: 'main.js',
-      path: path.resolve(__dirname, 'dist'),
+      libraryTarget: "commonjs2",
+      filename: "main.js",
+      path: path.resolve(__dirname, "dist"),
     },
   },
   {
-    entry: './renderer.tsx',
+    entry: "./renderer.tsx",
     context: __dirname,
-    target: 'electron-renderer',
-    mode: 'production',
+    target: "electron-renderer",
+    mode: "production",
     module: {
       rules: [
         {
           test: /\.tsx?$/,
-          use: 'ts-loader',
+          use: "ts-loader",
           exclude: /node_modules/,
         },
         {
           test: /\.s[ac]ss$/i,
           use: [
             // Creates `style` nodes from JS strings
-            'style-loader',
+            "style-loader",
             // Translates CSS into CommonJS
-            'css-loader',
+            "css-loader",
             // Compiles Sass to CSS
-            'sass-loader',
+            "sass-loader",
           ],
         },
         {
           test: /\.svg$/,
-          use: 'raw-loader',
+          use: "raw-loader",
         },
       ],
     },
     externals: [
       {
-        '@freelensapp/extensions': 'var global.LensExtensions',
-        react: 'var global.React',
-        mobx: 'var global.Mobx',
+        "@freelensapp/extensions": "var global.LensExtensions",
+        react: "var global.React",
+        mobx: "var global.Mobx",
       },
     ],
     resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
+      extensions: [".tsx", ".ts", ".js"],
+    },
+    optimization: {
+      minimize: false,
     },
     output: {
-      libraryTarget: 'commonjs2',
-      globalObject: 'this',
-      filename: 'renderer.js',
-      path: path.resolve(__dirname, 'dist'),
+      libraryTarget: "commonjs2",
+      globalObject: "this",
+      filename: "renderer.js",
+      path: path.resolve(__dirname, "dist"),
     },
     node: {
       __dirname: false,
       __filename: false,
     },
   },
-]
+];

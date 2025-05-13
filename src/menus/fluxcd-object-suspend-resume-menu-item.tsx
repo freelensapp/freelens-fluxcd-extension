@@ -1,48 +1,48 @@
-import React from 'react'
-import { Renderer } from '@freelensapp/extensions'
+import { Renderer } from "@freelensapp/extensions";
+import React from "react";
 
 const {
   Component: { MenuItem, Icon },
-} = Renderer
+} = Renderer;
 
 interface FluxCustomSpec {
-  suspend: boolean
+  suspend: boolean;
 }
 
 export interface FluxCdObjectSuspendResumeMenuItemProps
   extends Renderer.Component.KubeObjectMenuProps<
     Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, unknown, FluxCustomSpec>
   > {
-  api: Renderer.K8sApi.KubeApi<Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, unknown, FluxCustomSpec>>
+  api: Renderer.K8sApi.KubeApi<Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, unknown, FluxCustomSpec>>;
 }
 
 export function FluxcdObjectSuspendResumeMenuItem(props: FluxCdObjectSuspendResumeMenuItemProps) {
-  const { object, toolbar, api } = props
+  const { object, toolbar, api } = props;
 
-  if (!object) return null
+  if (!object) return null;
 
   const suspend = async () => {
-    object.spec.suspend = true
+    object.spec.suspend = true;
     await api.update(
       {
         name: object.metadata.name,
         namespace: object.metadata.namespace,
       },
-      object
-    )
-  }
+      object,
+    );
+  };
 
   const resume = async () => {
-    object.spec.suspend = false
+    object.spec.suspend = false;
 
     await api.update(
       {
         name: object.metadata.name,
         namespace: object.metadata.namespace,
       },
-      object
-    )
-  }
+      object,
+    );
+  };
 
   if (object.spec.suspend === true) {
     return (
@@ -50,7 +50,7 @@ export function FluxcdObjectSuspendResumeMenuItem(props: FluxCdObjectSuspendResu
         <Icon material="play_circle_outline" interactive={toolbar} title="Resume" />
         <span className="title">Resume</span>
       </MenuItem>
-    )
+    );
   }
 
   return (
@@ -58,5 +58,5 @@ export function FluxcdObjectSuspendResumeMenuItem(props: FluxCdObjectSuspendResu
       <Icon material="pause_circle_filled" interactive={toolbar} title="Suspend" />
       <span className="title">Suspend</span>
     </MenuItem>
-  )
+  );
 }

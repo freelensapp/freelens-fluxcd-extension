@@ -1,12 +1,12 @@
-import React from 'react'
-import { Renderer } from '@freelensapp/extensions'
+import { Renderer } from "@freelensapp/extensions";
+import React from "react";
 
 const {
   Component: { MenuItem, Icon },
-} = Renderer
+} = Renderer;
 
 interface FluxCustomSpec {
-  suspend: boolean
+  suspend: boolean;
 }
 
 export interface FluxcdObjectReconcileMenuItemProps
@@ -15,26 +15,26 @@ export interface FluxcdObjectReconcileMenuItemProps
   > {
   api: Renderer.K8sApi.KubeApi<
     Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, unknown, FluxCustomSpec | any>
-  >
+  >;
 }
 
 export function FluxcdObjectReconcileMenuItem(props: FluxcdObjectReconcileMenuItemProps) {
-  const { object, toolbar, api } = props
-  if (!object) return null
+  const { object, toolbar, api } = props;
+  if (!object) return null;
 
   const reconcile = async () => {
     if (!object.metadata.annotations) {
-      object.metadata.annotations = {}
+      object.metadata.annotations = {};
     }
 
-    object.metadata.annotations['reconcile.fluxcd.io/requestedAt'] = new Date().toISOString()
-    await api.update({ name: object.metadata.name, namespace: object.metadata.namespace }, object)
-  }
+    object.metadata.annotations["reconcile.fluxcd.io/requestedAt"] = new Date().toISOString();
+    await api.update({ name: object.metadata.name, namespace: object.metadata.namespace }, object);
+  };
 
   return (
     <MenuItem onClick={reconcile} disabled={object.spec.suspend === true}>
       <Icon material="autorenew" interactive={toolbar} title="Reconcile" />
       <span className="title">Reconcile</span>
     </MenuItem>
-  )
+  );
 }

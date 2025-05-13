@@ -1,6 +1,6 @@
 // import { Renderer } from '@freelensapp/extensions'
-import React from 'react'
-import './pie-chart.scss'
+import React from "react";
+import "./pie-chart.scss";
 // import { PieChartData } from '@freelensapp/extensions/dist/src/extensions/renderer-api/components'
 
 // const getStats = (objects: Renderer.K8sApi.KubeObject[]) => {
@@ -73,5 +73,5 @@ import './pie-chart.scss'
 // }
 
 export function PieChart(/*props: PieChartProps<Renderer.K8sApi.KubeObject>*/): React.ReactElement {
-  return <div>Pie Charts not working yet</div>
+  return <div>Pie Charts not working yet</div>;
 }

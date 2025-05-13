@@ -1,26 +1,26 @@
-import { Renderer } from '@freelensapp/extensions'
+import { Renderer } from "@freelensapp/extensions";
 
-import { observer } from 'mobx-react'
+import { observer } from "mobx-react";
 
-import React from 'react'
+import React from "react";
 
+import { KubeAge } from "../../components/ui/kube-age";
 import {
-  imageUpdateAutomationStore,
   ImageUpdateAutomation,
-} from '../../k8s/fluxcd/image-automation/imageupdateautomation'
-import { getStatusClass, getStatusMessage, getStatusText } from '../../utils'
-import { KubeAge } from '../../components/ui/kube-age'
+  imageUpdateAutomationStore,
+} from "../../k8s/fluxcd/image-automation/imageupdateautomation";
+import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
   Component: { KubeObjectListLayout, Badge },
-} = Renderer
+} = Renderer;
 
 enum sortBy {
-  name = 'name',
-  namespace = 'namespace',
-  status = 'status',
-  ready = 'ready',
-  age = 'age',
+  name = "name",
+  namespace = "namespace",
+  status = "status",
+  ready = "ready",
+  age = "age",
 }
 
 @observer
@@ -41,11 +41,11 @@ export class FluxCDImageUpdateAutomations extends React.Component<{ extension: R
         searchFilters={[(imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getSearchFields()]}
         renderHeaderTitle="Image Update Automations"
         renderTableHeader={[
-          { title: 'Name', className: 'name', sortBy: sortBy.name },
-          { title: 'Namespace', className: 'namespace', sortBy: sortBy.namespace },
-          { title: 'Ready', className: 'ready', sortBy: sortBy.ready },
-          { title: 'Status', className: 'status', sortBy: sortBy.status },
-          { title: 'Age', className: 'age', sortBy: sortBy.age },
+          { title: "Name", className: "name", sortBy: sortBy.name },
+          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
+          { title: "Ready", className: "ready", sortBy: sortBy.ready },
+          { title: "Status", className: "status", sortBy: sortBy.status },
+          { title: "Age", className: "age", sortBy: sortBy.age },
         ]}
         renderTableContents={(imageUpdateAutomation: ImageUpdateAutomation) => [
           imageUpdateAutomation.getName(),
@@ -55,12 +55,12 @@ export class FluxCDImageUpdateAutomations extends React.Component<{ extension: R
           <KubeAge timestamp={imageUpdateAutomation.getCreationTimestamp()} key="age" />,
         ]}
       />
-    )
+    );
   }
 
   renderStatus(imageUpdateAutomation: ImageUpdateAutomation) {
-    const className = getStatusClass(imageUpdateAutomation)
-    const text = getStatusText(imageUpdateAutomation)
-    return <Badge key="name" label={text} className={className} />
+    const className = getStatusClass(imageUpdateAutomation);
+    const text = getStatusText(imageUpdateAutomation);
+    return <Badge key="name" label={text} className={className} />;
   }
 }

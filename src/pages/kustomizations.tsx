@@ -1,23 +1,23 @@
-import { Renderer } from '@freelensapp/extensions'
+import { Renderer } from "@freelensapp/extensions";
 
-import { observer } from 'mobx-react'
+import { observer } from "mobx-react";
 
-import React from 'react'
+import React from "react";
 
-import { kustomizationStore, Kustomization } from '../k8s/fluxcd/kustomization'
-import { getStatusClass, getStatusMessage, getStatusText } from '../utils'
-import { KubeAge } from '../components/ui/kube-age'
+import { KubeAge } from "../components/ui/kube-age";
+import { Kustomization, kustomizationStore } from "../k8s/fluxcd/kustomization";
+import { getStatusClass, getStatusMessage, getStatusText } from "../utils";
 
 const {
   Component: { KubeObjectListLayout, Badge },
-} = Renderer
+} = Renderer;
 
 enum sortBy {
-  name = 'name',
-  namespace = 'namespace',
-  status = 'status',
-  ready = 'ready',
-  age = 'age',
+  name = "name",
+  namespace = "namespace",
+  status = "status",
+  ready = "ready",
+  age = "age",
 }
 
 @observer
@@ -38,11 +38,11 @@ export class FluxCDKustomizations extends React.Component<{ extension: Renderer.
         searchFilters={[(kustomization: Kustomization) => kustomization.getSearchFields()]}
         renderHeaderTitle="Kustomizations"
         renderTableHeader={[
-          { title: 'Name', className: 'name', sortBy: sortBy.name },
-          { title: 'Namespace', className: 'namespace', sortBy: sortBy.namespace },
-          { title: 'Ready', className: 'ready', sortBy: sortBy.ready },
-          { title: 'Status', className: 'status', sortBy: sortBy.status },
-          { title: 'Age', className: 'age', sortBy: sortBy.age },
+          { title: "Name", className: "name", sortBy: sortBy.name },
+          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
+          { title: "Ready", className: "ready", sortBy: sortBy.ready },
+          { title: "Status", className: "status", sortBy: sortBy.status },
+          { title: "Age", className: "age", sortBy: sortBy.age },
         ]}
         renderTableContents={(kustomization: Kustomization) => [
           kustomization.getName(),
@@ -52,12 +52,12 @@ export class FluxCDKustomizations extends React.Component<{ extension: Renderer.
           <KubeAge timestamp={kustomization.getCreationTimestamp()} key="age" />,
         ]}
       />
-    )
+    );
   }
 
   renderStatus(kustomization: Kustomization) {
-    const className = getStatusClass(kustomization)
-    const text = getStatusText(kustomization)
-    return <Badge key="name" label={text} className={className} />
+    const className = getStatusClass(kustomization);
+    const text = getStatusText(kustomization);
+    return <Badge key="name" label={text} className={className} />;
   }
 }
