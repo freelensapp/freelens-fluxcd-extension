@@ -186,7 +186,6 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
             <div className={`grid grow align-center ${style.fluxWorkloads}`}>
               {this.getChart("Kustomizations", kustomizationStore.items)}
               {this.getChart("Helm releases", helmReleaseStore.items)}
-
               {this.getChart("Git Repositories", gitRepositoryStore.items)}
               {this.getChart("Helm Repositories", helmRepositoryStore.items)}
               {this.getChart("Helm Charts", helmChartStore.items)}

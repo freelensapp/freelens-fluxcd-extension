@@ -59,9 +59,7 @@ const {
   Component: { Icon },
 } = Renderer;
 
-type IconProps = Renderer.Component.IconProps;
-
-export function FluxCDIcon(props: IconProps) {
+export function FluxCDIcon(props: Renderer.Component.IconProps) {
   return <Icon {...props} svg={svgIcon} />;
 }
 
@@ -303,6 +301,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "helm",
       parentId: "fluxcd",
+      target: { pageId: "helmreleases" },
       title: "Helm",
       components: {
         Icon: null as any,
@@ -320,6 +319,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "sources",
       parentId: "fluxcd",
+      target: { pageId: "gitrepositories" },
       title: "Sources",
       components: {
         Icon: null as any,
@@ -373,6 +373,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "imageautomations",
       parentId: "fluxcd",
+      target: { pageId: "imagerepositories" },
       title: "Image Automation",
       components: {
         Icon: null as any,
@@ -408,6 +409,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "notifications",
       parentId: "fluxcd",
+      target: { pageId: "alerts" },
       title: "Notifications",
       components: {
         Icon: null as any,
