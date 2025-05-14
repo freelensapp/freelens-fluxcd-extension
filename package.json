@@ -53,12 +53,9 @@
     "lint:fix": "pnpm biome:fix",
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
-  "dependencies": {
-    "@freelensapp/extensions": "^1.3.0"
-  },
   "devDependencies": {
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@freelensapp/kube-object": "^1.3.0",
+    "@freelensapp/extensions": "^1.3.0",
     "@types/chart.js": "^2.9.41",
     "@types/node": "^22.15.17",
     "@types/react": "^17.0.85",
@@ -66,7 +63,6 @@
     "electron-vite": "^3.1.0",
     "mobx": "^6.13.7",
     "mobx-react": "^7.6.0",
-    "mobx-react-lite": "^4.1.0",
     "moment": "^2.30.1",
     "react": "^17.0.2",
     "sass": "^1.87.0",
