@@ -6,25 +6,8 @@
   padding: 16px;
 }
 
-.floatRight {
-  float: right;
-}
-
-.fluxPanel header {
-  margin-bottom: 1em;
-}
-
-.gaps>.column {
-  margin-top: var(--flex-gap, 1em);
-  margin-right: var(--flex-gap, 1em);
-}
-
 .center {
   text-align: center;
-}
-
-.nowrap {
-  white-space: nowrap;
 }
 
 .chart-title {
@@ -39,33 +22,7 @@
   padding-bottom: 3em;
 }
 
-.mb-3 {
-  margin-bottom: 3em;
-}
-
-.fluxPanel {
-  padding: 1em;
-  border: 1px solid #ccc;
-  border-radius: 0.4em;
-}
-
-.statusReady {
-  background-color: #15501a;
-}
-
-.statusNotReady {
-  background-color: #502015;
-}
-
-.statusInProgress {
-  background-color: #154650;
-}
-
-.statusSuspended {
-  background-color: #424242;
-}
-
-.fluxContent {
+.flux-content {
   height: 100%;
   overflow-y: auto;
 }

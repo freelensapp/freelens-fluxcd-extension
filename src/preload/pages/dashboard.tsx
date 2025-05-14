@@ -1,6 +1,9 @@
 import { Renderer } from "@freelensapp/extensions";
 
 import React from "react";
+
+import { PieChart } from "../components/pie-chart";
+
 const {
   Component: { Tooltip, KubeObjectListLayout },
 } = Renderer;
@@ -26,6 +29,7 @@ import { GitRepository, gitRepositoryStore } from "../k8s/fluxcd/sources/gitrepo
 import { HelmChart, helmChartStore } from "../k8s/fluxcd/sources/helmchart";
 import { HelmRepository, helmRepositoryStore } from "../k8s/fluxcd/sources/helmrepository";
 
+import style from "./fluxcd-dashboard.module.scss";
 import styleInline from "./fluxcd-dashboard.module.scss?inline";
 
 import { makeObservable } from "mobx";
@@ -126,7 +130,7 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
     );
   }
 
-  getChart(_title: string, objects: Renderer.K8sApi.KubeObject[]) {
+  getChart(title: string, objects: Renderer.K8sApi.KubeObject[]) {
     if (!objects || objects.length === 0) {
       return;
     }
@@ -136,7 +140,11 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
       return;
     }
 
-    return <div className="column">{/* <PieChart title={title} objects={objects} crd={crd} /> */}</div>;
+    return (
+      <div className="column">
+        <PieChart title={title} objects={objects} crd={crd} />
+      </div>
+    );
   }
 
   async componentDidMount() {
@@ -169,13 +177,13 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
       <>
         <style>{styleInline}</style>
         <Renderer.Component.TabLayout>
-          <div className="fluxContent">
-            <header className="flex gaps align-center pb-3">
+          <div className={style.fluxContent}>
+            <header className={`flex gaps align-center ${style.pb3}`}>
               <h1>FluxCD Dashboard</h1>
             </header>
 
             {/* add all crd from flux here as chart  */}
-            <div className="grid grow algin-center flux-workloads">
+            <div className={`grid grow align-center ${style.fluxWorkloads}`}>
               {this.getChart("Kustomizations", kustomizationStore.items)}
               {this.getChart("Helm releases", helmReleaseStore.items)}
 

@@ -44,6 +44,7 @@ import { Receiver } from "./k8s/fluxcd/notifications/receiver";
 import { fluxcdObjects } from "./k8s/fluxcd/objects";
 
 import svgIcon from "./icons/fluxcd.svg?raw";
+
 import { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
 import { ImagePolicy } from "./k8s/fluxcd/image-automation/imagepolicy";
 import { ImageRepository } from "./k8s/fluxcd/image-automation/imagerepository";

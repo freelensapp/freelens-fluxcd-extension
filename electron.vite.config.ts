@@ -55,6 +55,11 @@ export default defineConfig({
       },
       sourcemap: true,
     },
+    css: {
+      modules: {
+        localsConvention: "camelCaseOnly",
+      },
+    },
     plugins: [
       react({
         // do not use `react/jsx-runtime` module in transpiled code
