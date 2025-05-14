@@ -1,7 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 
-const { KubeApi } = Renderer.K8sApi;
-
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
@@ -24,7 +22,7 @@ export class HelmChart extends KubeObject<
   static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta1/helmcharts";
 }
 
-export class HelmChartApi extends KubeApi<HelmChart> {}
+export class HelmChartApi extends Renderer.K8sApi.KubeApi<HelmChart> {}
 export const helmChartApi = new HelmChartApi({ objectConstructor: HelmChart });
 export class HelmChartStore extends KubeObjectStore<HelmChart> {
   api: Renderer.K8sApi.KubeApi<HelmChart> = helmChartApi;

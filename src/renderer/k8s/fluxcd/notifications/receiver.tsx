@@ -1,7 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 
-const { KubeApi } = Renderer.K8sApi;
-
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
@@ -28,7 +26,7 @@ export class Receiver extends KubeObject<
   static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta2/receivers";
 }
 
-export class ReceiverApi extends KubeApi<Receiver> {}
+export class ReceiverApi extends Renderer.K8sApi.KubeApi<Receiver> {}
 export const receiverApi = new ReceiverApi({ objectConstructor: Receiver });
 export class ReceiverStore extends KubeObjectStore<Receiver> {
   api: Renderer.K8sApi.KubeApi<Receiver> = receiverApi;

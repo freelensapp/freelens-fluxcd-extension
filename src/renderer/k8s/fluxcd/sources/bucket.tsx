@@ -1,7 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 
-const { KubeApi } = Renderer.K8sApi;
-
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
@@ -11,7 +9,7 @@ export class Bucket extends KubeObject<any, any, { url: string }> {
   static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta1/buckets";
 }
 
-export class BucketApi extends KubeApi<Bucket> {}
+export class BucketApi extends Renderer.K8sApi.KubeApi<Bucket> {}
 
 export const bucketApi = new BucketApi({ objectConstructor: Bucket });
 export class BucketStore extends KubeObjectStore<Bucket> {

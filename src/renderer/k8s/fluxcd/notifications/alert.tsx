@@ -1,7 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 
-const { KubeApi } = Renderer.K8sApi;
-
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
@@ -27,7 +25,7 @@ export class Alert extends KubeObject<
   static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta2/alerts";
 }
 
-export class AlertApi extends KubeApi<Alert> {}
+export class AlertApi extends Renderer.K8sApi.KubeApi<Alert> {}
 export const alertApi = new AlertApi({ objectConstructor: Alert });
 export class AlertStore extends KubeObjectStore<Alert> {
   api: Renderer.K8sApi.KubeApi<Alert> = alertApi;

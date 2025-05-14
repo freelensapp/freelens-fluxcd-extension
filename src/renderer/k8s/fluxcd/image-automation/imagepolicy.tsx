@@ -1,7 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 
-const { KubeApi } = Renderer.K8sApi;
-
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
@@ -20,7 +18,7 @@ export class ImagePolicy extends KubeObject<
   static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1beta2/imagepolicies";
 }
 
-export class ImagePolicyApi extends KubeApi<ImagePolicy> {}
+export class ImagePolicyApi extends Renderer.K8sApi.KubeApi<ImagePolicy> {}
 export const imagePolicyApi = new ImagePolicyApi({ objectConstructor: ImagePolicy });
 export class ImagePolicyStore extends KubeObjectStore<ImagePolicy> {
   api: Renderer.K8sApi.KubeApi<ImagePolicy> = imagePolicyApi;

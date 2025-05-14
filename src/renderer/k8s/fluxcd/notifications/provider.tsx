@@ -1,7 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 
-const { KubeApi } = Renderer.K8sApi;
-
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
@@ -15,7 +13,7 @@ export class Provider extends KubeObject<
   static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta2/providers";
 }
 
-export class ProviderApi extends KubeApi<Provider> {}
+export class ProviderApi extends Renderer.K8sApi.KubeApi<Provider> {}
 export const providerApi = new ProviderApi({ objectConstructor: Provider });
 export class ProviderStore extends KubeObjectStore<Provider> {
   api: Renderer.K8sApi.KubeApi<Provider> = providerApi;

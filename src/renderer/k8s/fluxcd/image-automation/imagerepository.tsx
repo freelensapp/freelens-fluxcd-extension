@@ -1,7 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 
-const { KubeApi } = Renderer.K8sApi;
-
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
@@ -15,7 +13,7 @@ export class ImageRepository extends KubeObject<
   static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1beta2/imagerepositories";
 }
 
-export class ImageRepositoryApi extends KubeApi<ImageRepository> {}
+export class ImageRepositoryApi extends Renderer.K8sApi.KubeApi<ImageRepository> {}
 export const imageRepositoryApi = new ImageRepositoryApi({ objectConstructor: ImageRepository });
 export class ImageRepositoryStore extends KubeObjectStore<ImageRepository> {
   api: Renderer.K8sApi.KubeApi<ImageRepository> = imageRepositoryApi;
