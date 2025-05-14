@@ -1,6 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import moment from "moment";
-// const KubeObject = Renderer.K8sApi.KubeObject
+
+type KubeObject = Renderer.K8sApi.KubeObject<any, any, any>;
 
 /**
  * This function formats durations in a more human readable form.
@@ -105,7 +106,7 @@ export function lowerAndPluralize(str: string) {
   }
 }
 
-export function getStatusClass<T extends Renderer.K8sApi.KubeObject>(obj: T) {
+export function getStatusClass<T extends KubeObject>(obj: T) {
   const status = getStatus(obj);
   switch (status) {
     case "ready":
@@ -121,7 +122,7 @@ export function getStatusClass<T extends Renderer.K8sApi.KubeObject>(obj: T) {
   }
 }
 
-export function getStatusText<T extends Renderer.K8sApi.KubeObject>(obj: T): string {
+export function getStatusText<T extends KubeObject>(obj: T): string {
   const status = getStatus(obj);
   switch (status) {
     case "ready":
@@ -137,19 +138,11 @@ export function getStatusText<T extends Renderer.K8sApi.KubeObject>(obj: T): str
   }
 }
 
-export function getStatusMessage<
-  T extends Renderer.K8sApi.KubeObject<any, { conditions?: { type: string; message: string }[] }, any>,
->(obj: T): string {
+export function getStatusMessage<T extends KubeObject>(obj: T): string {
   return obj.status?.conditions?.find((c) => c.type === "Ready")?.message || "unknown";
 }
 
-function getStatus<
-  T extends Renderer.K8sApi.KubeObject<
-    any,
-    { conditions?: { type: string; status?: string }[] },
-    { suspend?: boolean }
-  >,
->(obj: T): string {
+function getStatus<T extends KubeObject>(obj: T): string {
   if (obj.spec?.suspend) return "suspended";
 
   const readyCondition = obj.status?.conditions?.find((c) => c.type === "Ready");

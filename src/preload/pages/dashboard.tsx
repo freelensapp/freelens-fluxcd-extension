@@ -1,13 +1,14 @@
 import { Renderer } from "@freelensapp/extensions";
-import { KubeEvent } from "@freelensapp/kube-object";
-// import { PieChart } from '../components/pie-chart'
 
 import React from "react";
 const {
   Component: { Tooltip, KubeObjectListLayout },
 } = Renderer;
 
-class FluxEventsStore extends Renderer.K8sApi.KubeObjectStore<Renderer.K8sApi.KubeEvent> {
+class FluxEventsStore extends Renderer.K8sApi.KubeObjectStore<
+  Renderer.K8sApi.KubeEvent,
+  typeof Renderer.K8sApi.eventApi
+> {
   api = Renderer.K8sApi.eventApi;
 
   protected filterItemsOnLoad(items: Renderer.K8sApi.KubeEvent[]): Renderer.K8sApi.KubeEvent[] {
@@ -25,7 +26,7 @@ import { GitRepository, gitRepositoryStore } from "../k8s/fluxcd/sources/gitrepo
 import { HelmChart, helmChartStore } from "../k8s/fluxcd/sources/helmchart";
 import { HelmRepository, helmRepositoryStore } from "../k8s/fluxcd/sources/helmrepository";
 
-import "./fluxcd-dashboard.scss";
+import styleInline from "./fluxcd-dashboard.module.scss?inline";
 
 import { makeObservable } from "mobx";
 import { observer } from "mobx-react";
@@ -109,15 +110,15 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
     this.watches.length = 0;
   }
 
-  getCrd(kubeObject: Renderer.K8sApi.KubeObject): Renderer.K8sApi.CustomResourceDefinition {
+  getCrd(kubeObject: Renderer.K8sApi.KubeObject): Renderer.K8sApi.CustomResourceDefinition | undefined {
     const { crds } = this.state;
 
     if (!kubeObject) {
-      return null;
+      return;
     }
 
     if (!crds) {
-      return null;
+      return;
     }
 
     return crds.find(
@@ -125,21 +126,21 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
     );
   }
 
-  getChart(title: string, objects: Renderer.K8sApi.KubeObject[]) {
+  getChart(_title: string, objects: Renderer.K8sApi.KubeObject[]) {
     if (!objects || objects.length === 0) {
-      return null;
+      return;
     }
 
     const crd = this.getCrd(objects[0]);
     if (!crd) {
-      return null;
+      return;
     }
 
     return <div className="column">{/* <PieChart title={title} objects={objects} crd={crd} /> */}</div>;
   }
 
   async componentDidMount() {
-    crdStore.loadAll().then((l) => this.setState({ crds: l }));
+    crdStore.loadAll().then((l) => this.setState({ crds: l || [] }));
     [
       kustomizationStore,
       helmReleaseStore,
@@ -165,101 +166,107 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
     }
 
     return (
-      <Renderer.Component.TabLayout>
-        <div className="fluxContent">
-          <header className="flex gaps align-center pb-3">
-            <h1>FluxCD Dashboard</h1>
-          </header>
+      <>
+        <style>{styleInline}</style>
+        <Renderer.Component.TabLayout>
+          <div className="fluxContent">
+            <header className="flex gaps align-center pb-3">
+              <h1>FluxCD Dashboard</h1>
+            </header>
 
-          {/* add all crd from flux here as chart  */}
-          <div className="grid grow algin-center flux-workloads">
-            {this.getChart("Kustomizations", kustomizationStore.items)}
-            {this.getChart("Helm releases", helmReleaseStore.items)}
+            {/* add all crd from flux here as chart  */}
+            <div className="grid grow algin-center flux-workloads">
+              {this.getChart("Kustomizations", kustomizationStore.items)}
+              {this.getChart("Helm releases", helmReleaseStore.items)}
 
-            {this.getChart("Git Repositories", gitRepositoryStore.items)}
-            {this.getChart("Helm Repositories", helmRepositoryStore.items)}
-            {this.getChart("Helm Charts", helmChartStore.items)}
-            {this.getChart("Buckets", bucketStore.items)}
-            {this.getChart("OCI Repositories", ociRepositoryStore.items)}
-            {this.getChart("Image Repositories", imageRepositoryStore.items)}
-            {this.getChart("Image Policies", imagePolicyStore.items)}
-            {this.getChart("Image Automations", imageUpdateAutomationStore.items)}
-            {this.getChart("Alerts", alertStore.items)}
-            {this.getChart("Providers", providerStore.items)}
-            {this.getChart("Receivers", receiverStore.items)}
-          </div>
+              {this.getChart("Git Repositories", gitRepositoryStore.items)}
+              {this.getChart("Helm Repositories", helmRepositoryStore.items)}
+              {this.getChart("Helm Charts", helmChartStore.items)}
+              {this.getChart("Buckets", bucketStore.items)}
+              {this.getChart("OCI Repositories", ociRepositoryStore.items)}
+              {this.getChart("Image Repositories", imageRepositoryStore.items)}
+              {this.getChart("Image Policies", imagePolicyStore.items)}
+              {this.getChart("Image Automations", imageUpdateAutomationStore.items)}
+              {this.getChart("Alerts", alertStore.items)}
+              {this.getChart("Providers", providerStore.items)}
+              {this.getChart("Receivers", receiverStore.items)}
+            </div>
 
-          <KubeObjectListLayout
-            className="Events"
-            store={fluxEventsStore}
-            tableProps={{
-              sortSyncWithUrl: false,
-              sortByDefault: {
-                sortBy: columnId.lastSeen,
-                orderBy: "asc",
-              },
-            }}
-            isSelectable={false}
-            getItems={() =>
-              fluxEventsStore.contextItems
-                .filter(onlyFluxEvents)
-                .sort((a, b) => (new Date(b.lastTimestamp).getTime() || 0) - (new Date(a.lastTimestamp).getTime() || 0))
-            }
-            sortingCallbacks={{
-              [columnId.namespace]: (event) => event.getNs(),
-              [columnId.type]: (event) => event.type,
-              [columnId.object]: (event) => event.involvedObject.name,
-              [columnId.count]: (event) => event.count,
-              [columnId.age]: (event) => -event.getCreationTimestamp(),
-              [columnId.lastSeen]: (event) => (event.lastTimestamp ? -new Date(event.lastTimestamp).getTime() : 0),
-            }}
-            searchFilters={[
-              (event) => event.getSearchFields(),
-              (event) => event.message,
-              (event) => event.getSource(),
-              (event) => event.involvedObject.name,
-            ]}
-            renderHeaderTitle="Flux Events"
-            renderTableHeader={[
-              { title: "Type", className: "type", sortBy: columnId.type, id: columnId.type },
-              { title: "Message", className: "message", id: columnId.message },
-              { title: "Namespace", className: "namespace", sortBy: columnId.namespace, id: columnId.namespace },
-              { title: "Involved Object", className: "object", sortBy: columnId.object, id: columnId.object },
-              { title: "Source", className: "source", id: columnId.source },
-              { title: "Count", className: "count", sortBy: columnId.count, id: columnId.count },
-              { title: "Age", className: "age", sortBy: columnId.age, id: columnId.age },
-              { title: "Last Seen", className: "last-seen", sortBy: columnId.lastSeen, id: columnId.lastSeen },
-            ]}
-            renderTableContents={(event) => {
-              const { involvedObject, type, message } = event;
-              const tooltipId = `message-${event.getId()}`;
-              const isWarning = event.isWarning();
-
-              return [
-                type,
-                {
-                  className: isWarning ? "warning" : "",
-                  title: (
-                    <>
-                      <span id={tooltipId}>{message}</span>
-                      <Tooltip targetId={tooltipId} formatters={{ narrow: true, warning: isWarning }}>
-                        {message}
-                      </Tooltip>
-                    </>
-                  ),
+            <KubeObjectListLayout
+              className="Events"
+              store={fluxEventsStore}
+              tableProps={{
+                sortSyncWithUrl: false,
+                sortByDefault: {
+                  sortBy: columnId.lastSeen,
+                  orderBy: "asc",
                 },
-                event.getNs(),
-                <>{`${involvedObject.kind}: ${involvedObject.name}`}</>,
-                // </Link>,
-                event.getSource(),
-                event.count,
-                <KubeAge timestamp={event.getCreationTimestamp()} key={`date`} />,
-                <KubeAge timestamp={new Date(event.lastTimestamp).getTime()} key={`time`} />,
-              ];
-            }}
-          />
-        </div>
-      </Renderer.Component.TabLayout>
+              }}
+              isSelectable={false}
+              getItems={() =>
+                fluxEventsStore.contextItems
+                  .filter(onlyFluxEvents)
+                  .sort(
+                    (a, b) =>
+                      (new Date(b.lastTimestamp || 0).getTime() || 0) - (new Date(a.lastTimestamp || 0).getTime() || 0),
+                  )
+              }
+              sortingCallbacks={{
+                [columnId.namespace]: (event) => event.getNs(),
+                [columnId.type]: (event) => event.type,
+                [columnId.object]: (event) => event.involvedObject.name,
+                [columnId.count]: (event) => event.count,
+                [columnId.age]: (event) => -event.getCreationTimestamp(),
+                [columnId.lastSeen]: (event) => (event.lastTimestamp ? -new Date(event.lastTimestamp).getTime() : 0),
+              }}
+              searchFilters={[
+                (event) => event.getSearchFields(),
+                (event) => event.message,
+                (event) => event.getSource(),
+                (event) => event.involvedObject.name,
+              ]}
+              renderHeaderTitle="Flux Events"
+              renderTableHeader={[
+                { title: "Type", className: "type", sortBy: columnId.type, id: columnId.type },
+                { title: "Message", className: "message", id: columnId.message },
+                { title: "Namespace", className: "namespace", sortBy: columnId.namespace, id: columnId.namespace },
+                { title: "Involved Object", className: "object", sortBy: columnId.object, id: columnId.object },
+                { title: "Source", className: "source", id: columnId.source },
+                { title: "Count", className: "count", sortBy: columnId.count, id: columnId.count },
+                { title: "Age", className: "age", sortBy: columnId.age, id: columnId.age },
+                { title: "Last Seen", className: "last-seen", sortBy: columnId.lastSeen, id: columnId.lastSeen },
+              ]}
+              renderTableContents={(event) => {
+                const { involvedObject, type, message } = event;
+                const tooltipId = `message-${event.getId()}`;
+                const isWarning = event.isWarning();
+
+                return [
+                  type,
+                  {
+                    className: isWarning ? "warning" : "",
+                    title: (
+                      <>
+                        <span id={tooltipId}>{message}</span>
+                        <Tooltip targetId={tooltipId} formatters={{ narrow: true, warning: isWarning }}>
+                          {message}
+                        </Tooltip>
+                      </>
+                    ),
+                  },
+                  event.getNs(),
+                  <>{`${involvedObject.kind}: ${involvedObject.name}`}</>,
+                  // </Link>,
+                  event.getSource(),
+                  event.count,
+                  <KubeAge timestamp={event.getCreationTimestamp()} key={`date`} />,
+                  <KubeAge timestamp={new Date(event.lastTimestamp || 0).getTime()} key={`time`} />,
+                ];
+              }}
+            />
+          </div>
+        </Renderer.Component.TabLayout>
+      </>
     );
   }
 }
@@ -290,7 +297,7 @@ const FluxTypes = [
   { kind: "Receiver", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
 ];
 
-function onlyFluxEvents(event: KubeEvent) {
+function onlyFluxEvents(event: Renderer.K8sApi.KubeEvent) {
   return (
     FluxTypes.findIndex((ft) => {
       return ft.kind === event.involvedObject.kind && ft.apiVersions.includes(event.involvedObject.apiVersion);

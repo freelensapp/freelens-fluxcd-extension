@@ -1,16 +1,17 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
 
-  "entry": ["dist/{main,renderer}.js!", "main.ts", "renderer.tsx"],
-  "project": ["*.js", "*.ts", "*.tsx", "dist/**/*.js!", "src/**/*.tsx"],
+  "entry": ["out/{main,preload}/index.js!", "src/{main,preload}/index.ts"],
+  "project": ["*.{js,mjs,ts}", "out/**/*.js!", "src/**/*.{ts,tsx}"],
 
   "ignoreBinaries": ["build:.*"],
+  "ignoreDependencies": ["@freelensapp/extensions", "electron", "react", "@types/react"],
 
   "typescript": {
     "config": ["tsconfig.json"]
   },
-  "webpack": {
-    "config": ["webpack.config.js"]
+  "vite": {
+    "config": ["electron.vite.config.ts"]
   },
 
   "exclude": ["exports"]

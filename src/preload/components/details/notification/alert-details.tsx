@@ -22,21 +22,21 @@ export class FluxCDAlertDetails extends React.Component<
     crds: [],
   };
 
-  getCrd(kind: string): Renderer.K8sApi.CustomResourceDefinition {
+  getCrd(kind: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
     const { crds } = this.state;
 
     if (!kind) {
-      return null;
+      return;
     }
 
     if (!crds) {
-      return null;
+      return;
     }
 
     return crds.find((crd) => crd.spec.names.kind === kind);
   }
 
-  sourceUrl(resource: any, overwriteKind: string = null) {
+  sourceUrl(resource: any, overwriteKind?: string) {
     const name = resource.name;
     const ns = resource.namespace ?? this.props.object.metadata.namespace;
     const resourceKind = overwriteKind ?? resource.kind;

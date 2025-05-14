@@ -1,4 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
+
+// @ts-ignore
 import React from "react";
 
 const {
@@ -11,9 +13,11 @@ interface FluxCustomSpec {
 
 export interface FluxCdObjectSuspendResumeMenuItemProps
   extends Renderer.Component.KubeObjectMenuProps<
-    Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, unknown, FluxCustomSpec>
+    Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, unknown, FluxCustomSpec | any>
   > {
-  api: Renderer.K8sApi.KubeApi<Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, unknown, FluxCustomSpec>>;
+  api: Renderer.K8sApi.KubeApi<
+    Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, unknown, FluxCustomSpec | any>
+  >;
 }
 
 export function FluxcdObjectSuspendResumeMenuItem(props: FluxCdObjectSuspendResumeMenuItemProps) {

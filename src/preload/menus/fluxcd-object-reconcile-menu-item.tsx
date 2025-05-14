@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+// @ts-ignore
 import React from "react";
 
 const {
