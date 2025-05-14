@@ -40,7 +40,7 @@ export default defineConfig({
   preload: {
     build: {
       lib: {
-        entry: resolve(__dirname, "src/preload/index.tsx"),
+        entry: resolve(__dirname, "src/renderer/index.tsx"),
         // Freelens 1.xx extensions are CommonJS modules
         formats: ["cjs"],
       },
@@ -50,7 +50,7 @@ export default defineConfig({
           exports: "named",
           // prefer separate files for each module
           preserveModules: true,
-          preserveModulesRoot: "src/preload",
+          preserveModulesRoot: "src/renderer",
         },
       },
       sourcemap: true,

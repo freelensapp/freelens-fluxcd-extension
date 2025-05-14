@@ -8,7 +8,7 @@
     "directory": "."
   },
   "main": "out/main/index.js",
-  "renderer": "out/preload/index.js",
+  "renderer": "out/renderer/index.js",
   "files": [
     "out/**/*"
   ],
