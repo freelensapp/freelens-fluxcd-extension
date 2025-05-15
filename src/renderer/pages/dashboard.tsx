@@ -280,6 +280,50 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
 
 const FluxTypes = [
   {
+    kind: "Alert",
+    apiVersions: [
+      "notification.toolkit.fluxcd.io/v1beta1",
+      "notification.toolkit.fluxcd.io/v1beta2",
+      "notification.toolkit.fluxcd.io/v1beta3",
+    ],
+  },
+  {
+    kind: "Bucket",
+    apiVersions: [
+      "source.toolkit.fluxcd.io/v1beta1",
+      "source.toolkit.fluxcd.io/v1beta2",
+      "source.toolkit.fluxcd.io/v1",
+    ],
+  },
+  {
+    kind: "GitRepository",
+    apiVersions: [
+      "source.toolkit.fluxcd.io/v1beta1",
+      "source.toolkit.fluxcd.io/v1beta2",
+      "source.toolkit.fluxcd.io/v1",
+    ],
+  },
+  {
+    kind: "HelmChart",
+    apiVersions: [
+      "source.toolkit.fluxcd.io/v1beta1",
+      "source.toolkit.fluxcd.io/v1beta2",
+      "source.toolkit.fluxcd.io/v1",
+    ],
+  },
+  {
+    kind: "HelmRelease",
+    apiVersions: ["helm.toolkit.fluxcd.io/v2beta1", "helm.toolkit.fluxcd.io/v2beta2", "helm.toolkit.fluxcd.io/v2"],
+  },
+  {
+    kind: "HelmRepository",
+    apiVersions: [
+      "source.toolkit.fluxcd.io/v1beta1",
+      "source.toolkit.fluxcd.io/v1beta2",
+      "source.toolkit.fluxcd.io/v1",
+    ],
+  },
+  {
     kind: "Kustomization",
     apiVersions: [
       "kustomize.toolkit.fluxcd.io/v1beta1",
@@ -287,21 +331,29 @@ const FluxTypes = [
       "kustomize.toolkit.fluxcd.io/v1",
     ],
   },
-  { kind: "HelmRelease", apiVersions: ["helm.toolkit.fluxcd.io/v2beta1"] },
-  { kind: "GitRepository", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
-  { kind: "HelmChart", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
-  { kind: "HelmRepository", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
-  { kind: "Bucket", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
-  { kind: "OciRepository", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
-  { kind: "ImagePolicy", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
-  { kind: "ImageRepository", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "ImagePolicy", apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "ImageRepository", apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"] },
   {
     kind: "ImageUpdateAutomation",
-    apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"],
+    apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"],
   },
-  { kind: "Alert", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
-  { kind: "Provider", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
-  { kind: "Receiver", apiVersions: ["source.toolkit.fluxcd.io/v1beta1", "source.toolkit.fluxcd.io/v1beta2"] },
+  { kind: "OCIRepository", apiVersions: ["source.toolkit.fluxcd.io/v1beta2"] },
+  {
+    kind: "Provider",
+    apiVersions: [
+      "notification.toolkit.fluxcd.io/v1beta1",
+      "notification.toolkit.fluxcd.io/v1beta2",
+      "notification.toolkit.fluxcd.io/v1beta3",
+    ],
+  },
+  {
+    kind: "Receiver",
+    apiVersions: [
+      "notification.toolkit.fluxcd.io/v1beta1",
+      "notification.toolkit.fluxcd.io/v1beta2",
+      "notification.toolkit.fluxcd.io/v1",
+    ],
+  },
 ];
 
 function onlyFluxEvents(event: Renderer.K8sApi.KubeEvent) {

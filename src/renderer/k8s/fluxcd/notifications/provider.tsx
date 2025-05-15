@@ -10,7 +10,7 @@ export class Provider extends KubeObject<
 > {
   static readonly kind = "Provider";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta2/providers";
+  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta1/providers";
 }
 
 export class ProviderApi extends Renderer.K8sApi.KubeApi<Provider> {}

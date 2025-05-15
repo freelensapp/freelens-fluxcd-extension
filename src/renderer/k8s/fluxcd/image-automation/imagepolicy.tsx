@@ -15,7 +15,7 @@ export class ImagePolicy extends KubeObject<
 > {
   static readonly kind = "ImagePolicy";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1beta2/imagepolicies";
+  static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1beta1/imagepolicies";
 }
 
 export class ImagePolicyApi extends Renderer.K8sApi.KubeApi<ImagePolicy> {}
