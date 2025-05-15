@@ -89,3 +89,8 @@ extensions.
 Copyright (c) 2025 Freelens Authors.
 
 [MIT License](https://opensource.org/licenses/MIT)
+
+Based on:
+
+- <https://github.com/appvia/lens-extension-fluxcd>
+- <https://github.com/okaufmann/lens-extension-fluxcd>
