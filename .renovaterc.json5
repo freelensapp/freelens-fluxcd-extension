@@ -40,6 +40,7 @@
     {
       "matchDepNames": [
         "@types/node",
+        "@types/react",
         "electron",
         "npm"
       ],
