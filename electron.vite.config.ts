@@ -44,6 +44,7 @@ export default defineConfig({
         // Freelens 1.xx extensions are CommonJS modules
         formats: ["cjs"],
       },
+      outDir: "out/renderer",
       rollupOptions: {
         output: {
           // silence warning about using `chunk.default` to access the default export
