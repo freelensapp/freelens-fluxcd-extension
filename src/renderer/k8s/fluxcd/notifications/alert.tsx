@@ -22,7 +22,7 @@ export class Alert extends KubeObject<
 > {
   static readonly kind = "Alert";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta2/alerts";
+  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta1/alerts";
 }
 
 export class AlertApi extends Renderer.K8sApi.KubeApi<Alert> {}

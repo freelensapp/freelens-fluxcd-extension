@@ -10,7 +10,7 @@ export class ImageRepository extends KubeObject<
 > {
   static readonly kind = "ImageRepository";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1beta2/imagerepositories";
+  static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1beta1/imagerepositories";
 }
 
 export class ImageRepositoryApi extends Renderer.K8sApi.KubeApi<ImageRepository> {}

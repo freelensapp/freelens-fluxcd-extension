@@ -23,7 +23,7 @@ export class Receiver extends KubeObject<
 > {
   static readonly kind = "Receiver";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta2/receivers";
+  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta1/receivers";
 }
 
 export class ReceiverApi extends Renderer.K8sApi.KubeApi<Receiver> {}

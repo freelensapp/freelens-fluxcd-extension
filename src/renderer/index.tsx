@@ -66,97 +66,15 @@ export function FluxCDIcon(props: Renderer.Component.IconProps) {
 export default class FluxCDExtension extends Renderer.LensExtension {
   kubeObjectDetailItems = [
     {
-      kind: "Kustomization",
-      apiVersions: [
-        "kustomize.toolkit.fluxcd.io/v1beta1",
-        "kustomize.toolkit.fluxcd.io/v1beta2",
-        "kustomize.toolkit.fluxcd.io/v1",
-      ],
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Kustomization>) => (
-          <FluxCDKustomizationDetails {...props} />
-        ),
-      } as any,
-    },
-    {
-      kind: "Receiver",
-      apiVersions: ["notification.toolkit.fluxcd.io/v1beta1", "notification.toolkit.fluxcd.io/v1beta2"],
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver>) => <FluxCDReceiverDetails {...props} />,
-      } as any,
-    },
-    {
       kind: "Alert",
-      apiVersions: ["notification.toolkit.fluxcd.io/v1beta1", "notification.toolkit.fluxcd.io/v1beta2"],
+      apiVersions: [
+        "notification.toolkit.fluxcd.io/v1beta1",
+        "notification.toolkit.fluxcd.io/v1beta2",
+        "notification.toolkit.fluxcd.io/v1beta3",
+      ],
       priority: 10,
       components: {
         Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert>) => <FluxCDAlertDetails {...props} />,
-      } as any,
-    },
-    {
-      kind: "Provider",
-      apiVersions: ["notification.toolkit.fluxcd.io/v1beta1", "notification.toolkit.fluxcd.io/v1beta2"],
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider>) => <FluxCDProviderDetails {...props} />,
-      } as any,
-    },
-    {
-      kind: "ImageRepository",
-      apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"],
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageRepository>) => (
-          <FluxCDImageRepositoryDetails {...props} />
-        ),
-      } as any,
-    },
-    {
-      kind: "ImagePolicy",
-      apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"],
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImagePolicy>) => (
-          <FluxCDImagePolicyDetails {...props} />
-        ),
-      } as any,
-    },
-    {
-      kind: "ImageUpdateAutomation",
-      apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"],
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation>) => (
-          <FluxCDImageUpdateAutomationDetails {...props} />
-        ),
-      } as any,
-    },
-    {
-      kind: "HelmChart",
-      apiVersions: [
-        "source.toolkit.fluxcd.io/v1beta1",
-        "source.toolkit.fluxcd.io/v1beta2",
-        "source.toolkit.fluxcd.io/v1",
-      ],
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart>) => <FluxCDHelmChartDetails {...props} />,
-      } as any,
-    },
-    {
-      kind: "HelmRepository",
-      apiVersions: [
-        "source.toolkit.fluxcd.io/v1beta1",
-        "source.toolkit.fluxcd.io/v1beta2",
-        "source.toolkit.fluxcd.io/v1",
-      ],
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository>) => (
-          <FluxCDHelmRepositoryDetails {...props} />
-        ),
       } as any,
     },
     {
@@ -174,13 +92,107 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       } as any,
     },
     {
+      kind: "HelmChart",
+      apiVersions: [
+        "source.toolkit.fluxcd.io/v1beta1",
+        "source.toolkit.fluxcd.io/v1beta2",
+        "source.toolkit.fluxcd.io/v1",
+      ],
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart>) => <FluxCDHelmChartDetails {...props} />,
+      } as any,
+    },
+    {
       kind: "HelmRelease",
-      apiVersions: ["helm.toolkit.fluxcd.io/v2beta1"],
+      apiVersions: ["helm.toolkit.fluxcd.io/v2beta1", "helm.toolkit.fluxcd.io/v2beta2", "helm.toolkit.fluxcd.io/v2"],
       priority: 10,
       components: {
         Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRelease>) => (
           <FluxCDHelmReleaseDetails {...props} />
         ),
+      } as any,
+    },
+    {
+      kind: "HelmRepository",
+      apiVersions: [
+        "source.toolkit.fluxcd.io/v1beta1",
+        "source.toolkit.fluxcd.io/v1beta2",
+        "source.toolkit.fluxcd.io/v1",
+      ],
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository>) => (
+          <FluxCDHelmRepositoryDetails {...props} />
+        ),
+      } as any,
+    },
+    {
+      kind: "ImagePolicy",
+      apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"],
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImagePolicy>) => (
+          <FluxCDImagePolicyDetails {...props} />
+        ),
+      } as any,
+    },
+    {
+      kind: "ImageRepository",
+      apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"],
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageRepository>) => (
+          <FluxCDImageRepositoryDetails {...props} />
+        ),
+      } as any,
+    },
+    {
+      kind: "ImageUpdateAutomation",
+      apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"],
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation>) => (
+          <FluxCDImageUpdateAutomationDetails {...props} />
+        ),
+      } as any,
+    },
+    {
+      kind: "Kustomization",
+      apiVersions: [
+        "kustomize.toolkit.fluxcd.io/v1beta1",
+        "kustomize.toolkit.fluxcd.io/v1beta2",
+        "kustomize.toolkit.fluxcd.io/v1",
+      ],
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Kustomization>) => (
+          <FluxCDKustomizationDetails {...props} />
+        ),
+      } as any,
+    },
+    {
+      kind: "Provider",
+      apiVersions: [
+        "notification.toolkit.fluxcd.io/v1beta1",
+        "notification.toolkit.fluxcd.io/v1beta2",
+        "notification.toolkit.fluxcd.io/v1beta3",
+      ],
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider>) => <FluxCDProviderDetails {...props} />,
+      } as any,
+    },
+    {
+      kind: "Receiver",
+      apiVersions: [
+        "notification.toolkit.fluxcd.io/v1beta1",
+        "notification.toolkit.fluxcd.io/v1beta2",
+        "notification.toolkit.fluxcd.io/v1",
+      ],
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver>) => <FluxCDReceiverDetails {...props} />,
       } as any,
     },
   ];
