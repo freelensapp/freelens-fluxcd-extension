@@ -1,16 +1,20 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
 
-  "entry": ["dist/{main,renderer}.js!", "main.ts", "renderer.tsx"],
-  "project": ["*.js", "*.ts", "*.tsx", "dist/**/*.js!", "src/**/*.tsx"],
+  "entry": ["out/{main,renderer}/index.js!", "src/main/index.ts", "src/renderer/index.tsx"],
+  "project": ["*.{js,mjs,ts}", "out/**/*.js!", "src/**/*.{ts,tsx}"],
 
   "ignoreBinaries": ["build:.*"],
+  "ignoreDependencies": [
+    // Part of the extensions API
+    "@types/chart.js"
+  ],
 
   "typescript": {
     "config": ["tsconfig.json"]
   },
-  "webpack": {
-    "config": ["webpack.config.js"]
+  "vite": {
+    "config": ["electron.vite.config.ts"]
   },
 
   "exclude": ["exports"]

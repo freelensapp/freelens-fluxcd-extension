@@ -76,8 +76,12 @@ jobs:
 
       - name: Get Freelens version
         shell: bash
-        run: echo "freelens_version=$(pnpm list @freelensapp/extensions --json | jq -r '.[0].dependencies["@freelensapp/extensions"].version')"
-          >> ${GITHUB_ENV}
+        run: |
+          freelens_version=$(pnpm list @freelensapp/extensions --json | jq -r '.[0].devDependencies["@freelensapp/extensions"].version')
+          case "$freelens_version" in
+            [0-9]*) echo "freelens_version=${freelens_version}" >> ${GITHUB_ENV};;
+            *) exit 1
+          esac
 
       - name: Build plugin
         run: pnpm build
