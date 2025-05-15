@@ -1,13 +1,11 @@
 import { Renderer } from "@freelensapp/extensions";
 
-const { KubeApi } = Renderer.K8sApi;
-
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
 type CustomResourceDefinition = Renderer.K8sApi.CustomResourceDefinition;
 const CustomResourceDefinition = Renderer.K8sApi.CustomResourceDefinition;
 
-export class CrdApi extends KubeApi<CustomResourceDefinition> {}
+export class CrdApi extends Renderer.K8sApi.KubeApi<CustomResourceDefinition> {}
 
 export const crdApi = new CrdApi({ objectConstructor: CustomResourceDefinition });
 export class CrdStore extends KubeObjectStore<CustomResourceDefinition> {
