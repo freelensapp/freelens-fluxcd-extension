@@ -99,7 +99,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
     return resource.metadata.name;
   }
 
-  private getReleaseNameShortened(resource: HelmRelease) {
+  getReleaseNameShortened(resource: HelmRelease) {
     const name = this.getReleaseName(resource);
 
     if (name.length > 53) {
@@ -110,87 +110,23 @@ export class FluxCDHelmReleaseDetails extends React.Component<
     return name;
   }
 
-  private renderReleaseLink(name: string, namespace: string) {
-    const releaseUrl = `/helm/releases/${namespace}/${name}`;
-
-    return (
-      <Link key="link" to={releaseUrl} onClick={stopPropagation}>
-        {name}
-      </Link>
-    );
-  }
-
-  private renderNamespaceLink(namespace?: string) {
-    if (!namespace) {
-      return;
-    }
-
-    const namespaceUrl = getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: namespace }));
-
-    if (namespaceUrl) {
-      return (
-        <Link key="link" to={namespaceUrl} onClick={stopPropagation}>
-          {namespace}
-        </Link>
-      );
-    } else {
-      return namespace;
-    }
-  }
-
-  private renderServiceAccountLink(name?: string, namespace?: string) {
-    if (!name) {
-      return;
-    }
-
-    const serviceAccountUrl = getDetailsUrl(serviceAccountsApi.formatUrlForNotListing({ name, namespace }));
-
-    if (serviceAccountUrl) {
-      return (
-        <Link key="link" to={serviceAccountUrl} onClick={stopPropagation}>
-          {name}
-        </Link>
-      );
-    } else {
-      return name;
-    }
-  }
-
-  private renderValuesFromLink(kind: string, name: string, namespace?: string) {
-    if (!kind || !name) {
-      return;
-    }
-
-    let valuesFromUrl = "";
-
-    if (kind.toLowerCase() === "configmap") {
-      valuesFromUrl = getDetailsUrl(configMapApi.formatUrlForNotListing({ name, namespace }));
-    }
-    if (kind.toLowerCase() === "secret") {
-      valuesFromUrl = getDetailsUrl(secretsApi.formatUrlForNotListing({ name, namespace }));
-    }
-
-    if (valuesFromUrl) {
-      return (
-        <Link key="link" to={valuesFromUrl} onClick={stopPropagation}>
-          {name}
-        </Link>
-      );
-    } else {
-      return name;
-    }
-  }
-
   render() {
     const { object } = this.props;
     const valuesYaml = yaml.dump(object.spec.values);
 
     const namespace = this.getNamespace(object);
+    const releaseName = this.getReleaseNameShortened(object);
 
     return (
       <div>
         <DrawerItem name="Release Name">
-          {this.renderReleaseLink(this.getReleaseNameShortened(object), object.spec.storageNamespace ?? namespace)}
+          <Link
+            key="link"
+            to={`/helm/releases/${object.spec.storageNamespace ?? namespace}/${releaseName}`}
+            onClick={stopPropagation}
+          >
+            {releaseName}
+          </Link>
         </DrawerItem>
         <DrawerItem name="Helm Chart" hidden={!object.spec.chart}>
           <a
@@ -224,13 +160,33 @@ export class FluxCDHelmReleaseDetails extends React.Component<
           {object.spec.timeout}
         </DrawerItem>
         <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
-          {this.renderServiceAccountLink(object.spec.serviceAccountName)}
+          <Link
+            key="link"
+            to={getDetailsUrl(
+              serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
+            )}
+            onClick={stopPropagation}
+          >
+            {object.spec.serviceAccountName}
+          </Link>
         </DrawerItem>
         <DrawerItem name="Storage Namespace" hidden={!object.spec.storageNamespace}>
-          {this.renderNamespaceLink(object.spec.storageNamespace)}
+          <Link
+            key="link"
+            to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.storageNamespace }))}
+            onClick={stopPropagation}
+          >
+            {object.spec.storageNamespace}
+          </Link>
         </DrawerItem>
         <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>
-          {this.renderNamespaceLink(object.spec.targetNamespace)}
+          <Link
+            key="link"
+            to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.targetNamespace }))}
+            onClick={stopPropagation}
+          >
+            {object.spec.targetNamespace}
+          </Link>
         </DrawerItem>
         <DrawerItem name="Drift Detection" hidden={!object.spec.driftDetection?.mode}>
           {object.spec.driftDetection?.mode}
@@ -249,7 +205,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
               Renderer.Navigation.showDetails(this.sourceUrl(object), true);
             }}
           >
-            {object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind}:
+            {object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind}:{" "}
             {object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name}
           </a>
         </DrawerItem>
@@ -260,26 +216,36 @@ export class FluxCDHelmReleaseDetails extends React.Component<
         {object.spec.valuesFrom && (
           <div className="valuesFrom">
             <DrawerTitle>Values From</DrawerTitle>
-            {object.spec.valuesFrom.map((valueFrom) => (
-              <div key={valueFrom.name} className="valueFrom">
-                <div className="title flex gaps">
-                  <Icon small material="list" />
+            {object.spec.valuesFrom.map((valueFrom) => {
+              const api = valueFrom.kind.toLowerCase() === "configmap" ? configMapApi : secretsApi;
+              const name = valueFrom.name;
+              return (
+                <div key={name} className="valueFrom">
+                  <div className="title flex gaps">
+                    <Icon small material="list" />
+                  </div>
+                  <DrawerItem name="Kind">{valueFrom.kind}</DrawerItem>
+                  <DrawerItem name="Name">
+                    <Link
+                      key="link"
+                      to={getDetailsUrl(api.formatUrlForNotListing({ name, namespace }))}
+                      onClick={stopPropagation}
+                    >
+                      {name}
+                    </Link>
+                  </DrawerItem>
+                  <DrawerItem name="Values Key" hidden={!valueFrom.valuesKey}>
+                    {valueFrom.valuesKey}
+                  </DrawerItem>
+                  <DrawerItem name="Target Path" hidden={!valueFrom.targetPath}>
+                    {valueFrom.targetPath}
+                  </DrawerItem>
+                  <DrawerItem name="Optional" hidden={!valueFrom.optional}>
+                    {valueFrom.optional}
+                  </DrawerItem>
                 </div>
-                <DrawerItem name="Kind">{valueFrom.kind}</DrawerItem>
-                <DrawerItem name="Name">
-                  {this.renderValuesFromLink(valueFrom.kind, valueFrom.name, namespace)}
-                </DrawerItem>
-                <DrawerItem name="Values Key" hidden={!valueFrom.valuesKey}>
-                  {valueFrom.valuesKey}
-                </DrawerItem>
-                <DrawerItem name="Target Path" hidden={!valueFrom.targetPath}>
-                  {valueFrom.targetPath}
-                </DrawerItem>
-                <DrawerItem name="Optional" hidden={!valueFrom.optional}>
-                  {valueFrom.optional}
-                </DrawerItem>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
