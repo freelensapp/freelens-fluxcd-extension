@@ -19,6 +19,7 @@ enum sortBy {
   ready = "ready",
   age = "age",
   chartVersion = "chartVersion",
+  appVersion = "appVersion",
 }
 
 @observer
@@ -34,7 +35,9 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
           [sortBy.name]: (helmRelease: HelmRelease) => helmRelease.getName(),
           [sortBy.namespace]: (helmRelease: HelmRelease) => helmRelease.getNs(),
           [sortBy.ready]: (helmRelease: HelmRelease) => getStatusText(helmRelease),
-          [sortBy.chartVersion]: (helmRelease: HelmRelease) => helmRelease.spec.chart?.spec.version,
+          [sortBy.chartVersion]: (helmRelease: HelmRelease) =>
+            helmRelease.status?.history?.[0]?.chartVersion ?? helmRelease.spec.chart?.spec.version,
+          [sortBy.appVersion]: (helmRelease: HelmRelease) => helmRelease.status?.history?.[0]?.appVersion,
           [sortBy.status]: (helmRelease: HelmRelease) => getStatusMessage(helmRelease),
           [sortBy.age]: (helmRelease: HelmRelease) => helmRelease.getCreationTimestamp(),
         }}
@@ -44,7 +47,8 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
           { title: "Name", className: "name", sortBy: sortBy.name },
           { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
           { title: "Ready", className: "ready", sortBy: sortBy.ready },
-          { title: "Version", className: "version", sortBy: sortBy.chartVersion },
+          { title: "Chart Version", className: "chartVersion", sortBy: sortBy.chartVersion },
+          { title: "App Version", className: "appVersion", sortBy: sortBy.appVersion },
           { title: "Status", className: "status", sortBy: sortBy.status },
           { title: "Age", className: "age", sortBy: sortBy.age },
         ]}
@@ -52,7 +56,8 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
           helmRelease.getName(),
           helmRelease.getNs(),
           this.renderStatus(helmRelease),
-          helmRelease.spec.chart?.spec.version,
+          helmRelease.status?.history?.[0]?.chartVersion ?? helmRelease.spec.chart?.spec.version,
+          helmRelease.status?.history?.[0]?.appVersion,
           getStatusMessage(helmRelease),
           <KubeAge timestamp={helmRelease.getCreationTimestamp()} key="age" />,
         ]}
