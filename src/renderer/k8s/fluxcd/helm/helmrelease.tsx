@@ -4,7 +4,18 @@ const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
 export class HelmRelease extends KubeObject<
-  any,
+  {
+    name: string;
+    namespace?: string;
+    selfLink: string;
+    uid?: string;
+    generation?: number;
+    creationTimestamp?: string;
+    resourceVersion?: string;
+    labels?: Partial<Record<string, string>>;
+    annotations?: Partial<Record<string, string>>;
+    finalizers?: string[];
+  },
   {
     observedGeneration?: number;
     observedPostRenderersDigest?: string;
@@ -15,7 +26,7 @@ export class HelmRelease extends KubeObject<
       lastTransitionTime: string;
       reason: string;
       message: string;
-    };
+    }[];
     lastAppliedRevision?: string;
     lastAttemptedRevision?: string;
     lastAttemptedValuesChecksum?: string;
@@ -54,12 +65,8 @@ export class HelmRelease extends KubeObject<
   {
     chart?: {
       metadata?: {
-        labels?: {
-          [key: string]: string;
-        };
-        annotations?: {
-          [key: string]: string;
-        };
+        labels?: Record<string, string>;
+        annotations?: Record<string, string>;
       };
       spec: {
         chart: string;
