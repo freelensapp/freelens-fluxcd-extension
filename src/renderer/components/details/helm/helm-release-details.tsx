@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { Common, Renderer } from "@freelensapp/extensions";
 import yaml from "js-yaml";
 import React from "react";
@@ -44,8 +45,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
 
   sourceUrl(resource: HelmRelease): string {
     const name = resource.spec.chart?.spec.sourceRef.name ?? resource.spec.chartRef?.name;
-    const namespace =
-      resource.spec.chart?.spec.sourceRef.namespace ?? resource.spec.chartRef?.namespace ?? resource.metadata.namespace;
+    const namespace = this.getNamespace(resource);
     const kind = lowerAndPluralize(resource.spec.chart?.spec.sourceRef.kind ?? resource.spec.chartRef?.kind ?? "");
     const crd = this.getCrd(resource.spec.chart?.spec.sourceRef.kind ?? resource.spec.chartRef?.kind);
     const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
@@ -56,8 +56,68 @@ export class FluxCDHelmReleaseDetails extends React.Component<
     return `/apis/${group}/${apiVersion}/namespaces/${namespace}/${kind}/${name}`;
   }
 
+  helmChartUrl(resource: HelmRelease): string | undefined {
+    if (!resource.spec.chart) return;
+
+    const name = resource.metadata.name;
+    const namespace = this.getNamespace(resource);
+    const kind = lowerAndPluralize("HelmChart");
+    const crd = this.getCrd(resource.spec.chart?.spec.sourceRef.kind ?? resource.spec.chartRef?.kind);
+    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
+    const group = crd?.spec.group;
+
+    if (!apiVersion || !group) return;
+
+    return `/apis/${group}/${apiVersion}/namespaces/${namespace}/${kind}/${namespace}-${name}`;
+  }
+
   async componentDidMount() {
     crdStore.loadAll().then((l) => this.setState({ crds: l as Renderer.K8sApi.CustomResourceDefinition[] }));
+  }
+
+  getNamespace(resource: HelmRelease) {
+    return (
+      resource.spec.chart?.spec.sourceRef.namespace ?? resource.spec.chartRef?.namespace ?? resource.metadata.namespace!
+    );
+  }
+
+  getHelmChartName(resource: HelmRelease) {
+    const namespace = this.getNamespace(resource);
+
+    return `${namespace}-${resource.metadata.name}`;
+  }
+
+  getReleaseName(resource: HelmRelease) {
+    if (resource.spec.releaseName !== undefined) {
+      return resource.spec.releaseName;
+    }
+
+    if (resource.spec.targetNamespace !== undefined) {
+      return `${resource.spec.targetNamespace}-${resource.metadata.name}`;
+    }
+
+    return resource.metadata.name;
+  }
+
+  private getReleaseNameShortened(resource: HelmRelease) {
+    const name = this.getReleaseName(resource);
+
+    if (name.length > 53) {
+      const hash = crypto.createHash("sha256").update(name).digest("hex").slice(0, 12);
+      return `${name.slice(0, 40)}-${hash}`;
+    }
+
+    return name;
+  }
+
+  private renderReleaseLink(name: string, namespace: string) {
+    const releaseUrl = `/helm/releases/${namespace}/${name}`;
+
+    return (
+      <Link key="link" to={releaseUrl} onClick={stopPropagation}>
+        {name}
+      </Link>
+    );
   }
 
   private renderNamespaceLink(namespace?: string) {
@@ -83,11 +143,11 @@ export class FluxCDHelmReleaseDetails extends React.Component<
       return;
     }
 
-    const renderServiceAccountUrl = getDetailsUrl(serviceAccountsApi.formatUrlForNotListing({ name, namespace }));
+    const serviceAccountUrl = getDetailsUrl(serviceAccountsApi.formatUrlForNotListing({ name, namespace }));
 
-    if (renderServiceAccountUrl) {
+    if (serviceAccountUrl) {
       return (
-        <Link key="link" to={renderServiceAccountUrl} onClick={stopPropagation}>
+        <Link key="link" to={serviceAccountUrl} onClick={stopPropagation}>
           {name}
         </Link>
       );
@@ -125,13 +185,27 @@ export class FluxCDHelmReleaseDetails extends React.Component<
     const { object } = this.props;
     const valuesYaml = yaml.dump(object.spec.values);
 
-    const namespace =
-      object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace ?? object.metadata.namespace!;
+    const namespace = this.getNamespace(object);
 
     return (
       <div>
-        {/* Link to Artifact hub! */}
-        <DrawerItem name="Helm Chart">{object.spec.chart?.spec.chart ?? object.spec.chartRef?.name}</DrawerItem>
+        <DrawerItem name="Release Name">
+          {this.renderReleaseLink(this.getReleaseNameShortened(object), object.spec.storageNamespace ?? namespace)}
+        </DrawerItem>
+        <DrawerItem name="Helm Chart" hidden={!object.spec.chart}>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              Renderer.Navigation.showDetails(this.helmChartUrl(object), true);
+            }}
+          >
+            {this.getHelmChartName(object)}
+          </a>
+        </DrawerItem>
+        <DrawerItem name="Chart Name">
+          {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}
+        </DrawerItem>
         <DrawerItem name="Chart Version">
           {object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version}
         </DrawerItem>
@@ -148,9 +222,6 @@ export class FluxCDHelmReleaseDetails extends React.Component<
         </DrawerItem>
         <DrawerItem name="Timeout" hidden={!object.spec.timeout}>
           {object.spec.timeout}
-        </DrawerItem>
-        <DrawerItem name="Release Name" hidden={!object.spec.releaseName}>
-          {object.spec.releaseName}
         </DrawerItem>
         <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
           {this.renderServiceAccountLink(object.spec.serviceAccountName)}
