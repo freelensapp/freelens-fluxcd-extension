@@ -1,11 +1,12 @@
 import { Renderer } from "@freelensapp/extensions";
+import yaml from "js-yaml";
 import React from "react";
 import { crdStore } from "../../../k8s/core/crd";
 import { HelmRelease } from "../../../k8s/fluxcd/helm/helmrelease";
 import { lowerAndPluralize } from "../../../utils";
 
 const {
-  Component: { DrawerItem },
+  Component: { DrawerItem, DrawerTitle, MonacoEditor },
 } = Renderer;
 
 interface HelmReleaseDetailsState {
@@ -54,14 +55,28 @@ export class FluxCDHelmReleaseDetails extends React.Component<
 
   render() {
     const { object } = this.props;
+    const valuesYaml = yaml.dump(object.spec.values);
 
     return (
       <div>
         {/* Link to Artifact hub! */}
         <DrawerItem name="Helm Chart">{object.spec.chart?.spec.chart ?? object.spec.chartRef?.name}</DrawerItem>
-        <DrawerItem name="Version">{object.spec.chart?.spec.version}</DrawerItem>
+        <DrawerItem name="Chart Version">
+          {object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version}
+        </DrawerItem>
+        <DrawerItem name="App Version">{object.status?.history?.[0]?.appVersion}</DrawerItem>
+        <DrawerItem name="Status">{object.status?.history?.[0]?.status}</DrawerItem>
         <DrawerItem name="Chart Interval">{object.spec.chart?.spec.interval}</DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
+        <DrawerItem name="Max History">{object.spec.maxHistory}</DrawerItem>
+        <DrawerItem name="Timeout">{object.spec.timeout}</DrawerItem>
+        <DrawerItem name="Release Name">{object.spec.releaseName}</DrawerItem>
+        <DrawerItem name="Service Account">{object.spec.serviceAccountName}</DrawerItem>
+        <DrawerItem name="Storage Namespace">{object.spec.storageNamespace}</DrawerItem>
+        <DrawerItem name="Target Namespace">{object.spec.targetNamespace}</DrawerItem>
+        <DrawerItem name="Drift Detection">{object.spec.driftDetection?.mode}</DrawerItem>
+        <DrawerItem name="Install CRDs">{object.spec.install?.crds}</DrawerItem>
+        <DrawerItem name="Upgrade CRDs">{object.spec.upgrade?.crds}</DrawerItem>
         <DrawerItem name="Source">
           <a
             href="#"
@@ -74,6 +89,26 @@ export class FluxCDHelmReleaseDetails extends React.Component<
             {object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name}
           </a>
         </DrawerItem>
+        <DrawerItem name="Last Transition Message">{object.status?.conditions?.[0].message}</DrawerItem>
+        <div className="values">
+          <DrawerTitle>Values</DrawerTitle>
+          <MonacoEditor
+            id="values"
+            style={{
+              resize: "vertical",
+              overflow: "hidden",
+              border: "1px solid var(--borderFaintColor)",
+              borderRadius: "4px",
+            }}
+            value={valuesYaml}
+            setInitialHeight
+            options={{
+              scrollbar: {
+                alwaysConsumeMouseWheel: false,
+              },
+            }}
+          />
+        </div>
       </div>
     );
   }
