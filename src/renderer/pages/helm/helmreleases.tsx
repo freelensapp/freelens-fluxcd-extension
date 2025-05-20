@@ -34,7 +34,7 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
           [sortBy.name]: (helmRelease: HelmRelease) => helmRelease.getName(),
           [sortBy.namespace]: (helmRelease: HelmRelease) => helmRelease.getNs(),
           [sortBy.ready]: (helmRelease: HelmRelease) => getStatusText(helmRelease),
-          [sortBy.chartVersion]: (helmRelease: HelmRelease) => helmRelease.spec.chart.spec.version,
+          [sortBy.chartVersion]: (helmRelease: HelmRelease) => helmRelease.spec.chart?.spec.version,
           [sortBy.status]: (helmRelease: HelmRelease) => getStatusMessage(helmRelease),
           [sortBy.age]: (helmRelease: HelmRelease) => helmRelease.getCreationTimestamp(),
         }}
@@ -52,7 +52,7 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
           helmRelease.getName(),
           helmRelease.getNs(),
           this.renderStatus(helmRelease),
-          helmRelease.spec.chart.spec.version,
+          helmRelease.spec.chart?.spec.version,
           getStatusMessage(helmRelease),
           <KubeAge timestamp={helmRelease.getCreationTimestamp()} key="age" />,
         ]}

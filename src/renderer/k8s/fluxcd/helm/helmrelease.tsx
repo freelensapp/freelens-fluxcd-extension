@@ -7,19 +7,175 @@ export class HelmRelease extends KubeObject<
   any,
   any,
   {
-    chart: {
+    chart?: {
+      metadata?: {
+        labels?: {
+          [key: string]: string;
+        };
+        annotations?: {
+          [key: string]: string;
+        };
+      };
       spec: {
-        version: string;
+        chart: string;
+        version?: string;
         sourceRef: {
+          apiVersion?: string;
           kind: string;
           name: string;
-          namespace: string;
+          namespace?: string;
         };
-        interval: string;
-        chart: string;
+        interval?: string;
+        reconcileStrategy?: string;
+        valuesFiles?: string[];
+        valuesFile?: string;
+        verify?: {
+          provider?: string;
+          secretRef?: {
+            name: string;
+          };
+        };
       };
     };
+    chartRef?: {
+      apiVersion?: string;
+      kind: string;
+      name: string;
+      namespace?: string;
+    };
     interval: string;
+    kubeConfig?: {
+      secretRef: {
+        name: string;
+        key?: string;
+      };
+    };
+    suspend?: boolean;
+    releaseName?: string;
+    targetNamespace?: string;
+    storageNamespace?: string;
+    dependsOn?: {
+      name: string;
+      namespace?: string;
+    }[];
+    timeout?: string;
+    maxHistory?: number;
+    serviceAccountName?: string;
+    persistentClient?: boolean;
+    driftDetection?: {
+      mode?: string;
+      ignore?: {
+        paths?: string[];
+        target?: {
+          group?: string;
+          version?: string;
+          kind?: string;
+          namespace?: string;
+          name?: string;
+          annotationSelector?: string;
+          labelSelector?: string;
+        };
+      }[];
+    };
+    install?: {
+      timeout?: string;
+      remediation?: {
+        retries?: number;
+        ignoreTestFailures?: boolean;
+        remediateLastFailure?: boolean;
+      };
+      disableWait?: boolean;
+      disableWaitForJobs?: boolean;
+      disableHooks?: boolean;
+      disableOpenAPIValidation?: boolean;
+      replace?: boolean;
+      skipCRDs?: boolean;
+      crds?: string;
+      createNamespace?: boolean;
+    };
+    upgrade?: {
+      timeout?: string;
+      remediation?: {
+        retries?: number;
+        ignoreTestFailures?: boolean;
+        remediateLastFailure?: boolean;
+        strategy?: string;
+      };
+      disableWait?: boolean;
+      disableWaitForJobs?: boolean;
+      disableHooks?: boolean;
+      disableOpenAPIValidation?: boolean;
+      force?: boolean;
+      preserveValues?: boolean;
+      cleanupOnFail?: boolean;
+      crds?: string;
+    };
+    test?: {
+      enable?: boolean;
+      timeout?: string;
+      ignoreFailures?: boolean;
+    };
+    rollback?: {
+      timeout?: string;
+      disableWait?: boolean;
+      disableWaitForJobs?: boolean;
+      disableHooks?: boolean;
+      recreate?: boolean;
+      force?: boolean;
+      cleanupOnFail?: boolean;
+    };
+    uninstall?: {
+      timeout?: string;
+      disableHooks?: boolean;
+      keepHistory?: boolean;
+      disableWait?: boolean;
+      deletionPropagation?: string;
+    };
+    valuesFrom?: {
+      kind: string;
+      name: string;
+      valuesKey?: string;
+      targetPath?: string;
+      optional?: boolean;
+    }[];
+    values?: {
+      [key: string]: any;
+    };
+    postRenderers?: {
+      kustomize?: {
+        patches?: {
+          patch: string;
+          target: {
+            group?: string;
+            version?: string;
+            kind?: string;
+            namespace?: string;
+            name?: string;
+            annotationSelector?: string;
+            labelSelector?: string;
+          };
+        }[];
+        patchesStrategicMerge?: string[];
+        patchesJson6902?: {
+          patch: string;
+          target: {
+            group?: string;
+            version?: string;
+            kind?: string;
+            namespace?: string;
+            name?: string;
+            annotationSelector?: string;
+            labelSelector?: string;
+          };
+        }[];
+        images?: {
+          name: string;
+          newName?: string;
+          newTag?: string;
+          digest?: string;
+        }[];
+      };
+    }[];
   }
 > {
   static readonly kind = "HelmRelease";
