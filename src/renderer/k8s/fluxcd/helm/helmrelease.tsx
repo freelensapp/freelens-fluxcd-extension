@@ -1,124 +1,194 @@
 import { Renderer } from "@freelensapp/extensions";
+import type { KubeObjectMetadata } from "../../core/metadata";
 
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
 
-export class HelmRelease extends KubeObject<
-  {
+export interface HelmReleaseSnapshot {
+  apiVersion?: string;
+  digest: string;
+  name: string;
+  namespace: string;
+  version: number;
+  status: string;
+  chartName: string;
+  chartVersion: string;
+  appVersion?: string;
+  configDigest: string;
+  firstDeployed: string;
+  lastDeployed: string;
+  deleted?: string;
+  testHooks?: {
+    lastStarted?: string;
+    lastCompleted?: string;
+    phase?: string;
+  }[];
+}
+
+export interface HelmReleaseStatus {
+  observedGeneration?: number;
+  observedPostRenderersDigest?: string;
+  conditions?: {
+    type?: string;
+    status: string;
+    observedGeneration?: number;
+    lastTransitionTime: string;
+    reason: string;
+    message: string;
+  }[];
+  lastAppliedRevision?: string;
+  lastAttemptedRevision?: string;
+  lastAttemptedValuesChecksum?: string;
+  lastReleaseRevision?: string;
+  helmChart?: string;
+  failures?: number;
+  installFailures?: number;
+  upgradeFailures?: number;
+  storageNamespace?: string;
+  history?: HelmReleaseSnapshot[];
+  lastAttemptedGeneration?: number;
+  lastAttemptedConfigDigest?: string;
+  lastAttemptedReleaseAction?: string;
+  lastHandledForceAt?: string;
+  lastHandledResetAt?: string;
+}
+
+export interface HelmReleaseSpec {
+  chart?: {
+    metadata?: {
+      labels?: Record<string, string>;
+      annotations?: Record<string, string>;
+    };
+    spec: {
+      chart: string;
+      version?: string;
+      sourceRef: {
+        apiVersion?: string;
+        kind: string;
+        name: string;
+        namespace?: string;
+      };
+      interval?: string;
+      reconcileStrategy?: string;
+      valuesFiles?: string[];
+      valuesFile?: string;
+      verify?: {
+        provider?: string;
+        secretRef?: {
+          name: string;
+        };
+      };
+    };
+  };
+  chartRef?: {
+    apiVersion?: string;
+    kind: string;
     name: string;
     namespace?: string;
-    selfLink: string;
-    uid?: string;
-    generation?: number;
-    creationTimestamp?: string;
-    resourceVersion?: string;
-    labels?: Partial<Record<string, string>>;
-    annotations?: Partial<Record<string, string>>;
-    finalizers?: string[];
-  },
-  {
-    observedGeneration?: number;
-    observedPostRenderersDigest?: string;
-    conditions?: {
-      type?: string;
-      status: string;
-      observedGeneration?: number;
-      lastTransitionTime: string;
-      reason: string;
-      message: string;
-    }[];
-    lastAppliedRevision?: string;
-    lastAttemptedRevision?: string;
-    lastAttemptedValuesChecksum?: string;
-    lastReleaseRevision?: string;
-    helmChart?: string;
-    failures?: number;
-    installFailures?: number;
-    upgradeFailures?: number;
-    storageNamespace?: string;
-    history?: {
-      apiVersion?: string;
-      digest: string;
+  };
+  interval: string;
+  kubeConfig?: {
+    secretRef: {
       name: string;
-      namespace: string;
-      version: number;
-      status: string;
-      chartName: string;
-      chartVersion: string;
-      appVersion?: string;
-      configDigest: string;
-      firstDeployed: string;
-      lastDeployed: string;
-      deleted?: string;
-      testHooks?: {
-        lastStarted?: string;
-        lastCompleted?: string;
-        phase?: string;
-      }[];
-      lastAttemptedGeneration?: number;
-      lastAttemptedConfigDigest?: string;
-      lastAttemptedReleaseAction?: string;
-      lastHandledForceAt?: string;
-      lastHandledResetAt?: string;
-    }[];
-  },
-  {
-    chart?: {
-      metadata?: {
-        labels?: Record<string, string>;
-        annotations?: Record<string, string>;
-      };
-      spec: {
-        chart: string;
+      key?: string;
+    };
+  };
+  suspend?: boolean;
+  releaseName?: string;
+  targetNamespace?: string;
+  storageNamespace?: string;
+  dependsOn?: {
+    name: string;
+    namespace?: string;
+  }[];
+  timeout?: string;
+  maxHistory?: number;
+  serviceAccountName?: string;
+  persistentClient?: boolean;
+  driftDetection?: {
+    mode?: string;
+    ignore?: {
+      paths?: string[];
+      target?: {
+        group?: string;
         version?: string;
-        sourceRef: {
-          apiVersion?: string;
-          kind: string;
-          name: string;
-          namespace?: string;
-        };
-        interval?: string;
-        reconcileStrategy?: string;
-        valuesFiles?: string[];
-        valuesFile?: string;
-        verify?: {
-          provider?: string;
-          secretRef?: {
-            name: string;
-          };
-        };
+        kind?: string;
+        namespace?: string;
+        name?: string;
+        annotationSelector?: string;
+        labelSelector?: string;
       };
-    };
-    chartRef?: {
-      apiVersion?: string;
-      kind: string;
-      name: string;
-      namespace?: string;
-    };
-    interval: string;
-    kubeConfig?: {
-      secretRef: {
-        name: string;
-        key?: string;
-      };
-    };
-    suspend?: boolean;
-    releaseName?: string;
-    targetNamespace?: string;
-    storageNamespace?: string;
-    dependsOn?: {
-      name: string;
-      namespace?: string;
     }[];
+  };
+  install?: {
     timeout?: string;
-    maxHistory?: number;
-    serviceAccountName?: string;
-    persistentClient?: boolean;
-    driftDetection?: {
-      mode?: string;
-      ignore?: {
-        paths?: string[];
-        target?: {
+    remediation?: {
+      retries?: number;
+      ignoreTestFailures?: boolean;
+      remediateLastFailure?: boolean;
+    };
+    disableWait?: boolean;
+    disableWaitForJobs?: boolean;
+    disableHooks?: boolean;
+    disableOpenAPIValidation?: boolean;
+    replace?: boolean;
+    skipCRDs?: boolean;
+    crds?: string;
+    createNamespace?: boolean;
+  };
+  upgrade?: {
+    timeout?: string;
+    remediation?: {
+      retries?: number;
+      ignoreTestFailures?: boolean;
+      remediateLastFailure?: boolean;
+      strategy?: string;
+    };
+    disableWait?: boolean;
+    disableWaitForJobs?: boolean;
+    disableHooks?: boolean;
+    disableOpenAPIValidation?: boolean;
+    force?: boolean;
+    preserveValues?: boolean;
+    cleanupOnFail?: boolean;
+    crds?: string;
+  };
+  test?: {
+    enable?: boolean;
+    timeout?: string;
+    ignoreFailures?: boolean;
+  };
+  rollback?: {
+    timeout?: string;
+    disableWait?: boolean;
+    disableWaitForJobs?: boolean;
+    disableHooks?: boolean;
+    recreate?: boolean;
+    force?: boolean;
+    cleanupOnFail?: boolean;
+  };
+  uninstall?: {
+    timeout?: string;
+    disableHooks?: boolean;
+    keepHistory?: boolean;
+    disableWait?: boolean;
+    deletionPropagation?: string;
+  };
+  valuesFrom?: {
+    kind: string;
+    name: string;
+    valuesKey?: string;
+    targetPath?: string;
+    optional?: boolean;
+  }[];
+  values?: {
+    [key: string]: any;
+  };
+  postRenderers?: {
+    kustomize?: {
+      patches?: {
+        patch: string;
+        target: {
           group?: string;
           version?: string;
           kind?: string;
@@ -128,108 +198,30 @@ export class HelmRelease extends KubeObject<
           labelSelector?: string;
         };
       }[];
+      patchesStrategicMerge?: string[];
+      patchesJson6902?: {
+        patch: string;
+        target: {
+          group?: string;
+          version?: string;
+          kind?: string;
+          namespace?: string;
+          name?: string;
+          annotationSelector?: string;
+          labelSelector?: string;
+        };
+      }[];
+      images?: {
+        name: string;
+        newName?: string;
+        newTag?: string;
+        digest?: string;
+      }[];
     };
-    install?: {
-      timeout?: string;
-      remediation?: {
-        retries?: number;
-        ignoreTestFailures?: boolean;
-        remediateLastFailure?: boolean;
-      };
-      disableWait?: boolean;
-      disableWaitForJobs?: boolean;
-      disableHooks?: boolean;
-      disableOpenAPIValidation?: boolean;
-      replace?: boolean;
-      skipCRDs?: boolean;
-      crds?: string;
-      createNamespace?: boolean;
-    };
-    upgrade?: {
-      timeout?: string;
-      remediation?: {
-        retries?: number;
-        ignoreTestFailures?: boolean;
-        remediateLastFailure?: boolean;
-        strategy?: string;
-      };
-      disableWait?: boolean;
-      disableWaitForJobs?: boolean;
-      disableHooks?: boolean;
-      disableOpenAPIValidation?: boolean;
-      force?: boolean;
-      preserveValues?: boolean;
-      cleanupOnFail?: boolean;
-      crds?: string;
-    };
-    test?: {
-      enable?: boolean;
-      timeout?: string;
-      ignoreFailures?: boolean;
-    };
-    rollback?: {
-      timeout?: string;
-      disableWait?: boolean;
-      disableWaitForJobs?: boolean;
-      disableHooks?: boolean;
-      recreate?: boolean;
-      force?: boolean;
-      cleanupOnFail?: boolean;
-    };
-    uninstall?: {
-      timeout?: string;
-      disableHooks?: boolean;
-      keepHistory?: boolean;
-      disableWait?: boolean;
-      deletionPropagation?: string;
-    };
-    valuesFrom?: {
-      kind: string;
-      name: string;
-      valuesKey?: string;
-      targetPath?: string;
-      optional?: boolean;
-    }[];
-    values?: {
-      [key: string]: any;
-    };
-    postRenderers?: {
-      kustomize?: {
-        patches?: {
-          patch: string;
-          target: {
-            group?: string;
-            version?: string;
-            kind?: string;
-            namespace?: string;
-            name?: string;
-            annotationSelector?: string;
-            labelSelector?: string;
-          };
-        }[];
-        patchesStrategicMerge?: string[];
-        patchesJson6902?: {
-          patch: string;
-          target: {
-            group?: string;
-            version?: string;
-            kind?: string;
-            namespace?: string;
-            name?: string;
-            annotationSelector?: string;
-            labelSelector?: string;
-          };
-        }[];
-        images?: {
-          name: string;
-          newName?: string;
-          newTag?: string;
-          digest?: string;
-        }[];
-      };
-    }[];
-  }
-> {
+  }[];
+}
+
+export class HelmRelease extends KubeObject<KubeObjectMetadata, HelmReleaseStatus, HelmReleaseSpec> {
   static readonly kind = "HelmRelease";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/helm.toolkit.fluxcd.io/v2beta1/helmreleases";

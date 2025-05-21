@@ -1,0 +1,11 @@
+.HelmReleaseHistory {
+  .TableCell {
+    &.version {
+      flex-grow: 0.5;
+    }
+
+    &.status {
+      flex-grow: 0.8;
+    }
+  }
+}

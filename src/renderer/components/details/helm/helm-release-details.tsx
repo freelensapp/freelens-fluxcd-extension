@@ -4,11 +4,13 @@ import yaml from "js-yaml";
 import React from "react";
 import { Link } from "react-router-dom";
 import { crdStore } from "../../../k8s/core/crd";
-import { HelmRelease } from "../../../k8s/fluxcd/helm/helmrelease";
+import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease";
 import { lowerAndPluralize } from "../../../utils";
 
+import styleInline from "./helm-release-details.scss?inline";
+
 const {
-  Component: { DrawerItem, DrawerTitle, Icon, MonacoEditor },
+  Component: { DrawerItem, DrawerTitle, Icon, MonacoEditor, Table, TableCell, TableHead, TableRow, Tooltip },
   K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
   Navigation: { getDetailsUrl },
 } = Renderer;
@@ -19,6 +21,14 @@ const {
 
 interface HelmReleaseDetailsState {
   crds: Renderer.K8sApi.CustomResourceDefinition[];
+}
+
+enum historySortBy {
+  version = "version",
+  lastDeployed = "lastDeployed",
+  chartVersion = "chartVersion",
+  appVersion = "appVersion",
+  status = "status",
 }
 
 export class FluxCDHelmReleaseDetails extends React.Component<
@@ -118,188 +128,227 @@ export class FluxCDHelmReleaseDetails extends React.Component<
     const releaseName = this.getReleaseNameShortened(object);
 
     return (
-      <div>
-        <DrawerItem name="Release Name">
-          <Link
-            key="link"
-            to={`/helm/releases/${object.spec.storageNamespace ?? namespace}/${releaseName}`}
-            onClick={stopPropagation}
-          >
-            {releaseName}
-          </Link>
-        </DrawerItem>
-        <DrawerItem name="Helm Chart" hidden={!object.spec.chart}>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              Renderer.Navigation.showDetails(this.helmChartUrl(object), true);
-            }}
-          >
-            {this.getHelmChartName(object)}
-          </a>
-        </DrawerItem>
-        <DrawerItem name="Chart Name">
-          {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}
-        </DrawerItem>
-        <DrawerItem name="Chart Version">
-          {object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version}
-        </DrawerItem>
-        <DrawerItem name="App Version">{object.status?.history?.[0]?.appVersion}</DrawerItem>
-        <DrawerItem name="Status" hidden={!object.status?.history?.[0]?.status}>
-          {object.status?.history?.[0]?.status}
-        </DrawerItem>
-        <DrawerItem name="Chart Interval" hidden={!object.spec.chart?.spec.interval}>
-          {object.spec.chart?.spec.interval}
-        </DrawerItem>
-        <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-        <DrawerItem name="Max History" hidden={!object.spec.maxHistory}>
-          {object.spec.maxHistory}
-        </DrawerItem>
-        <DrawerItem name="Timeout" hidden={!object.spec.timeout}>
-          {object.spec.timeout}
-        </DrawerItem>
-        <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
-          <Link
-            key="link"
-            to={getDetailsUrl(
-              serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
-            )}
-            onClick={stopPropagation}
-          >
-            {object.spec.serviceAccountName}
-          </Link>
-        </DrawerItem>
-        <DrawerItem name="Storage Namespace" hidden={!object.spec.storageNamespace}>
-          <Link
-            key="link"
-            to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.storageNamespace }))}
-            onClick={stopPropagation}
-          >
-            {object.spec.storageNamespace}
-          </Link>
-        </DrawerItem>
-        <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>
-          <Link
-            key="link"
-            to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.targetNamespace }))}
-            onClick={stopPropagation}
-          >
-            {object.spec.targetNamespace}
-          </Link>
-        </DrawerItem>
-        <DrawerItem name="Drift Detection" hidden={!object.spec.driftDetection?.mode}>
-          {object.spec.driftDetection?.mode}
-        </DrawerItem>
-        <DrawerItem name="Install CRDs" hidden={!object.spec.install?.crds}>
-          {object.spec.install?.crds}
-        </DrawerItem>
-        <DrawerItem name="Upgrade CRDs" hidden={!object.spec.upgrade?.crds}>
-          {object.spec.upgrade?.crds}
-        </DrawerItem>
-        <DrawerItem name="Source">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              Renderer.Navigation.showDetails(this.sourceUrl(object), true);
-            }}
-          >
-            {object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind}:{" "}
-            {object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name}
-          </a>
-        </DrawerItem>
-        <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
-          {object.status?.conditions?.[0].message}
-        </DrawerItem>
+      <>
+        <style>{styleInline}</style>
+        <div>
+          <DrawerItem name="Release Name">
+            <Link
+              key="link"
+              to={`/helm/releases/${object.spec.storageNamespace ?? namespace}/${releaseName}`}
+              onClick={stopPropagation}
+            >
+              {releaseName}
+            </Link>
+          </DrawerItem>
+          <DrawerItem name="Helm Chart" hidden={!object.spec.chart}>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                Renderer.Navigation.showDetails(this.helmChartUrl(object), true);
+              }}
+            >
+              {this.getHelmChartName(object)}
+            </a>
+          </DrawerItem>
+          <DrawerItem name="Chart Name">
+            {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}
+          </DrawerItem>
+          <DrawerItem name="Chart Version">
+            {object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version}
+          </DrawerItem>
+          <DrawerItem name="App Version">{object.status?.history?.[0]?.appVersion}</DrawerItem>
+          <DrawerItem name="Status" hidden={!object.status?.history?.[0]?.status}>
+            {object.status?.history?.[0]?.status}
+          </DrawerItem>
+          <DrawerItem name="Chart Interval" hidden={!object.spec.chart?.spec.interval}>
+            {object.spec.chart?.spec.interval}
+          </DrawerItem>
+          <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
+          <DrawerItem name="Max History" hidden={!object.spec.maxHistory}>
+            {object.spec.maxHistory}
+          </DrawerItem>
+          <DrawerItem name="Timeout" hidden={!object.spec.timeout}>
+            {object.spec.timeout}
+          </DrawerItem>
+          <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
+            <Link
+              key="link"
+              to={getDetailsUrl(
+                serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
+              )}
+              onClick={stopPropagation}
+            >
+              {object.spec.serviceAccountName}
+            </Link>
+          </DrawerItem>
+          <DrawerItem name="Storage Namespace" hidden={!object.spec.storageNamespace}>
+            <Link
+              key="link"
+              to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.storageNamespace }))}
+              onClick={stopPropagation}
+            >
+              {object.spec.storageNamespace}
+            </Link>
+          </DrawerItem>
+          <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>
+            <Link
+              key="link"
+              to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.targetNamespace }))}
+              onClick={stopPropagation}
+            >
+              {object.spec.targetNamespace}
+            </Link>
+          </DrawerItem>
+          <DrawerItem name="Drift Detection" hidden={!object.spec.driftDetection?.mode}>
+            {object.spec.driftDetection?.mode}
+          </DrawerItem>
+          <DrawerItem name="Install CRDs" hidden={!object.spec.install?.crds}>
+            {object.spec.install?.crds}
+          </DrawerItem>
+          <DrawerItem name="Upgrade CRDs" hidden={!object.spec.upgrade?.crds}>
+            {object.spec.upgrade?.crds}
+          </DrawerItem>
+          <DrawerItem name="Source">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                Renderer.Navigation.showDetails(this.sourceUrl(object), true);
+              }}
+            >
+              {object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind}:{" "}
+              {object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name}
+            </a>
+          </DrawerItem>
+          <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
+            {object.status?.conditions?.[0].message}
+          </DrawerItem>
 
-        {object.spec.valuesFrom && (
-          <div className="valuesFrom">
-            <DrawerTitle>Values From</DrawerTitle>
-            {object.spec.valuesFrom.map((valueFrom) => {
-              const api = valueFrom.kind.toLowerCase() === "configmap" ? configMapApi : secretsApi;
-              const name = valueFrom.name;
-              return (
-                <div key={name} className="valueFrom">
+          {object.spec.valuesFrom && (
+            <div className="valuesFrom">
+              <DrawerTitle>Values From</DrawerTitle>
+              {object.spec.valuesFrom.map((valueFrom) => {
+                const api = valueFrom.kind.toLowerCase() === "configmap" ? configMapApi : secretsApi;
+                const name = valueFrom.name;
+                return (
+                  <div key={name} className="valueFrom">
+                    <div className="title flex gaps">
+                      <Icon small material="list" />
+                    </div>
+                    <DrawerItem name="Kind">{valueFrom.kind}</DrawerItem>
+                    <DrawerItem name="Name">
+                      <Link
+                        key="link"
+                        to={getDetailsUrl(api.formatUrlForNotListing({ name, namespace }))}
+                        onClick={stopPropagation}
+                      >
+                        {name}
+                      </Link>
+                    </DrawerItem>
+                    <DrawerItem name="Values Key" hidden={!valueFrom.valuesKey}>
+                      {valueFrom.valuesKey}
+                    </DrawerItem>
+                    <DrawerItem name="Target Path" hidden={!valueFrom.targetPath}>
+                      {valueFrom.targetPath}
+                    </DrawerItem>
+                    <DrawerItem name="Optional" hidden={!valueFrom.optional}>
+                      {valueFrom.optional}
+                    </DrawerItem>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {object.spec.values && (
+            <div className="values">
+              <DrawerTitle>Values</DrawerTitle>
+              <div className="flex column gaps">
+                <MonacoEditor readOnly id="values" style={{ minHeight: 300 }} value={valuesYaml} />
+              </div>
+            </div>
+          )}
+
+          {object.status?.history && (
+            <div className="HelmReleaseHistory flex column">
+              <DrawerTitle>History</DrawerTitle>
+              <Table
+                selectable
+                tableId="history"
+                scrollable={false}
+                sortable={{
+                  [historySortBy.version]: (snapshot: HelmReleaseSnapshot) => snapshot.version,
+                  [historySortBy.lastDeployed]: (snapshot: HelmReleaseSnapshot) => snapshot.lastDeployed,
+                  [historySortBy.chartVersion]: (snapshot: HelmReleaseSnapshot) => snapshot.chartVersion,
+                  [historySortBy.appVersion]: (snapshot: HelmReleaseSnapshot) => snapshot.appVersion,
+                  [historySortBy.status]: (snapshot: HelmReleaseSnapshot) => snapshot.status,
+                }}
+                sortByDefault={{ sortBy: historySortBy.version, orderBy: "desc" }}
+                sortSyncWithUrl={false}
+                className="box grow"
+              >
+                <TableHead flat sticky={false}>
+                  <TableCell className="version" sortBy={historySortBy.version}>
+                    Version
+                  </TableCell>
+                  <TableCell className="lastDeployed" sortBy={historySortBy.lastDeployed}>
+                    Last Deployed
+                  </TableCell>
+                  <TableCell className="chartVersion" sortBy={historySortBy.chartVersion}>
+                    Chart Version
+                  </TableCell>
+                  <TableCell className="appVersion" sortBy={historySortBy.appVersion}>
+                    App Version
+                  </TableCell>
+                  <TableCell className="status" sortBy={historySortBy.status}>
+                    Status
+                  </TableCell>
+                </TableHead>
+                {object.status?.history.map((snapshot) => (
+                  <TableRow key={snapshot.version} sortItem={snapshot} nowrap>
+                    <TableCell className="version">{snapshot.version}</TableCell>
+                    <TableCell className="lastDeployed">{snapshot.lastDeployed}</TableCell>
+                    <TableCell className="chartVersion" id={`helmReleaseHistory-${snapshot.version}-chartVersion`}>
+                      {snapshot.chartVersion}
+                      <Tooltip targetId={`helmReleaseHistory-${snapshot.version}-chartVersion`}>
+                        {snapshot.chartVersion}
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell className="appVersion" id={`helmReleaseHistory-${snapshot.version}-appVersion`}>
+                      {snapshot.appVersion}{" "}
+                      <Tooltip targetId={`helmReleaseHistory-${snapshot.version}-appVersion`}>
+                        {snapshot.appVersion}
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell className="status">{snapshot.status}</TableCell>
+                  </TableRow>
+                ))}
+              </Table>
+            </div>
+          )}
+
+          {object.status?.conditions && (
+            <div className="conditions">
+              <DrawerTitle>Conditions</DrawerTitle>
+              {object.status?.conditions.map((condition) => (
+                <div className="condition">
                   <div className="title flex gaps">
                     <Icon small material="list" />
                   </div>
-                  <DrawerItem name="Kind">{valueFrom.kind}</DrawerItem>
-                  <DrawerItem name="Name">
-                    <Link
-                      key="link"
-                      to={getDetailsUrl(api.formatUrlForNotListing({ name, namespace }))}
-                      onClick={stopPropagation}
-                    >
-                      {name}
-                    </Link>
+                  <DrawerItem name="Last Transition Time">{condition.lastTransitionTime}</DrawerItem>
+                  <DrawerItem name="Reason">{condition.reason}</DrawerItem>
+                  <DrawerItem name="Status">{condition.status}</DrawerItem>
+                  <DrawerItem name="Type" hidden={!condition.type}>
+                    {condition.type}
                   </DrawerItem>
-                  <DrawerItem name="Values Key" hidden={!valueFrom.valuesKey}>
-                    {valueFrom.valuesKey}
-                  </DrawerItem>
-                  <DrawerItem name="Target Path" hidden={!valueFrom.targetPath}>
-                    {valueFrom.targetPath}
-                  </DrawerItem>
-                  <DrawerItem name="Optional" hidden={!valueFrom.optional}>
-                    {valueFrom.optional}
-                  </DrawerItem>
+                  <DrawerItem name="Message">{condition.message}</DrawerItem>
                 </div>
-              );
-            })}
-          </div>
-        )}
-
-        {object.spec.values && (
-          <div className="values">
-            <DrawerTitle>Values</DrawerTitle>
-            <div className="flex column gaps">
-              <MonacoEditor readOnly id="values" style={{ minHeight: 300 }} value={valuesYaml} />
+              ))}
             </div>
-          </div>
-        )}
-
-        {object.status?.history && (
-          <div className="history">
-            <DrawerTitle>History</DrawerTitle>
-            {object.status?.history.map((snapshot) => (
-              <div className="snapshot">
-                <div className="title flex gaps">
-                  <Icon small material="list" />
-                </div>
-                <DrawerItem name="Version">{snapshot.version}</DrawerItem>
-                <DrawerItem name="First Deployed">{snapshot.firstDeployed}</DrawerItem>
-                <DrawerItem name="Last Deployed">{snapshot.lastDeployed}</DrawerItem>
-                <DrawerItem name="Name">{snapshot.name}</DrawerItem>
-                <DrawerItem name="Namespace">{snapshot.namespace}</DrawerItem>
-                <DrawerItem name="Chart Name">{snapshot.chartName}</DrawerItem>
-                <DrawerItem name="Chart Version">{snapshot.chartVersion}</DrawerItem>
-                <DrawerItem name="App Version">{snapshot.appVersion}</DrawerItem>
-                <DrawerItem name="Status">{snapshot.status}</DrawerItem>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {object.status?.conditions && (
-          <div className="conditions">
-            <DrawerTitle>Conditions</DrawerTitle>
-            {object.status?.conditions.map((condition) => (
-              <div className="condition">
-                <div className="title flex gaps">
-                  <Icon small material="list" />
-                </div>
-                <DrawerItem name="Last Transition Time">{condition.lastTransitionTime}</DrawerItem>
-                <DrawerItem name="Reason">{condition.reason}</DrawerItem>
-                <DrawerItem name="Status">{condition.status}</DrawerItem>
-                <DrawerItem name="Type" hidden={!condition.type}>
-                  {condition.type}
-                </DrawerItem>
-                <DrawerItem name="Message">{condition.message}</DrawerItem>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </>
     );
   }
 }
