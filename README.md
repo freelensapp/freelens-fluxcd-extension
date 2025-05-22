@@ -27,8 +27,8 @@ Features include:
 
 ## Install
 
-To install open Freelens and go to Extensions (`ctrl`+`shift`+`E` or
-`cmd`+`shift`+`E`), and install `@freelensapp/extension-fluxcd`.
+To install or upgrade: open Freelens and go to Extensions (`ctrl`+`shift`+`E`
+or `cmd`+`shift`+`E`), and install `@freelensapp/extension-fluxcd`.
 
 or:
 
