@@ -342,7 +342,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                     Status
                   </TableCell>
                 </TableHead>
-                {object.status?.history.map((snapshot) => (
+                {object.status?.history?.map((snapshot) => (
                   <TableRow key={snapshot.version} sortItem={snapshot} nowrap>
                     <TableCell className="version">{snapshot.version}</TableCell>
                     <TableCell className="lastDeployed">{snapshot.lastDeployed}</TableCell>
@@ -368,7 +368,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
           {object.status?.conditions && (
             <div className="conditions">
               <DrawerTitle>Conditions</DrawerTitle>
-              {object.status?.conditions.map((condition) => (
+              {object.status?.conditions?.map((condition) => (
                 <div className="condition">
                   <div className="title flex gaps">
                     <Icon small material="list" />

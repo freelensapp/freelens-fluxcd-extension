@@ -56,7 +56,7 @@ export class FluxCDHelmChartDetails extends React.Component<
 
     return (
       <div>
-        <DrawerItem name="Status">{object.status?.conditions.find((s: any) => s.type === "Ready").message}</DrawerItem>
+        <DrawerItem name="Status">{object.status?.conditions?.find((s: any) => s.type === "Ready").message}</DrawerItem>
         <DrawerItem name="Ready">
           <Badge className={getStatusClass(object)} label={getStatusText(object)} />
         </DrawerItem>
