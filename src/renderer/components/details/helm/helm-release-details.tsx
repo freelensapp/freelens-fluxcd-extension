@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { Common, Renderer } from "@freelensapp/extensions";
+import { Base64 } from "js-base64";
 import yaml from "js-yaml";
 import React from "react";
 import { Link } from "react-router-dom";
@@ -21,6 +22,7 @@ const {
 
 interface HelmReleaseDetailsState {
   crds: Renderer.K8sApi.CustomResourceDefinition[];
+  valuesFromYaml: Record<string, string>;
 }
 
 enum historySortBy {
@@ -37,6 +39,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
 > {
   public readonly state: Readonly<HelmReleaseDetailsState> = {
     crds: [],
+    valuesFromYaml: {},
   };
 
   getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | null {
@@ -83,6 +86,24 @@ export class FluxCDHelmReleaseDetails extends React.Component<
 
   async componentDidMount() {
     crdStore.loadAll().then((l) => this.setState({ crds: l as Renderer.K8sApi.CustomResourceDefinition[] }));
+
+    const { object } = this.props;
+    const namespace = this.getNamespace(object);
+
+    for (const valueFrom of object.spec.valuesFrom ?? []) {
+      const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
+      const name = valueFrom.name;
+      const valuesKey = valueFrom.valuesKey ?? "values.yaml";
+      const valuesObject = await api.get({ name, namespace });
+      if (!valuesObject) continue;
+      const valuesYaml = valuesObject?.data?.[valuesKey];
+      if (!valuesYaml) continue;
+      if (valueFrom.kind.toLowerCase() === "secret" && Base64.isValid(valuesYaml)) {
+        this.state.valuesFromYaml[`${namespace}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
+      } else {
+        this.state.valuesFromYaml[`${namespace}/${name}/${valuesKey}`] = valuesYaml;
+      }
+    }
   }
 
   getNamespace(resource: HelmRelease) {
@@ -122,10 +143,10 @@ export class FluxCDHelmReleaseDetails extends React.Component<
 
   render() {
     const { object } = this.props;
-    const valuesYaml = yaml.dump(object.spec.values);
 
     const namespace = this.getNamespace(object);
     const releaseName = this.getReleaseNameShortened(object);
+    const valuesYaml = yaml.dump(object.spec.values);
 
     return (
       <>
@@ -221,6 +242,12 @@ export class FluxCDHelmReleaseDetails extends React.Component<
               {object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name}
             </a>
           </DrawerItem>
+          <DrawerItem name="First Deployed" hidden={!object.status?.history?.[0].firstDeployed}>
+            {object.status?.history?.[0].firstDeployed}
+          </DrawerItem>
+          <DrawerItem name="Last Deployed" hidden={!object.status?.history?.[0].lastDeployed}>
+            {object.status?.history?.[0].lastDeployed}
+          </DrawerItem>
           <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
             {object.status?.conditions?.[0].message}
           </DrawerItem>
@@ -229,8 +256,10 @@ export class FluxCDHelmReleaseDetails extends React.Component<
             <div className="valuesFrom">
               <DrawerTitle>Values From</DrawerTitle>
               {object.spec.valuesFrom.map((valueFrom) => {
-                const api = valueFrom.kind.toLowerCase() === "configmap" ? configMapApi : secretsApi;
+                const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
                 const name = valueFrom.name;
+                const valuesYaml = this.state.valuesFromYaml[`${namespace}/${name}/${valueFrom.valuesKey}`];
+
                 return (
                   <div key={name} className="valueFrom">
                     <div className="title flex gaps">
@@ -255,6 +284,14 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                     <DrawerItem name="Optional" hidden={!valueFrom.optional}>
                       {valueFrom.optional}
                     </DrawerItem>
+                    <div className="flex column gaps">
+                      <MonacoEditor
+                        readOnly
+                        id={`valuesFrom-${namespace}-${name}-${valueFrom.valuesKey}`}
+                        style={{ minHeight: 300 }}
+                        value={valuesYaml}
+                      />
+                    </div>
                   </div>
                 );
               })}

@@ -32,6 +32,9 @@ importers:
       electron-vite:
         specifier: ^3.1.0
         version: 3.1.0(vite@6.3.5(@types/node@22.15.18)(less@4.3.0)(sass@1.88.0)(stylus@0.62.0)(terser@5.39.1))
+      js-base64:
+        specifier: ^3.7.7
+        version: 3.7.7
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
@@ -1770,6 +1773,9 @@ packages:
 
   joi@17.13.3:
     resolution: {integrity: sha512-otDA4ldcIx+ZXsKHWmp0YizCweVRZG96J10b0FevjfuncLO1oX59THoAmHkNubYJ+9gWsYsp5k8v4ib6oDv1fA==}
+
+  js-base64@3.7.7:
+    resolution: {integrity: sha512-7rCnleh0z2CkXhH67J8K1Ytz0b2Y+yxTPL+/KOJoa20hfnVQ/3/T6W/KflYI4bRHRagNeXeU2bkNGI3v1oS/lw==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -4891,6 +4897,8 @@ snapshots:
       '@sideway/address': 4.1.5
       '@sideway/formula': 3.0.1
       '@sideway/pinpoint': 2.0.0
+
+  js-base64@3.7.7: {}
 
   js-tokens@4.0.0: {}
 
