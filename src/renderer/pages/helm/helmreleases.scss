@@ -1,0 +1,11 @@
+.HelmReleases {
+  .TableCell {
+    &.ready {
+      flex-grow: 0.7;
+    }
+
+    &.age {
+      flex-grow: 0.3;
+    }
+  }
+}
