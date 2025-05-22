@@ -54,7 +54,7 @@ lint:
     - actionlint@1.7.7
     - biome@1.9.4
     - git-diff-check
-    - markdownlint@0.44.0
+    - markdownlint@0.45.0
     - oxipng@9.1.5
     - svgo@3.3.2
     - yamlfmt@0.16.0
