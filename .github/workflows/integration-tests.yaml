@@ -18,7 +18,7 @@ env:
 
 jobs:
   test-integration:
-    name: integration tests on ${{ matrix.os }}
+    name: "integration tests on ${{ matrix.os }} update ${{ matrix.update }}"
 
     strategy:
       fail-fast: false
@@ -26,6 +26,10 @@ jobs:
         include:
           - os: ubuntu-22.04
             arch: x64
+            update: false
+          - os: ubuntu-22.04
+            arch: x64
+            update: true
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -73,6 +77,18 @@ jobs:
         if: steps.install-pnpm-extension.outcome == 'failure'
         shell: bash
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+
+      - name: Update pnpm dependencies for extension
+        id: update-pnpm-extension
+        if: matrix.update == true
+        shell: bash
+        run: timeout 300 pnpm update @freelensapp/extensions --color=always --prefer-offline
+        continue-on-error: true
+
+      - name: Update pnpm dependencies for extension (retry)
+        if: matrix.update == true && steps.update-pnpm-extension.outcome == 'failure'
+        shell: bash
+        run: timeout 300 pnpm update @freelensapp/extensions --color=always --prefer-offline
 
       - name: Get Freelens version
         shell: bash
