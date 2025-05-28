@@ -25,7 +25,9 @@
     // it must be the same as bundled in Electron
     "node",
     // it must be the oldest possible version to get binary compatibility with older OSes
-    "ubuntu"
+    "ubuntu",
+    // manual updates only
+    "@freelensapp/extensions"
   ],
   "packageRules": [
     // peerDependencies are widen
