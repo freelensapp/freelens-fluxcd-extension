@@ -99,6 +99,9 @@ jobs:
             *) exit 1
           esac
 
+      - name: Typecheck plugin
+        run: pnpm typecheck
+
       - name: Build plugin
         run: pnpm build
 
