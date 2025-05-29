@@ -1,4 +1,4 @@
-import { Renderer } from "@freelensapp/extensions";
+import { Common, Renderer } from "@freelensapp/extensions";
 
 // @ts-ignore
 import React from "react";
@@ -12,8 +12,8 @@ interface FluxCustomSpec {
 }
 
 export interface FluxcdObjectReconcileMenuItemProps
-  extends Renderer.Component.KubeObjectMenuProps<
-    Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, any, FluxCustomSpec | any>
+  extends Common.Types.KubeObjectMenuItemProps<
+    Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata<any>, any, FluxCustomSpec | any>
   > {
   api: Renderer.K8sApi.KubeApi<
     Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, any, FluxCustomSpec | any>
