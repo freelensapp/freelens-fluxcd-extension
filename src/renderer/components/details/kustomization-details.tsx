@@ -2,12 +2,12 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Condition } from "../../k8s/core/types";
-import { Kustomization } from "../../k8s/fluxcd/kustomization";
+import { Kustomization, kustomizationApi, kustomizationStore } from "../../k8s/fluxcd/kustomization";
 import { NamespacedObjectKindReference } from "../../k8s/fluxcd/types";
-import { getStatusClass, getStatusText, lowerAndPluralize } from "../../utils";
+import { getStatusClass, getStatusMessage, getStatusText, lowerAndPluralize } from "../../utils";
 
 const {
-  Component: { Badge, DrawerItem, DrawerTitle, Table, TableCell, TableHead, TableRow, Tooltip },
+  Component: { Badge, DrawerItem, DrawerTitle, Icon, Table, TableCell, TableHead, TableRow, Tooltip },
   K8sApi: { namespacesApi },
   Navigation: { getDetailsUrl },
 } = Renderer;
@@ -116,52 +116,111 @@ export class FluxCDKustomizationDetails extends React.Component<
                   Namespace
                 </TableCell>
               </TableHead>
-              {object.spec?.healthChecks?.map((reference) => (
-                <TableRow key={`${reference.namespace}-${reference.name}`} sortItem={reference} nowrap>
+              {object.spec.healthChecks.map((healthCheck) => (
+                <TableRow key={`${healthCheck.namespace}-${healthCheck.name}`} sortItem={healthCheck} nowrap>
                   <TableCell className="apiVersion">
-                    <span id={`kustomizationHealthChecks-${reference.name}-apiVersion`}>{reference.apiVersion}</span>
-                    <Tooltip targetId={`kustomizationHealthChecks-${reference.name}-apiVersion`}>
-                      {reference.apiVersion}
+                    <span id={`kustomizationHealthChecks-${healthCheck.name}-apiVersion`}>
+                      {healthCheck.apiVersion}
+                    </span>
+                    <Tooltip targetId={`kustomizationHealthChecks-${healthCheck.name}-apiVersion`}>
+                      {healthCheck.apiVersion}
                     </Tooltip>
                   </TableCell>
                   <TableCell className="kind">
-                    <span id={`kustomizationHealthChecks-${reference.name}-kind`}>{reference.kind}</span>
-                    <Tooltip targetId={`kustomizationHealthChecks-${reference.name}-kind`}>{reference.kind}</Tooltip>
+                    <span id={`kustomizationHealthChecks-${healthCheck.name}-kind`}>{healthCheck.kind}</span>
+                    <Tooltip targetId={`kustomizationHealthChecks-${healthCheck.name}-kind`}>
+                      {healthCheck.kind}
+                    </Tooltip>
                   </TableCell>
-                  <TableCell className="name" id={`kustomizationHealthChecks-${reference.name}-name`}>
+                  <TableCell className="name" id={`kustomizationHealthChecks-${healthCheck.name}-name`}>
                     <a
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
                         Renderer.Navigation.showDetails(
-                          `/apis/${reference.apiVersion}/namespaces/${reference.namespace ?? object.metadata.namespace}/${lowerAndPluralize(reference.kind)}/${reference.name}`,
+                          `/apis/${healthCheck.apiVersion}/namespaces/${healthCheck.namespace ?? object.metadata.namespace}/${lowerAndPluralize(healthCheck.kind)}/${healthCheck.name}`,
                           true,
                         );
                       }}
                     >
-                      {reference.name}
+                      {healthCheck.name}
                     </a>
-                    <Tooltip targetId={`kustomizationHealthChecks-${reference.name}-name`}>{reference.name}</Tooltip>
+                    <Tooltip targetId={`kustomizationHealthChecks-${healthCheck.name}-name`}>
+                      {healthCheck.name}
+                    </Tooltip>
                   </TableCell>
-                  <TableCell className="namespace" id={`kustomizationHealthChecks-${reference.namespace}-namespace`}>
+                  <TableCell className="namespace" id={`kustomizationHealthChecks-${healthCheck.namespace}-namespace`}>
                     <Link
                       key="link"
                       to={getDetailsUrl(
                         namespacesApi.formatUrlForNotListing({
-                          name: reference.namespace ?? object.metadata.namespace,
+                          name: healthCheck.namespace ?? object.metadata.namespace,
                         }),
                       )}
                       onClick={stopPropagation}
                     >
-                      {reference.namespace ?? object.metadata.namespace}
+                      {healthCheck.namespace ?? object.metadata.namespace}
                     </Link>
-                    <Tooltip targetId={`kustomizationHealthChecks-${reference.namespace}-namespace`}>
-                      {reference.namespace ?? object.metadata.namespace}
+                    <Tooltip targetId={`kustomizationHealthChecks-${healthCheck.namespace}-namespace`}>
+                      {healthCheck.namespace ?? object.metadata.namespace}
                     </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
             </Table>
+          </div>
+        )}
+
+        {object.spec.dependsOn && (
+          <div className="KustomizationDependsOn">
+            <DrawerTitle>Depends On</DrawerTitle>
+            {object.spec.dependsOn.map((dependency) => {
+              const reference = kustomizationStore.getByName(dependency.name);
+              return (
+                <div className="dependency">
+                  <div className="title flex gaps">
+                    <Icon small material="list" />
+                  </div>
+
+                  <DrawerItem name="Name">
+                    <Link
+                      key="link"
+                      to={getDetailsUrl(
+                        kustomizationApi.formatUrlForNotListing({
+                          name: dependency.name,
+                          namespace: dependency.namespace ?? object.metadata.namespace,
+                        }),
+                      )}
+                      onClick={stopPropagation}
+                    >
+                      {dependency.name}
+                    </Link>
+                  </DrawerItem>
+                  <DrawerItem name="Namespace">
+                    <Link
+                      key="link"
+                      to={getDetailsUrl(
+                        namespacesApi.formatUrlForNotListing({
+                          name: dependency.namespace ?? object.metadata.namespace,
+                        }),
+                      )}
+                      onClick={stopPropagation}
+                    >
+                      {dependency.namespace ?? object.metadata.namespace}
+                    </Link>
+                  </DrawerItem>
+                  <DrawerItem name="Revision" hidden={!reference?.status?.lastAppliedRevision}>
+                    {reference?.status?.lastAppliedRevision}
+                  </DrawerItem>
+                  <DrawerItem name="Status" hidden={!reference}>
+                    {reference ? <Badge className={getStatusClass(reference)} label={getStatusText(reference)} /> : ""}
+                  </DrawerItem>
+                  <DrawerItem name="Message" hidden={!reference}>
+                    {reference && getStatusMessage(reference)}
+                  </DrawerItem>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
