@@ -292,7 +292,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                       <MonacoEditor
                         readOnly
                         id={`valuesFrom-${namespace}-${name}-${valueFrom.valuesKey}`}
-                        style={{ minHeight: 300 }}
+                        style={{ minHeight: 200 }}
                         value={valuesYaml}
                       />
                     </div>
@@ -306,7 +306,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
             <div className="values">
               <DrawerTitle>Values</DrawerTitle>
               <div className="flex column gaps">
-                <MonacoEditor readOnly id="values" style={{ minHeight: 300 }} value={valuesYaml} />
+                <MonacoEditor readOnly id="values" style={{ minHeight: 200 }} value={valuesYaml} />
               </div>
             </div>
           )}

@@ -1,4 +1,6 @@
+import crypto from "crypto";
 import { Common, Renderer } from "@freelensapp/extensions";
+import yaml from "js-yaml";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Condition } from "../../k8s/core/types";
@@ -7,8 +9,8 @@ import { NamespacedObjectKindReference } from "../../k8s/fluxcd/types";
 import { getStatusClass, getStatusMessage, getStatusText, lowerAndPluralize } from "../../utils";
 
 const {
-  Component: { Badge, DrawerItem, DrawerTitle, Icon, Table, TableCell, TableHead, TableRow, Tooltip },
-  K8sApi: { namespacesApi },
+  Component: { Badge, DrawerItem, DrawerTitle, Icon, MonacoEditor, Table, TableCell, TableHead, TableRow, Tooltip },
+  K8sApi: { namespacesApi, serviceAccountsApi },
   Navigation: { getDetailsUrl },
 } = Renderer;
 
@@ -38,6 +40,7 @@ export class FluxCDKustomizationDetails extends React.Component<
 
   render() {
     const { object } = this.props;
+    const namespace = object.getNs();
 
     return (
       <div>
@@ -83,6 +86,17 @@ export class FluxCDKustomizationDetails extends React.Component<
           {object.spec.timeout}
         </DrawerItem>
         <DrawerItem name="Force">{object.spec.force === true ? "Yes" : "No"}</DrawerItem>
+        <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
+          <Link
+            key="link"
+            to={getDetailsUrl(
+              serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
+            )}
+            onClick={stopPropagation}
+          >
+            {object.spec.serviceAccountName}
+          </Link>
+        </DrawerItem>
         <DrawerItem name="Last Applied Revision">{object.status?.lastAppliedRevision}</DrawerItem>
 
         {object.spec.healthChecks && (
@@ -138,7 +152,7 @@ export class FluxCDKustomizationDetails extends React.Component<
                       onClick={(e) => {
                         e.preventDefault();
                         Renderer.Navigation.showDetails(
-                          `/apis/${healthCheck.apiVersion}/namespaces/${healthCheck.namespace ?? object.metadata.namespace}/${lowerAndPluralize(healthCheck.kind)}/${healthCheck.name}`,
+                          `/apis/${healthCheck.apiVersion}/namespaces/${healthCheck.namespace ?? namespace}/${lowerAndPluralize(healthCheck.kind)}/${healthCheck.name}`,
                           true,
                         );
                       }}
@@ -154,15 +168,15 @@ export class FluxCDKustomizationDetails extends React.Component<
                       key="link"
                       to={getDetailsUrl(
                         namespacesApi.formatUrlForNotListing({
-                          name: healthCheck.namespace ?? object.metadata.namespace,
+                          name: healthCheck.namespace ?? namespace,
                         }),
                       )}
                       onClick={stopPropagation}
                     >
-                      {healthCheck.namespace ?? object.metadata.namespace}
+                      {healthCheck.namespace ?? namespace}
                     </Link>
                     <Tooltip targetId={`kustomizationHealthChecks-${healthCheck.namespace}-namespace`}>
-                      {healthCheck.namespace ?? object.metadata.namespace}
+                      {healthCheck.namespace ?? namespace}
                     </Tooltip>
                   </TableCell>
                 </TableRow>
@@ -188,7 +202,7 @@ export class FluxCDKustomizationDetails extends React.Component<
                       to={getDetailsUrl(
                         kustomizationApi.formatUrlForNotListing({
                           name: dependency.name,
-                          namespace: dependency.namespace ?? object.metadata.namespace,
+                          namespace: dependency.namespace ?? namespace,
                         }),
                       )}
                       onClick={stopPropagation}
@@ -201,12 +215,12 @@ export class FluxCDKustomizationDetails extends React.Component<
                       key="link"
                       to={getDetailsUrl(
                         namespacesApi.formatUrlForNotListing({
-                          name: dependency.namespace ?? object.metadata.namespace,
+                          name: dependency.namespace ?? namespace,
                         }),
                       )}
                       onClick={stopPropagation}
                     >
-                      {dependency.namespace ?? object.metadata.namespace}
+                      {dependency.namespace ?? namespace}
                     </Link>
                   </DrawerItem>
                   <DrawerItem name="Revision" hidden={!reference?.status?.lastAppliedRevision}>
@@ -218,6 +232,133 @@ export class FluxCDKustomizationDetails extends React.Component<
                   <DrawerItem name="Message" hidden={!reference}>
                     {reference && getStatusMessage(reference)}
                   </DrawerItem>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {object.spec.patches && (
+          <div className="KustomizationPatches">
+            <DrawerTitle>Patches</DrawerTitle>
+            {object.spec.patches.map((patch) => {
+              const key = crypto
+                .createHash("sha256")
+                .update(
+                  [
+                    patch.patch,
+                    patch.target.kind,
+                    patch.target.name,
+                    patch.target.namespace,
+                    patch.target.labelSelector,
+                    patch.target.annotationSelector,
+                  ].join(""),
+                )
+                .digest("hex");
+
+              return (
+                <div key={key} className="patch">
+                  <div className="title flex gaps">
+                    <Icon small material="list" />
+                  </div>
+                  <DrawerItem name="Group" hidden={!patch.target.group}>
+                    {patch.target.group}
+                  </DrawerItem>
+                  <DrawerItem name="Version" hidden={!patch.target.version}>
+                    {patch.target.version}
+                  </DrawerItem>
+                  <DrawerItem name="Kind" hidden={!patch.target.kind}>
+                    {patch.target.kind}
+                  </DrawerItem>
+                  <DrawerItem name="Name" hidden={!patch.target.name}>
+                    {patch.target.name}
+                  </DrawerItem>
+                  <DrawerItem name="Namespace" hidden={!patch.target.namespace}>
+                    {patch.target.namespace}
+                  </DrawerItem>
+                  <DrawerItem name="Label Selector" hidden={!patch.target.labelSelector}>
+                    {patch.target.labelSelector}
+                  </DrawerItem>
+                  <DrawerItem name="Annotation Selector" hidden={!patch.target.annotationSelector}>
+                    {patch.target.annotationSelector}
+                  </DrawerItem>
+                  <div className="flex column gaps">
+                    <MonacoEditor readOnly id={`patch-${key}`} style={{ minHeight: 200 }} value={patch.patch} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {object.spec.patchesStrategicMerge && (
+          <div className="KustomizationPatchesStrategicMerge">
+            <DrawerTitle>Patches: Strategic Merge</DrawerTitle>
+            {object.spec.patchesStrategicMerge.map((patch) => {
+              const key = crypto.createHash("sha256").update(patch).digest("hex");
+
+              return (
+                <div key={key} className="patch">
+                  <div className="title flex gaps">
+                    <Icon small material="list" />
+                  </div>
+                  <div className="flex column gaps">
+                    <MonacoEditor readOnly id={`patch-${key}`} style={{ minHeight: 200 }} value={patch} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {object.spec.patchesJson6902 && (
+          <div className="KustomizationPatchesJson6902">
+            <DrawerTitle>Patches: RFC 6902</DrawerTitle>
+            {object.spec.patchesJson6902.map((patch) => {
+              const patchYaml = yaml.dump(patch.patch);
+              const key = crypto
+                .createHash("sha256")
+                .update(
+                  [
+                    patchYaml,
+                    patch.target.kind,
+                    patch.target.name,
+                    patch.target.namespace,
+                    patch.target.labelSelector,
+                    patch.target.annotationSelector,
+                  ].join(""),
+                )
+                .digest("hex");
+
+              return (
+                <div key={key} className="patch">
+                  <div className="title flex gaps">
+                    <Icon small material="list" />
+                  </div>
+                  <DrawerItem name="Group" hidden={!patch.target.group}>
+                    {patch.target.group}
+                  </DrawerItem>
+                  <DrawerItem name="Version" hidden={!patch.target.version}>
+                    {patch.target.version}
+                  </DrawerItem>
+                  <DrawerItem name="Kind" hidden={!patch.target.kind}>
+                    {patch.target.kind}
+                  </DrawerItem>
+                  <DrawerItem name="Name" hidden={!patch.target.name}>
+                    {patch.target.name}
+                  </DrawerItem>
+                  <DrawerItem name="Namespace" hidden={!patch.target.namespace}>
+                    {patch.target.namespace}
+                  </DrawerItem>
+                  <DrawerItem name="Label Selector" hidden={!patch.target.labelSelector}>
+                    {patch.target.labelSelector}
+                  </DrawerItem>
+                  <DrawerItem name="Annotation Selector" hidden={!patch.target.annotationSelector}>
+                    {patch.target.annotationSelector}
+                  </DrawerItem>
+                  <div className="flex column gaps">
+                    <MonacoEditor readOnly id={`patch-${key}`} style={{ minHeight: 200 }} value={patchYaml} />
+                  </div>
                 </div>
               );
             })}

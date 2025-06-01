@@ -29,7 +29,7 @@ export interface JSON6902Patch {
     path: string;
     from?: string;
     value?: any;
-  };
+  }[];
   target: Selector;
 }
 
