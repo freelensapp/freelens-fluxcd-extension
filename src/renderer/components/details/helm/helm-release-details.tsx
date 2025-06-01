@@ -148,6 +148,20 @@ export class FluxCDHelmReleaseDetails extends React.Component<
     const releaseName = this.getReleaseNameShortened(object);
     const valuesYaml = yaml.dump(object.spec.values);
 
+    const images = object.spec.postRenderers
+      ?.filter((a) => a?.kustomize)
+      ?.map((a) => a?.kustomize)
+      ?.filter((a) => a?.images)
+      ?.map((a) => a?.images)
+      ?.flat();
+
+    const patches = object.spec.postRenderers
+      ?.filter((a) => a?.kustomize)
+      ?.map((a) => a?.kustomize)
+      ?.filter((a) => a?.patches)
+      ?.map((a) => a?.patches)
+      ?.flat();
+
     return (
       <>
         <style>{styleInline}</style>
@@ -257,7 +271,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
           </DrawerItem>
 
           {object.spec.valuesFrom && (
-            <div className="valuesFrom">
+            <div className="HelmReleaseValuesFrom">
               <DrawerTitle>Values From</DrawerTitle>
               {object.spec.valuesFrom.map((valueFrom) => {
                 const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
@@ -303,11 +317,92 @@ export class FluxCDHelmReleaseDetails extends React.Component<
           )}
 
           {object.spec.values && (
-            <div className="values">
+            <div className="HelmReleaseValues">
               <DrawerTitle>Values</DrawerTitle>
               <div className="flex column gaps">
                 <MonacoEditor readOnly id="values" style={{ minHeight: 200 }} value={valuesYaml} />
               </div>
+            </div>
+          )}
+
+          {patches && (
+            <div className="HelmReleasePatches">
+              <DrawerTitle>Patches</DrawerTitle>
+              {patches.map((patch) => {
+                if (!patch) return;
+
+                const key = crypto
+                  .createHash("sha256")
+                  .update(
+                    [
+                      patch.patch,
+                      patch.target.kind,
+                      patch.target.name,
+                      patch.target.namespace,
+                      patch.target.labelSelector,
+                      patch.target.annotationSelector,
+                    ].join(""),
+                  )
+                  .digest("hex");
+
+                return (
+                  <div key={key} className="patch">
+                    <div className="title flex gaps">
+                      <Icon small material="list" />
+                    </div>
+                    <DrawerItem name="Group" hidden={!patch.target.group}>
+                      {patch.target.group}
+                    </DrawerItem>
+                    <DrawerItem name="Version" hidden={!patch.target.version}>
+                      {patch.target.version}
+                    </DrawerItem>
+                    <DrawerItem name="Kind" hidden={!patch.target.kind}>
+                      {patch.target.kind}
+                    </DrawerItem>
+                    <DrawerItem name="Name" hidden={!patch.target.name}>
+                      {patch.target.name}
+                    </DrawerItem>
+                    <DrawerItem name="Namespace" hidden={!patch.target.namespace}>
+                      {patch.target.namespace}
+                    </DrawerItem>
+                    <DrawerItem name="Label Selector" hidden={!patch.target.labelSelector}>
+                      {patch.target.labelSelector}
+                    </DrawerItem>
+                    <DrawerItem name="Annotation Selector" hidden={!patch.target.annotationSelector}>
+                      {patch.target.annotationSelector}
+                    </DrawerItem>
+                    <div className="flex column gaps">
+                      <MonacoEditor readOnly id={`patch-${key}`} style={{ minHeight: 200 }} value={patch.patch} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {images && (
+            <div className="HelmReleaseImages">
+              <DrawerTitle>Images</DrawerTitle>
+              {images.map((image) => {
+                if (!image) return;
+                return (
+                  <div className="image">
+                    <div className="title flex gaps">
+                      <Icon small material="list" />
+                    </div>
+                    <DrawerItem name="Name">{image.name}</DrawerItem>
+                    <DrawerItem name="New Name" hidden={!image.newName}>
+                      {image.newName}
+                    </DrawerItem>
+                    <DrawerItem name="New Tag" hidden={!image.newTag}>
+                      {image.newTag}
+                    </DrawerItem>
+                    <DrawerItem name="Digest" hidden={!image.digest}>
+                      {image.digest}
+                    </DrawerItem>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -370,7 +465,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
           )}
 
           {object.status?.conditions && (
-            <div className="conditions">
+            <div className="HelmReleaseConditions">
               <DrawerTitle>Conditions</DrawerTitle>
               {object.status?.conditions?.map((condition) => (
                 <div className="condition">

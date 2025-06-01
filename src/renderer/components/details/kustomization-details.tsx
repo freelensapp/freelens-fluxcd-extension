@@ -364,6 +364,31 @@ export class FluxCDKustomizationDetails extends React.Component<
             })}
           </div>
         )}
+
+        {object.spec.images && (
+          <div className="KustomizationImages">
+            <DrawerTitle>Images</DrawerTitle>
+            {object.spec.images.map((image) => {
+              return (
+                <div className="image">
+                  <div className="title flex gaps">
+                    <Icon small material="list" />
+                  </div>
+                  <DrawerItem name="Name">{image.name}</DrawerItem>
+                  <DrawerItem name="New Name" hidden={!image.newName}>
+                    {image.newName}
+                  </DrawerItem>
+                  <DrawerItem name="New Tag" hidden={!image.newTag}>
+                    {image.newTag}
+                  </DrawerItem>
+                  <DrawerItem name="Digest" hidden={!image.digest}>
+                    {image.digest}
+                  </DrawerItem>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }
