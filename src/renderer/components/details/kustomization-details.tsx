@@ -1,5 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import React from "react";
+import { Condition } from "../../k8s/core/types";
 import { Kustomization } from "../../k8s/fluxcd/kustomization";
 import { getStatusClass, getStatusText, lowerAndPluralize } from "../../utils";
 
@@ -23,7 +24,9 @@ export class FluxCDKustomizationDetails extends React.Component<
 
     return (
       <div>
-        <DrawerItem name="Status">{object.status?.conditions?.find((s: any) => s.type === "Ready").message}</DrawerItem>
+        <DrawerItem name="Status">
+          {object.status?.conditions?.find((s: Condition) => s.type === "Ready")?.message}
+        </DrawerItem>
         <DrawerItem name="Ready">
           <Badge className={getStatusClass(object)} label={getStatusText(object)} />
         </DrawerItem>
@@ -35,7 +38,7 @@ export class FluxCDKustomizationDetails extends React.Component<
         <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
         <DrawerItem name="Prune">{object.spec.prune === true ? "Yes" : "No"}</DrawerItem>
         <DrawerItem name="Force">{object.spec.force === true ? "Yes" : "No"}</DrawerItem>
-        <DrawerItem name="Last Applied Revision">{object.status.lastAppliedRevision}</DrawerItem>
+        <DrawerItem name="Last Applied Revision">{object.status?.lastAppliedRevision}</DrawerItem>
 
         <DrawerItem name="Source">
           <a

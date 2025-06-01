@@ -1,5 +1,12 @@
 import { Renderer } from "@freelensapp/extensions";
-import type { KubeObjectMetadata } from "../../core/metadata";
+import type { Condition, KubeObjectMetadata, Patch, Selector } from "../../core/types";
+import {
+  Image,
+  JSON6902Patch,
+  LocalObjectReference,
+  NamespacedObjectKindReference,
+  NamespacedObjectReference,
+} from "../types";
 
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
@@ -28,14 +35,7 @@ export interface HelmReleaseSnapshot {
 export interface HelmReleaseStatus {
   observedGeneration?: number;
   observedPostRenderersDigest?: string;
-  conditions?: {
-    type?: string;
-    status: string;
-    observedGeneration?: number;
-    lastTransitionTime: string;
-    reason: string;
-    message: string;
-  }[];
+  conditions?: Condition[];
   lastAppliedRevision?: string;
   lastAttemptedRevision?: string;
   lastAttemptedValuesChecksum?: string;
@@ -62,30 +62,18 @@ export interface HelmReleaseSpec {
     spec: {
       chart: string;
       version?: string;
-      sourceRef: {
-        apiVersion?: string;
-        kind: string;
-        name: string;
-        namespace?: string;
-      };
+      sourceRef: NamespacedObjectKindReference;
       interval?: string;
       reconcileStrategy?: string;
       valuesFiles?: string[];
       valuesFile?: string;
       verify?: {
         provider?: string;
-        secretRef?: {
-          name: string;
-        };
+        secretRef?: LocalObjectReference;
       };
     };
   };
-  chartRef?: {
-    apiVersion?: string;
-    kind: string;
-    name: string;
-    namespace?: string;
-  };
+  chartRef?: NamespacedObjectKindReference;
   interval: string;
   kubeConfig?: {
     secretRef: {
@@ -97,10 +85,7 @@ export interface HelmReleaseSpec {
   releaseName?: string;
   targetNamespace?: string;
   storageNamespace?: string;
-  dependsOn?: {
-    name: string;
-    namespace?: string;
-  }[];
+  dependsOn?: NamespacedObjectReference[];
   timeout?: string;
   maxHistory?: number;
   serviceAccountName?: string;
@@ -109,15 +94,7 @@ export interface HelmReleaseSpec {
     mode?: string;
     ignore?: {
       paths?: string[];
-      target?: {
-        group?: string;
-        version?: string;
-        kind?: string;
-        namespace?: string;
-        name?: string;
-        annotationSelector?: string;
-        labelSelector?: string;
-      };
+      target?: Selector;
     }[];
   };
   install?: {
@@ -186,37 +163,10 @@ export interface HelmReleaseSpec {
   };
   postRenderers?: {
     kustomize?: {
-      patches?: {
-        patch: string;
-        target: {
-          group?: string;
-          version?: string;
-          kind?: string;
-          namespace?: string;
-          name?: string;
-          annotationSelector?: string;
-          labelSelector?: string;
-        };
-      }[];
+      patches?: Patch[];
       patchesStrategicMerge?: string[];
-      patchesJson6902?: {
-        patch: string;
-        target: {
-          group?: string;
-          version?: string;
-          kind?: string;
-          namespace?: string;
-          name?: string;
-          annotationSelector?: string;
-          labelSelector?: string;
-        };
-      }[];
-      images?: {
-        name: string;
-        newName?: string;
-        newTag?: string;
-        digest?: string;
-      }[];
+      patchesJson6902?: JSON6902Patch[];
+      images?: Image[];
     };
   }[];
 }

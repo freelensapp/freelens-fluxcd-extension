@@ -1,0 +1,19 @@
+.Kustomizations {
+  .TableCell {
+    &.revision {
+      flex-grow: 1.3;
+    }
+
+    &.status {
+      flex-grow: 0.7;
+    }
+
+    &.message {
+      flex-grow: 1.5;
+    }
+
+    &.age {
+      flex-grow: 0.3;
+    }
+  }
+}
