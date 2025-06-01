@@ -1,9 +1,7 @@
-import { Renderer } from "@freelensapp/extensions";
-
+import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
-
 import React from "react";
-
+import { Link } from "react-router-dom";
 import { KubeAge } from "../components/ui/kube-age";
 import { Kustomization, kustomizationStore } from "../k8s/fluxcd/kustomization";
 import { getStatusClass, getStatusMessage, getStatusText } from "../utils";
@@ -11,8 +9,14 @@ import { getStatusClass, getStatusMessage, getStatusText } from "../utils";
 import styleInline from "./kustomizations.scss?inline";
 
 const {
-  Component: { KubeObjectListLayout, Badge, Tooltip },
+  Component: { Badge, KubeObjectListLayout, Tooltip },
+  K8sApi: { namespacesApi },
+  Navigation: { getDetailsUrl },
 } = Renderer;
+
+const {
+  Util: { stopPropagation },
+} = Common;
 
 enum sortBy {
   name = "name",
@@ -58,7 +62,18 @@ export class FluxCDKustomizations extends React.Component<{ extension: Renderer.
 
             return [
               kustomization.getName(),
-              kustomization.getNs(),
+              <>
+                <span id={`${tooltipId}-namespace`}>
+                  <Link
+                    key="link"
+                    to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: kustomization.getNs() }))}
+                    onClick={stopPropagation}
+                  >
+                    {kustomization.getNs()}
+                  </Link>
+                </span>
+                <Tooltip targetId={`${tooltipId}-namespace`}>{kustomization.getNs()}</Tooltip>
+              </>,
               <>
                 <span id={`${tooltipId}-lastAppliedRevision`}>{lastAppliedRevision}</span>
                 <Tooltip targetId={`${tooltipId}-lastAppliedRevision`}>{lastAppliedRevision}</Tooltip>

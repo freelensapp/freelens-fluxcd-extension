@@ -238,7 +238,11 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                 Renderer.Navigation.showDetails(this.sourceUrl(object), true);
               }}
             >
-              {object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind}:{" "}
+              {object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind}
+              {": "}
+              {(object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace)
+                ? `${object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace}/`
+                : ""}
               {object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name}
             </a>
           </DrawerItem>
