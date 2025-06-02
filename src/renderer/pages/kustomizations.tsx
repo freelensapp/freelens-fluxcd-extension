@@ -57,7 +57,8 @@ export class FluxCDKustomizations extends React.Component<{ extension: Renderer.
           ]}
           renderTableContents={(kustomization: Kustomization) => {
             const tooltipId = `kustomization-${kustomization.getId()}`;
-            const lastAppliedRevision = kustomization.status?.lastAppliedRevision || "N/A";
+            const lastAppliedRevision =
+              kustomization.status?.lastAppliedRevision?.replace(/^refs\/(heads|tags)\//, "") || "N/A";
             const statusMessage = getStatusMessage(kustomization);
 
             return [
