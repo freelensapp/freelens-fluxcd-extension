@@ -153,3 +153,11 @@ function getStatus<T extends KubeObject>(obj: T): string {
 
   return "";
 }
+
+export function getHeight(data: string): number {
+  const lineHeight = 18;
+  const lines = data.split("\n").length;
+  if (lines < 5) return 5 * lineHeight;
+  if (lines > 20) return 20 * lineHeight;
+  return lines * lineHeight;
+}

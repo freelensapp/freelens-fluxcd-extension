@@ -6,7 +6,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { crdStore } from "../../../k8s/core/crd";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease";
-import { lowerAndPluralize } from "../../../utils";
+import { getHeight, lowerAndPluralize } from "../../../utils";
 
 import styleInline from "./helm-release-details.scss?inline";
 
@@ -306,8 +306,20 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                       <MonacoEditor
                         readOnly
                         id={`valuesFrom-${namespace}-${name}-${valueFrom.valuesKey}`}
-                        style={{ minHeight: 200 }}
+                        style={{
+                          minHeight: getHeight(valuesYaml),
+                          resize: "none",
+                          overflow: "hidden",
+                          border: "1px solid var(--borderFaintColor)",
+                          borderRadius: "4px",
+                        }}
                         value={valuesYaml}
+                        setInitialHeight
+                        options={{
+                          scrollbar: {
+                            alwaysConsumeMouseWheel: false,
+                          },
+                        }}
                       />
                     </div>
                   </div>
@@ -320,7 +332,24 @@ export class FluxCDHelmReleaseDetails extends React.Component<
             <div className="HelmReleaseValues">
               <DrawerTitle>Values</DrawerTitle>
               <div className="flex column gaps">
-                <MonacoEditor readOnly id="values" style={{ minHeight: 200 }} value={valuesYaml} />
+                <MonacoEditor
+                  readOnly
+                  id="values"
+                  style={{
+                    minHeight: getHeight(valuesYaml),
+                    resize: "none",
+                    overflow: "hidden",
+                    border: "1px solid var(--borderFaintColor)",
+                    borderRadius: "4px",
+                  }}
+                  value={valuesYaml}
+                  setInitialHeight
+                  options={{
+                    scrollbar: {
+                      alwaysConsumeMouseWheel: false,
+                    },
+                  }}
+                />
               </div>
             </div>
           )}
@@ -372,7 +401,24 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                       {patch.target.annotationSelector}
                     </DrawerItem>
                     <div className="flex column gaps">
-                      <MonacoEditor readOnly id={`patch-${key}`} style={{ minHeight: 200 }} value={patch.patch} />
+                      <MonacoEditor
+                        readOnly
+                        id={`patch-${key}`}
+                        style={{
+                          minHeight: getHeight(patch.patch),
+                          resize: "none",
+                          overflow: "hidden",
+                          border: "1px solid var(--borderFaintColor)",
+                          borderRadius: "4px",
+                        }}
+                        value={patch.patch}
+                        setInitialHeight
+                        options={{
+                          scrollbar: {
+                            alwaysConsumeMouseWheel: false,
+                          },
+                        }}
+                      />
                     </div>
                   </div>
                 );
