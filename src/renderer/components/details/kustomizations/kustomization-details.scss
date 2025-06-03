@@ -1,8 +1,20 @@
-@use "../../vars" as *;
+@use "../../../vars";
 
 .KustomizationDetails {
   .title {
-    margin-top: $margin * 2;
-    margin-bottom: $margin;
+    margin-top: vars.$margin * 2;
+    margin-bottom: vars.$margin;
+  }
+}
+
+.KustomizationSubstitute {
+  .TableCell {
+    &.key {
+      flex-grow: 0.7;
+    }
+
+    &.value {
+      flex-grow: 1.3;
+    }
   }
 }

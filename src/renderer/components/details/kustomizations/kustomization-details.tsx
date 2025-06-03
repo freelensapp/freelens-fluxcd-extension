@@ -27,6 +27,11 @@ enum healthChecksSortBy {
   namespace = "namespace",
 }
 
+enum variableSubstsSortBy {
+  key = "key",
+  value = "value",
+}
+
 export class FluxCDKustomizationDetails extends React.Component<
   Renderer.Component.KubeObjectDetailsProps<Kustomization>
 > {
@@ -452,6 +457,49 @@ export class FluxCDKustomizationDetails extends React.Component<
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {object.spec.postBuild?.substitute && (
+            <div className="KustomizationSubstitute flex column">
+              <DrawerTitle>Post Build Variable Substitution</DrawerTitle>
+              <Table
+                selectable
+                tableId="variableSubst"
+                scrollable={false}
+                sortable={{
+                  [variableSubstsSortBy.key]: (variable: { key: string; value: string }) => variable.key,
+                  [variableSubstsSortBy.value]: (variable: { key: string; value: string }) => variable.value,
+                }}
+                sortByDefault={{ sortBy: variableSubstsSortBy.key, orderBy: "asc" }}
+                sortSyncWithUrl={false}
+                className="box grow"
+              >
+                <TableHead flat sticky={false}>
+                  <TableCell className="key" sortBy={variableSubstsSortBy.key}>
+                    Key
+                  </TableCell>
+                  <TableCell className="value" sortBy={variableSubstsSortBy.value}>
+                    Value
+                  </TableCell>
+                </TableHead>
+                {Object.entries(object.spec.postBuild?.substitute ?? {})
+                  .map((a) => ({ key: a[0], value: a[1] }))
+                  .map((variable) => (
+                    <TableRow key={variable.key} sortItem={variable} nowrap>
+                      <TableCell className="key">
+                        <span id={`kustomizationVariableSubst-${variable.key}-key`}>{variable.key}</span>
+                        <Tooltip targetId={`kustomizationVariableSubst-${variable.key}-key`}>{variable.key}</Tooltip>
+                      </TableCell>
+                      <TableCell className="value">
+                        <span id={`kustomizationVariableSubst-${variable.key}-value`}>{variable.value}</span>
+                        <Tooltip targetId={`kustomizationVariableSubst-${variable.key}-value`}>
+                          {variable.value}
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </Table>
             </div>
           )}
         </div>

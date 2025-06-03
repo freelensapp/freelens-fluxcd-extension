@@ -2,9 +2,9 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Link } from "react-router-dom";
-import { KubeAge } from "../components/ui/kube-age";
-import { Kustomization, kustomizationStore } from "../k8s/fluxcd/kustomization";
-import { getStatusClass, getStatusMessage, getStatusText } from "../utils";
+import { KubeAge } from "../../components/ui/kube-age";
+import { Kustomization, kustomizationStore } from "../../k8s/fluxcd/kustomization";
+import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 import styleInline from "./kustomizations.scss?inline";
 

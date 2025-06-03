@@ -17,7 +17,7 @@ import { FluxCDHelmReleases } from "./pages/helm/helmreleases";
 import { FluxCDImagePolicies } from "./pages/imageautomation/imagepolicies";
 import { FluxCDImageRepositories } from "./pages/imageautomation/imagerepositories";
 import { FluxCDImageUpdateAutomations } from "./pages/imageautomation/imageupdateautomations";
-import { FluxCDKustomizations } from "./pages/kustomizations";
+import { FluxCDKustomizations } from "./pages/kustomizations/kustomizations";
 import { FluxCDAlerts } from "./pages/notifications/alerts";
 import { FluxCDProviders } from "./pages/notifications/providers";
 import { FluxCDReceivers } from "./pages/notifications/receivers";
