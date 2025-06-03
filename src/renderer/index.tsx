@@ -31,7 +31,7 @@ import { FluxCDHelmReleaseDetails } from "./components/details/helm/helm-release
 import { FluxCDImagePolicyDetails } from "./components/details/imageautomation/image-policy-details";
 import { FluxCDImageRepositoryDetails } from "./components/details/imageautomation/image-repository-details";
 import { FluxCDImageUpdateAutomationDetails } from "./components/details/imageautomation/image-update-automation-details";
-import { FluxCDKustomizationDetails } from "./components/details/kustomization-details";
+import { FluxCDKustomizationDetails } from "./components/details/kustomizations/kustomization-details";
 import { FluxCDAlertDetails } from "./components/details/notification/alert-details";
 import { FluxCDProviderDetails } from "./components/details/notification/provider-details";
 import { FluxCDReceiverDetails } from "./components/details/notification/receiver-details";

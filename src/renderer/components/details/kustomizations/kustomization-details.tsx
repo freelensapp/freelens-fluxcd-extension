@@ -3,10 +3,10 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import yaml from "js-yaml";
 import React from "react";
 import { Link } from "react-router-dom";
-import { Condition } from "../../k8s/core/types";
-import { Kustomization, kustomizationApi, kustomizationStore } from "../../k8s/fluxcd/kustomization";
-import { NamespacedObjectKindReference } from "../../k8s/fluxcd/types";
-import { getHeight, getStatusClass, getStatusMessage, getStatusText, lowerAndPluralize } from "../../utils";
+import { Condition } from "../../../k8s/core/types";
+import { Kustomization, kustomizationApi, kustomizationStore } from "../../../k8s/fluxcd/kustomization";
+import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
+import { getHeight, getStatusClass, getStatusMessage, getStatusText, lowerAndPluralize } from "../../../utils";
 
 import styleInline from "./kustomization-details.scss?inline";
 
