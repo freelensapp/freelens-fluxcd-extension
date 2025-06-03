@@ -25,6 +25,12 @@ Features include:
 ### Dashboard
 ![./docs/images/dashboard.png](./docs/images/dashboard.png)
 
+## Requirements
+
+- Kubernetes >= 1.24
+- Freelens >= 1.3.1
+- Flux >= v2.0.0
+
 ## Install
 
 To install or upgrade: open Freelens and go to Extensions (`ctrl`+`shift`+`E`
