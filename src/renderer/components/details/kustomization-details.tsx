@@ -47,7 +47,7 @@ export class FluxCDKustomizationDetails extends React.Component<
     return (
       <>
         <style>{styleInline}</style>
-        <div>
+        <div className="KustomizationDetails">
           <DrawerItem name="Status">
             <Badge className={getStatusClass(object)} label={getStatusText(object)} />
           </DrawerItem>

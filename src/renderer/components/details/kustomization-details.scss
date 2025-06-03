@@ -1,10 +1,8 @@
 @use "../../vars" as *;
 
-.KustomizationPatches {
-  .patch {
-    .title {
-      margin-top: $margin * 2;
-      margin-bottom: $margin;
-    }
+.KustomizationDetails {
+  .title {
+    margin-top: $margin * 2;
+    margin-bottom: $margin;
   }
 }
