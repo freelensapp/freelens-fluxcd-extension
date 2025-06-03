@@ -8,17 +8,22 @@ import { Kustomization, kustomizationApi, kustomizationStore } from "../../../k8
 import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 import { getHeight, getStatusClass, getStatusMessage, getStatusText, lowerAndPluralize } from "../../../utils";
 
+import { Base64 } from "js-base64";
 import styleInline from "./kustomization-details.scss?inline";
 
 const {
   Component: { Badge, DrawerItem, DrawerTitle, Icon, MonacoEditor, Table, TableCell, TableHead, TableRow, Tooltip },
-  K8sApi: { namespacesApi, serviceAccountsApi },
+  K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
   Navigation: { getDetailsUrl },
 } = Renderer;
 
 const {
   Util: { stopPropagation },
 } = Common;
+
+interface KustomizationDetailsState {
+  variablesFrom: Record<string, Record<string, string>>;
+}
 
 enum healthChecksSortBy {
   apiVersion = "apiVersion",
@@ -33,8 +38,13 @@ enum variableSubstsSortBy {
 }
 
 export class FluxCDKustomizationDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<Kustomization>
+  Renderer.Component.KubeObjectDetailsProps<Kustomization>,
+  KustomizationDetailsState
 > {
+  public readonly state: Readonly<KustomizationDetailsState> = {
+    variablesFrom: {},
+  };
+
   sourceUrl(object: Kustomization) {
     const name = object.spec.sourceRef.name;
     const ns = object.spec.sourceRef.namespace ?? object.metadata.namespace;
@@ -43,6 +53,27 @@ export class FluxCDKustomizationDetails extends React.Component<
       kind === "ocirepositories" ? "source.toolkit.fluxcd.io/v1beta2" : "source.toolkit.fluxcd.io/v1beta1";
 
     return `/apis/${apiVersion}/namespaces/${ns}/${kind}/${name}`;
+  }
+
+  async componentDidMount() {
+    const { object } = this.props;
+    const namespace = object.metadata.namespace!;
+
+    for (const substituteFrom of object.spec.postBuild?.substituteFrom ?? []) {
+      const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
+      const name = substituteFrom.name;
+      const variablesObject = await api.get({ name, namespace });
+      if (!variablesObject) continue;
+      for (let [key, value] of Object.entries(variablesObject.data)) {
+        if (value === undefined) continue;
+        this.state.variablesFrom[`${namespace}/${name}`] ??= {};
+        if (substituteFrom.kind.toLowerCase() === "secret" && Base64.isValid(value)) {
+          this.state.variablesFrom[`${namespace}/${name}`][key] = Base64.decode(value);
+        } else {
+          this.state.variablesFrom[`${namespace}/${name}`][key] = value;
+        }
+      }
+    }
   }
 
   render() {
@@ -409,6 +440,9 @@ export class FluxCDKustomizationDetails extends React.Component<
                     <DrawerItem name="Annotation Selector" hidden={!patch.target.annotationSelector}>
                       {patch.target.annotationSelector}
                     </DrawerItem>
+                    <div className="DrawerItem">
+                      <span className="name">Patch</span>
+                    </div>
                     <div className="flex column gaps">
                       <MonacoEditor
                         readOnly
@@ -460,42 +494,103 @@ export class FluxCDKustomizationDetails extends React.Component<
             </div>
           )}
 
-          {object.spec.postBuild?.substitute && (
+          {object.spec.postBuild && (
             <div className="KustomizationSubstitute flex column">
               <DrawerTitle>Post Build Variable Substitution</DrawerTitle>
-              <Table
-                selectable
-                tableId="variableSubst"
-                scrollable={false}
-                sortable={{
-                  [variableSubstsSortBy.key]: ([key, _]: [string, string]) => key,
-                  [variableSubstsSortBy.value]: ([_, value]: [string, string]) => value,
-                }}
-                sortByDefault={{ sortBy: variableSubstsSortBy.key, orderBy: "asc" }}
-                sortSyncWithUrl={false}
-                className="box grow"
-              >
-                <TableHead flat sticky={false}>
-                  <TableCell className="key" sortBy={variableSubstsSortBy.key}>
-                    Key
-                  </TableCell>
-                  <TableCell className="value" sortBy={variableSubstsSortBy.value}>
-                    Value
-                  </TableCell>
-                </TableHead>
-                {Object.entries(object.spec.postBuild?.substitute ?? {}).map(([key, value]) => (
-                  <TableRow key={key} sortItem={[key, value]} nowrap>
-                    <TableCell className="key">
-                      <span id={`kustomizationVariableSubst-${key}-key`}>{key}</span>
-                      <Tooltip targetId={`kustomizationVariableSubst-${key}-key`}>{key}</Tooltip>
+              {object.spec.postBuild.substitute && (
+                <Table
+                  selectable
+                  tableId="variableSubst"
+                  scrollable={false}
+                  sortable={{
+                    [variableSubstsSortBy.key]: ([key, _]: [string, string]) => key,
+                    [variableSubstsSortBy.value]: ([_, value]: [string, string]) => value,
+                  }}
+                  sortByDefault={{ sortBy: variableSubstsSortBy.key, orderBy: "asc" }}
+                  sortSyncWithUrl={false}
+                  className="box grow"
+                >
+                  <TableHead flat sticky={false}>
+                    <TableCell className="key" sortBy={variableSubstsSortBy.key}>
+                      Key
                     </TableCell>
-                    <TableCell className="value">
-                      <span id={`kustomizationVariableSubst-${key}-value`}>{value}</span>
-                      <Tooltip targetId={`kustomizationVariableSubst-${key}-value`}>{value}</Tooltip>
+                    <TableCell className="value" sortBy={variableSubstsSortBy.value}>
+                      Value
                     </TableCell>
-                  </TableRow>
-                ))}
-              </Table>
+                  </TableHead>
+                  {Object.entries(object.spec.postBuild?.substitute ?? {}).map(([key, value]) => (
+                    <TableRow key={key} sortItem={[key, value]} nowrap>
+                      <TableCell className="key">
+                        <span id={`kustomizationVariableSubst-${key}-key`}>{key}</span>
+                        <Tooltip targetId={`kustomizationVariableSubst-${key}-key`}>{key}</Tooltip>
+                      </TableCell>
+                      <TableCell className="value">
+                        <span id={`kustomizationVariableSubst-${key}-value`}>{value}</span>
+                        <Tooltip targetId={`kustomizationVariableSubst-${key}-value`}>{value}</Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </Table>
+              )}
+              {object.spec.postBuild.substituteFrom?.map((substituteFrom) => {
+                const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
+                const name = substituteFrom.name;
+                const variablesFrom = this.state.variablesFrom[`${namespace}/${name}`] ?? {};
+
+                return (
+                  <div key={name} className="variablesFrom">
+                    <div className="title flex gaps">
+                      <Icon small material="list" />
+                    </div>
+                    <DrawerItem name="Kind">{substituteFrom.kind}</DrawerItem>
+                    <DrawerItem name="Name">
+                      <Link
+                        key="link"
+                        to={getDetailsUrl(api.formatUrlForNotListing({ name, namespace }))}
+                        onClick={stopPropagation}
+                      >
+                        {name}
+                      </Link>
+                    </DrawerItem>
+                    <div className="DrawerItem">
+                      <span className="name">Variables</span>
+                    </div>
+                    <Table
+                      selectable
+                      tableId="variableSubstFrom"
+                      scrollable={false}
+                      sortable={{
+                        [variableSubstsSortBy.key]: ([key, _]: [string, string]) => key,
+                        [variableSubstsSortBy.value]: ([_, value]: [string, string]) => value,
+                      }}
+                      sortByDefault={{ sortBy: variableSubstsSortBy.key, orderBy: "asc" }}
+                      sortSyncWithUrl={false}
+                      className="box grow"
+                    >
+                      <TableHead flat sticky={false}>
+                        <TableCell className="key" sortBy={variableSubstsSortBy.key}>
+                          Key
+                        </TableCell>
+                        <TableCell className="value" sortBy={variableSubstsSortBy.value}>
+                          Value
+                        </TableCell>
+                      </TableHead>
+                      {Object.entries(variablesFrom).map(([key, value]) => (
+                        <TableRow key={key} sortItem={[key, value]} nowrap>
+                          <TableCell className="key">
+                            <span id={`kustomizationVariableSubstFrom-${key}-key`}>{key}</span>
+                            <Tooltip targetId={`kustomizationVariableSubstFrom-${key}-key`}>{key}</Tooltip>
+                          </TableCell>
+                          <TableCell className="value">
+                            <span id={`kustomizationVariableSubstFrom-${key}-value`}>{value}</span>
+                            <Tooltip targetId={`kustomizationVariableSubstFrom-${key}-value`}>{value}</Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </Table>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
