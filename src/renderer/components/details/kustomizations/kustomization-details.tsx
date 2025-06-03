@@ -468,8 +468,8 @@ export class FluxCDKustomizationDetails extends React.Component<
                 tableId="variableSubst"
                 scrollable={false}
                 sortable={{
-                  [variableSubstsSortBy.key]: (variable: { key: string; value: string }) => variable.key,
-                  [variableSubstsSortBy.value]: (variable: { key: string; value: string }) => variable.value,
+                  [variableSubstsSortBy.key]: ([key, _]: [string, string]) => key,
+                  [variableSubstsSortBy.value]: ([_, value]: [string, string]) => value,
                 }}
                 sortByDefault={{ sortBy: variableSubstsSortBy.key, orderBy: "asc" }}
                 sortSyncWithUrl={false}
@@ -483,22 +483,18 @@ export class FluxCDKustomizationDetails extends React.Component<
                     Value
                   </TableCell>
                 </TableHead>
-                {Object.entries(object.spec.postBuild?.substitute ?? {})
-                  .map((a) => ({ key: a[0], value: a[1] }))
-                  .map((variable) => (
-                    <TableRow key={variable.key} sortItem={variable} nowrap>
-                      <TableCell className="key">
-                        <span id={`kustomizationVariableSubst-${variable.key}-key`}>{variable.key}</span>
-                        <Tooltip targetId={`kustomizationVariableSubst-${variable.key}-key`}>{variable.key}</Tooltip>
-                      </TableCell>
-                      <TableCell className="value">
-                        <span id={`kustomizationVariableSubst-${variable.key}-value`}>{variable.value}</span>
-                        <Tooltip targetId={`kustomizationVariableSubst-${variable.key}-value`}>
-                          {variable.value}
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                {Object.entries(object.spec.postBuild?.substitute ?? {}).map(([key, value]) => (
+                  <TableRow key={key} sortItem={[key, value]} nowrap>
+                    <TableCell className="key">
+                      <span id={`kustomizationVariableSubst-${key}-key`}>{key}</span>
+                      <Tooltip targetId={`kustomizationVariableSubst-${key}-key`}>{key}</Tooltip>
+                    </TableCell>
+                    <TableCell className="value">
+                      <span id={`kustomizationVariableSubst-${key}-value`}>{value}</span>
+                      <Tooltip targetId={`kustomizationVariableSubst-${key}-value`}>{value}</Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </Table>
             </div>
           )}
