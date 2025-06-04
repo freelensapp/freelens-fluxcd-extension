@@ -276,7 +276,7 @@ export class FluxCDKustomizationDetails extends React.Component<
             <div className="KustomizationDependsOn">
               <DrawerTitle>Depends On</DrawerTitle>
               {object.spec.dependsOn.map((dependency) => {
-                const reference = kustomizationStore.getByName(dependency.name);
+                const reference = kustomizationStore.getByName(dependency.name, dependency.namespace ?? namespace);
                 return (
                   <div className="dependency">
                     <div className="title flex gaps">
