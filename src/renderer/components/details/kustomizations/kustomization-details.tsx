@@ -22,7 +22,7 @@ const {
 } = Common;
 
 interface KustomizationDetailsState {
-  variablesFrom: Record<string, Record<string, string>>;
+  substituteFromYaml: Record<string, string>;
 }
 
 enum healthChecksSortBy {
@@ -32,17 +32,12 @@ enum healthChecksSortBy {
   namespace = "namespace",
 }
 
-enum variableSubstsSortBy {
-  key = "key",
-  value = "value",
-}
-
 export class FluxCDKustomizationDetails extends React.Component<
   Renderer.Component.KubeObjectDetailsProps<Kustomization>,
   KustomizationDetailsState
 > {
   public readonly state: Readonly<KustomizationDetailsState> = {
-    variablesFrom: {},
+    substituteFromYaml: {},
   };
 
   sourceUrl(object: Kustomization) {
@@ -64,21 +59,24 @@ export class FluxCDKustomizationDetails extends React.Component<
       const name = substituteFrom.name;
       const variablesObject = await api.get({ name, namespace });
       if (!variablesObject) continue;
+      const variablesFrom = {};
       for (let [key, value] of Object.entries(variablesObject.data)) {
         if (value === undefined) continue;
-        this.state.variablesFrom[`${namespace}/${name}`] ??= {};
         if (substituteFrom.kind.toLowerCase() === "secret" && Base64.isValid(value)) {
-          this.state.variablesFrom[`${namespace}/${name}`][key] = Base64.decode(value);
+          variablesFrom[key] = Base64.decode(value);
         } else {
-          this.state.variablesFrom[`${namespace}/${name}`][key] = value;
+          variablesFrom[key] = value;
         }
       }
+      this.state.substituteFromYaml[`${namespace}/${name}`] = yaml.dump(variablesFrom).trimEnd();
     }
   }
 
   render() {
     const { object } = this.props;
     const namespace = object.getNs();
+
+    const substituteYaml = object.spec.postBuild?.substitute && yaml.dump(object.spec.postBuild?.substitute).trimEnd();
 
     return (
       <>
@@ -497,45 +495,37 @@ export class FluxCDKustomizationDetails extends React.Component<
           {object.spec.postBuild && (
             <div className="KustomizationSubstitute flex column">
               <DrawerTitle>Post Build Variable Substitution</DrawerTitle>
-              {object.spec.postBuild.substitute && (
-                <Table
-                  selectable
-                  tableId="variableSubst"
-                  scrollable={false}
-                  sortable={{
-                    [variableSubstsSortBy.key]: ([key, _]: [string, string]) => key,
-                    [variableSubstsSortBy.value]: ([_, value]: [string, string]) => value,
-                  }}
-                  sortByDefault={{ sortBy: variableSubstsSortBy.key, orderBy: "asc" }}
-                  sortSyncWithUrl={false}
-                  className="box grow"
-                >
-                  <TableHead flat sticky={false}>
-                    <TableCell className="key" sortBy={variableSubstsSortBy.key}>
-                      Key
-                    </TableCell>
-                    <TableCell className="value" sortBy={variableSubstsSortBy.value}>
-                      Value
-                    </TableCell>
-                  </TableHead>
-                  {Object.entries(object.spec.postBuild?.substitute ?? {}).map(([key, value]) => (
-                    <TableRow key={key} sortItem={[key, value]} nowrap>
-                      <TableCell className="key">
-                        <span id={`kustomizationVariableSubst-${key}-key`}>{key}</span>
-                        <Tooltip targetId={`kustomizationVariableSubst-${key}-key`}>{key}</Tooltip>
-                      </TableCell>
-                      <TableCell className="value">
-                        <span id={`kustomizationVariableSubst-${key}-value`}>{value}</span>
-                        <Tooltip targetId={`kustomizationVariableSubst-${key}-value`}>{value}</Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </Table>
+              {substituteYaml && (
+                <>
+                  <div className="DrawerItem">
+                    <span className="name">Variables</span>
+                  </div>
+                  <div className="flex column gaps">
+                    <MonacoEditor
+                      readOnly
+                      id={`substituteYaml-${namespace}-${name}`}
+                      style={{
+                        minHeight: getHeight(substituteYaml),
+                        resize: "none",
+                        overflow: "hidden",
+                        border: "1px solid var(--borderFaintColor)",
+                        borderRadius: "4px",
+                      }}
+                      value={substituteYaml}
+                      setInitialHeight
+                      options={{
+                        scrollbar: {
+                          alwaysConsumeMouseWheel: false,
+                        },
+                      }}
+                    />
+                  </div>
+                </>
               )}
               {object.spec.postBuild.substituteFrom?.map((substituteFrom) => {
                 const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
                 const name = substituteFrom.name;
-                const variablesFrom = this.state.variablesFrom[`${namespace}/${name}`] ?? {};
+                const substituteFromYaml = this.state.substituteFromYaml[`${namespace}/${name}`] ?? "";
 
                 return (
                   <div key={name} className="variablesFrom">
@@ -552,42 +542,31 @@ export class FluxCDKustomizationDetails extends React.Component<
                         {name}
                       </Link>
                     </DrawerItem>
-                    <div className="DrawerItem">
-                      <span className="name">Variables</span>
+                    <div>
+                      <div className="DrawerItem">
+                        <span className="name">Variables</span>
+                      </div>
+                      <div className="flex column gaps">
+                        <MonacoEditor
+                          readOnly
+                          id={`variablesFromYaml-${namespace}-${name}`}
+                          style={{
+                            minHeight: getHeight(substituteFromYaml),
+                            resize: "none",
+                            overflow: "hidden",
+                            border: "1px solid var(--borderFaintColor)",
+                            borderRadius: "4px",
+                          }}
+                          value={substituteFromYaml}
+                          setInitialHeight
+                          options={{
+                            scrollbar: {
+                              alwaysConsumeMouseWheel: false,
+                            },
+                          }}
+                        />
+                      </div>
                     </div>
-                    <Table
-                      selectable
-                      tableId="variableSubstFrom"
-                      scrollable={false}
-                      sortable={{
-                        [variableSubstsSortBy.key]: ([key, _]: [string, string]) => key,
-                        [variableSubstsSortBy.value]: ([_, value]: [string, string]) => value,
-                      }}
-                      sortByDefault={{ sortBy: variableSubstsSortBy.key, orderBy: "asc" }}
-                      sortSyncWithUrl={false}
-                      className="box grow"
-                    >
-                      <TableHead flat sticky={false}>
-                        <TableCell className="key" sortBy={variableSubstsSortBy.key}>
-                          Key
-                        </TableCell>
-                        <TableCell className="value" sortBy={variableSubstsSortBy.value}>
-                          Value
-                        </TableCell>
-                      </TableHead>
-                      {Object.entries(variablesFrom).map(([key, value]) => (
-                        <TableRow key={key} sortItem={[key, value]} nowrap>
-                          <TableCell className="key">
-                            <span id={`kustomizationVariableSubstFrom-${key}-key`}>{key}</span>
-                            <Tooltip targetId={`kustomizationVariableSubstFrom-${key}-key`}>{key}</Tooltip>
-                          </TableCell>
-                          <TableCell className="value">
-                            <span id={`kustomizationVariableSubstFrom-${key}-value`}>{value}</span>
-                            <Tooltip targetId={`kustomizationVariableSubstFrom-${key}-value`}>{value}</Tooltip>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </Table>
                   </div>
                 );
               })}
