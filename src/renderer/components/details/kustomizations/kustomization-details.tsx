@@ -6,9 +6,17 @@ import { Link } from "react-router-dom";
 import { Condition } from "../../../k8s/core/types";
 import { Kustomization, kustomizationApi, kustomizationStore } from "../../../k8s/fluxcd/kustomization";
 import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
-import { getHeight, getStatusClass, getStatusMessage, getStatusText, lowerAndPluralize } from "../../../utils";
+import {
+  defaultYamlDumpOptions,
+  getHeight,
+  getStatusClass,
+  getStatusMessage,
+  getStatusText,
+  lowerAndPluralize,
+} from "../../../utils";
 
 import { Base64 } from "js-base64";
+import { crdStore } from "../../../k8s/core/crd";
 import styleInline from "./kustomization-details.scss?inline";
 
 const {
@@ -22,6 +30,7 @@ const {
 } = Common;
 
 interface KustomizationDetailsState {
+  crds: Renderer.K8sApi.CustomResourceDefinition[];
   substituteFromYaml: Record<string, string>;
 }
 
@@ -37,29 +46,51 @@ export class FluxCDKustomizationDetails extends React.Component<
   KustomizationDetailsState
 > {
   public readonly state: Readonly<KustomizationDetailsState> = {
+    crds: [],
     substituteFromYaml: {},
   };
 
-  sourceUrl(object: Kustomization) {
-    const name = object.spec.sourceRef.name;
-    const ns = object.spec.sourceRef.namespace ?? object.metadata.namespace;
-    const kind = lowerAndPluralize(object.spec.sourceRef.kind);
-    const apiVersion =
-      kind === "ocirepositories" ? "source.toolkit.fluxcd.io/v1beta2" : "source.toolkit.fluxcd.io/v1beta1";
+  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | null {
+    const { crds } = this.state;
 
-    return `/apis/${apiVersion}/namespaces/${ns}/${kind}/${name}`;
+    if (!kind) {
+      return null;
+    }
+
+    if (!crds) {
+      return null;
+    }
+
+    return crds.find((crd) => crd.spec.names.kind === kind) ?? null;
+  }
+
+  sourceUrl(resource: Kustomization): string {
+    const name = resource.spec.sourceRef.name;
+    const namespace = resource.spec.sourceRef.namespace ?? resource.getNs()!;
+    const kind = lowerAndPluralize(resource.spec.sourceRef.kind);
+    const crd = this.getCrd(kind);
+    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
+    const group = crd?.spec.group;
+
+    if (!apiVersion || !group) return "";
+
+    return `/apis/${group}/${apiVersion}/namespaces/${namespace}/${kind}/${name}`;
   }
 
   async componentDidMount() {
+    crdStore.loadAll().then((l) => this.setState({ crds: l! }));
+
     const { object } = this.props;
     const namespace = object.metadata.namespace!;
+
+    const substituteFromYaml: typeof this.state.substituteFromYaml = {};
 
     for (const substituteFrom of object.spec.postBuild?.substituteFrom ?? []) {
       const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
       const name = substituteFrom.name;
       const variablesObject = await api.get({ name, namespace });
       if (!variablesObject) continue;
-      const variablesFrom = {};
+      const variablesFrom: Record<string, string> = {};
       for (let [key, value] of Object.entries(variablesObject.data)) {
         if (value === undefined) continue;
         if (substituteFrom.kind.toLowerCase() === "secret" && Base64.isValid(value)) {
@@ -68,15 +99,19 @@ export class FluxCDKustomizationDetails extends React.Component<
           variablesFrom[key] = value;
         }
       }
-      this.state.substituteFromYaml[`${namespace}/${name}`] = yaml.dump(variablesFrom).trimEnd();
+      substituteFromYaml[`${namespace}/${name}`] = yaml.dump(variablesFrom, defaultYamlDumpOptions).trimEnd();
     }
+
+    this.setState({ substituteFromYaml });
   }
 
   render() {
     const { object } = this.props;
     const namespace = object.getNs();
 
-    const substituteYaml = object.spec.postBuild?.substitute && yaml.dump(object.spec.postBuild?.substitute).trimEnd();
+    const substituteYaml =
+      object.spec.postBuild?.substitute &&
+      yaml.dump(object.spec.postBuild?.substitute, defaultYamlDumpOptions).trimEnd();
 
     return (
       <>
@@ -292,11 +327,11 @@ export class FluxCDKustomizationDetails extends React.Component<
                   .update(
                     [
                       patch.patch,
-                      patch.target.kind,
-                      patch.target.name,
-                      patch.target.namespace,
-                      patch.target.labelSelector,
-                      patch.target.annotationSelector,
+                      patch.target?.kind,
+                      patch.target?.name,
+                      patch.target?.namespace,
+                      patch.target?.labelSelector,
+                      patch.target?.annotationSelector,
                     ].join(""),
                   )
                   .digest("hex");
@@ -306,26 +341,26 @@ export class FluxCDKustomizationDetails extends React.Component<
                     <div className="title flex gaps">
                       <Icon small material="list" />
                     </div>
-                    <DrawerItem name="Group" hidden={!patch.target.group}>
-                      {patch.target.group}
+                    <DrawerItem name="Group" hidden={!patch.target?.group}>
+                      {patch.target?.group}
                     </DrawerItem>
-                    <DrawerItem name="Version" hidden={!patch.target.version}>
-                      {patch.target.version}
+                    <DrawerItem name="Version" hidden={!patch.target?.version}>
+                      {patch.target?.version}
                     </DrawerItem>
-                    <DrawerItem name="Kind" hidden={!patch.target.kind}>
-                      {patch.target.kind}
+                    <DrawerItem name="Kind" hidden={!patch.target?.kind}>
+                      {patch.target?.kind}
                     </DrawerItem>
-                    <DrawerItem name="Name" hidden={!patch.target.name}>
-                      {patch.target.name}
+                    <DrawerItem name="Name" hidden={!patch.target?.name}>
+                      {patch.target?.name}
                     </DrawerItem>
-                    <DrawerItem name="Namespace" hidden={!patch.target.namespace}>
-                      {patch.target.namespace}
+                    <DrawerItem name="Namespace" hidden={!patch.target?.namespace}>
+                      {patch.target?.namespace}
                     </DrawerItem>
-                    <DrawerItem name="Label Selector" hidden={!patch.target.labelSelector}>
-                      {patch.target.labelSelector}
+                    <DrawerItem name="Label Selector" hidden={!patch.target?.labelSelector}>
+                      {patch.target?.labelSelector}
                     </DrawerItem>
-                    <DrawerItem name="Annotation Selector" hidden={!patch.target.annotationSelector}>
-                      {patch.target.annotationSelector}
+                    <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
+                      {patch.target?.annotationSelector}
                     </DrawerItem>
                     <div className="DrawerItem">
                       <span className="name">Patch</span>
@@ -397,17 +432,17 @@ export class FluxCDKustomizationDetails extends React.Component<
             <div className="KustomizationPatchesJson6902">
               <DrawerTitle>Patches: RFC 6902</DrawerTitle>
               {object.spec.patchesJson6902.map((patch) => {
-                const patchYaml = yaml.dump(patch.patch);
+                const patchYaml = yaml.dump(patch.patch, defaultYamlDumpOptions);
                 const key = crypto
                   .createHash("sha256")
                   .update(
                     [
                       patchYaml,
-                      patch.target.kind,
-                      patch.target.name,
-                      patch.target.namespace,
-                      patch.target.labelSelector,
-                      patch.target.annotationSelector,
+                      patch.target?.kind,
+                      patch.target?.name,
+                      patch.target?.namespace,
+                      patch.target?.labelSelector,
+                      patch.target?.annotationSelector,
                     ].join(""),
                   )
                   .digest("hex");
@@ -417,26 +452,26 @@ export class FluxCDKustomizationDetails extends React.Component<
                     <div className="title flex gaps">
                       <Icon small material="list" />
                     </div>
-                    <DrawerItem name="Group" hidden={!patch.target.group}>
-                      {patch.target.group}
+                    <DrawerItem name="Group" hidden={!patch.target?.group}>
+                      {patch.target?.group}
                     </DrawerItem>
-                    <DrawerItem name="Version" hidden={!patch.target.version}>
-                      {patch.target.version}
+                    <DrawerItem name="Version" hidden={!patch.target?.version}>
+                      {patch.target?.version}
                     </DrawerItem>
-                    <DrawerItem name="Kind" hidden={!patch.target.kind}>
-                      {patch.target.kind}
+                    <DrawerItem name="Kind" hidden={!patch.target?.kind}>
+                      {patch.target?.kind}
                     </DrawerItem>
-                    <DrawerItem name="Name" hidden={!patch.target.name}>
-                      {patch.target.name}
+                    <DrawerItem name="Name" hidden={!patch.target?.name}>
+                      {patch.target?.name}
                     </DrawerItem>
-                    <DrawerItem name="Namespace" hidden={!patch.target.namespace}>
-                      {patch.target.namespace}
+                    <DrawerItem name="Namespace" hidden={!patch.target?.namespace}>
+                      {patch.target?.namespace}
                     </DrawerItem>
-                    <DrawerItem name="Label Selector" hidden={!patch.target.labelSelector}>
-                      {patch.target.labelSelector}
+                    <DrawerItem name="Label Selector" hidden={!patch.target?.labelSelector}>
+                      {patch.target?.labelSelector}
                     </DrawerItem>
-                    <DrawerItem name="Annotation Selector" hidden={!patch.target.annotationSelector}>
-                      {patch.target.annotationSelector}
+                    <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
+                      {patch.target?.annotationSelector}
                     </DrawerItem>
                     <div className="DrawerItem">
                       <span className="name">Patch</span>
@@ -495,33 +530,6 @@ export class FluxCDKustomizationDetails extends React.Component<
           {object.spec.postBuild && (
             <div className="KustomizationSubstitute flex column">
               <DrawerTitle>Post Build Variable Substitution</DrawerTitle>
-              {substituteYaml && (
-                <>
-                  <div className="DrawerItem">
-                    <span className="name">Variables</span>
-                  </div>
-                  <div className="flex column gaps">
-                    <MonacoEditor
-                      readOnly
-                      id={`substituteYaml-${namespace}-${name}`}
-                      style={{
-                        minHeight: getHeight(substituteYaml),
-                        resize: "none",
-                        overflow: "hidden",
-                        border: "1px solid var(--borderFaintColor)",
-                        borderRadius: "4px",
-                      }}
-                      value={substituteYaml}
-                      setInitialHeight
-                      options={{
-                        scrollbar: {
-                          alwaysConsumeMouseWheel: false,
-                        },
-                      }}
-                    />
-                  </div>
-                </>
-              )}
               {object.spec.postBuild.substituteFrom?.map((substituteFrom) => {
                 const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
                 const name = substituteFrom.name;
@@ -570,6 +578,36 @@ export class FluxCDKustomizationDetails extends React.Component<
                   </div>
                 );
               })}
+              {substituteYaml && (
+                <>
+                  <div className="title flex gaps">
+                    <Icon small material="list" />
+                  </div>
+                  <div className="DrawerItem">
+                    <span className="name">Variables</span>
+                  </div>
+                  <div className="flex column gaps">
+                    <MonacoEditor
+                      readOnly
+                      id={`substituteYaml-${namespace}-${name}`}
+                      style={{
+                        minHeight: getHeight(substituteYaml),
+                        resize: "none",
+                        overflow: "hidden",
+                        border: "1px solid var(--borderFaintColor)",
+                        borderRadius: "4px",
+                      }}
+                      value={substituteYaml}
+                      setInitialHeight
+                      options={{
+                        scrollbar: {
+                          alwaysConsumeMouseWheel: false,
+                        },
+                      }}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

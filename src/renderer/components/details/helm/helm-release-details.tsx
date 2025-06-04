@@ -6,7 +6,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { crdStore } from "../../../k8s/core/crd";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease";
-import { getHeight, lowerAndPluralize } from "../../../utils";
+import { defaultYamlDumpOptions, getHeight, lowerAndPluralize } from "../../../utils";
 
 import styleInline from "./helm-release-details.scss?inline";
 
@@ -22,7 +22,7 @@ const {
 
 interface HelmReleaseDetailsState {
   crds: Renderer.K8sApi.CustomResourceDefinition[];
-  valuesFromYaml: Record<string, string>;
+  valuesFromYaml: Record<string, string | undefined>;
 }
 
 enum historySortBy {
@@ -58,7 +58,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
 
   sourceUrl(resource: HelmRelease): string {
     const name = resource.spec.chart?.spec.sourceRef.name ?? resource.spec.chartRef?.name;
-    const namespace = this.getNamespace(resource);
+    const namespace = this.getChartRefNamespace(resource);
     const kind = lowerAndPluralize(resource.spec.chart?.spec.sourceRef.kind ?? resource.spec.chartRef?.kind ?? "");
     const crd = this.getCrd(resource.spec.chart?.spec.sourceRef.kind ?? resource.spec.chartRef?.kind);
     const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
@@ -73,7 +73,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
     if (!resource.spec.chart) return;
 
     const name = resource.metadata.name;
-    const namespace = this.getNamespace(resource);
+    const namespace = this.getChartRefNamespace(resource);
     const kind = lowerAndPluralize("HelmChart");
     const crd = this.getCrd(resource.spec.chart?.spec.sourceRef.kind ?? resource.spec.chartRef?.kind);
     const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
@@ -85,10 +85,12 @@ export class FluxCDHelmReleaseDetails extends React.Component<
   }
 
   async componentDidMount() {
-    crdStore.loadAll().then((l) => this.setState({ crds: l as Renderer.K8sApi.CustomResourceDefinition[] }));
+    crdStore.loadAll().then((l) => this.setState({ crds: l! }));
 
     const { object } = this.props;
-    const namespace = this.getNamespace(object);
+    const namespace = object.getNs()!;
+
+    const valuesFromYaml: typeof this.state.valuesFromYaml = {};
 
     for (const valueFrom of object.spec.valuesFrom ?? []) {
       const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
@@ -96,24 +98,26 @@ export class FluxCDHelmReleaseDetails extends React.Component<
       const valuesKey = valueFrom.valuesKey ?? "values.yaml";
       const valuesObject = await api.get({ name, namespace });
       if (!valuesObject) continue;
+
       const valuesYaml = valuesObject?.data?.[valuesKey];
       if (!valuesYaml) continue;
+
       if (valueFrom.kind.toLowerCase() === "secret" && Base64.isValid(valuesYaml)) {
-        this.state.valuesFromYaml[`${namespace}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
+        valuesFromYaml[`${namespace}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
       } else {
-        this.state.valuesFromYaml[`${namespace}/${name}/${valuesKey}`] = valuesYaml;
+        valuesFromYaml[`${namespace}/${name}/${valuesKey}`] = valuesYaml;
       }
     }
+
+    this.setState({ valuesFromYaml });
   }
 
-  getNamespace(resource: HelmRelease) {
-    return (
-      resource.spec.chart?.spec.sourceRef.namespace ?? resource.spec.chartRef?.namespace ?? resource.metadata.namespace!
-    );
+  getChartRefNamespace(resource: HelmRelease) {
+    return resource.spec.chart?.spec.sourceRef.namespace ?? resource.spec.chartRef?.namespace ?? resource.getNs()!;
   }
 
   getHelmChartName(resource: HelmRelease) {
-    const namespace = this.getNamespace(resource);
+    const namespace = this.getChartRefNamespace(resource);
 
     return `${namespace}-${resource.metadata.name}`;
   }
@@ -144,9 +148,9 @@ export class FluxCDHelmReleaseDetails extends React.Component<
   render() {
     const { object } = this.props;
 
-    const namespace = this.getNamespace(object);
+    const namespace = object.metadata.namespace ?? "default";
     const releaseName = this.getReleaseNameShortened(object);
-    const valuesYaml = yaml.dump(object.spec.values);
+    const valuesYaml = yaml.dump(object.spec.values, defaultYamlDumpOptions);
 
     const images = object.spec.postRenderers
       ?.filter((a) => a?.kustomize)
@@ -165,7 +169,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
     return (
       <>
         <style>{styleInline}</style>
-        <div>
+        <div className="HelmReleaseDetails">
           <DrawerItem name="Release Name">
             <Link
               key="link"
@@ -276,7 +280,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
               {object.spec.valuesFrom.map((valueFrom) => {
                 const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
                 const name = valueFrom.name;
-                const valuesYaml = this.state.valuesFromYaml[`${namespace}/${name}/${valueFrom.valuesKey}`];
+                const valuesYaml = this.state.valuesFromYaml[`${namespace}/${name}/${valueFrom.valuesKey}`] && "";
 
                 return (
                   <div key={name} className="valueFrom">
@@ -313,7 +317,7 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                           border: "1px solid var(--borderFaintColor)",
                           borderRadius: "4px",
                         }}
-                        value={valuesYaml}
+                        value={valuesYaml ?? ""}
                         setInitialHeight
                         options={{
                           scrollbar: {
@@ -365,11 +369,11 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                   .update(
                     [
                       patch.patch,
-                      patch.target.kind,
-                      patch.target.name,
-                      patch.target.namespace,
-                      patch.target.labelSelector,
-                      patch.target.annotationSelector,
+                      patch.target?.kind,
+                      patch.target?.name,
+                      patch.target?.namespace,
+                      patch.target?.labelSelector,
+                      patch.target?.annotationSelector,
                     ].join(""),
                   )
                   .digest("hex");
@@ -379,27 +383,30 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                     <div className="title flex gaps">
                       <Icon small material="list" />
                     </div>
-                    <DrawerItem name="Group" hidden={!patch.target.group}>
-                      {patch.target.group}
+                    <DrawerItem name="Group" hidden={!patch.target?.group}>
+                      {patch.target?.group}
                     </DrawerItem>
-                    <DrawerItem name="Version" hidden={!patch.target.version}>
-                      {patch.target.version}
+                    <DrawerItem name="Version" hidden={!patch.target?.version}>
+                      {patch.target?.version}
                     </DrawerItem>
-                    <DrawerItem name="Kind" hidden={!patch.target.kind}>
-                      {patch.target.kind}
+                    <DrawerItem name="Kind" hidden={!patch.target?.kind}>
+                      {patch.target?.kind}
                     </DrawerItem>
-                    <DrawerItem name="Name" hidden={!patch.target.name}>
-                      {patch.target.name}
+                    <DrawerItem name="Name" hidden={!patch.target?.name}>
+                      {patch.target?.name}
                     </DrawerItem>
-                    <DrawerItem name="Namespace" hidden={!patch.target.namespace}>
-                      {patch.target.namespace}
+                    <DrawerItem name="Namespace" hidden={!patch.target?.namespace}>
+                      {patch.target?.namespace}
                     </DrawerItem>
-                    <DrawerItem name="Label Selector" hidden={!patch.target.labelSelector}>
-                      {patch.target.labelSelector}
+                    <DrawerItem name="Label Selector" hidden={!patch.target?.labelSelector}>
+                      {patch.target?.labelSelector}
                     </DrawerItem>
-                    <DrawerItem name="Annotation Selector" hidden={!patch.target.annotationSelector}>
-                      {patch.target.annotationSelector}
+                    <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
+                      {patch.target?.annotationSelector}
                     </DrawerItem>
+                    <div className="DrawerItem">
+                      <span className="name">Patch</span>
+                    </div>
                     <div className="flex column gaps">
                       <MonacoEditor
                         readOnly
