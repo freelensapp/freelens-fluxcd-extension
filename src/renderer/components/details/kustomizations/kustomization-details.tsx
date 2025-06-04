@@ -170,6 +170,17 @@ export class FluxCDKustomizationDetails extends React.Component<
               {object.spec.serviceAccountName}
             </Link>
           </DrawerItem>
+          <DrawerItem name="Kube Config" hidden={!object.spec.kubeConfig?.secretRef.name}>
+            <Link
+              key="link"
+              to={getDetailsUrl(
+                secretsApi.formatUrlForNotListing({ name: object.spec.kubeConfig?.secretRef.name, namespace }),
+              )}
+              onClick={stopPropagation}
+            >
+              {object.spec.kubeConfig?.secretRef.name}
+            </Link>
+          </DrawerItem>
           <DrawerItem name="Last Applied Revision">{object.status?.lastAppliedRevision}</DrawerItem>
 
           {object.spec.healthChecks && (
