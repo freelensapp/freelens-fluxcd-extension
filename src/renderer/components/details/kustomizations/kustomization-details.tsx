@@ -621,6 +621,24 @@ export class FluxCDKustomizationDetails extends React.Component<
               )}
             </div>
           )}
+
+          {object.spec.decryption && (
+            <div className="KustomizationDecryption">
+              <DrawerTitle>Decryption</DrawerTitle>
+              <DrawerItem name="Provider">{object.spec.decryption.provider}</DrawerItem>
+              <DrawerItem name="Secret Name">
+                <Link
+                  key="link"
+                  to={getDetailsUrl(
+                    secretsApi.formatUrlForNotListing({ name: object.spec.decryption.secretRef.name, namespace }),
+                  )}
+                  onClick={stopPropagation}
+                >
+                  {object.spec.decryption.secretRef.name}
+                </Link>
+              </DrawerItem>
+            </div>
+          )}
         </div>
       </>
     );
