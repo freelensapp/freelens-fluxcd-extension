@@ -24,6 +24,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     environment: publishing
 
+    env:
+      VITE_PRESERVE_MODULES: "false"
+
     steps:
       - name: Checkout plugin
         uses: actions/checkout@v4
