@@ -70,7 +70,10 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
             const appVersion = helmRelease.status?.history?.[0]?.appVersion;
 
             return [
-              helmRelease.getName(),
+              <>
+                <span id={`${tooltipId}-name`}>{helmRelease.getName()}</span>
+                <Tooltip targetId={`${tooltipId}-name`}>{helmRelease.getName()}</Tooltip>
+              </>,
               <>
                 <span id={`${tooltipId}-namespace`}>
                   <Link

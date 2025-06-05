@@ -62,7 +62,10 @@ export class FluxCDKustomizations extends React.Component<{ extension: Renderer.
             const statusMessage = getStatusMessage(kustomization);
 
             return [
-              kustomization.getName(),
+              <>
+                <span id={`${tooltipId}-name`}>{kustomization.getName()}</span>
+                <Tooltip targetId={`${tooltipId}-name`}>{kustomization.getName()}</Tooltip>
+              </>,
               <>
                 <span id={`${tooltipId}-namespace`}>
                   <Link
