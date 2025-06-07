@@ -17,7 +17,7 @@ export default defineConfig({
           // silence warning about using `chunk.default` to access the default export
           exports: "named",
           // prefer separate files for each module
-          preserveModules: true,
+          preserveModules: (process.env.VITE_PRESERVE_MODULES ?? "true") === "true",
           preserveModulesRoot: "src/main",
         },
       },
@@ -50,7 +50,7 @@ export default defineConfig({
           // silence warning about using `chunk.default` to access the default export
           exports: "named",
           // prefer separate files for each module
-          preserveModules: true,
+          preserveModules: (process.env.VITE_PRESERVE_MODULES ?? "true") === "true",
           preserveModulesRoot: "src/renderer",
         },
       },

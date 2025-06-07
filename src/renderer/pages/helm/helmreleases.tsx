@@ -1,4 +1,4 @@
-import { Renderer } from "@freelensapp/extensions";
+import { Common, Renderer } from "@freelensapp/extensions";
 
 import { observer } from "mobx-react";
 
@@ -8,11 +8,18 @@ import { KubeAge } from "../../components/ui/kube-age";
 import { HelmRelease, helmReleaseStore } from "../../k8s/fluxcd/helm/helmrelease";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
+import { Link } from "react-router-dom";
 import styleInline from "./helmreleases.scss?inline";
 
 const {
   Component: { KubeObjectListLayout, Badge, Tooltip },
+  K8sApi: { namespacesApi },
+  Navigation: { getDetailsUrl },
 } = Renderer;
+
+const {
+  Util: { stopPropagation },
+} = Common;
 
 enum sortBy {
   name = "name",
@@ -68,7 +75,15 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
                 <Tooltip targetId={`${tooltipId}-name`}>{helmRelease.getName()}</Tooltip>
               </>,
               <>
-                <span id={`${tooltipId}-namespace`}>{helmRelease.getNs()}</span>
+                <span id={`${tooltipId}-namespace`}>
+                  <Link
+                    key="link"
+                    to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: helmRelease.getNs() }))}
+                    onClick={stopPropagation}
+                  >
+                    {helmRelease.getNs()}
+                  </Link>
+                </span>
                 <Tooltip targetId={`${tooltipId}-namespace`}>{helmRelease.getNs()}</Tooltip>
               </>,
               this.renderStatus(helmRelease),

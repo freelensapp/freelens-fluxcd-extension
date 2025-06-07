@@ -1,20 +1,20 @@
 @use "../../../vars";
 
-.HelmReleaseDetails {
+.KustomizationDetails {
   .title {
     margin-top: vars.$margin * 2;
     margin-bottom: vars.$margin;
   }
 }
 
-.HelmReleaseHistory {
+.KustomizationSubstitute {
   .TableCell {
-    &.version {
-      flex-grow: 0.5;
+    &.key {
+      flex-grow: 0.7;
     }
 
-    &.status {
-      flex-grow: 0.8;
+    &.value {
+      flex-grow: 1.3;
     }
   }
 }

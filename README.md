@@ -25,6 +25,19 @@ Features include:
 ### Dashboard
 ![./docs/images/dashboard.png](./docs/images/dashboard.png)
 
+## Requirements
+
+- Kubernetes >= 1.24
+- Freelens >= 1.3.1
+- Flux >= v2.0.0
+- kustomize-controller >= v0.1.0
+- helm-controller >= v0.1.0
+
+## API supported
+
+- [helm.toolkit.fluxcd.io/v2beta1](https://github.com/fluxcd/helm-controller/blob/main/docs/spec/v2beta1/helmreleases.md)
+- [kustomize.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/kustomize-controller/blob/v1.6.0/docs/spec/v1beta1/kustomizations.md)
+
 ## Install
 
 To install or upgrade: open Freelens and go to Extensions (`ctrl`+`shift`+`E`
