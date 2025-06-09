@@ -1,12 +1,12 @@
-# @freelensapp/extension-fluxcd
+# @freelensapp/fluxcd-extension
 
 <!-- markdownlint-disable MD013 -->
 
 [![Home](https://img.shields.io/badge/%F0%9F%8F%A0-freelens.app-02a7a0)](https://freelens.app)
 [![GitHub](https://img.shields.io/github/stars/freelensapp/freelens?style=flat&label=GitHub%20%E2%AD%90)](https://github.com/freelensapp/freelens)
-[![Release](https://img.shields.io/github/v/release/freelensapp/freelens-extension-fluxcd?display_name=tag&sort=semver)](https://github.com/freelensapp/freelens-extension-fluxcd)
-[![Integration tests](https://github.com/freelensapp/freelens-extension-fluxcd/actions/workflows/integration-tests.yaml/badge.svg?branch=main)](https://github.com/freelensapp/freelens-extension-fluxcd/actions/workflows/integration-tests.yaml)
-[![npm](https://img.shields.io/npm/v/@freelensapp/extension-fluxcd.svg)](https://www.npmjs.com/package/@freelensapp/extension-fluxcd)
+[![Release](https://img.shields.io/github/v/release/freelensapp/freelens-fluxcd-extension?display_name=tag&sort=semver)](https://github.com/freelensapp/freelens-fluxcd-extension)
+[![Integration tests](https://github.com/freelensapp/freelens-fluxcd-extension/actions/workflows/integration-tests.yaml/badge.svg?branch=main)](https://github.com/freelensapp/freelens-fluxcd-extension/actions/workflows/integration-tests.yaml)
+[![npm](https://img.shields.io/npm/v/@freelensapp/fluxcd-extension.svg)](https://www.npmjs.com/package/@freelensapp/fluxcd-extension)
 
 <!-- markdownlint-enable MD013 -->
 
@@ -41,12 +41,12 @@ Features include:
 ## Install
 
 To install or upgrade: open Freelens and go to Extensions (`ctrl`+`shift`+`E`
-or `cmd`+`shift`+`E`), and install `@freelensapp/extension-fluxcd`.
+or `cmd`+`shift`+`E`), and install `@freelensapp/fluxcd-extension`.
 
 or:
 
 Use a following URL in the browser:
-[freelens://app/extensions/install/%40freelensapp%2Fextension-fluxcd](freelens://app/extensions/install/%40freelensapp%2Fextension-fluxcd)
+[freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension](freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension)
 
 ## Build from the source
 
@@ -105,5 +105,5 @@ Copyright (c) 2025 Freelens Authors.
 
 Based on:
 
-- <https://github.com/appvia/lens-extension-fluxcd>
-- <https://github.com/okaufmann/lens-extension-fluxcd>
+- <https://github.com/appvia/lens-fluxcd-extension>
+- <https://github.com/okaufmann/lens-fluxcd-extension>
