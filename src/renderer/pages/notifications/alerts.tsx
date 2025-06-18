@@ -4,12 +4,11 @@ import { observer } from "mobx-react";
 
 import React from "react";
 
-import { KubeAge } from "../../components/ui/kube-age";
 import { Alert, alertStore } from "../../k8s/fluxcd/notifications/alert";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
-  Component: { KubeObjectListLayout, Badge },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
 } = Renderer;
 
 enum sortBy {
@@ -49,7 +48,7 @@ export class FluxCDAlerts extends React.Component<{ extension: Renderer.LensExte
           alert.getNs(),
           this.renderStatus(alert),
           getStatusMessage(alert),
-          <KubeAge timestamp={alert.getCreationTimestamp()} key="age" />,
+          <KubeObjectAge object={alert} key="age" />,
         ]}
       />
     );

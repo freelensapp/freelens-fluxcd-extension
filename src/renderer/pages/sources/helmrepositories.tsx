@@ -4,12 +4,11 @@ import { observer } from "mobx-react";
 
 import React from "react";
 
-import { KubeAge } from "../../components/ui/kube-age";
 import { HelmRepository, helmRepositoryStore } from "../../k8s/fluxcd/sources/helmrepository";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
-  Component: { KubeObjectListLayout, Badge },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
 } = Renderer;
 
 enum sortBy {
@@ -53,7 +52,7 @@ export class FluxCDHelmRepositories extends React.Component<{ extension: Rendere
           helmRepository.spec.url,
           this.renderStatus(helmRepository),
           getStatusMessage(helmRepository),
-          <KubeAge timestamp={helmRepository.getCreationTimestamp()} key="age" />,
+          <KubeObjectAge object={helmRepository} key="age" />,
         ]}
       />
     );

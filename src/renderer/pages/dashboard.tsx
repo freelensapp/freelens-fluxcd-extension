@@ -5,7 +5,7 @@ import React from "react";
 import { PieChart } from "../components/pie-chart";
 
 const {
-  Component: { Tooltip, KubeObjectListLayout },
+  Component: { KubeObjectAge, KubeObjectListLayout, Tooltip },
 } = Renderer;
 
 class FluxEventsStore extends Renderer.K8sApi.KubeObjectStore<
@@ -34,7 +34,6 @@ import styleInline from "./fluxcd-dashboard.module.scss?inline";
 
 import { makeObservable } from "mobx";
 import { observer } from "mobx-react";
-import { KubeAge } from "../components/ui/kube-age";
 import { ImagePolicy, imagePolicyStore } from "../k8s/fluxcd/image-automation/imagepolicy";
 import { ImageRepository, imageRepositoryStore } from "../k8s/fluxcd/image-automation/imagerepository";
 import {
@@ -224,7 +223,7 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
                 [columnId.object]: (event) => event.involvedObject.name,
                 [columnId.count]: (event) => event.count,
                 [columnId.age]: (event) => -event.getCreationTimestamp(),
-                [columnId.lastSeen]: (event) => (event.lastTimestamp ? -new Date(event.lastTimestamp).getTime() : 0),
+                // [columnId.lastSeen]: (event) => (event.lastTimestamp ? -new Date(event.lastTimestamp).getTime() : 0),
               }}
               searchFilters={[
                 (event) => event.getSearchFields(),
@@ -241,7 +240,7 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
                 { title: "Source", className: "source", id: columnId.source },
                 { title: "Count", className: "count", sortBy: columnId.count, id: columnId.count },
                 { title: "Age", className: "age", sortBy: columnId.age, id: columnId.age },
-                { title: "Last Seen", className: "last-seen", sortBy: columnId.lastSeen, id: columnId.lastSeen },
+                // { title: "Last Seen", className: "last-seen", sortBy: columnId.lastSeen, id: columnId.lastSeen },
               ]}
               renderTableContents={(event) => {
                 const { involvedObject, type, message } = event;
@@ -266,8 +265,8 @@ export class FluxCDDashboard extends React.Component<{ extension: Renderer.LensE
                   // </Link>,
                   event.getSource(),
                   event.count,
-                  <KubeAge timestamp={event.getCreationTimestamp()} key={`date`} />,
-                  <KubeAge timestamp={new Date(event.lastTimestamp || 0).getTime()} key={`time`} />,
+                  <KubeObjectAge object={event} key={`date`} />,
+                  // <ReactiveDuration key="last-seen" timestamp={event.lastTimestamp} />,
                 ];
               }}
             />

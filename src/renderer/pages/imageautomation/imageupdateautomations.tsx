@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 
 import React from "react";
 
-import { KubeAge } from "../../components/ui/kube-age";
 import {
   ImageUpdateAutomation,
   imageUpdateAutomationStore,
@@ -12,7 +11,7 @@ import {
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
-  Component: { KubeObjectListLayout, Badge },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
 } = Renderer;
 
 enum sortBy {
@@ -52,7 +51,7 @@ export class FluxCDImageUpdateAutomations extends React.Component<{ extension: R
           imageUpdateAutomation.getNs(),
           this.renderStatus(imageUpdateAutomation),
           getStatusMessage(imageUpdateAutomation),
-          <KubeAge timestamp={imageUpdateAutomation.getCreationTimestamp()} key="age" />,
+          <KubeObjectAge object={imageUpdateAutomation} key="age" />,
         ]}
       />
     );

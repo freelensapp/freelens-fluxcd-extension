@@ -4,12 +4,11 @@ import { observer } from "mobx-react";
 
 import React from "react";
 
-import { KubeAge } from "../../components/ui/kube-age";
 import { ImagePolicy, imagePolicyStore } from "../../k8s/fluxcd/image-automation/imagepolicy";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
-  Component: { KubeObjectListLayout, Badge },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
 } = Renderer;
 
 enum sortBy {
@@ -53,7 +52,7 @@ export class FluxCDImagePolicies extends React.Component<{ extension: Renderer.L
           imagePolicy.spec.imageRepositoryRef.name,
           this.renderStatus(imagePolicy),
           getStatusMessage(imagePolicy),
-          <KubeAge timestamp={imagePolicy.getCreationTimestamp()} key="age" />,
+          <KubeObjectAge object={imagePolicy} key="age" />,
         ]}
       />
     );

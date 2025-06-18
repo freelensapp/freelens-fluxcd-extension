@@ -1,6 +1,6 @@
 {
   "name": "@freelensapp/fluxcd-extension",
-  "version": "3.2.1-0",
+  "version": "3.2.1-6",
   "description": "Freelens extension for FluxCD",
   "repository": {
     "type": "git",
@@ -13,8 +13,8 @@
     "out/**/*"
   ],
   "engines": {
-    "node": ">= 22.14.0",
-    "freelens": "^1.3.0"
+    "node": ">= 22.15.1",
+    "freelens": "^1.3.2"
   },
   "copyright": "© 2025 Freelens Authors",
   "license": "MIT",
@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@freelensapp/extensions": "^1.3.1",
+    "@freelensapp/extensions": "^1.3.2",
     "@types/chart.js": "^2.9.41",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.15.30",

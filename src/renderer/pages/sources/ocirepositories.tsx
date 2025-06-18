@@ -4,12 +4,11 @@ import { observer } from "mobx-react";
 
 import React from "react";
 
-import { KubeAge } from "../../components/ui/kube-age";
 import { OCIRepository, ociRepositoryStore } from "../../k8s/fluxcd/sources/ocirepository";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
-  Component: { KubeObjectListLayout, Badge },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
 } = Renderer;
 
 enum sortBy {
@@ -53,7 +52,7 @@ export class FluxCDOCIRepositories extends React.Component<{ extension: Renderer
           ociRepository.spec.url,
           this.renderStatus(ociRepository),
           getStatusMessage(ociRepository),
-          <KubeAge timestamp={ociRepository.getCreationTimestamp()} key="age" />,
+          <KubeObjectAge object={ociRepository} key="age" />,
         ]}
       />
     );

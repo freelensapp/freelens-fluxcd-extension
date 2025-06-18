@@ -4,12 +4,11 @@ import { observer } from "mobx-react";
 
 import React from "react";
 
-import { KubeAge } from "../../components/ui/kube-age";
 import { GitRepository, gitRepositoryStore } from "../../k8s/fluxcd/sources/gitrepository";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
-  Component: { KubeObjectListLayout, Badge },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
 } = Renderer;
 
 enum sortBy {
@@ -53,7 +52,7 @@ export class FluxCDGitRepositories extends React.Component<{ extension: Renderer
           this.renderStatus(gitRepository),
           gitRepository.spec.url,
           getStatusMessage(gitRepository),
-          <KubeAge timestamp={gitRepository.getCreationTimestamp()} key="age" />,
+          <KubeObjectAge object={gitRepository} key="age" />,
         ]}
       />
     );

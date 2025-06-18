@@ -4,12 +4,11 @@ import { observer } from "mobx-react";
 
 import React from "react";
 
-import { KubeAge } from "../../components/ui/kube-age";
 import { Bucket, bucketStore } from "../../k8s/fluxcd/sources/bucket";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
-  Component: { KubeObjectListLayout, Badge },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
 } = Renderer;
 
 enum sortBy {
@@ -53,7 +52,7 @@ export class FluxCDBuckets extends React.Component<{ extension: Renderer.LensExt
           bucket.spec.url,
           this.renderStatus(bucket),
           getStatusMessage(bucket),
-          <KubeAge timestamp={bucket.getCreationTimestamp()} key="age" />,
+          <KubeObjectAge object={bucket} key="age" />,
         ]}
       />
     );

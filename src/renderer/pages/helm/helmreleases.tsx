@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 
 import React from "react";
 
-import { KubeAge } from "../../components/ui/kube-age";
 import { HelmRelease, helmReleaseStore } from "../../k8s/fluxcd/helm/helmrelease";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
@@ -12,7 +11,7 @@ import { Link } from "react-router-dom";
 import styleInline from "./helmreleases.scss?inline";
 
 const {
-  Component: { KubeObjectListLayout, Badge, Tooltip },
+  Component: { Badge, KubeObjectListLayout, KubeObjectAge, Tooltip },
   K8sApi: { namespacesApi },
   Navigation: { getDetailsUrl },
 } = Renderer;
@@ -99,7 +98,7 @@ export class FluxCDHelmReleases extends React.Component<{ extension: Renderer.Le
                 <span id={`${tooltipId}-status`}>{status}</span>
                 <Tooltip targetId={`${tooltipId}-status`}>{status}</Tooltip>
               </>,
-              <KubeAge timestamp={helmRelease.getCreationTimestamp()} key="age" />,
+              <KubeObjectAge object={helmRelease} key="age" />,
             ];
           }}
         />
