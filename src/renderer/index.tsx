@@ -2,31 +2,6 @@ import { Renderer } from "@freelensapp/extensions";
 
 // @ts-ignore
 import React from "react";
-
-import {
-  FluxcdObjectReconcileMenuItem,
-  FluxcdObjectReconcileMenuItemProps,
-} from "./menus/fluxcd-object-reconcile-menu-item";
-import {
-  FluxCdObjectSuspendResumeMenuItemProps,
-  FluxcdObjectSuspendResumeMenuItem,
-} from "./menus/fluxcd-object-suspend-resume-menu-item";
-
-import { FluxCDDashboard } from "./pages/dashboard";
-import { FluxCDHelmReleases } from "./pages/helm/helmreleases";
-import { FluxCDImagePolicies } from "./pages/imageautomation/imagepolicies";
-import { FluxCDImageRepositories } from "./pages/imageautomation/imagerepositories";
-import { FluxCDImageUpdateAutomations } from "./pages/imageautomation/imageupdateautomations";
-import { FluxCDKustomizations } from "./pages/kustomizations/kustomizations";
-import { FluxCDAlerts } from "./pages/notifications/alerts";
-import { FluxCDProviders } from "./pages/notifications/providers";
-import { FluxCDReceivers } from "./pages/notifications/receivers";
-import { FluxCDBuckets } from "./pages/sources/buckets";
-import { FluxCDGitRepositories } from "./pages/sources/gitrepositories";
-import { FluxCDHelmCharts } from "./pages/sources/helmcharts";
-import { FluxCDHelmRepositories } from "./pages/sources/helmrepositories";
-import { FluxCDOCIRepositories } from "./pages/sources/ocirepositories";
-
 import { FluxCDHelmReleaseDetails } from "./components/details/helm/helm-release-details";
 import { FluxCDImagePolicyDetails } from "./components/details/imageautomation/image-policy-details";
 import { FluxCDImageRepositoryDetails } from "./components/details/imageautomation/image-repository-details";
@@ -38,22 +13,41 @@ import { FluxCDReceiverDetails } from "./components/details/notification/receive
 import { FluxCDGitRepositoryDetails } from "./components/details/sources/git-repository-details";
 import { FluxCDHelmChartDetails } from "./components/details/sources/helm-chart-details";
 import { FluxCDHelmRepositoryDetails } from "./components/details/sources/helm-repository-details";
-
-import { Kustomization } from "./k8s/fluxcd/kustomization";
-import { Receiver } from "./k8s/fluxcd/notifications/receiver";
-import { fluxcdObjects } from "./k8s/fluxcd/objects";
-
 import svgIcon from "./icons/fluxcd.svg?raw";
-
-import { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
-import { ImagePolicy } from "./k8s/fluxcd/image-automation/imagepolicy";
-import { ImageRepository } from "./k8s/fluxcd/image-automation/imagerepository";
-import { ImageUpdateAutomation } from "./k8s/fluxcd/image-automation/imageupdateautomation";
-import { Alert } from "./k8s/fluxcd/notifications/alert";
-import { Provider } from "./k8s/fluxcd/notifications/provider";
-import { GitRepository } from "./k8s/fluxcd/sources/gitrepository";
-import { HelmChart } from "./k8s/fluxcd/sources/helmchart";
-import { HelmRepository } from "./k8s/fluxcd/sources/helmrepository";
+import type { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
+import type { ImagePolicy } from "./k8s/fluxcd/image-automation/imagepolicy";
+import type { ImageRepository } from "./k8s/fluxcd/image-automation/imagerepository";
+import type { ImageUpdateAutomation } from "./k8s/fluxcd/image-automation/imageupdateautomation";
+import type { Kustomization } from "./k8s/fluxcd/kustomization";
+import type { Alert } from "./k8s/fluxcd/notifications/alert";
+import type { Provider } from "./k8s/fluxcd/notifications/provider";
+import type { Receiver } from "./k8s/fluxcd/notifications/receiver";
+import { fluxcdObjects } from "./k8s/fluxcd/objects";
+import type { GitRepository } from "./k8s/fluxcd/sources/gitrepository";
+import type { HelmChart } from "./k8s/fluxcd/sources/helmchart";
+import type { HelmRepository } from "./k8s/fluxcd/sources/helmrepository";
+import {
+  FluxcdObjectReconcileMenuItem,
+  type FluxcdObjectReconcileMenuItemProps,
+} from "./menus/fluxcd-object-reconcile-menu-item";
+import {
+  type FluxCdObjectSuspendResumeMenuItemProps,
+  FluxcdObjectSuspendResumeMenuItem,
+} from "./menus/fluxcd-object-suspend-resume-menu-item";
+import { FluxCDHelmReleases } from "./pages/helm/helmreleases";
+import { FluxCDImagePolicies } from "./pages/imageautomation/imagepolicies";
+import { FluxCDImageRepositories } from "./pages/imageautomation/imagerepositories";
+import { FluxCDImageUpdateAutomations } from "./pages/imageautomation/imageupdateautomations";
+import { FluxCDKustomizations } from "./pages/kustomizations/kustomizations";
+import { FluxCDAlerts } from "./pages/notifications/alerts";
+import { FluxCDProviders } from "./pages/notifications/providers";
+import { FluxCDReceivers } from "./pages/notifications/receivers";
+import { FluxCDOverview } from "./pages/overview";
+import { FluxCDBuckets } from "./pages/sources/buckets";
+import { FluxCDGitRepositories } from "./pages/sources/gitrepositories";
+import { FluxCDHelmCharts } from "./pages/sources/helmcharts";
+import { FluxCDHelmRepositories } from "./pages/sources/helmrepositories";
+import { FluxCDOCIRepositories } from "./pages/sources/ocirepositories";
 
 const {
   Component: { Icon },
@@ -201,7 +195,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "dashboard",
       components: {
-        Page: () => <FluxCDDashboard extension={this} />,
+        Page: () => <FluxCDOverview extension={this} />,
       },
     },
     {

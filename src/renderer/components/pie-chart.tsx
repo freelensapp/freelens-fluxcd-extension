@@ -1,5 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-import React from "react";
+import type React from "react";
 
 import style from "./pie-chart.module.scss";
 import styleInline from "./pie-chart.module.scss?inline";
@@ -25,7 +25,7 @@ const getPath = (crd: Renderer.K8sApi.CustomResourceDefinition) => {
 export interface PieChartProps<A extends Renderer.K8sApi.KubeObject> {
   objects: A[];
   title: string;
-  crd: Renderer.K8sApi.CustomResourceDefinition;
+  crd?: Renderer.K8sApi.CustomResourceDefinition;
 }
 
 export function PieChart(props: PieChartProps<Renderer.K8sApi.KubeObject>): React.ReactElement {
@@ -64,10 +64,10 @@ export function PieChart(props: PieChartProps<Renderer.K8sApi.KubeObject>): Reac
           <a
             onClick={(e) => {
               e.preventDefault();
-              Renderer.Navigation.navigate({ pathname: getPath(crd) });
+              crd && Renderer.Navigation.navigate({ pathname: getPath(crd) });
             }}
           >
-            {title}: {objects.length}
+            {title} ({objects.length})
           </a>
         </div>
         <Renderer.Component.PieChart data={chartData} />
