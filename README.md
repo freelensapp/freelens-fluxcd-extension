@@ -41,12 +41,12 @@ Features include:
 ## Install
 
 To install or upgrade: open Freelens and go to Extensions (`ctrl`+`shift`+`E`
-or `cmd`+`shift`+`E`), and install `@freelensapp/fluxcd-extension`.
+or `cmd`+`shift`+`E`), and install `@freelensapp/extension-fluxcd`.
 
 or:
 
 Use a following URL in the browser:
-[freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension](freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension)
+[freelens://app/extensions/install/%40freelensapp%2Fextension-fluxcd](freelens://app/extensions/install/%40freelensapp%2Fextension-fluxcd)
 
 ## Build from the source
 
