@@ -38,7 +38,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "biome": "pnpm dlx @biomejs/biome@1.9.4",
+    "biome": "pnpm dlx @biomejs/biome@2.0.6",
     "biome:check": "pnpm biome check",
     "biome:fix": "pnpm biome check --fix",
     "prebuild": "pnpm typecheck",
