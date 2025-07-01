@@ -4,6 +4,7 @@
     "config:recommended",
     ":semanticCommitsDisabled"
   ],
+  "prHourlyLimit": 20,
   "addLabels": [
     "renovate"
   ],
@@ -27,7 +28,13 @@
     // it must be the oldest possible version to get binary compatibility with older OSes
     "ubuntu",
     // manual updates only
-    "@freelensapp/extensions"
+    "@freelensapp/extensions",
+    // must match version from Freelens
+    "mobx",
+    "mobx-react",
+    "react",
+    "react-dom",
+    "react-router-dom",
   ],
   "packageRules": [
     // peerDependencies are widen
@@ -41,13 +48,9 @@
     // non-major updates only
     {
       "matchDepNames": [
-        "@types/chart.js",
         "@types/node",
         "@types/react",
-        "electron",
-        "mobx-react",
         "npm",
-        "react",
       ],
       "matchUpdateTypes": [
         "major"
