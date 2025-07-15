@@ -1,4 +1,5 @@
-import { Selector } from "../core/types";
+import { Renderer } from "@freelensapp/extensions";
+import { type Condition, Selector } from "../core/types";
 
 export interface LocalObjectReference {
   name: string;
@@ -39,4 +40,33 @@ export interface Snapshot {
     namespace: string;
     kinds: Record<string, string>;
   }[];
+}
+
+export interface FluxCDObjectCRD {
+  apiVersions: string[];
+  plural: string;
+  singular: string;
+  shortNames: string[];
+  title: string;
+}
+
+export interface FluxCDObjectStatic {
+  readonly crd: FluxCDObjectCRD;
+  getApi(): Renderer.K8sApi.KubeApi | undefined;
+  getStore(): Renderer.K8sApi.KubeObjectStore | undefined;
+}
+
+export type FluxCDObject = typeof Renderer.K8sApi.KubeObject<any, any, any> & FluxCDObjectStatic;
+
+export interface FluxCDStatusConditions {
+  observedGeneration?: number;
+  conditions?: Condition[];
+  lastAppliedRevision?: string;
+  lastAttemptedRevision?: string;
+  lastHandledReconcileAt: string;
+  snapshot: Snapshot;
+}
+
+export interface FluxCDSpecSuspend {
+  suspend?: boolean;
 }

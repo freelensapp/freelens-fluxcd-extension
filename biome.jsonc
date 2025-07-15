@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -24,7 +24,15 @@
     }
   },
   "files": {
-    "includes": ["**", "!**/.trunk/**", "!**/build/**", "!**/dist/**", "!**/package.json"]
+    "includes": [
+      "**",
+      "!**/.trunk/**",
+      "!**/build/**",
+      "!**/dist/**",
+      "!**/package.json",
+      "!**/*.css.d.ts",
+      "!**/*.scss.d.ts"
+    ]
   },
   "formatter": {
     "attributePosition": "auto",

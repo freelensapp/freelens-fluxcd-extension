@@ -1,18 +1,17 @@
 import { Renderer } from "@freelensapp/extensions";
-import { Condition, KubeObjectMetadata, Patch } from "../core/types";
+import { type Condition, Patch } from "../../core/types";
+import { getApi, getStore } from "../stores";
 import {
+  type FluxCDSpecSuspend,
   Image,
   JSON6902Patch,
   LocalObjectReference,
   NamespacedObjectKindReference,
   NamespacedObjectReference,
   Snapshot,
-} from "./types";
+} from "../types";
 
-const KubeObject = Renderer.K8sApi.KubeObject;
-const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
-
-export interface KustomizationSpec {
+export interface KustomizationSpec extends FluxCDSpecSuspend {
   dependsOn?: NamespacedObjectReference[];
   decryption?: {
     provider: string;
@@ -55,16 +54,30 @@ export interface KustomizationStatus {
   snapshot: Snapshot;
 }
 
-export class Kustomization extends KubeObject<KubeObjectMetadata, KustomizationStatus, KustomizationSpec> {
+export class Kustomization extends Renderer.K8sApi.KubeObject<
+  Renderer.K8sApi.KubeObjectMetadata,
+  KustomizationStatus,
+  KustomizationSpec
+> {
   static readonly kind = "Kustomization";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/kustomize.toolkit.fluxcd.io/v1beta1/kustomizations";
+
+  static readonly crd = {
+    apiVersions: [
+      "kustomize.toolkit.fluxcd.io/v1beta1",
+      "kustomize.toolkit.fluxcd.io/v1beta2",
+      "kustomize.toolkit.fluxcd.io/v1",
+    ],
+    plural: "kustomizations",
+    singular: "kustomization",
+    shortNames: ["ks"],
+    title: "Kustomizations",
+  };
+
+  static getApi = getApi;
+  static getStore = getStore;
 }
 
 export class KustomizationApi extends Renderer.K8sApi.KubeApi<Kustomization> {}
-export const kustomizationApi = new KustomizationApi({ objectConstructor: Kustomization });
-export class KustomizationStore extends KubeObjectStore<Kustomization> {
-  api = kustomizationApi;
-}
-export const kustomizationStore = new KustomizationStore();
-Renderer.K8sApi.apiManager.registerStore(kustomizationStore);
+export class KustomizationStore extends Renderer.K8sApi.KubeObjectStore<Kustomization> {}

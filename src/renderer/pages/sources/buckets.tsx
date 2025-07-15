@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { Bucket, bucketStore } from "../../k8s/fluxcd/sources/bucket";
+import { Bucket } from "../../k8s/fluxcd/source/bucket";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -21,13 +18,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDBuckets extends React.Component<{ extension: Renderer.LensExtension }> {
+export class BucketsPage extends React.Component {
   render() {
+    const store = Bucket.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="bucketsTable"
         className="Buckets"
-        store={bucketStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (bucket: Bucket) => bucket.getName(),
           [sortBy.namespace]: (bucket: Bucket) => bucket.getNs(),

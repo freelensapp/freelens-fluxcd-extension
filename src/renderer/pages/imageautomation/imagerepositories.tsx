@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { ImageRepository, imageRepositoryStore } from "../../k8s/fluxcd/image-automation/imagerepository";
+import { ImageRepository } from "../../k8s/fluxcd/image/imagerepository";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -21,13 +18,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDImageRepositories extends React.Component<{ extension: Renderer.LensExtension }> {
+export class ImageRepositoriesPage extends React.Component {
   render() {
+    const store = ImageRepository.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="imageRepositoriesTable"
         className="ImageRepositories"
-        store={imageRepositoryStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (imageRepository: ImageRepository) => imageRepository.getName(),
           [sortBy.namespace]: (imageRepository: ImageRepository) => imageRepository.getNs(),

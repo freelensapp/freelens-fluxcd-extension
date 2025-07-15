@@ -1,0 +1,70 @@
+import { Common, Renderer } from "@freelensapp/extensions";
+import { observer } from "mobx-react";
+import { Link } from "react-router-dom";
+import { Kustomization } from "../../k8s/fluxcd/kustomize/kustomization";
+import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import styleInline from "./kustomizations.scss?inline";
+
+const {
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, WithTooltip },
+  K8sApi: { namespacesApi },
+  Navigation: { getDetailsUrl },
+} = Renderer;
+
+const {
+  Util: { stopPropagation },
+} = Common;
+
+export const KustomizationsPage = observer(() => {
+  const store = Kustomization.getStore();
+  if (!store) return <></>;
+
+  return (
+    <>
+      <style>{styleInline}</style>
+      <KubeObjectListLayout
+        tableId="kustomizationsTable"
+        className="Kustomizations"
+        store={store}
+        sortingCallbacks={{
+          name: (kustomization: Kustomization) => kustomization.getName(),
+          namespace: (kustomization: Kustomization) => kustomization.getNs(),
+          revision: (kustomization: Kustomization) => kustomization.status?.lastAppliedRevision,
+          status: (kustomization: Kustomization) => getStatusText(kustomization),
+          message: (kustomization: Kustomization) => getStatusText(kustomization),
+          age: (kustomization: Kustomization) => kustomization.getCreationTimestamp(),
+        }}
+        searchFilters={[(kustomization: Kustomization) => kustomization.getSearchFields()]}
+        renderHeaderTitle="Kustomizations"
+        renderTableHeader={[
+          { title: "Name", className: "name", sortBy: "name" },
+          { title: "Namespace", className: "namespace", sortBy: "namespace" },
+          { title: "Revision", className: "revision", sortBy: "revision" },
+          { title: "Status", className: "status", sortBy: "status" },
+          { title: "Message", className: "message", sortBy: "message" },
+          { title: "Age", className: "age", sortBy: "age" },
+        ]}
+        renderTableContents={(kustomization: Kustomization) => {
+          const lastAppliedRevision =
+            kustomization.status?.lastAppliedRevision?.replace(/^refs\/(heads|tags)\//, "") || "N/A";
+          const statusMessage = getStatusMessage(kustomization);
+
+          return [
+            <WithTooltip>{kustomization.getName()}</WithTooltip>,
+            <Link
+              key="link"
+              to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: kustomization.getNs() }))}
+              onClick={stopPropagation}
+            >
+              <WithTooltip>{kustomization.getNs()}</WithTooltip>
+            </Link>,
+            <WithTooltip>{lastAppliedRevision}</WithTooltip>,
+            <Badge className={getStatusClass(kustomization)} label={getStatusText(kustomization)} />,
+            <WithTooltip>{statusMessage}</WithTooltip>,
+            <KubeObjectAge object={kustomization} key="age" />,
+          ];
+        }}
+      />
+    </>
+  );
+});

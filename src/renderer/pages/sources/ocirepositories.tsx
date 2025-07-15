@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { OCIRepository, ociRepositoryStore } from "../../k8s/fluxcd/sources/ocirepository";
+import { OCIRepository } from "../../k8s/fluxcd/source/ocirepository";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -21,13 +18,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDOCIRepositories extends React.Component<{ extension: Renderer.LensExtension }> {
+export class OCIRepositoriesPage extends React.Component {
   render() {
+    const store = OCIRepository.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="ociRepositoriesTable"
         className="OCIRepositories"
-        store={ociRepositoryStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (ociRepository: OCIRepository) => ociRepository.getName(),
           [sortBy.namespace]: (ociRepository: OCIRepository) => ociRepository.getNs(),

@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { Receiver, receiverStore } from "../../k8s/fluxcd/notifications/receiver";
+import { Receiver } from "../../k8s/fluxcd/notification/receiver";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -21,13 +18,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDReceivers extends React.Component<{ extension: Renderer.LensExtension }> {
+export class ReceiversPage extends React.Component {
   render() {
+    const store = Receiver.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="receiversTable"
         className="Receivers"
-        store={receiverStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (receiver: Receiver) => receiver.getName(),
           [sortBy.namespace]: (receiver: Receiver) => receiver.getNs(),

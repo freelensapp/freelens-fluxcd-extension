@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { ImagePolicy, imagePolicyStore } from "../../k8s/fluxcd/image-automation/imagepolicy";
+import { ImagePolicy } from "../../k8s/fluxcd/image/imagepolicy";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -21,13 +18,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDImagePolicies extends React.Component<{ extension: Renderer.LensExtension }> {
+export class ImagePoliciesPage extends React.Component {
   render() {
+    const store = ImagePolicy.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="imagePoliciesTable"
         className="ImagePolicies"
-        store={imagePolicyStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (imagePolicy: ImagePolicy) => imagePolicy.getName(),
           [sortBy.namespace]: (imagePolicy: ImagePolicy) => imagePolicy.getNs(),

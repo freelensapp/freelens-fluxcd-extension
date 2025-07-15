@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { Alert, alertStore } from "../../k8s/fluxcd/notifications/alert";
+import { Alert } from "../../k8s/fluxcd/notification/alert";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -20,13 +17,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDAlerts extends React.Component<{ extension: Renderer.LensExtension }> {
+export class AlertsPage extends React.Component {
   render() {
+    const store = Alert.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="alertsTable"
         className="Alerts"
-        store={alertStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (alert: Alert) => alert.getName(),
           [sortBy.namespace]: (alert: Alert) => alert.getNs(),

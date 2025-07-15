@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { crdStore } from "../../../k8s/core/crd";
-import { ImagePolicy } from "../../../k8s/fluxcd/image-automation/imagepolicy";
+import { getCrdStore } from "../../../k8s/core/stores";
+import { ImagePolicy } from "../../../k8s/fluxcd/image/imagepolicy";
 import { lowerAndPluralize } from "../../../utils";
 
 const {
@@ -20,18 +20,12 @@ export class FluxCDImagePolicyDetails extends React.Component<
     crds: [],
   };
 
-  getCrd(kind: string): Renderer.K8sApi.CustomResourceDefinition | null {
+  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
     const { crds } = this.state;
 
-    if (!kind) {
-      return null;
-    }
+    if (!kind || !crds) return;
 
-    if (!crds) {
-      return null;
-    }
-
-    return crds.find((crd) => crd.spec.names.kind === kind) ?? null;
+    return crds.find((crd) => crd.spec.names.kind === kind);
   }
 
   sourceUrl(resource: ImagePolicy): string {
@@ -48,7 +42,10 @@ export class FluxCDImagePolicyDetails extends React.Component<
   }
 
   async componentDidMount() {
-    crdStore.loadAll().then((l) => this.setState({ crds: l as Renderer.K8sApi.CustomResourceDefinition[] }));
+    const crdStore = getCrdStore();
+    if (crdStore) {
+      crdStore.loadAll().then((l) => this.setState({ crds: l! }));
+    }
   }
 
   render() {

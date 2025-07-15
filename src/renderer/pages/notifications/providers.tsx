@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { Provider, providerStore } from "../../k8s/fluxcd/notifications/provider";
+import { Provider } from "../../k8s/fluxcd/notification/provider";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -21,13 +18,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDProviders extends React.Component<{ extension: Renderer.LensExtension }> {
+export class ProvidersPage extends React.Component {
   render() {
+    const store = Provider.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="providersTable"
         className="Providers"
-        store={providerStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (provider: Provider) => provider.getName(),
           [sortBy.namespace]: (provider: Provider) => provider.getNs(),

@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { crdStore } from "../../../k8s/core/crd";
-import { Alert } from "../../../k8s/fluxcd/notifications/alert";
+import { getCrdStore } from "../../../k8s/core/stores";
+import { Alert } from "../../../k8s/fluxcd/notification/alert";
 import { lowerAndPluralize } from "../../../utils";
 
 interface AlertDetailsState {
@@ -22,16 +22,10 @@ export class FluxCDAlertDetails extends React.Component<
     crds: [],
   };
 
-  getCrd(kind: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
+  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
     const { crds } = this.state;
 
-    if (!kind) {
-      return;
-    }
-
-    if (!crds) {
-      return;
-    }
+    if (!kind || !crds) return;
 
     return crds.find((crd) => crd.spec.names.kind === kind);
   }
@@ -51,7 +45,10 @@ export class FluxCDAlertDetails extends React.Component<
   }
 
   async componentDidMount() {
-    crdStore.loadAll().then((l: any) => this.setState({ crds: l as Renderer.K8sApi.CustomResourceDefinition[] }));
+    const crdStore = getCrdStore();
+    if (crdStore) {
+      crdStore.loadAll().then((l) => this.setState({ crds: l! }));
+    }
   }
 
   render() {

@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { ImageRepository } from "../../../k8s/fluxcd/image-automation/imagerepository";
+import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository";
 
 const {
   Component: { DrawerItem },

@@ -1,8 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
-import type React from "react";
-
 import style from "./pie-chart.module.scss";
 import styleInline from "./pie-chart.module.scss?inline";
+
+import type React from "react";
 
 const getStats = (objects: Renderer.K8sApi.KubeObject<any, any, any>[]) => {
   const suspended = objects.filter((k) => k.spec.suspend === true).length;
@@ -25,7 +25,7 @@ const getPath = (crd: Renderer.K8sApi.CustomResourceDefinition) => {
 export interface PieChartProps<A extends Renderer.K8sApi.KubeObject> {
   objects: A[];
   title: string;
-  crd?: Renderer.K8sApi.CustomResourceDefinition;
+  crd: Renderer.K8sApi.CustomResourceDefinition;
 }
 
 export function PieChart(props: PieChartProps<Renderer.K8sApi.KubeObject>): React.ReactElement {
@@ -64,7 +64,7 @@ export function PieChart(props: PieChartProps<Renderer.K8sApi.KubeObject>): Reac
           <a
             onClick={(e) => {
               e.preventDefault();
-              crd && Renderer.Navigation.navigate({ pathname: getPath(crd) });
+              Renderer.Navigation.navigate({ pathname: getPath(crd) });
             }}
           >
             {title} ({objects.length})

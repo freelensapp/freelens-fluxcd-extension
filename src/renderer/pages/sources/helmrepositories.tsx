@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { HelmRepository, helmRepositoryStore } from "../../k8s/fluxcd/sources/helmrepository";
+import { HelmRepository } from "../../k8s/fluxcd/source/helmrepository";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -21,13 +18,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDHelmRepositories extends React.Component<{ extension: Renderer.LensExtension }> {
+export class HelmRepositoriesPage extends React.Component {
   render() {
+    const store = HelmRepository.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="helmRepositoriesTable"
         className="HelmRepositories"
-        store={helmRepositoryStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (helmRepository: HelmRepository) => helmRepository.getName(),
           [sortBy.namespace]: (helmRepository: HelmRepository) => helmRepository.getNs(),

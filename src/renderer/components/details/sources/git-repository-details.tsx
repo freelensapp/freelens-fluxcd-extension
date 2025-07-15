@@ -1,6 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { GitRepository } from "../../../k8s/fluxcd/sources/gitrepository";
+import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository";
 import { getStatusClass, getStatusText } from "../../../utils";
 
 const {

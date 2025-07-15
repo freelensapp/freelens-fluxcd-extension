@@ -1,5 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-import type { Condition, KubeObjectMetadata, Patch, Selector } from "../../core/types";
+import { getApi, getStore } from "../stores";
 import {
   Image,
   JSON6902Patch,
@@ -8,8 +8,7 @@ import {
   NamespacedObjectReference,
 } from "../types";
 
-const KubeObject = Renderer.K8sApi.KubeObject;
-const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
+import type { Condition, Patch, Selector } from "../../core/types";
 
 export interface HelmReleaseSnapshot {
   apiVersion?: string;
@@ -171,17 +170,26 @@ export interface HelmReleaseSpec {
   }[];
 }
 
-export class HelmRelease extends KubeObject<KubeObjectMetadata, HelmReleaseStatus, HelmReleaseSpec> {
+export class HelmRelease extends Renderer.K8sApi.KubeObject<
+  Renderer.K8sApi.KubeObjectMetadata,
+  HelmReleaseStatus,
+  HelmReleaseSpec
+> {
   static readonly kind = "HelmRelease";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/helm.toolkit.fluxcd.io/v2beta1/helmreleases";
+
+  static readonly crd = {
+    apiVersions: ["helm.toolkit.fluxcd.io/v2beta1", "helm.toolkit.fluxcd.io/v2beta2", "helm.toolkit.fluxcd.io/v2"],
+    plural: "helmreleases",
+    singular: "helmrelease",
+    shortNames: ["hr"],
+    title: "Helm Releases",
+  };
+
+  static getApi = getApi;
+  static getStore = getStore;
 }
 
 export class HelmReleaseApi extends Renderer.K8sApi.KubeApi<HelmRelease> {}
-export const helmReleaseApi = new HelmReleaseApi({ objectConstructor: HelmRelease });
-export class HelmReleaseStore extends KubeObjectStore<HelmRelease> {
-  api: Renderer.K8sApi.KubeApi<HelmRelease> = helmReleaseApi;
-}
-export const helmReleaseStore = new HelmReleaseStore();
-
-Renderer.K8sApi.apiManager.registerStore(helmReleaseStore);
+export class HelmReleaseStore extends Renderer.K8sApi.KubeObjectStore<HelmRelease> {}

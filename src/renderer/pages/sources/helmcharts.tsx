@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { HelmChart, helmChartStore } from "../../k8s/fluxcd/sources/helmchart";
+import { HelmChart } from "../../k8s/fluxcd/source/helmchart";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -21,13 +18,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDHelmCharts extends React.Component<{ extension: Renderer.LensExtension }> {
+export class HelmChartsPage extends React.Component {
   render() {
+    const store = HelmChart.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="helmRepositoriesTable"
         className="HelmCharts"
-        store={helmChartStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (helmChart: HelmChart) => helmChart.getName(),
           [sortBy.namespace]: (helmChart: HelmChart) => helmChart.getNs(),

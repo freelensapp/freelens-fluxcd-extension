@@ -1,0 +1,42 @@
+import { Renderer } from "@freelensapp/extensions";
+import { getApi, getStore } from "../stores";
+
+export class GitRepository extends Renderer.K8sApi.KubeObject<
+  any,
+  any,
+  {
+    url: string;
+    interval: string;
+    timeout: string;
+    suspend: boolean;
+    ref: {
+      branch: string;
+      tag: string;
+      semver: string;
+      name: string;
+      commit: string;
+    };
+  }
+> {
+  static readonly kind = "GitRepository";
+  static readonly namespaced = true;
+  static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta1/gitrepositories";
+
+  static readonly crd = {
+    apiVersions: [
+      "source.toolkit.fluxcd.io/v1beta1",
+      "source.toolkit.fluxcd.io/v1beta2",
+      "source.toolkit.fluxcd.io/v1",
+    ],
+    plural: "gitrepositories",
+    singular: "gitrepository",
+    shortNames: [],
+    title: "Git Repositories",
+  };
+
+  static getApi = getApi;
+  static getStore = getStore;
+}
+
+export class GitRepositoryApi extends Renderer.K8sApi.KubeApi<GitRepository> {}
+export class GitRepositoryStore extends Renderer.K8sApi.KubeObjectStore<GitRepository> {}

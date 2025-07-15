@@ -1,13 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import {
-  ImageUpdateAutomation,
-  imageUpdateAutomationStore,
-} from "../../k8s/fluxcd/image-automation/imageupdateautomation";
+import { ImageUpdateAutomation } from "../../k8s/fluxcd/image/imageupdateautomation";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -23,13 +17,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDImageUpdateAutomations extends React.Component<{ extension: Renderer.LensExtension }> {
+export class ImageUpdateAutomationsPage extends React.Component {
   render() {
+    const store = ImageUpdateAutomation.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="imageUpdateAutomationsTable"
         className="ImageUpdateAutomations"
-        store={imageUpdateAutomationStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getName(),
           [sortBy.namespace]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getNs(),

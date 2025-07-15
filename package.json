@@ -1,6 +1,6 @@
 {
   "name": "@freelensapp/fluxcd-extension",
-  "version": "3.3.0-0",
+  "version": "3.3.0-80",
   "description": "Freelens extension for FluxCD",
   "repository": {
     "type": "git",
@@ -13,8 +13,8 @@
     "out/**/*"
   ],
   "engines": {
-    "node": ">= 22.15.1",
-    "freelens": "^1.4.0"
+    "node": ">= 22.16.1",
+    "freelens": "^1.5.0"
   },
   "copyright": "© 2025 Freelens Authors",
   "license": "MIT",
@@ -48,10 +48,10 @@
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.27.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@freelensapp/extensions": "^1.4.0",
+    "@freelensapp/extensions": "^1.5.0",
     "@types/chart.js": "^2.9.41",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.15.34",
+    "@types/node": "^22.16.4",
     "@types/react": "^17.0.87",
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^4.6.0",
@@ -76,5 +76,5 @@
     "flux",
     "fluxcd"
   ],
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.13.1"
 }

@@ -67,8 +67,8 @@ nvm install
 mise install
 # or
 winget install CoreyButler.NVMforWindows
-nvm install 22.15.1
-nvm use 22.15.1
+nvm install 22.16.1
+nvm use 22.16.1
 ```
 
 Install Pnpm:

@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { crdStore } from "../../../k8s/core/crd";
-import { Provider } from "../../../k8s/fluxcd/notifications/provider";
+import { getCrdStore } from "../../../k8s/core/stores";
+import { Provider } from "../../../k8s/fluxcd/notification/provider";
 
 interface ProviderDetailsState {
   events: Renderer.K8sApi.KubeEvent[];
@@ -21,16 +21,10 @@ export class FluxCDProviderDetails extends React.Component<
     crds: [],
   };
 
-  getCrd(kind: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
+  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
     const { crds } = this.state;
 
-    if (!kind) {
-      return;
-    }
-
-    if (!crds) {
-      return;
-    }
+    if (!kind || !crds) return;
 
     return crds.find((crd) => crd.spec.names.kind === kind);
   }
@@ -41,13 +35,14 @@ export class FluxCDProviderDetails extends React.Component<
 
     const url = `/api/v1/namespaces/${ns}/secrets/${name}`;
 
-    console.log({ url });
-
     return url;
   }
 
   async componentDidMount() {
-    crdStore.loadAll().then((l: any) => this.setState({ crds: l as Renderer.K8sApi.CustomResourceDefinition[] }));
+    const crdStore = getCrdStore();
+    if (crdStore) {
+      crdStore.loadAll().then((l) => this.setState({ crds: l! }));
+    }
   }
 
   render() {

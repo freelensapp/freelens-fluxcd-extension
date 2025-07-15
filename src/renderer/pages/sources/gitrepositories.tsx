@@ -1,10 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
 import React from "react";
-
-import { GitRepository, gitRepositoryStore } from "../../k8s/fluxcd/sources/gitrepository";
+import { GitRepository } from "../../k8s/fluxcd/source/gitrepository";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
 
 const {
@@ -21,13 +18,15 @@ enum sortBy {
 }
 
 @observer
-export class FluxCDGitRepositories extends React.Component<{ extension: Renderer.LensExtension }> {
+export class GitRepositoriesPage extends React.Component {
   render() {
+    const store = GitRepository.getStore();
+    if (!store) return <></>;
     return (
       <KubeObjectListLayout
         tableId="gitRepositorysTable"
         className="GitRepositories"
-        store={gitRepositoryStore}
+        store={store}
         sortingCallbacks={{
           [sortBy.name]: (gitRepository: GitRepository) => gitRepository.getName(),
           [sortBy.namespace]: (gitRepository: GitRepository) => gitRepository.getNs(),

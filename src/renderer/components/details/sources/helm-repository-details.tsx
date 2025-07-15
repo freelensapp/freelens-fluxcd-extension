@@ -1,6 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { HelmRepository } from "../../../k8s/fluxcd/sources/helmrepository";
+import { HelmRepository } from "../../../k8s/fluxcd/source/helmrepository";
 import { getStatusClass, getStatusText } from "../../../utils";
 
 const {
