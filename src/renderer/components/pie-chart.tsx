@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
-import style from "./pie-chart.module.scss";
-import styleInline from "./pie-chart.module.scss?inline";
+import styles from "./pie-chart.module.scss";
+import stylesInline from "./pie-chart.module.scss?inline";
 
 import type React from "react";
 
@@ -58,9 +58,9 @@ export function PieChart(props: PieChartProps<Renderer.K8sApi.KubeObject>): Reac
 
   return (
     <>
-      <style>{styleInline}</style>
-      <div className={style.chartItem}>
-        <div className={`${style.chartTitle} ${style.center}`}>
+      <style>{stylesInline}</style>
+      <>
+        <div className={styles.title}>
           <a
             onClick={(e) => {
               e.preventDefault();
@@ -71,7 +71,7 @@ export function PieChart(props: PieChartProps<Renderer.K8sApi.KubeObject>): Reac
           </a>
         </div>
         <Renderer.Component.PieChart data={chartData} />
-      </div>
+      </>
     </>
   );
 }

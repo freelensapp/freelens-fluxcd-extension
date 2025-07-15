@@ -3,7 +3,8 @@ import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
 import { Kustomization } from "../../k8s/fluxcd/kustomize/kustomization";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
-import styleInline from "./kustomizations.scss?inline";
+import styles from "./kustomizations.module.scss";
+import stylesInline from "./kustomizations.module.scss?inline";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout, WithTooltip },
@@ -19,31 +20,35 @@ export const KustomizationsPage = observer(() => {
   const store = Kustomization.getStore();
   if (!store) return <></>;
 
+  const sortingCallbacks = {
+    name: (kustomization: Kustomization) => kustomization.getName(),
+    namespace: (kustomization: Kustomization) => kustomization.getNs(),
+    revision: (kustomization: Kustomization) => kustomization.status?.lastAppliedRevision,
+    status: (kustomization: Kustomization) => getStatusText(kustomization),
+    message: (kustomization: Kustomization) => getStatusText(kustomization),
+    age: (kustomization: Kustomization) => kustomization.getCreationTimestamp(),
+  };
+
+  const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
+    { title: "Name", sortBy: "name" },
+    { title: "Namespace", sortBy: "namespace" },
+    { title: "Revision", sortBy: "revision", className: styles.revision },
+    { title: "Status", sortBy: "status", className: styles.status },
+    { title: "Message", sortBy: "message", className: styles.message },
+    { title: "Age", sortBy: "age", className: styles.age },
+  ];
+
   return (
     <>
-      <style>{styleInline}</style>
+      <style>{stylesInline}</style>
       <KubeObjectListLayout
         tableId="kustomizationsTable"
-        className="Kustomizations"
+        className={styles.kustomizations}
         store={store}
-        sortingCallbacks={{
-          name: (kustomization: Kustomization) => kustomization.getName(),
-          namespace: (kustomization: Kustomization) => kustomization.getNs(),
-          revision: (kustomization: Kustomization) => kustomization.status?.lastAppliedRevision,
-          status: (kustomization: Kustomization) => getStatusText(kustomization),
-          message: (kustomization: Kustomization) => getStatusText(kustomization),
-          age: (kustomization: Kustomization) => kustomization.getCreationTimestamp(),
-        }}
+        sortingCallbacks={sortingCallbacks}
         searchFilters={[(kustomization: Kustomization) => kustomization.getSearchFields()]}
         renderHeaderTitle="Kustomizations"
-        renderTableHeader={[
-          { title: "Name", className: "name", sortBy: "name" },
-          { title: "Namespace", className: "namespace", sortBy: "namespace" },
-          { title: "Revision", className: "revision", sortBy: "revision" },
-          { title: "Status", className: "status", sortBy: "status" },
-          { title: "Message", className: "message", sortBy: "message" },
-          { title: "Age", className: "age", sortBy: "age" },
-        ]}
+        renderTableHeader={renderTableHeader}
         renderTableContents={(kustomization: Kustomization) => {
           const lastAppliedRevision =
             kustomization.status?.lastAppliedRevision?.replace(/^refs\/(heads|tags)\//, "") || "N/A";

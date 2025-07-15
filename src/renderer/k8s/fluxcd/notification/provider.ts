@@ -1,7 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
-import { getApi, getStore } from "../stores";
 
-export class Provider extends Renderer.K8sApi.KubeObject<
+export class Provider extends Renderer.K8sApi.LensExtensionKubeObject<
   any,
   any,
   { suspend: boolean; type: string; secretRef: { name: string; namespace: string } }
@@ -17,9 +16,6 @@ export class Provider extends Renderer.K8sApi.KubeObject<
     shortNames: [],
     title: "Provider",
   };
-
-  static getApi = getApi;
-  static getStore = getStore;
 }
 
 export class ProviderApi extends Renderer.K8sApi.KubeApi<Provider> {}

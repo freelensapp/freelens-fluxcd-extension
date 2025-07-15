@@ -1,7 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
-import { getApi, getStore } from "../stores";
 
-export class GitRepository extends Renderer.K8sApi.KubeObject<
+export class GitRepository extends Renderer.K8sApi.LensExtensionKubeObject<
   any,
   any,
   {
@@ -33,9 +32,6 @@ export class GitRepository extends Renderer.K8sApi.KubeObject<
     shortNames: [],
     title: "Git Repositories",
   };
-
-  static getApi = getApi;
-  static getStore = getStore;
 }
 
 export class GitRepositoryApi extends Renderer.K8sApi.KubeApi<GitRepository> {}

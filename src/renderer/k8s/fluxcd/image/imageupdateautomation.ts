@@ -1,7 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
-import { getApi, getStore } from "../stores";
 
-export class ImageUpdateAutomation extends Renderer.K8sApi.KubeObject<
+export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObject<
   any,
   any,
   {
@@ -24,9 +23,6 @@ export class ImageUpdateAutomation extends Renderer.K8sApi.KubeObject<
     shortNames: [],
     title: "Image Update Automations",
   };
-
-  static getApi = getApi;
-  static getStore = getStore;
 }
 
 export class ImageUpdateAutomationApi extends Renderer.K8sApi.KubeApi<ImageUpdateAutomation> {}

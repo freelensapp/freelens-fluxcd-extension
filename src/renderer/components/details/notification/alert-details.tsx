@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { getCrdStore } from "../../../k8s/core/stores";
 import { Alert } from "../../../k8s/fluxcd/notification/alert";
 import { lowerAndPluralize } from "../../../utils";
 
@@ -45,7 +44,7 @@ export class FluxCDAlertDetails extends React.Component<
   }
 
   async componentDidMount() {
-    const crdStore = getCrdStore();
+    const crdStore = Renderer.K8sApi.crdStore;
     if (crdStore) {
       crdStore.loadAll().then((l) => this.setState({ crds: l! }));
     }

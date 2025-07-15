@@ -3,7 +3,6 @@ import crypto from "crypto";
 import { Base64 } from "js-base64";
 import yaml from "js-yaml";
 import React, { useEffect, useState } from "react";
-import { Condition } from "../../../k8s/core/types";
 import {
   Kustomization,
   type KustomizationApi,
@@ -19,7 +18,10 @@ import {
   getStatusText,
 } from "../../../utils";
 import { MaybeLink } from "../../maybe-link";
-import styleInline from "./kustomization-details.scss?inline";
+import styles from "./kustomization-details.module.scss";
+import stylesInline from "./kustomization-details.module.scss?inline";
+
+import type { Condition } from "@freelensapp/kube-object";
 
 const {
   Component: { Badge, DrawerItem, DrawerTitle, Icon, MonacoEditor, Table, TableCell, TableHead, TableRow, Tooltip },
@@ -82,8 +84,8 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
 
   return (
     <>
-      <style>{styleInline}</style>
-      <div className="KustomizationDetails">
+      <style>{stylesInline}</style>
+      <div className={styles.kustomizationDetails}>
         <DrawerItem name="Status">
           <Badge className={getStatusClass(object)} label={getStatusText(object)} />
         </DrawerItem>
@@ -484,7 +486,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         )}
 
         {object.spec.postBuild && (
-          <div className="KustomizationSubstitute flex column">
+          <div className={styles.kustomizationSubstitute}>
             <DrawerTitle>Post Build Variable Substitution</DrawerTitle>
             {object.spec.postBuild.substituteFrom?.map((substituteFrom) => {
               const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;

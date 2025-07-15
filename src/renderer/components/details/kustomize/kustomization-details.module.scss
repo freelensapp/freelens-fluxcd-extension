@@ -1,14 +1,16 @@
 @use "../../../vars";
 
-.KustomizationDetails {
+.kustomizationDetails {
   .title {
     margin-top: vars.$margin * 2;
     margin-bottom: vars.$margin;
   }
 }
 
-.KustomizationSubstitute {
-  .TableCell {
+.kustomizationSubstitute {
+  display: flex;
+
+  :global(.TableCell) {
     &.key {
       flex-grow: 0.7;
     }

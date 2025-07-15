@@ -1,5 +1,5 @@
-.Kustomizations {
-  .TableCell {
+.kustomizations {
+  :global(.TableCell) {
     &.revision {
       flex-grow: 1.3;
     }

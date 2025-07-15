@@ -12,12 +12,3 @@ export interface Patch {
   patch: string;
   target: Selector;
 }
-
-export interface Condition {
-  type?: string;
-  status: string;
-  observedGeneration?: number;
-  lastTransitionTime: string;
-  reason: string;
-  message: string;
-}

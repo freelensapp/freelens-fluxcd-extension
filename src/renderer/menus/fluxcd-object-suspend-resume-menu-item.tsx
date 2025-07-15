@@ -1,43 +1,56 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { FluxCDObjectStatic, FluxCDSpecSuspend } from "../k8s/fluxcd/types";
+import type { FluxCDKubeObjectSpecSuspend } from "../k8s/fluxcd/types";
 
 const {
   Component: { MenuItem, Icon },
 } = Renderer;
 
+type FluxCDKubeObjectWithSuspend = Renderer.K8sApi.LensExtensionKubeObject<
+  Renderer.K8sApi.KubeObjectMetadata,
+  unknown,
+  FluxCDKubeObjectSpecSuspend
+>;
+type FluxCDKubeObjectWithSuspendCtor = typeof Renderer.K8sApi.LensExtensionKubeObject<
+  Renderer.K8sApi.KubeObjectMetadata,
+  unknown,
+  FluxCDKubeObjectSpecSuspend
+>;
+
 export interface FluxCDObjectSuspendResumeMenuItemProps
-  extends Renderer.Component.KubeObjectMenuProps<
-    Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, any, FluxCDSpecSuspend>
-  > {
-  resource: FluxCDObjectStatic;
+  extends Renderer.Component.KubeObjectMenuProps<FluxCDKubeObjectWithSuspend> {
+  resource: FluxCDKubeObjectWithSuspendCtor;
 }
 
 export function FluxCDObjectSuspendResumeMenuItem(props: FluxCDObjectSuspendResumeMenuItemProps) {
   const { object, toolbar, resource } = props;
   if (!object) return <></>;
 
-  const store = resource.getStore();
+  const store = resource.getStore<FluxCDKubeObjectWithSuspend>();
   if (!store) return <></>;
 
   const suspend = async () => {
-    await store.patch(object, [
+    await store.patch(
+      object,
       {
-        op: "add",
-        path: "/spec/suspend",
-        value: true,
+        spec: {
+          suspend: true,
+        },
       },
-    ]);
+      "merge",
+    );
   };
 
   const resume = async () => {
-    await store.patch(object, [
+    await store.patch(
+      object,
       {
-        op: "add",
-        path: "/spec/suspend",
-        value: false,
+        spec: {
+          suspend: false,
+        },
       },
-    ]);
+      "merge",
+    );
   };
 
   if (object.spec.suspend === true) {

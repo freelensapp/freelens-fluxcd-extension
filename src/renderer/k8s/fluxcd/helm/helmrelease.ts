@@ -1,14 +1,16 @@
 import { Renderer } from "@freelensapp/extensions";
-import { getApi, getStore } from "../stores";
 import {
+  type FluxCDKubeObjectCRD,
+  type FluxCDKubeObjectSpecSuspend,
   Image,
   JSON6902Patch,
-  LocalObjectReference,
   NamespacedObjectKindReference,
   NamespacedObjectReference,
 } from "../types";
 
-import type { Condition, Patch, Selector } from "../../core/types";
+import type { Condition, LocalObjectReference } from "@freelensapp/kube-object";
+
+import type { Patch, Selector } from "../../core/types";
 
 export interface HelmReleaseSnapshot {
   apiVersion?: string;
@@ -31,28 +33,7 @@ export interface HelmReleaseSnapshot {
   }[];
 }
 
-export interface HelmReleaseStatus {
-  observedGeneration?: number;
-  observedPostRenderersDigest?: string;
-  conditions?: Condition[];
-  lastAppliedRevision?: string;
-  lastAttemptedRevision?: string;
-  lastAttemptedValuesChecksum?: string;
-  lastReleaseRevision?: string;
-  helmChart?: string;
-  failures?: number;
-  installFailures?: number;
-  upgradeFailures?: number;
-  storageNamespace?: string;
-  history?: HelmReleaseSnapshot[];
-  lastAttemptedGeneration?: number;
-  lastAttemptedConfigDigest?: string;
-  lastAttemptedReleaseAction?: string;
-  lastHandledForceAt?: string;
-  lastHandledResetAt?: string;
-}
-
-export interface HelmReleaseSpec {
+export interface HelmReleaseSpec extends FluxCDKubeObjectSpecSuspend {
   chart?: {
     metadata?: {
       labels?: Record<string, string>;
@@ -170,7 +151,28 @@ export interface HelmReleaseSpec {
   }[];
 }
 
-export class HelmRelease extends Renderer.K8sApi.KubeObject<
+export interface HelmReleaseStatus {
+  observedGeneration?: number;
+  observedPostRenderersDigest?: string;
+  conditions?: Condition[];
+  lastAppliedRevision?: string;
+  lastAttemptedRevision?: string;
+  lastAttemptedValuesChecksum?: string;
+  lastReleaseRevision?: string;
+  helmChart?: string;
+  failures?: number;
+  installFailures?: number;
+  upgradeFailures?: number;
+  storageNamespace?: string;
+  history?: HelmReleaseSnapshot[];
+  lastAttemptedGeneration?: number;
+  lastAttemptedConfigDigest?: string;
+  lastAttemptedReleaseAction?: string;
+  lastHandledForceAt?: string;
+  lastHandledResetAt?: string;
+}
+
+export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,
   HelmReleaseStatus,
   HelmReleaseSpec
@@ -179,16 +181,13 @@ export class HelmRelease extends Renderer.K8sApi.KubeObject<
   static readonly namespaced = true;
   static readonly apiBase = "/apis/helm.toolkit.fluxcd.io/v2beta1/helmreleases";
 
-  static readonly crd = {
+  static readonly crd: FluxCDKubeObjectCRD = {
     apiVersions: ["helm.toolkit.fluxcd.io/v2beta1", "helm.toolkit.fluxcd.io/v2beta2", "helm.toolkit.fluxcd.io/v2"],
     plural: "helmreleases",
     singular: "helmrelease",
     shortNames: ["hr"],
     title: "Helm Releases",
   };
-
-  static getApi = getApi;
-  static getStore = getStore;
 }
 
 export class HelmReleaseApi extends Renderer.K8sApi.KubeApi<HelmRelease> {}

@@ -9,6 +9,9 @@
 ?.*
 
 !custom.d.ts
+!env.d.ts
+!*.css.d.ts
+!*.scss.d.ts
 
 /dist/
 

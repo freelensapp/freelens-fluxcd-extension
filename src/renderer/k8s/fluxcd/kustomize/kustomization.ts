@@ -1,17 +1,19 @@
 import { Renderer } from "@freelensapp/extensions";
-import { type Condition, Patch } from "../../core/types";
-import { getApi, getStore } from "../stores";
-import {
-  type FluxCDSpecSuspend,
+
+import type { Condition, LocalObjectReference } from "@freelensapp/kube-object";
+
+import type { Patch } from "../../core/types";
+import type {
+  FluxCDKubeObjectCRD,
+  FluxCDKubeObjectSpecSuspend,
   Image,
   JSON6902Patch,
-  LocalObjectReference,
   NamespacedObjectKindReference,
   NamespacedObjectReference,
   Snapshot,
 } from "../types";
 
-export interface KustomizationSpec extends FluxCDSpecSuspend {
+export interface KustomizationSpec extends FluxCDKubeObjectSpecSuspend {
   dependsOn?: NamespacedObjectReference[];
   decryption?: {
     provider: string;
@@ -54,7 +56,7 @@ export interface KustomizationStatus {
   snapshot: Snapshot;
 }
 
-export class Kustomization extends Renderer.K8sApi.KubeObject<
+export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,
   KustomizationStatus,
   KustomizationSpec
@@ -63,7 +65,7 @@ export class Kustomization extends Renderer.K8sApi.KubeObject<
   static readonly namespaced = true;
   static readonly apiBase = "/apis/kustomize.toolkit.fluxcd.io/v1beta1/kustomizations";
 
-  static readonly crd = {
+  static readonly crd: FluxCDKubeObjectCRD = {
     apiVersions: [
       "kustomize.toolkit.fluxcd.io/v1beta1",
       "kustomize.toolkit.fluxcd.io/v1beta2",
@@ -74,9 +76,6 @@ export class Kustomization extends Renderer.K8sApi.KubeObject<
     shortNames: ["ks"],
     title: "Kustomizations",
   };
-
-  static getApi = getApi;
-  static getStore = getStore;
 }
 
 export class KustomizationApi extends Renderer.K8sApi.KubeApi<Kustomization> {}

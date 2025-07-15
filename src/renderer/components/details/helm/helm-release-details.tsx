@@ -6,7 +6,8 @@ import React, { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease";
 import { defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { MaybeLink } from "../../maybe-link";
-import styleInline from "./helm-release-details.scss?inline";
+import styles from "./helm-release-details.module.scss";
+import stylesInline from "./helm-release-details.module.scss?inline";
 
 const {
   Component: { DrawerItem, DrawerTitle, Icon, MonacoEditor, Table, TableCell, TableHead, TableRow, Tooltip },
@@ -111,8 +112,8 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
 
   return (
     <>
-      <style>{styleInline}</style>
-      <div className="HelmReleaseDetails">
+      <style>{stylesInline}</style>
+      <div className={styles.helmReleaseDetails}>
         <DrawerItem name="Release Name">
           <MaybeLink key="link" to={getHelmReleaseUrl(object)} onClick={stopPropagation}>
             {releaseName}
@@ -387,7 +388,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
         )}
 
         {object.status?.history && (
-          <div className="HelmReleaseHistory flex column">
+          <div className={styles.helmReleaseHistory}>
             <DrawerTitle>History</DrawerTitle>
             <Table
               selectable

@@ -4,60 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  freelens: ../freelens/freelens-1.5.0-0.tgz
-  '@freelensapp/animate': ../freelens/freelensapp-animate-1.5.0-0.tgz
-  '@freelensapp/application': ../freelens/freelensapp-application-1.5.0-0.tgz
-  '@freelensapp/application-for-electron-main': ../freelens/freelensapp-application-for-electron-main-1.5.0-0.tgz
-  '@freelensapp/button': ../freelens/freelensapp-button-1.5.0-0.tgz
-  '@freelensapp/cluster-settings': ../freelens/freelensapp-cluster-settings-1.5.0-0.tgz
-  '@freelensapp/cluster-sidebar': ../freelens/freelensapp-cluster-sidebar-1.5.0-0.tgz
-  '@freelensapp/computed-channel': ../freelens/freelensapp-computed-channel-1.5.0-0.tgz
-  '@freelensapp/core': ../freelens/freelensapp-core-1.5.0-0.tgz
-  '@freelensapp/ensure-binaries': ../freelens/freelensapp-ensure-binaries-1.5.0-0.tgz
-  '@freelensapp/error-boundary': ../freelens/freelensapp-error-boundary-1.5.0-0.tgz
-  '@freelensapp/event-emitter': ../freelens/freelensapp-event-emitter-1.5.0-0.tgz
-  '@freelensapp/extensions': ../freelens/freelensapp-extensions-1.5.0-0.tgz
-  '@freelensapp/feature-core': ../freelens/freelensapp-feature-core-1.5.0-0.tgz
-  '@freelensapp/generate-tray-icons': ../freelens/freelensapp-generate-tray-icons-1.5.0-0.tgz
-  '@freelensapp/icon': ../freelens/freelensapp-icon-1.5.0-0.tgz
-  '@freelensapp/jest': ../freelens/freelensapp-jest-1.5.0-0.tgz
-  '@freelensapp/json-api': ../freelens/freelensapp-json-api-1.5.0-0.tgz
-  '@freelensapp/keyboard-shortcuts': ../freelens/freelensapp-keyboard-shortcuts-1.5.0-0.tgz
-  '@freelensapp/kube-api': ../freelens/freelensapp-kube-api-1.5.0-0.tgz
-  '@freelensapp/kube-api-specifics': ../freelens/freelensapp-kube-api-specifics-1.5.0-0.tgz
-  '@freelensapp/kube-object': ../freelens/freelensapp-kube-object-1.5.0-0.tgz
-  '@freelensapp/kubectl-versions': ../freelens/freelensapp-kubectl-versions-1.5.0-0.tgz
-  '@freelensapp/kubernetes-client-node': ../freelens/freelensapp-kubernetes-client-node-1.5.0-0.tgz
-  '@freelensapp/legacy-extensions': ../freelens/freelensapp-legacy-extensions-1.5.0-0.tgz
-  '@freelensapp/legacy-global-di': ../freelens/freelensapp-legacy-global-di-1.5.0-0.tgz
-  '@freelensapp/list-layout': ../freelens/freelensapp-list-layout-1.5.0-0.tgz
-  '@freelensapp/logger': ../freelens/freelensapp-logger-1.5.0-0.tgz
-  '@freelensapp/messaging': ../freelens/freelensapp-messaging-1.5.0-0.tgz
-  '@freelensapp/messaging-fake-bridge': ../freelens/freelensapp-messaging-fake-bridge-1.5.0-0.tgz
-  '@freelensapp/messaging-for-main': ../freelens/freelensapp-messaging-for-main-1.5.0-0.tgz
-  '@freelensapp/messaging-for-renderer': ../freelens/freelensapp-messaging-for-renderer-1.5.0-0.tgz
-  '@freelensapp/metrics': ../freelens/freelensapp-metrics-1.5.0-0.tgz
-  '@freelensapp/node-fetch': ../freelens/freelensapp-node-fetch-1.5.0-0.tgz
-  '@freelensapp/notifications': ../freelens/freelensapp-notifications-1.5.0-0.tgz
-  '@freelensapp/openid-client': ../freelens/freelensapp-openid-client-1.5.0-0.tgz
-  '@freelensapp/prometheus': ../freelens/freelensapp-prometheus-1.5.0-0.tgz
-  '@freelensapp/random': ../freelens/freelensapp-random-1.5.0-0.tgz
-  '@freelensapp/react-application': ../freelens/freelensapp-react-application-1.5.0-0.tgz
-  '@freelensapp/react-testing-library-discovery': ../freelens/freelensapp-react-testing-library-discovery-1.5.0-0.tgz
-  '@freelensapp/resizing-anchor': ../freelens/freelensapp-resizing-anchor-1.5.0-0.tgz
-  '@freelensapp/resource-templates': ../freelens/freelensapp-resource-templates-1.5.0-0.tgz
-  '@freelensapp/routing': ../freelens/freelensapp-routing-1.5.0-0.tgz
-  '@freelensapp/run-many': ../freelens/freelensapp-run-many-1.5.0-0.tgz
-  '@freelensapp/semver': ../freelens/freelensapp-semver-1.5.0-0.tgz
-  '@freelensapp/spinner': ../freelens/freelensapp-spinner-1.5.0-0.tgz
-  '@freelensapp/startable-stoppable': ../freelens/freelensapp-startable-stoppable-1.5.0-0.tgz
-  '@freelensapp/test-utils': ../freelens/freelensapp-test-utils-1.5.0-0.tgz
-  '@freelensapp/tooltip': ../freelens/freelensapp-tooltip-1.5.0-0.tgz
-  '@freelensapp/typescript': ../freelens/freelensapp-typescript-1.5.0-0.tgz
-  '@freelensapp/utilities': ../freelens/freelensapp-utilities-1.5.0-0.tgz
-  '@freelensapp/webpack': ../freelens/freelensapp-webpack-1.5.0-0.tgz
-
 importers:
 
   .:
@@ -69,8 +15,11 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(@types/node@22.16.4)
       '@freelensapp/extensions':
-        specifier: ../freelens/freelensapp-extensions-1.5.0-0.tgz
-        version: file:../freelens/freelensapp-extensions-1.5.0-0.tgz(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@types/react@17.0.87)
+        specifier: ^1.5.0
+        version: 1.5.0(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@types/react@17.0.87)
+      '@freelensapp/kube-object':
+        specifier: ^1.5.0
+        version: 1.5.0
       '@types/chart.js':
         specifier: ^2.9.41
         version: 2.9.41
@@ -88,10 +37,10 @@ importers:
         version: 5.3.3
       '@vitejs/plugin-react':
         specifier: ^4.6.0
-        version: 4.6.0(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1))
+        version: 4.6.0(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1))
       electron-vite:
         specifier: ^3.1.0
-        version: 3.1.0(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1))
+        version: 3.1.0(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1))
       js-base64:
         specifier: ^3.7.7
         version: 3.7.7
@@ -118,10 +67,13 @@ importers:
         version: 5.8.3
       vite:
         specifier: ^6.3.5
-        version: 6.3.5(@types/node@22.16.4)(less@4.3.0)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)
+        version: 6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)
       vite-plugin-external:
         specifier: ^6.2.2
         version: 6.2.2
+      vite-plugin-sass-dts:
+        specifier: ^1.3.31
+        version: 1.3.31(postcss@8.5.3)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1))
 
 packages:
 
@@ -263,6 +215,9 @@ packages:
   '@babel/types@7.27.7':
     resolution: {integrity: sha512-8OLQgDScAOHXnAz2cV+RfzzNMipuLVBz2biuAJFMV9bfkNf393je3VM8CLkjQodW5+iWsSJdSgSWT6rsZoXHPw==}
     engines: {node: '>=6.9.0'}
+
+  '@bufbuild/protobuf@2.6.0':
+    resolution: {integrity: sha512-6cuonJVNOIL7lTj5zgo/Rc2bKAo4/GvN+rKCrUj7GdEHRzCk8zKOfFwUsL9nAVk5rSIsRmlgcpLzTRysopEeeg==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -489,162 +444,123 @@ packages:
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
 
-  '@freelensapp/animate@file:../freelens/freelensapp-animate-1.5.0-0.tgz':
-    resolution: {integrity: sha512-YKFl6xsy8OXRPGCE8z5WDy3wdJlPgO2hDQ/ngAntjT2gLWnVCDecqdv5x3Ivs/Jh8f8aKvl6w43L6lD1KMXPMw==, tarball: file:../freelens/freelensapp-animate-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/animate@1.5.0':
+    resolution: {integrity: sha512-1xrF+3mYrUvoG40zRiZo9A8qsWCTzWZsorfzpwv7DSul09ap3CeLMALEzQ639RcnTZupvcHrR8GW6Tu8u3wcOA==}
 
-  '@freelensapp/application-for-electron-main@file:../freelens/freelensapp-application-for-electron-main-1.5.0-0.tgz':
-    resolution: {integrity: sha512-vSCVF3h8itgC83kiZ+Jxrbk5wrpE1YQJA+Y14TMDlepzwPLfWOCnXGLJn4mKOKJ/Z/zH+bdiiT0vP7Y8IR+QDg==, tarball: file:../freelens/freelensapp-application-for-electron-main-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/application-for-electron-main@1.5.0':
+    resolution: {integrity: sha512-LAJgrRAyxz86MfcuNDfEuPH20VHRIGUmKa1rzLOUHFULCxL0klgkawOqtYuHgLLRzyPS+9xBOxVmaf5hxtUrpA==}
 
-  '@freelensapp/application@file:../freelens/freelensapp-application-1.5.0-0.tgz':
-    resolution: {integrity: sha512-Fvi16W0W5rbiQIBFBlxzoCjShxzLhcRUsa/rjGs6rvpi+hFxkmTf7G6dz6N8miCe7u4HIFMBlfK5htcXB+fT/w==, tarball: file:../freelens/freelensapp-application-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/application@1.5.0':
+    resolution: {integrity: sha512-J3e5mkAo1mJYHlPlUyCxHP1sOYz5KS36azHaLPsN/Bw2tmJ+4hj1WzumbWykQN+McgoX5jmAAvAzLwka8a9aZQ==}
 
-  '@freelensapp/button@file:../freelens/freelensapp-button-1.5.0-0.tgz':
-    resolution: {integrity: sha512-kn6xKm5Q7OUqpsiQ7j0knK+4f36ID4kX2uH9WXWm7o/8PRL8pyU03q9b5oi8+zeMIz2UMNLuOWeGm0qfoiqIKg==, tarball: file:../freelens/freelensapp-button-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/button@1.5.0':
+    resolution: {integrity: sha512-CNxB1j0LDEfRFTizTgVsVxoWvSvLZ27FtcwPnyWZ6TlFZUqfSckuFCz0H6U/zjQNstlPmZj8xM581pC9LAQhzw==}
 
-  '@freelensapp/cluster-settings@file:../freelens/freelensapp-cluster-settings-1.5.0-0.tgz':
-    resolution: {integrity: sha512-ypSVtTEHLkf0/+uVmmEN8nJXwVDcachyiIGPwwuBjin90+z8Eq3n8ZDANu2EgjTncozF/wCjS2n8dbm0qBSRTg==, tarball: file:../freelens/freelensapp-cluster-settings-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/cluster-settings@1.5.0':
+    resolution: {integrity: sha512-yZMTNSHnsxMO5wnMos4hFVr3xPRwLRK0Q2cvsVLPsNeMAv9deCFMvU2hcZ9hDGDIU49BHHl9MO4/Nr2TXtaepQ==}
 
-  '@freelensapp/cluster-sidebar@file:../freelens/freelensapp-cluster-sidebar-1.5.0-0.tgz':
-    resolution: {integrity: sha512-9+o36Sw78U86Sw2qy9YJ97coAcXXPHTcV91hegK54EBpxZ/WLpgh2pitda6utWm7RPAe13jy09YUF5wEApIY8Q==, tarball: file:../freelens/freelensapp-cluster-sidebar-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/cluster-sidebar@1.5.0':
+    resolution: {integrity: sha512-6o8B1ra1WZ675jELDh1j+0tyhxA/wUk3QiD4pj7THT9Bx/97v/Sjy1KM9DQTATTiL3/PbuY5b0Yn1rnnSP2ulw==}
 
-  '@freelensapp/core@file:../freelens/freelensapp-core-1.5.0-0.tgz':
-    resolution: {integrity: sha512-B+JdPpE61LPbkz2hL7q0omQg7QJf2VV9HesgkQJSZgD+Jyey/oOPqEZMtDQLR3d/KOA7bVsks/p6xuZZmxXSVA==, tarball: file:../freelens/freelensapp-core-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/core@1.5.0':
+    resolution: {integrity: sha512-khyOL/kruA2vhMdlbFPsCGGC/E+/gqImRK9ovnUx7NfmC2TJxe4+2eUAXmuFf0/etDriBxDAHnFtS0uQ/q20wA==}
     engines: {node: ^22.0.0}
 
-  '@freelensapp/error-boundary@file:../freelens/freelensapp-error-boundary-1.5.0-0.tgz':
-    resolution: {integrity: sha512-4C7A/odq8mvqBMeYO5MpTEdvJevYe5/7h2oafiAV9XLY2inJH1Uy8KdiU3P6StSdyDi3zaSYUU2Zjg3XxDAgLg==, tarball: file:../freelens/freelensapp-error-boundary-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/error-boundary@1.5.0':
+    resolution: {integrity: sha512-EUUmsrGrsPmngSV2gSTvGoeck9uzbBMa1rgbwExIj4Mn9tN6H8d4GW8bOAwHaaHjfOjumc4eUapiSGJfiwOq1g==}
 
-  '@freelensapp/event-emitter@file:../freelens/freelensapp-event-emitter-1.5.0-0.tgz':
-    resolution: {integrity: sha512-fOtk4TmQUJu7AkESdJ1ZyyfGqpDdR/D9nWpeMzA2NdijfRnA3ZbfEO2AkVgdVYgLQgJ24nnWdmYzjkCrMOcOWQ==, tarball: file:../freelens/freelensapp-event-emitter-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/event-emitter@1.5.0':
+    resolution: {integrity: sha512-JDSXMHZ4cOrXIDIHyfS/4bYTM8qQ0hVRGJho9c4cQ7NAyhiaewxXjew5FlS5g4+xSLT1zGacokE67fwwmV9viQ==}
 
-  '@freelensapp/extensions@file:../freelens/freelensapp-extensions-1.5.0-0.tgz':
-    resolution: {integrity: sha512-ss1QrgBnE3GH9UHh6W7bVg0dXfSjDmkFUvVzFeaO1iMVmcUQofM25F+8EjFRMIh1huej8STdlgyNxxotgQHZDA==, tarball: file:../freelens/freelensapp-extensions-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/extensions@1.5.0':
+    resolution: {integrity: sha512-foNYx54+sbKnAQJ8obPX5O6PWjFbb0IazwXRWTT3AlRXc5fSeToD/M6ARCxKGoU6EFcp/2vXmiEWPUJC2bZ5cA==}
 
-  '@freelensapp/feature-core@file:../freelens/freelensapp-feature-core-1.5.0-0.tgz':
-    resolution: {integrity: sha512-jReBRm8fwOHALkJgWp/17nnxeiLiSHxiL4Fwd8slnYdsMa/m2s4VozpuYiNe3w+jfbr8aUL4/cGOupS4wEkrPg==, tarball: file:../freelens/freelensapp-feature-core-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/feature-core@1.5.0':
+    resolution: {integrity: sha512-Jxt2bmzYSbUcDNLBg3l45tpD6nd7sp51Z2LbkWIMNK5u1fYg85QRBaBjplwqeN74ilav/WK33cJMnP/EmHagDg==}
 
-  '@freelensapp/icon@file:../freelens/freelensapp-icon-1.5.0-0.tgz':
-    resolution: {integrity: sha512-S9T1aJublf0kNbmAdta1oCUiOrUSVpm2rsEsKIginHB41GcW53S922ZRqu20mi1hDBaUJSiEJNMBMe1lEaNzlQ==, tarball: file:../freelens/freelensapp-icon-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/icon@1.5.0':
+    resolution: {integrity: sha512-DviklYwcfboP3OCmR1/PscpiROoStsIUEmCFoMjm/pgy1ag3L1NETrMs+oNAs3XT6G1L6nXVQO8oPhtTMqSDUw==}
 
-  '@freelensapp/json-api@file:../freelens/freelensapp-json-api-1.5.0-0.tgz':
-    resolution: {integrity: sha512-M/IwixgX7sFa47l3h2QVBbSenqBnZhKNWmUd1j4YiYl5NDDD7tlOBSeM5W6JoANGizU9ZfDXZ4kNcZAh5QYAzw==, tarball: file:../freelens/freelensapp-json-api-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/json-api@1.5.0':
+    resolution: {integrity: sha512-2IbbRFmMp9Xf4opYna0LpRiQXvGgdUfC5lNPQqq/AZUOnNIX+J4yMxRteK54FWCag781p+53WGptclaqSEzp6g==}
 
-  '@freelensapp/kube-api-specifics@file:../freelens/freelensapp-kube-api-specifics-1.5.0-0.tgz':
-    resolution: {integrity: sha512-Qqq110TajoE2cc+IHVNM0gVmGUdPTff4e4XBDdUUh7VkfngDliXlyLH1znhp491sThyhf/tN/D8gIOuM8IWAig==, tarball: file:../freelens/freelensapp-kube-api-specifics-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/kube-api-specifics@1.5.0':
+    resolution: {integrity: sha512-INv966p4TkOjmj6Kl3BrP0RGJVXT8SzCggV8DqMsECCgOzgNNiE+1gsQPtBj1pm5nm40NwFAbTSm93KAj2I1Mg==}
 
-  '@freelensapp/kube-api@file:../freelens/freelensapp-kube-api-1.5.0-0.tgz':
-    resolution: {integrity: sha512-jkEAeNsXeZR9Mp0U41SYn1IouHjzRWdTA2GjezzHBGvzx9bxcVdl316KKc4SctfZmFqtK0hN4z8agLomUvlHHQ==, tarball: file:../freelens/freelensapp-kube-api-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/kube-api@1.5.0':
+    resolution: {integrity: sha512-GM/eF48YaAykZJCiX0UL9bzT2x35717itHv4h1CpJQdR1mXqdCbOP318813gYWg2Rp3exbQMPkiznrS2i0GL0g==}
 
-  '@freelensapp/kube-object@file:../freelens/freelensapp-kube-object-1.5.0-0.tgz':
-    resolution: {integrity: sha512-pYnnEKwvpoSfGt0LKuh+u84jiGHcH84w7Q6fwd7stpTNlqvC8TXNbdnETHhPFiMEPesa68UgUGKSWBVOnuHWdQ==, tarball: file:../freelens/freelensapp-kube-object-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/kube-object@1.5.0':
+    resolution: {integrity: sha512-32A2mkDJ38/kV9HRQ2btHTNEP/ERXcCtsuGSx71iYV31vytQlwwo95iN4dseeO1lXG+DWdbaCNYOjIdXISXL2g==}
 
-  '@freelensapp/kubectl-versions@file:../freelens/freelensapp-kubectl-versions-1.5.0-0.tgz':
-    resolution: {integrity: sha512-kkHAdWhx/4fAKhG4DMfEqSNVPOslERUsatzhV3QhfY4yQuZtfDCSN1WG0G6m5o7KpEaHGuBCMQ7UQVAfHIUQ+g==, tarball: file:../freelens/freelensapp-kubectl-versions-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/kubectl-versions@1.5.0':
+    resolution: {integrity: sha512-ZHoyqmi58OqWemGvUPeXVN341zGC7OxN6heAloxanPUCKJwweLU38SiKyfdNaGKPOgB7UN0u6nRl54GqsRIr2w==}
 
-  '@freelensapp/kubernetes-client-node@file:../freelens/freelensapp-kubernetes-client-node-1.5.0-0.tgz':
-    resolution: {integrity: sha512-G2Y+kZSCapzY7VhU3fuYLaxKx6rNj9c7qx3f5meCGIC/lSZQRzjwaD2wNh77jflgWX1G6OwmFlWvIDl3tWtDuw==, tarball: file:../freelens/freelensapp-kubernetes-client-node-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/kubernetes-client-node@1.5.0':
+    resolution: {integrity: sha512-ZE5+KAmVqIOMFbAr5cBpD123RW6pHsxHiyBfDLm9Vm8VoHXDiGLfquA0ODqy5xZJaUcKoMtRuyu3ol8Vn8CFxw==}
 
-  '@freelensapp/legacy-extensions@file:../freelens/freelensapp-legacy-extensions-1.5.0-0.tgz':
-    resolution: {integrity: sha512-Px9YUgnWzf/nI4Q2lamlY5jZIfBGO/ELFl4f/LxzRyoyJS7rZM4VcUVgbXodfl/iGjSC15FevnGrwK8vZcOEUg==, tarball: file:../freelens/freelensapp-legacy-extensions-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/legacy-extensions@1.5.0':
+    resolution: {integrity: sha512-fugEE71TAs+Yq4mawwoefy5BXHnRVfAVW6WQ+EkkcnraY+Ih+4oTk9pshR/tgP4vDOGnrbEeK50svnuchzt3Dw==}
 
-  '@freelensapp/legacy-global-di@file:../freelens/freelensapp-legacy-global-di-1.5.0-0.tgz':
-    resolution: {integrity: sha512-zIyY11ct+JlL/R9mbXr4FjAZ/ujccXcy768wIndrLaAFTyPev+rBSJQdYEzTLN+1yffuKsohahp9Zr9XXRyfPw==, tarball: file:../freelens/freelensapp-legacy-global-di-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/legacy-global-di@1.5.0':
+    resolution: {integrity: sha512-PB8nrWwq3DE4rOZLvPh18XR0kuAO858xoWSYwD4Znkb0V6Vg97RnWY2np4pyYdZTo/hVyU9oLfdGShDxck9Y6Q==}
 
-  '@freelensapp/list-layout@file:../freelens/freelensapp-list-layout-1.5.0-0.tgz':
-    resolution: {integrity: sha512-eUkZqR8bFYU68awIOn0h1UYTvxf+J4v7PPYvUMsLfKVgLYKmHfwwIB1gcSnHMjCdRCBOTlIDwfBMY+o5KEp+vg==, tarball: file:../freelens/freelensapp-list-layout-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/list-layout@1.5.0':
+    resolution: {integrity: sha512-OliHvBbm6GP1JSZHO8mWPFb08becYPFdImdCEJcZSzKafP/0+j/BZzFsVnwHqc1ZxqpZcVx6xCe09cB1OKYlEQ==}
 
-  '@freelensapp/logger@file:../freelens/freelensapp-logger-1.5.0-0.tgz':
-    resolution: {integrity: sha512-hhCBP8c4erXl4Acr2eqX7b2VWlbM5ycFYdff9dDIO1qE3YTMbTEK3ecYFJrvDCJF/t4SwhEd2S3NPlof8NkMRA==, tarball: file:../freelens/freelensapp-logger-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/logger@1.5.0':
+    resolution: {integrity: sha512-+S1B5YNIOTAmKqJm5kxdCQ8XSTyQBwS+2/kO/pPTYakMsYycj5A9H1ej3sapO9BlKeFLgxKl2//RuQ4ik6j+DA==}
 
-  '@freelensapp/messaging@file:../freelens/freelensapp-messaging-1.5.0-0.tgz':
-    resolution: {integrity: sha512-p1kQQqVDVqUMiH2dIHIdxwcKR2+WlPn1S3sTMLIaHwP5eqOGCoC9dan8gVluoUXaXZ6fRtPBAczcDrixaG87SA==, tarball: file:../freelens/freelensapp-messaging-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/messaging@1.5.0':
+    resolution: {integrity: sha512-1AdZ2FiNxaFezR0ROtsNXsdL4hD0j5GXx4VN20acVzajxH9qxyhj6gNJ5hoNndmAUvY9fDzDiNl9LtKy+18Lng==}
 
-  '@freelensapp/metrics@file:../freelens/freelensapp-metrics-1.5.0-0.tgz':
-    resolution: {integrity: sha512-CeLUOVCs4AjMyAd6vBXv5TGRaiSwKl/QTiII9QXx5VS1l76RAxz5L1kxDpdwsb81trsdRh/xvdJlpl7WIyaaUw==, tarball: file:../freelens/freelensapp-metrics-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/metrics@1.5.0':
+    resolution: {integrity: sha512-TOLHIl+FurSFYYQWWKeFR8NIzrXDIEpvHghZInirk6X6Scic53qWORtEE371RRFz8f6H9vrlGbx3nDZdbHz2vA==}
 
-  '@freelensapp/node-fetch@file:../freelens/freelensapp-node-fetch-1.5.0-0.tgz':
-    resolution: {integrity: sha512-90IfQZd/ESORF9KRHnNGBuP21Owtt02oj24NsLP8JMph85Ml3MU1O2gLB2e7K1OHgGghGiTZFYsgzB9b/c+uAg==, tarball: file:../freelens/freelensapp-node-fetch-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/node-fetch@1.5.0':
+    resolution: {integrity: sha512-Nk6fbzTC5lpHN46nGlk1u6JXLj+SH5IKS3B8y8p3vWgPjS+LLLB08/ko7xaqjsKzsC48bOKmjxkWN09hQludCA==}
 
-  '@freelensapp/notifications@file:../freelens/freelensapp-notifications-1.5.0-0.tgz':
-    resolution: {integrity: sha512-KEnVk1UUIFoD4KnsSc7CyJ4jDYA98fznxnzf9W8IeoMw3S9/fxcaYN9iGf+yH1fTCd52i1hQjecMbxrYoPVd9A==, tarball: file:../freelens/freelensapp-notifications-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/notifications@1.5.0':
+    resolution: {integrity: sha512-0KCYr5yGTBfRpdOt4OgVjSaPYIoKjYN4+K644++a6pdjIK/z1iL+4wnobF6Gv2VCe7lvBBZN5m3TUkmk1yus8g==}
 
-  '@freelensapp/openid-client@file:../freelens/freelensapp-openid-client-1.5.0-0.tgz':
-    resolution: {integrity: sha512-iRbaZUkajwzosiAc0ZRm8ZjulDaFNuZdV5+W/yfQCKNGiUnht94OoWWWmNz5ONggvTWJuEbaoA2BHceUKb9MlQ==, tarball: file:../freelens/freelensapp-openid-client-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/openid-client@1.5.0':
+    resolution: {integrity: sha512-Qs9uYf0eZZgrcmajAPX30+QXDmrPJjZOmChT2y4nCP0pw26GFil7sSHjeQcsvJNZJtfsQQI4NbEC1y6EE1dvFA==}
 
-  '@freelensapp/prometheus@file:../freelens/freelensapp-prometheus-1.5.0-0.tgz':
-    resolution: {integrity: sha512-SJJ2TbLZOyWHibca83yHFdlEG8mNEj50caZWbiE1vwySYtVDfS7e/nsplIJFP6nue8+Z5Gy55eVdt8PzAvZVWg==, tarball: file:../freelens/freelensapp-prometheus-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/prometheus@1.5.0':
+    resolution: {integrity: sha512-9DPN/DfwFOXL6E1Iuf8lwDMFUy5whFO3rhoz1P5d7UqqRR0b3mxQAubZxWYH40yCfQ52GkPiZBkjT1UCAQx5KQ==}
 
-  '@freelensapp/random@file:../freelens/freelensapp-random-1.5.0-0.tgz':
-    resolution: {integrity: sha512-jdT1v69bxSoZP6XPfaXgAv0u9MLPfv50Y2MAVFBEv+1MywZbFDhhDTW64VRzZeyYfOWBtzv0J4C8FkqO0w58uQ==, tarball: file:../freelens/freelensapp-random-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/random@1.5.0':
+    resolution: {integrity: sha512-ShQtO7dL7JsylMIK0LXwww+zuDauhH7BzZJq1hrigw5xGaPA+K4N9Dg2FWaa5TYCexl4AJS4AfYrQ/s548JHBA==}
 
-  '@freelensapp/react-application@file:../freelens/freelensapp-react-application-1.5.0-0.tgz':
-    resolution: {integrity: sha512-3hVt0Ppnd3uReIkv+bShttOMKTcC0khjVqFlu47lL2HudXnGwBX6NvxBEMxGF7fozGQYD1Q0OUE+EL6KXpbqCA==, tarball: file:../freelens/freelensapp-react-application-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/react-application@1.5.0':
+    resolution: {integrity: sha512-azZBXR7fNdFKXJemq/7z8vFJ5IkDFmHQ8hw7BXukQ7U3aA2RI9PSKLMb6RsGb5rZvn78wfdD5yngy7U21In0yQ==}
 
-  '@freelensapp/resizing-anchor@file:../freelens/freelensapp-resizing-anchor-1.5.0-0.tgz':
-    resolution: {integrity: sha512-s2RcpDjAr+uxmNI5kDZ007wbopK7G8cOYjR6JUg5ojveVHVWPNWIHwtLtWm/kcs0st9TiRuDQqSDnEwMJMCL/g==, tarball: file:../freelens/freelensapp-resizing-anchor-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/resizing-anchor@1.5.0':
+    resolution: {integrity: sha512-fuoR0udWA6qLlXJ/J7NRrqCrejHFdQtBZNan6rgw4OM3rHjIJnXULYIM6iVa+o52Bg7ziYLsIWSKCIejovz7Xw==}
 
-  '@freelensapp/resource-templates@file:../freelens/freelensapp-resource-templates-1.5.0-0.tgz':
-    resolution: {integrity: sha512-ku4bwKlycrRoHVw3MchIW4ooWz4N3WBhIC4VtsoObPlWwM2hciPUvWDHXA2htyBbqJgowVmeuF/3vnz85NANBg==, tarball: file:../freelens/freelensapp-resource-templates-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/resource-templates@1.5.0':
+    resolution: {integrity: sha512-xG1rkzyyQFReXy1eosvIlaxFwDc9AVcuTJiY6dU3eLR9Y3eWgqdrKygkxwqVWHCehBN3owQW/ayNZjvSvaM2Cg==}
 
-  '@freelensapp/routing@file:../freelens/freelensapp-routing-1.5.0-0.tgz':
-    resolution: {integrity: sha512-R6OslyzAR2gUpM1SMLtLcq7GCN9t+skZzlsje9HSdN85E4Hdavd0aotjlD09RLV8kFW9WRKNwMEHquaoyvDXIQ==, tarball: file:../freelens/freelensapp-routing-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/routing@1.5.0':
+    resolution: {integrity: sha512-p7aeeRUm/5QNsUCBdM7hNmtR5gxTwAoG8Dnr5zJPEwonYOMawo1ADImW16zhzKsUxQzmqPoTL8OouIKlfv+Vzw==}
 
-  '@freelensapp/run-many@file:../freelens/freelensapp-run-many-1.5.0-0.tgz':
-    resolution: {integrity: sha512-GNo5fP6G+5lg5iR1yFSCNdpPuKFnm67NX3YOT7xwbSz8xzj9EXAph7ZPnGDBD2ILsxOAiF980ZpNf4JUhveeIg==, tarball: file:../freelens/freelensapp-run-many-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/run-many@1.5.0':
+    resolution: {integrity: sha512-Y6v4vpf9bcZ4tJLpGIh8H2TN20ItqlC5YCFJaHCtE8qVE6v97fmJnQfZiJSt5/nzTK8PgQ/SDeF0i1XYviqj7g==}
 
-  '@freelensapp/spinner@file:../freelens/freelensapp-spinner-1.5.0-0.tgz':
-    resolution: {integrity: sha512-Bll6I/Zq+zQTmggJifQpmfZHujajXlMKRRVLTpj0boklUlHXd3lay88WZ2Q053PzWx9TKxAtDag8QXJ9nNIjgw==, tarball: file:../freelens/freelensapp-spinner-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/spinner@1.5.0':
+    resolution: {integrity: sha512-w9W+h16qcwzQKbx6cbxhgJe9gxj4Z8a0U2fa2fkuzhQtbkdY/a6TkkzhMKkLU6FzYNi6Sv7M/MDWq5mYFFSQ9Q==}
 
-  '@freelensapp/startable-stoppable@file:../freelens/freelensapp-startable-stoppable-1.5.0-0.tgz':
-    resolution: {integrity: sha512-LRlP6WujW29MxS7XCods2EkiWd231q6UJ+BLSPj7/0K6uv0K+IROPLmSgYNDyUSW05IAkbIku0zfupRFtSdeLw==, tarball: file:../freelens/freelensapp-startable-stoppable-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/startable-stoppable@1.5.0':
+    resolution: {integrity: sha512-CwK7hBPAA8ibmdYMOWG6NLA2RWR8/y0T6O1vaFQ7cUZa4SOcax59GwmJBUumlKHscxZVn7iIQEF72Z1LaUrXvw==}
 
-  '@freelensapp/tooltip@file:../freelens/freelensapp-tooltip-1.5.0-0.tgz':
-    resolution: {integrity: sha512-Q1iKv2pvAJ9U8MJZXOBZkOxRrQyKSPM8NxxBHDRqCd4Xfqs+PkAxlXYR1YNe/vll2r+Z34b0ytpu6vt8E2DfJg==, tarball: file:../freelens/freelensapp-tooltip-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/tooltip@1.5.0':
+    resolution: {integrity: sha512-E9K3iHzPL6F1kKtjNOwfhmovAe6DeK6axjWxZXzoJQGYzmhMjx+I7JYNpWeEUwkwDXPbOOLRJlX8b1Kf1upqpw==}
 
-  '@freelensapp/typescript@file:../freelens/freelensapp-typescript-1.5.0-0.tgz':
-    resolution: {integrity: sha512-OGE0WrbUlC/lPOB3eYpGFXAvZJ5dCysx5D65NPHM8ByL1PR/nr5dPLnab6BPRXe0rJ4h4ay9eLXAmfwBYc0f7g==, tarball: file:../freelens/freelensapp-typescript-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/typescript@1.5.0':
+    resolution: {integrity: sha512-JlezfOZEDihzExq79gHlCrAqUk7M5Tp/FlSBfw8BCTldsFY+HFDLiRG77bfRf2gLI8PzfMD2eGTcD6ooHljLgw==}
 
-  '@freelensapp/utilities@file:../freelens/freelensapp-utilities-1.5.0-0.tgz':
-    resolution: {integrity: sha512-3UcWVtYj1khPFwfpjmqu45wiakScLhWp5zJup151G4ayKfLcsKkfVwBBI2LJZytLvClYgao2erYAXPjA8OVVDQ==, tarball: file:../freelens/freelensapp-utilities-1.5.0-0.tgz}
-    version: 1.5.0-0
+  '@freelensapp/utilities@1.5.0':
+    resolution: {integrity: sha512-DYgu2ipxbcX/zQ1nhsCrXE1QoTt42Yb3P0qAmqM16pT7lOkX63wN22BTMnRmAW1wLqhZnJsQgmpHTJS2K8Qu5Q==}
 
   '@hapi/b64@6.0.1':
     resolution: {integrity: sha512-ZvjX4JQReUmBheeCq+S9YavcnMMHWqx3S0jHNXWIM1kQDxB9cyfSycpVvjfrKcIS8Mh5N3hmu/YKo4Iag9g2Kw==}
@@ -1317,6 +1233,9 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
+  buffer-builder@0.2.0:
+    resolution: {integrity: sha512-7VPMEPuYznPSoR21NE1zvd2Xna6c/CloiZCfcMXR1Jny6PjX0N4Nsa38zcBFo/FMK+BlA+FLKbJCQ0i2yxp+Xg==}
+
   buffer-crc32@0.2.13:
     resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
 
@@ -1342,6 +1261,10 @@ packages:
   callsites@3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
+
+  camelcase-css@2.0.1:
+    resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
+    engines: {node: '>= 6'}
 
   caniuse-lite@1.0.30001718:
     resolution: {integrity: sha512-AflseV1ahcSunK53NfEs9gFWgOEmzr0f+kaMFA4xiLZlr9Hzt7HxcSpIFcnNCUkz6R6dWKa54rUz3HUmI3nVcw==}
@@ -1400,6 +1323,9 @@ packages:
   color@4.2.3:
     resolution: {integrity: sha512-1rXeuUUiGGrykh+CeBdu5Ie7OJwinCgQY0bc7GCRxy5xVHy+moaqkpL/jqQq0MtQOeYcrqEz4abc5f0KtU7W4A==}
     engines: {node: '>=12.5.0'}
+
+  colorjs.io@0.5.2:
+    resolution: {integrity: sha512-twmVoizEW7ylZSN32OgKdXRmo1qg+wT5/6C3xu5b9QsWzSFAhHLn2xd8ro0diCsKfCj1RdaTP/nrcW+vAoQPIw==}
 
   colorspace@1.1.4:
     resolution: {integrity: sha512-BgvKJiuVu1igBUF2kEjRCZXol6wiiGbY5ipL/oVPwm0BL9sIpMIzM8IK7vwuxIIzOXMV3Ey5w+vxhm0rR/TN8w==}
@@ -2284,6 +2210,12 @@ packages:
     engines: {node: '>=18.12'}
     hasBin: true
 
+  postcss-js@4.0.1:
+    resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
+    engines: {node: ^12 || ^14 || >= 16}
+    peerDependencies:
+      postcss: ^8.4.21
+
   postcss-load-config@3.1.4:
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
     engines: {node: '>= 10'}
@@ -2328,6 +2260,11 @@ packages:
   prelude-ls@1.1.2:
     resolution: {integrity: sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==}
     engines: {node: '>= 0.8.0'}
+
+  prettier@3.6.2:
+    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
+    engines: {node: '>=14'}
+    hasBin: true
 
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
@@ -2525,6 +2462,9 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
+  rxjs@7.8.2:
+    resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
+
   safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
 
@@ -2537,6 +2477,107 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
+  sass-embedded-android-arm64@1.89.2:
+    resolution: {integrity: sha512-+pq7a7AUpItNyPu61sRlP6G2A8pSPpyazASb+8AK2pVlFayCSPAEgpwpCE9A2/Xj86xJZeMizzKUHxM2CBCUxA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [android]
+
+  sass-embedded-android-arm@1.89.2:
+    resolution: {integrity: sha512-oHAPTboBHRZlDBhyRB6dvDKh4KvFs+DZibDHXbkSI6dBZxMTT+Yb2ivocHnctVGucKTLQeT7+OM5DjWHyynL/A==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm]
+    os: [android]
+
+  sass-embedded-android-riscv64@1.89.2:
+    resolution: {integrity: sha512-HfJJWp/S6XSYvlGAqNdakeEMPOdhBkj2s2lN6SHnON54rahKem+z9pUbCriUJfM65Z90lakdGuOfidY61R9TYg==}
+    engines: {node: '>=14.0.0'}
+    cpu: [riscv64]
+    os: [android]
+
+  sass-embedded-android-x64@1.89.2:
+    resolution: {integrity: sha512-BGPzq53VH5z5HN8de6jfMqJjnRe1E6sfnCWFd4pK+CAiuM7iw5Fx6BQZu3ikfI1l2GY0y6pRXzsVLdp/j4EKEA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [android]
+
+  sass-embedded-darwin-arm64@1.89.2:
+    resolution: {integrity: sha512-UCm3RL/tzMpG7DsubARsvGUNXC5pgfQvP+RRFJo9XPIi6elopY5B6H4m9dRYDpHA+scjVthdiDwkPYr9+S/KGw==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  sass-embedded-darwin-x64@1.89.2:
+    resolution: {integrity: sha512-D9WxtDY5VYtMApXRuhQK9VkPHB8R79NIIR6xxVlN2MIdEid/TZWi1MHNweieETXhWGrKhRKglwnHxxyKdJYMnA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  sass-embedded-linux-arm64@1.89.2:
+    resolution: {integrity: sha512-2N4WW5LLsbtrWUJ7iTpjvhajGIbmDR18ZzYRywHdMLpfdPApuHPMDF5CYzHbS+LLx2UAx7CFKBnj5LLjY6eFgQ==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  sass-embedded-linux-arm@1.89.2:
+    resolution: {integrity: sha512-leP0t5U4r95dc90o8TCWfxNXwMAsQhpWxTkdtySDpngoqtTy3miMd7EYNYd1znI0FN1CBaUvbdCMbnbPwygDlA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm]
+    os: [linux]
+
+  sass-embedded-linux-musl-arm64@1.89.2:
+    resolution: {integrity: sha512-nTyuaBX6U1A/cG7WJh0pKD1gY8hbg1m2SnzsyoFG+exQ0lBX/lwTLHq3nyhF+0atv7YYhYKbmfz+sjPP8CZ9lw==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  sass-embedded-linux-musl-arm@1.89.2:
+    resolution: {integrity: sha512-Z6gG2FiVEEdxYHRi2sS5VIYBmp17351bWtOCUZ/thBM66+e70yiN6Eyqjz80DjL8haRUegNQgy9ZJqsLAAmr9g==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm]
+    os: [linux]
+
+  sass-embedded-linux-musl-riscv64@1.89.2:
+    resolution: {integrity: sha512-N6oul+qALO0SwGY8JW7H/Vs0oZIMrRMBM4GqX3AjM/6y8JsJRxkAwnfd0fDyK+aICMFarDqQonQNIx99gdTZqw==}
+    engines: {node: '>=14.0.0'}
+    cpu: [riscv64]
+    os: [linux]
+
+  sass-embedded-linux-musl-x64@1.89.2:
+    resolution: {integrity: sha512-K+FmWcdj/uyP8GiG9foxOCPfb5OAZG0uSVq80DKgVSC0U44AdGjvAvVZkrgFEcZ6cCqlNC2JfYmslB5iqdL7tg==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  sass-embedded-linux-riscv64@1.89.2:
+    resolution: {integrity: sha512-g9nTbnD/3yhOaskeqeBQETbtfDQWRgsjHok6bn7DdAuwBsyrR3JlSFyqKc46pn9Xxd9SQQZU8AzM4IR+sY0A0w==}
+    engines: {node: '>=14.0.0'}
+    cpu: [riscv64]
+    os: [linux]
+
+  sass-embedded-linux-x64@1.89.2:
+    resolution: {integrity: sha512-Ax7dKvzncyQzIl4r7012KCMBvJzOz4uwSNoyoM5IV6y5I1f5hEwI25+U4WfuTqdkv42taCMgpjZbh9ERr6JVMQ==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  sass-embedded-win32-arm64@1.89.2:
+    resolution: {integrity: sha512-j96iJni50ZUsfD6tRxDQE2QSYQ2WrfHxeiyAXf41Kw0V4w5KYR/Sf6rCZQLMTUOHnD16qTMVpQi20LQSqf4WGg==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  sass-embedded-win32-x64@1.89.2:
+    resolution: {integrity: sha512-cS2j5ljdkQsb4PaORiClaVYynE9OAPZG/XjbOMxpQmjRIf7UroY4PEIH+Waf+y47PfXFX9SyxhYuw2NIKGbEng==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [win32]
+
+  sass-embedded@1.89.2:
+    resolution: {integrity: sha512-Ack2K8rc57kCFcYlf3HXpZEJFNUX8xd8DILldksREmYXQkRHI879yy8q4mRDJgrojkySMZqmmmW1NxrFxMsYaA==}
+    engines: {node: '>=16.0.0'}
+    hasBin: true
 
   sass@1.89.2:
     resolution: {integrity: sha512-xCmtksBKd/jdJ9Bt9p7nPKiuqrlBMBuuGkQlkhZjjQk3Ty48lv93k5Dq6OPkKt4XwxDJ7tvlfrTa1MPA9bf+QA==}
@@ -2673,9 +2714,21 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
+  supports-color@8.1.1:
+    resolution: {integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==}
+    engines: {node: '>=10'}
+
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  sync-child-process@1.0.2:
+    resolution: {integrity: sha512-8lD+t2KrrScJ/7KXCSyfhT3/hRq78rC0wBFqNJXv3mZyn6hW2ypM05JmlSvtqRbeq6jqA94oHbxAr2vYsJ8vDA==}
+    engines: {node: '>=16.0.0'}
+
+  sync-message-port@1.1.3:
+    resolution: {integrity: sha512-GTt8rSKje5FilG+wEdfCkOcLL7LWqpMlr2c3LRuKt/YXxcJ52aGSbGBAdI4L3aaqfrBt6y711El53ItyH1NWzg==}
+    engines: {node: '>=16.0.0'}
 
   tar-fs@3.1.0:
     resolution: {integrity: sha512-5Mty5y/sOF1YWj1J6GiBodjlDc05CUR8PKXrsnFAiSG0xA+GHeWLovaZPYUDXkH/1iKRf2+M5+OrRgzC7O9b7w==}
@@ -2820,9 +2873,21 @@ packages:
   value-equal@1.0.1:
     resolution: {integrity: sha512-NOJ6JZCAWr0zlxZt+xqCHNTEKOsrks2HQd4MqhP1qy4z1SkbEP467eNx6TgDKXMvUOb+OENfJCZwM+16n7fRfw==}
 
+  varint@6.0.0:
+    resolution: {integrity: sha512-cXEIW6cfr15lFv563k4GuVuW/fiwjknytD37jIOLSdSWuOI6WnO/oKwmP2FQTU2l01LP8/M5TSAJpzUaGe3uWg==}
+
   vite-plugin-external@6.2.2:
     resolution: {integrity: sha512-OpdFlWgVfWyZgx9nym3LAQp4DciutbqwSKzbA1l2Bg7CNzlDd3jnHfv1uWTY4y5h2gRfgT60ZtOgF5+W95i+3A==}
     engines: {node: '>=14.18.0', vite: '>=3.1.0'}
+
+  vite-plugin-sass-dts@1.3.31:
+    resolution: {integrity: sha512-9egcHbUZdnCr2l1g9X2bHl6LjXv2mXb9xWRX3CVXHt/t4Io+HL5dYsBimlY4QImzbSeH26d7Bw6v0NUrQfwEDA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      postcss: ^8
+      prettier: ^2.7 || ^3
+      sass-embedded: ^1.78.0
+      vite: '>=3'
 
   vite@6.3.5:
     resolution: {integrity: sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==}
@@ -3113,6 +3178,8 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
+  '@bufbuild/protobuf@2.6.0': {}
+
   '@colors/colors@1.6.0': {}
 
   '@dabh/diagnostics@2.0.3':
@@ -3299,10 +3366,10 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
-  '@freelensapp/animate@file:../freelens/freelensapp-animate-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))':
+  '@freelensapp/animate@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))':
     dependencies:
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/utilities': 1.5.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-react': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -3314,11 +3381,11 @@ snapshots:
       - mobx-react
       - react-dom
 
-  '@freelensapp/application-for-electron-main@file:../freelens/freelensapp-application-for-electron-main-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/application-for-electron-main@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
-      '@freelensapp/application': file:../freelens/freelensapp-application-1.5.0-0.tgz(lodash@4.17.21)
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/run-many': file:../freelens/freelensapp-run-many-1.5.0-0.tgz
+      '@freelensapp/application': 1.5.0(lodash@4.17.21)
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/run-many': 1.5.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
       electron: 35.7.0
@@ -3327,38 +3394,38 @@ snapshots:
       - lodash
       - supports-color
 
-  '@freelensapp/application@file:../freelens/freelensapp-application-1.5.0-0.tgz(lodash@4.17.21)':
+  '@freelensapp/application@1.5.0(lodash@4.17.21)':
     dependencies:
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/run-many': file:../freelens/freelensapp-run-many-1.5.0-0.tgz
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/run-many': 1.5.0
       '@ogre-tools/fp': 17.11.1(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
     transitivePeerDependencies:
       - lodash
 
-  '@freelensapp/button@file:../freelens/freelensapp-button-1.5.0-0.tgz':
+  '@freelensapp/button@1.5.0':
     dependencies:
-      '@freelensapp/tooltip': file:../freelens/freelensapp-tooltip-1.5.0-0.tgz
-      '@freelensapp/typescript': file:../freelens/freelensapp-typescript-1.5.0-0.tgz
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/tooltip': 1.5.0
+      '@freelensapp/typescript': 1.5.0
+      '@freelensapp/utilities': 1.5.0
       react: 17.0.2
     transitivePeerDependencies:
       - react-native
       - supports-color
       - ts-node
 
-  '@freelensapp/cluster-settings@file:../freelens/freelensapp-cluster-settings-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/cluster-settings@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
     transitivePeerDependencies:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/cluster-sidebar@file:../freelens/freelensapp-cluster-sidebar-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/cluster-sidebar@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/utilities': 1.5.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-mobx': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)(mobx@6.13.7)
@@ -3367,43 +3434,43 @@ snapshots:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/core@file:../freelens/freelensapp-core-1.5.0-0.tgz(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@types/react@17.0.87)':
+  '@freelensapp/core@1.5.0(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@types/react@17.0.87)':
     dependencies:
-      '@freelensapp/animate': file:../freelens/freelensapp-animate-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))
-      '@freelensapp/application': file:../freelens/freelensapp-application-1.5.0-0.tgz(lodash@4.17.21)
-      '@freelensapp/application-for-electron-main': file:../freelens/freelensapp-application-for-electron-main-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/button': file:../freelens/freelensapp-button-1.5.0-0.tgz
-      '@freelensapp/cluster-settings': file:../freelens/freelensapp-cluster-settings-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/cluster-sidebar': file:../freelens/freelensapp-cluster-sidebar-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/error-boundary': file:../freelens/freelensapp-error-boundary-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))
-      '@freelensapp/event-emitter': file:../freelens/freelensapp-event-emitter-1.5.0-0.tgz
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/icon': file:../freelens/freelensapp-icon-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))
-      '@freelensapp/json-api': file:../freelens/freelensapp-json-api-1.5.0-0.tgz
-      '@freelensapp/kube-api': file:../freelens/freelensapp-kube-api-1.5.0-0.tgz
-      '@freelensapp/kube-api-specifics': file:../freelens/freelensapp-kube-api-specifics-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/kube-object': file:../freelens/freelensapp-kube-object-1.5.0-0.tgz
-      '@freelensapp/kubectl-versions': file:../freelens/freelensapp-kubectl-versions-1.5.0-0.tgz
-      '@freelensapp/kubernetes-client-node': file:../freelens/freelensapp-kubernetes-client-node-1.5.0-0.tgz(ws@8.18.3)
-      '@freelensapp/legacy-extensions': file:../freelens/freelensapp-legacy-extensions-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/legacy-global-di': file:../freelens/freelensapp-legacy-global-di-1.5.0-0.tgz
-      '@freelensapp/list-layout': file:../freelens/freelensapp-list-layout-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/logger': file:../freelens/freelensapp-logger-1.5.0-0.tgz
-      '@freelensapp/messaging': file:../freelens/freelensapp-messaging-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/metrics': file:../freelens/freelensapp-metrics-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/node-fetch': file:../freelens/freelensapp-node-fetch-1.5.0-0.tgz
-      '@freelensapp/notifications': file:../freelens/freelensapp-notifications-1.5.0-0.tgz
-      '@freelensapp/prometheus': file:../freelens/freelensapp-prometheus-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/random': file:../freelens/freelensapp-random-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/react-application': file:../freelens/freelensapp-react-application-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/resizing-anchor': file:../freelens/freelensapp-resizing-anchor-1.5.0-0.tgz(react-dom@17.0.2(react@17.0.2))
-      '@freelensapp/resource-templates': file:../freelens/freelensapp-resource-templates-1.5.0-0.tgz
-      '@freelensapp/routing': file:../freelens/freelensapp-routing-1.5.0-0.tgz(lodash@4.17.21)
-      '@freelensapp/run-many': file:../freelens/freelensapp-run-many-1.5.0-0.tgz
-      '@freelensapp/spinner': file:../freelens/freelensapp-spinner-1.5.0-0.tgz
-      '@freelensapp/startable-stoppable': file:../freelens/freelensapp-startable-stoppable-1.5.0-0.tgz
-      '@freelensapp/tooltip': file:../freelens/freelensapp-tooltip-1.5.0-0.tgz
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/animate': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))
+      '@freelensapp/application': 1.5.0(lodash@4.17.21)
+      '@freelensapp/application-for-electron-main': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/button': 1.5.0
+      '@freelensapp/cluster-settings': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/cluster-sidebar': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/error-boundary': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))
+      '@freelensapp/event-emitter': 1.5.0
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/icon': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))
+      '@freelensapp/json-api': 1.5.0
+      '@freelensapp/kube-api': 1.5.0
+      '@freelensapp/kube-api-specifics': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/kube-object': 1.5.0
+      '@freelensapp/kubectl-versions': 1.5.0
+      '@freelensapp/kubernetes-client-node': 1.5.0(ws@8.18.3)
+      '@freelensapp/legacy-extensions': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/legacy-global-di': 1.5.0
+      '@freelensapp/list-layout': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/logger': 1.5.0
+      '@freelensapp/messaging': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/metrics': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/node-fetch': 1.5.0
+      '@freelensapp/notifications': 1.5.0
+      '@freelensapp/prometheus': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/random': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/react-application': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/resizing-anchor': 1.5.0(react-dom@17.0.2(react@17.0.2))
+      '@freelensapp/resource-templates': 1.5.0
+      '@freelensapp/routing': 1.5.0(lodash@4.17.21)
+      '@freelensapp/run-many': 1.5.0
+      '@freelensapp/spinner': 1.5.0
+      '@freelensapp/startable-stoppable': 1.5.0
+      '@freelensapp/tooltip': 1.5.0
+      '@freelensapp/utilities': 1.5.0
       '@hapi/call': 9.0.1
       '@hapi/subtext': 8.1.0
       '@mui/lab': 5.0.0-alpha.142(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@mui/material@5.17.1(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@types/react@17.0.87)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(@types/react@17.0.87)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -3492,10 +3559,10 @@ snapshots:
       - ts-node
       - utf-8-validate
 
-  '@freelensapp/error-boundary@file:../freelens/freelensapp-error-boundary-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))':
+  '@freelensapp/error-boundary@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))':
     dependencies:
-      '@freelensapp/button': file:../freelens/freelensapp-button-1.5.0-0.tgz
-      '@freelensapp/routing': file:../freelens/freelensapp-routing-1.5.0-0.tgz(lodash@4.17.21)
+      '@freelensapp/button': 1.5.0
+      '@freelensapp/routing': 1.5.0(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-react': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       lodash: 4.17.21
@@ -3509,11 +3576,11 @@ snapshots:
       - supports-color
       - ts-node
 
-  '@freelensapp/event-emitter@file:../freelens/freelensapp-event-emitter-1.5.0-0.tgz': {}
+  '@freelensapp/event-emitter@1.5.0': {}
 
-  '@freelensapp/extensions@file:../freelens/freelensapp-extensions-1.5.0-0.tgz(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@types/react@17.0.87)':
+  '@freelensapp/extensions@1.5.0(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@types/react@17.0.87)':
     dependencies:
-      '@freelensapp/core': file:../freelens/freelensapp-core-1.5.0-0.tgz(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@types/react@17.0.87)
+      '@freelensapp/core': 1.5.0(@emotion/react@11.14.0(@types/react@17.0.87)(react@17.0.2))(@types/react@17.0.87)
     transitivePeerDependencies:
       - '@emotion/react'
       - '@emotion/styled'
@@ -3526,18 +3593,18 @@ snapshots:
       - ts-node
       - utf-8-validate
 
-  '@freelensapp/feature-core@file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/feature-core@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
     transitivePeerDependencies:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/icon@file:../freelens/freelensapp-icon-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))':
+  '@freelensapp/icon@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))':
     dependencies:
-      '@freelensapp/logger': file:../freelens/freelensapp-logger-1.5.0-0.tgz
-      '@freelensapp/tooltip': file:../freelens/freelensapp-tooltip-1.5.0-0.tgz
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/logger': 1.5.0
+      '@freelensapp/tooltip': 1.5.0
+      '@freelensapp/utilities': 1.5.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-react': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       lodash: 4.17.21
@@ -3550,28 +3617,28 @@ snapshots:
       - '@ogre-tools/fp'
       - react-native
 
-  '@freelensapp/json-api@file:../freelens/freelensapp-json-api-1.5.0-0.tgz':
+  '@freelensapp/json-api@1.5.0':
     dependencies:
-      '@freelensapp/event-emitter': file:../freelens/freelensapp-event-emitter-1.5.0-0.tgz
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/event-emitter': 1.5.0
+      '@freelensapp/utilities': 1.5.0
       lodash: 4.17.21
 
-  '@freelensapp/kube-api-specifics@file:../freelens/freelensapp-kube-api-specifics-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/kube-api-specifics@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/kube-api': file:../freelens/freelensapp-kube-api-1.5.0-0.tgz
-      '@freelensapp/logger': file:../freelens/freelensapp-logger-1.5.0-0.tgz
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/kube-api': 1.5.0
+      '@freelensapp/logger': 1.5.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
     transitivePeerDependencies:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/kube-api@file:../freelens/freelensapp-kube-api-1.5.0-0.tgz':
+  '@freelensapp/kube-api@1.5.0':
     dependencies:
-      '@freelensapp/json-api': file:../freelens/freelensapp-json-api-1.5.0-0.tgz
-      '@freelensapp/kube-object': file:../freelens/freelensapp-kube-object-1.5.0-0.tgz
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/json-api': 1.5.0
+      '@freelensapp/kube-object': 1.5.0
+      '@freelensapp/utilities': 1.5.0
       '@ogre-tools/fp': 17.11.1(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       byline: 5.0.0
@@ -3579,20 +3646,20 @@ snapshots:
       mobx: 6.13.7
       moment: 2.30.1
 
-  '@freelensapp/kube-object@file:../freelens/freelensapp-kube-object-1.5.0-0.tgz':
+  '@freelensapp/kube-object@1.5.0':
     dependencies:
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/utilities': 1.5.0
       auto-bind: 4.0.0
       lodash: 4.17.21
       moment: 2.30.1
       typed-regex: 0.0.8
 
-  '@freelensapp/kubectl-versions@file:../freelens/freelensapp-kubectl-versions-1.5.0-0.tgz': {}
+  '@freelensapp/kubectl-versions@1.5.0': {}
 
-  '@freelensapp/kubernetes-client-node@file:../freelens/freelensapp-kubernetes-client-node-1.5.0-0.tgz(ws@8.18.3)':
+  '@freelensapp/kubernetes-client-node@1.5.0(ws@8.18.3)':
     dependencies:
-      '@freelensapp/node-fetch': file:../freelens/freelensapp-node-fetch-1.5.0-0.tgz
-      '@freelensapp/openid-client': file:../freelens/freelensapp-openid-client-1.5.0-0.tgz
+      '@freelensapp/node-fetch': 1.5.0
+      '@freelensapp/openid-client': 1.5.0
       hpagent: 1.2.0
       isomorphic-ws: 5.0.0(ws@8.18.3)
       js-yaml: 4.1.0
@@ -3605,36 +3672,36 @@ snapshots:
       - supports-color
       - ws
 
-  '@freelensapp/legacy-extensions@file:../freelens/freelensapp-legacy-extensions-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/legacy-extensions@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
     transitivePeerDependencies:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/legacy-global-di@file:../freelens/freelensapp-legacy-global-di-1.5.0-0.tgz': {}
+  '@freelensapp/legacy-global-di@1.5.0': {}
 
-  '@freelensapp/list-layout@file:../freelens/freelensapp-list-layout-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/list-layout@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
     transitivePeerDependencies:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/logger@file:../freelens/freelensapp-logger-1.5.0-0.tgz':
+  '@freelensapp/logger@1.5.0':
     dependencies:
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/fp': 17.11.1(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
       lodash: 4.17.21
       winston: 3.17.0
 
-  '@freelensapp/messaging@file:../freelens/freelensapp-messaging-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/messaging@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
-      '@freelensapp/application': file:../freelens/freelensapp-application-1.5.0-0.tgz(lodash@4.17.21)
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/startable-stoppable': file:../freelens/freelensapp-startable-stoppable-1.5.0-0.tgz
+      '@freelensapp/application': 1.5.0(lodash@4.17.21)
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/startable-stoppable': 1.5.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-mobx': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)(mobx@6.13.7)
@@ -3643,24 +3710,24 @@ snapshots:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/metrics@file:../freelens/freelensapp-metrics-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/metrics@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
     transitivePeerDependencies:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/node-fetch@file:../freelens/freelensapp-node-fetch-1.5.0-0.tgz': {}
+  '@freelensapp/node-fetch@1.5.0': {}
 
-  '@freelensapp/notifications@file:../freelens/freelensapp-notifications-1.5.0-0.tgz':
+  '@freelensapp/notifications@1.5.0':
     dependencies:
-      '@freelensapp/animate': file:../freelens/freelensapp-animate-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/icon': file:../freelens/freelensapp-icon-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))
-      '@freelensapp/json-api': file:../freelens/freelensapp-json-api-1.5.0-0.tgz
-      '@freelensapp/logger': file:../freelens/freelensapp-logger-1.5.0-0.tgz
-      '@freelensapp/react-application': file:../freelens/freelensapp-react-application-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/animate': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/icon': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))
+      '@freelensapp/json-api': 1.5.0
+      '@freelensapp/logger': 1.5.0
+      '@freelensapp/react-application': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/utilities': 1.5.0
       '@ogre-tools/fp': 17.11.1(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
@@ -3674,22 +3741,22 @@ snapshots:
     transitivePeerDependencies:
       - react-native
 
-  '@freelensapp/openid-client@file:../freelens/freelensapp-openid-client-1.5.0-0.tgz': {}
+  '@freelensapp/openid-client@1.5.0': {}
 
-  '@freelensapp/prometheus@file:../freelens/freelensapp-prometheus-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/prometheus@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
-      '@freelensapp/application': file:../freelens/freelensapp-application-1.5.0-0.tgz(lodash@4.17.21)
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/application': 1.5.0(lodash@4.17.21)
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/utilities': 1.5.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
     transitivePeerDependencies:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/random@file:../freelens/freelensapp-random-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/random@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
       uuid: 11.1.0
@@ -3697,10 +3764,10 @@ snapshots:
       - '@ogre-tools/fp'
       - lodash
 
-  '@freelensapp/react-application@file:../freelens/freelensapp-react-application-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
+  '@freelensapp/react-application@1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
-      '@freelensapp/application': file:../freelens/freelensapp-application-1.5.0-0.tgz(lodash@4.17.21)
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/application': 1.5.0(lodash@4.17.21)
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-mobx': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)(mobx@6.13.7)
@@ -3714,9 +3781,9 @@ snapshots:
       - lodash
       - react-native
 
-  '@freelensapp/resizing-anchor@file:../freelens/freelensapp-resizing-anchor-1.5.0-0.tgz(react-dom@17.0.2(react@17.0.2))':
+  '@freelensapp/resizing-anchor@1.5.0(react-dom@17.0.2(react@17.0.2))':
     dependencies:
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/utilities': 1.5.0
       lodash: 4.17.21
       mobx: 6.13.7
       mobx-react: 7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -3725,11 +3792,11 @@ snapshots:
       - react-dom
       - react-native
 
-  '@freelensapp/resource-templates@file:../freelens/freelensapp-resource-templates-1.5.0-0.tgz': {}
+  '@freelensapp/resource-templates@1.5.0': {}
 
-  '@freelensapp/routing@file:../freelens/freelensapp-routing-1.5.0-0.tgz(lodash@4.17.21)':
+  '@freelensapp/routing@1.5.0(lodash@4.17.21)':
     dependencies:
-      '@freelensapp/feature-core': file:../freelens/freelensapp-feature-core-1.5.0-0.tgz(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
+      '@freelensapp/feature-core': 1.5.0(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/fp': 17.11.1(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
@@ -3738,21 +3805,21 @@ snapshots:
     transitivePeerDependencies:
       - lodash
 
-  '@freelensapp/run-many@file:../freelens/freelensapp-run-many-1.5.0-0.tgz':
+  '@freelensapp/run-many@1.5.0':
     dependencies:
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/utilities': 1.5.0
       uuid: 11.1.0
 
-  '@freelensapp/spinner@file:../freelens/freelensapp-spinner-1.5.0-0.tgz':
+  '@freelensapp/spinner@1.5.0':
     dependencies:
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/utilities': 1.5.0
       react: 17.0.2
 
-  '@freelensapp/startable-stoppable@file:../freelens/freelensapp-startable-stoppable-1.5.0-0.tgz': {}
+  '@freelensapp/startable-stoppable@1.5.0': {}
 
-  '@freelensapp/tooltip@file:../freelens/freelensapp-tooltip-1.5.0-0.tgz':
+  '@freelensapp/tooltip@1.5.0':
     dependencies:
-      '@freelensapp/utilities': file:../freelens/freelensapp-utilities-1.5.0-0.tgz
+      '@freelensapp/utilities': 1.5.0
       auto-bind: 4.0.0
       lodash: 4.17.21
       mobx: 6.13.7
@@ -3762,7 +3829,7 @@ snapshots:
     transitivePeerDependencies:
       - react-native
 
-  '@freelensapp/typescript@file:../freelens/freelensapp-typescript-1.5.0-0.tgz':
+  '@freelensapp/typescript@1.5.0':
     dependencies:
       typescript: 5.8.3
       typescript-plugin-css-modules: 5.1.0(typescript@5.8.3)
@@ -3770,7 +3837,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  '@freelensapp/utilities@file:../freelens/freelensapp-utilities-1.5.0-0.tgz':
+  '@freelensapp/utilities@1.5.0':
     dependencies:
       '@astronautlabs/jsonpath': 1.1.2
       crypto-js: 4.2.0
@@ -4295,7 +4362,7 @@ snapshots:
       '@types/node': 22.16.4
     optional: true
 
-  '@vitejs/plugin-react@4.6.0(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1))':
+  '@vitejs/plugin-react@4.6.0(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1))':
     dependencies:
       '@babel/core': 7.27.7
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.27.7)
@@ -4303,7 +4370,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.19
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 6.3.5(@types/node@22.16.4)(less@4.3.0)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)
+      vite: 6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -4430,6 +4497,8 @@ snapshots:
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.5)
 
+  buffer-builder@0.2.0: {}
+
   buffer-crc32@0.2.13: {}
 
   buffer-from@1.1.2:
@@ -4452,6 +4521,8 @@ snapshots:
       responselike: 2.0.1
 
   callsites@3.1.0: {}
+
+  camelcase-css@2.0.1: {}
 
   caniuse-lite@1.0.30001718: {}
 
@@ -4514,6 +4585,8 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
       color-string: 1.9.1
+
+  colorjs.io@0.5.2: {}
 
   colorspace@1.1.4:
     dependencies:
@@ -4650,7 +4723,7 @@ snapshots:
 
   electron-to-chromium@1.5.152: {}
 
-  electron-vite@3.1.0(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)):
+  electron-vite@3.1.0(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)):
     dependencies:
       '@babel/core': 7.27.7
       '@babel/plugin-transform-arrow-functions': 7.27.1(@babel/core@7.27.7)
@@ -4658,7 +4731,7 @@ snapshots:
       esbuild: 0.25.4
       magic-string: 0.30.17
       picocolors: 1.1.1
-      vite: 6.3.5(@types/node@22.16.4)(less@4.3.0)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)
+      vite: 6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -5360,6 +5433,11 @@ snapshots:
 
   pnpm@10.13.1: {}
 
+  postcss-js@4.0.1(postcss@8.5.3):
+    dependencies:
+      camelcase-css: 2.0.1
+      postcss: 8.5.3
+
   postcss-load-config@3.1.4(postcss@8.5.3):
     dependencies:
       lilconfig: 2.1.0
@@ -5397,6 +5475,8 @@ snapshots:
       source-map-js: 1.2.1
 
   prelude-ls@1.1.2: {}
+
+  prettier@3.6.2: {}
 
   process-nextick-args@2.0.1: {}
 
@@ -5649,6 +5729,10 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  rxjs@7.8.2:
+    dependencies:
+      tslib: 2.8.1
+
   safe-buffer@5.1.2: {}
 
   safe-buffer@5.2.1: {}
@@ -5657,6 +5741,82 @@ snapshots:
 
   safer-buffer@2.1.2:
     optional: true
+
+  sass-embedded-android-arm64@1.89.2:
+    optional: true
+
+  sass-embedded-android-arm@1.89.2:
+    optional: true
+
+  sass-embedded-android-riscv64@1.89.2:
+    optional: true
+
+  sass-embedded-android-x64@1.89.2:
+    optional: true
+
+  sass-embedded-darwin-arm64@1.89.2:
+    optional: true
+
+  sass-embedded-darwin-x64@1.89.2:
+    optional: true
+
+  sass-embedded-linux-arm64@1.89.2:
+    optional: true
+
+  sass-embedded-linux-arm@1.89.2:
+    optional: true
+
+  sass-embedded-linux-musl-arm64@1.89.2:
+    optional: true
+
+  sass-embedded-linux-musl-arm@1.89.2:
+    optional: true
+
+  sass-embedded-linux-musl-riscv64@1.89.2:
+    optional: true
+
+  sass-embedded-linux-musl-x64@1.89.2:
+    optional: true
+
+  sass-embedded-linux-riscv64@1.89.2:
+    optional: true
+
+  sass-embedded-linux-x64@1.89.2:
+    optional: true
+
+  sass-embedded-win32-arm64@1.89.2:
+    optional: true
+
+  sass-embedded-win32-x64@1.89.2:
+    optional: true
+
+  sass-embedded@1.89.2:
+    dependencies:
+      '@bufbuild/protobuf': 2.6.0
+      buffer-builder: 0.2.0
+      colorjs.io: 0.5.2
+      immutable: 5.1.2
+      rxjs: 7.8.2
+      supports-color: 8.1.1
+      sync-child-process: 1.0.2
+      varint: 6.0.0
+    optionalDependencies:
+      sass-embedded-android-arm: 1.89.2
+      sass-embedded-android-arm64: 1.89.2
+      sass-embedded-android-riscv64: 1.89.2
+      sass-embedded-android-x64: 1.89.2
+      sass-embedded-darwin-arm64: 1.89.2
+      sass-embedded-darwin-x64: 1.89.2
+      sass-embedded-linux-arm: 1.89.2
+      sass-embedded-linux-arm64: 1.89.2
+      sass-embedded-linux-musl-arm: 1.89.2
+      sass-embedded-linux-musl-arm64: 1.89.2
+      sass-embedded-linux-musl-riscv64: 1.89.2
+      sass-embedded-linux-musl-x64: 1.89.2
+      sass-embedded-linux-riscv64: 1.89.2
+      sass-embedded-linux-x64: 1.89.2
+      sass-embedded-win32-arm64: 1.89.2
+      sass-embedded-win32-x64: 1.89.2
 
   sass@1.89.2:
     dependencies:
@@ -5790,7 +5950,17 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
+  supports-color@8.1.1:
+    dependencies:
+      has-flag: 4.0.0
+
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  sync-child-process@1.0.2:
+    dependencies:
+      sync-message-port: 1.1.3
+
+  sync-message-port@1.1.3: {}
 
   tar-fs@3.1.0:
     dependencies:
@@ -5957,6 +6127,8 @@ snapshots:
 
   value-equal@1.0.1: {}
 
+  varint@6.0.0: {}
+
   vite-plugin-external@6.2.2:
     dependencies:
       '@types/fs-extra': 11.0.4
@@ -5966,7 +6138,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1):
+  vite-plugin-sass-dts@1.3.31(postcss@8.5.3)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)):
+    dependencies:
+      postcss: 8.5.3
+      postcss-js: 4.0.1(postcss@8.5.3)
+      prettier: 3.6.2
+      sass-embedded: 1.89.2
+      vite: 6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1)
+
+  vite@6.3.5(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.89.2)(stylus@0.62.0)(terser@5.39.1):
     dependencies:
       esbuild: 0.25.4
       fdir: 6.4.4(picomatch@4.0.2)
@@ -5979,6 +6159,7 @@ snapshots:
       fsevents: 2.3.3
       less: 4.3.0
       sass: 1.89.2
+      sass-embedded: 1.89.2
       stylus: 0.62.0
       terser: 5.39.1
 

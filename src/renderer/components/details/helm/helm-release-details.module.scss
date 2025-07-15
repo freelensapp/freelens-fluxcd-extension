@@ -1,14 +1,16 @@
 @use "../../../vars";
 
-.HelmReleaseDetails {
+.helmReleaseDetails {
   .title {
     margin-top: vars.$margin * 2;
     margin-bottom: vars.$margin;
   }
 }
 
-.HelmReleaseHistory {
-  .TableCell {
+.helmReleaseHistory {
+  display: flex;
+
+  :global(.TableCell) {
     &.version {
       flex-grow: 0.5;
     }

@@ -1,7 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
-import { getApi, getStore } from "../stores";
 
-export class OCIRepository extends Renderer.K8sApi.KubeObject<any, any, { url: string }> {
+export class OCIRepository extends Renderer.K8sApi.LensExtensionKubeObject<any, any, { url: string }> {
   static readonly kind = "OCIRepository";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta2/ocirepositories";
@@ -17,9 +16,6 @@ export class OCIRepository extends Renderer.K8sApi.KubeObject<any, any, { url: s
     shortNames: ["ocirepo"],
     title: "OCI Repositories",
   };
-
-  static getApi = getApi;
-  static getStore = getStore;
 }
 
 export class OCIRepositoryApi extends Renderer.K8sApi.KubeApi<OCIRepository> {}

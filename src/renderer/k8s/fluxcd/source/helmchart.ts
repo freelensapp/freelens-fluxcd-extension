@@ -1,7 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
-import { getApi, getStore } from "../stores";
 
-export class HelmChart extends Renderer.K8sApi.KubeObject<
+export class HelmChart extends Renderer.K8sApi.LensExtensionKubeObject<
   any,
   any,
   {
@@ -30,9 +29,6 @@ export class HelmChart extends Renderer.K8sApi.KubeObject<
     shortNames: ["hc"],
     title: "Helm Charts",
   };
-
-  static getApi = getApi;
-  static getStore = getStore;
 }
 
 export class HelmChartApi extends Renderer.K8sApi.KubeApi<HelmChart> {}

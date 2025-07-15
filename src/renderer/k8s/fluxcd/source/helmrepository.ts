@@ -1,7 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
-import { getApi, getStore } from "../stores";
 
-export class HelmRepository extends Renderer.K8sApi.KubeObject<
+export class HelmRepository extends Renderer.K8sApi.LensExtensionKubeObject<
   any,
   any,
   { url: string; interval: string; timeout: string; suspend: boolean }
@@ -21,9 +20,6 @@ export class HelmRepository extends Renderer.K8sApi.KubeObject<
     shortNames: ["helmrepo"],
     title: "Helm Repositories",
   };
-
-  static getApi = getApi;
-  static getStore = getStore;
 }
 
 export class HelmRepositoryApi extends Renderer.K8sApi.KubeApi<HelmRepository> {}

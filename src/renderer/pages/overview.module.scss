@@ -1,6 +1,6 @@
 @use "../vars";
 
-.overview-statuses {
+.overviewStatuses {
   background: var(--contentColor);
 }
 
@@ -12,27 +12,19 @@
   padding: 16px;
 }
 
-.center {
-  text-align: center;
-}
-
-.chart-column {
+.chartColumn {
   align-self: end;
 }
 
-.chart-title {
+.chartTitle {
   color: var(--colorInfo);
 }
 
-.chart-item {
+.chartItem {
   margin-bottom: 16px;
 }
 
-.pb-3 {
-  padding-bottom: 3em;
-}
-
-.flux-content {
+.fluxContent {
   --flex-gap: #{vars.$padding * 2};
   min-height: 100%;
 
@@ -43,6 +35,9 @@
     background: var(--contentColor);
     position: relative;
     padding: vars.$padding * 2;
+
+    text-align: center;
+    padding-bottom: 3em;
 
     h5 {
       color: var(--textColorPrimary);

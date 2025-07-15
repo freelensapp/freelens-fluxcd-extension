@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { getCrdStore } from "../../../k8s/core/stores";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver";
 import { getStatusClass, getStatusText, lowerAndPluralize } from "../../../utils";
 
@@ -44,7 +43,7 @@ export class FluxCDReceiverDetails extends React.Component<
   }
 
   async componentDidMount() {
-    const crdStore = getCrdStore();
+    const crdStore = Renderer.K8sApi.crdStore;
     if (crdStore) {
       crdStore.loadAll().then((l) => this.setState({ crds: l! }));
     }

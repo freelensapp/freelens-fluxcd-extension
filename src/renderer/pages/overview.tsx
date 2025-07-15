@@ -2,7 +2,6 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PieChart } from "../components/pie-chart";
-import { getCrdStore, getNamespaceStore } from "../k8s/core/stores";
 import { HelmRelease } from "../k8s/fluxcd/helm/helmrelease";
 import { ImagePolicy } from "../k8s/fluxcd/image/imagepolicy";
 import { ImageRepository } from "../k8s/fluxcd/image/imagerepository";
@@ -16,10 +15,8 @@ import { GitRepository } from "../k8s/fluxcd/source/gitrepository";
 import { HelmChart } from "../k8s/fluxcd/source/helmchart";
 import { HelmRepository } from "../k8s/fluxcd/source/helmrepository";
 import { OCIRepository } from "../k8s/fluxcd/source/ocirepository";
-import style from "./overview.module.scss";
-import styleInline from "./overview.module.scss?inline";
-
-import type { FluxCDObject } from "../k8s/fluxcd/types";
+import styles from "./overview.module.scss";
+import stylesInline from "./overview.module.scss?inline";
 
 const {
   Component: { Events, NamespaceSelectFilter, TabLayout },
@@ -45,16 +42,16 @@ export const FluxCDOverview = observer(() => {
   );
 
   const getChart = useCallback(
-    (title: string, resource: FluxCDObject) => {
+    (title: string, resource: typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>) => {
       const store = resource.getStore();
       if (!store) return <></>;
       const crd = getCrd(store);
       if (!crd) return <></>;
 
-      const namespaceStore = getNamespaceStore();
+      const namespaceStore = Renderer.K8sApi.namespaceStore;
 
       return (
-        <div className={`column ${style.chartColumn}`} hidden={!store.getAllByNs([]).length}>
+        <div className={`${styles.chartColumn} column`} hidden={!store.getAllByNs([]).length}>
           <PieChart
             title={title}
             objects={store.items.filter((item) => namespaceStore?.contextNamespaces.includes(item.getNs()!))}
@@ -69,11 +66,11 @@ export const FluxCDOverview = observer(() => {
   useEffect(() => {
     let isMounted = true;
     (async () => {
-      const crdStore = getCrdStore();
+      const crdStore = Renderer.K8sApi.crdStore;
       const crds = (await crdStore.loadAll()) || [];
       if (isMounted) setCrds(crds);
 
-      const namespaceStore = getNamespaceStore();
+      const namespaceStore = Renderer.K8sApi.namespaceStore;
       await namespaceStore.loadAll({ namespaces: [] });
       watches.current.push(namespaceStore.subscribe());
 
@@ -115,16 +112,16 @@ export const FluxCDOverview = observer(() => {
 
   return (
     <>
-      <style>{styleInline}</style>
-      <TabLayout className={style.fluxOverview}>
-        <div className={style.fluxContent}>
-          <header className={`flex gaps align-center ${style.pb3}`}>
-            <h5 className="box grow">FluxCD Overview</h5>
+      <style>{stylesInline}</style>
+      <TabLayout>
+        <div className={styles.fluxContent}>
+          <header>
+            <h5>FluxCD Overview</h5>
             <NamespaceSelectFilter id="overview-namespace-select-filter-input" />
           </header>
 
-          <div className={style.overviewStatuses}>
-            <div className={`grid grow align-center ${style.statuses}`}>
+          <div className={styles.overviewStatuses}>
+            <div className={styles.statuses}>
               {getChart(Kustomization.crd.title, Kustomization)}
               {getChart(HelmRelease.crd.title, HelmRelease)}
               {/* {getChart("Git Repositories", this.stores[GitRepository.kind])}
@@ -141,7 +138,7 @@ export const FluxCDOverview = observer(() => {
             </div>
           </div>
 
-          <Events className="box grow" compact hideFilters filterItems={[filterItems]} compactLimit={1000} />
+          <Events compact hideFilters filterItems={[filterItems]} compactLimit={1000} />
         </div>
       </TabLayout>
     </>

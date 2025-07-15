@@ -1,5 +1,5 @@
-.HelmReleases {
-  .TableCell {
+.helmReleases {
+  :global(.TableCell) {
     &.ready {
       flex-grow: 0.7;
     }

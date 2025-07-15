@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { getCrdStore } from "../../../k8s/core/stores";
 import { HelmChart } from "../../../k8s/fluxcd/source/helmchart";
 import { getStatusClass, getStatusText, lowerAndPluralize } from "../../../utils";
 
@@ -42,7 +41,7 @@ export class FluxCDHelmChartDetails extends React.Component<
   }
 
   async componentDidMount() {
-    const crdStore = getCrdStore();
+    const crdStore = Renderer.K8sApi.crdStore;
     if (crdStore) {
       crdStore.loadAll().then((l) => this.setState({ crds: l! }));
     }

@@ -3,7 +3,8 @@ import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
 import { HelmRelease } from "../../k8s/fluxcd/helm/helmrelease";
 import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
-import styleInline from "./helmreleases.scss?inline";
+import styles from "./helmreleases.module.scss";
+import stylesInline from "./helmreleases.module.scss?inline";
 
 const {
   Component: { Badge, KubeObjectListLayout, KubeObjectAge, WithTooltip },
@@ -19,34 +20,38 @@ export const HelmReleasesPage = observer(() => {
   const store = HelmRelease.getStore();
   if (!store) return <></>;
 
+  const sortingCallbacks = {
+    name: (helmRelease: HelmRelease) => helmRelease.getName(),
+    namespace: (helmRelease: HelmRelease) => helmRelease.getNs(),
+    ready: (helmRelease: HelmRelease) => getStatusText(helmRelease),
+    chartVersion: (helmRelease: HelmRelease) =>
+      helmRelease.status?.history?.[0]?.chartVersion ?? helmRelease.spec.chart?.spec.version,
+    appVersion: (helmRelease: HelmRelease) => helmRelease.status?.history?.[0]?.appVersion,
+    status: (helmRelease: HelmRelease) => getStatusMessage(helmRelease),
+    age: (helmRelease: HelmRelease) => helmRelease.getCreationTimestamp(),
+  };
+
+  const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
+    { title: "Name", sortBy: "name" },
+    { title: "Namespace", sortBy: "namespace" },
+    { title: "Ready", sortBy: "ready", className: styles.ready },
+    { title: "Chart Version", sortBy: "chartVersion" },
+    { title: "App Version", sortBy: "appVersion" },
+    { title: "Status", sortBy: "status" },
+    { title: "Age", sortBy: "age", className: styles.age },
+  ];
+
   return (
     <>
-      <style>{styleInline}</style>
+      <style>{stylesInline}</style>
       <KubeObjectListLayout
         tableId="helmReleasesTable"
-        className="HelmReleases"
+        className={styles.helmReleases}
         store={store}
-        sortingCallbacks={{
-          name: (helmRelease: HelmRelease) => helmRelease.getName(),
-          namespace: (helmRelease: HelmRelease) => helmRelease.getNs(),
-          ready: (helmRelease: HelmRelease) => getStatusText(helmRelease),
-          chartVersion: (helmRelease: HelmRelease) =>
-            helmRelease.status?.history?.[0]?.chartVersion ?? helmRelease.spec.chart?.spec.version,
-          appVersion: (helmRelease: HelmRelease) => helmRelease.status?.history?.[0]?.appVersion,
-          status: (helmRelease: HelmRelease) => getStatusMessage(helmRelease),
-          age: (helmRelease: HelmRelease) => helmRelease.getCreationTimestamp(),
-        }}
+        sortingCallbacks={sortingCallbacks}
         searchFilters={[(helmRelease: HelmRelease) => helmRelease.getSearchFields()]}
         renderHeaderTitle="Helm Releases"
-        renderTableHeader={[
-          { title: "Name", className: "name", sortBy: "name" },
-          { title: "Namespace", className: "namespace", sortBy: "namespace" },
-          { title: "Ready", className: "ready", sortBy: "ready" },
-          { title: "Chart Version", className: "chartVersion", sortBy: "chartVersion" },
-          { title: "App Version", className: "appVersion", sortBy: "appVersion" },
-          { title: "Status", className: "status", sortBy: "status" },
-          { title: "Age", className: "age", sortBy: "age" },
-        ]}
+        renderTableHeader={renderTableHeader}
         renderTableContents={(helmRelease: HelmRelease) => {
           const status = getStatusMessage(helmRelease);
           const chartVersion = helmRelease.status?.history?.[0]?.chartVersion ?? helmRelease.spec.chart?.spec.version;

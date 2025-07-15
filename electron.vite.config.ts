@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig, externalizeDepsPlugin } from "electron-vite";
 import pluginExternal from "vite-plugin-external";
+import sassDts from "vite-plugin-sass-dts";
 
 export default defineConfig({
   // main process has full access to Node.js APIs
@@ -74,8 +75,16 @@ export default defineConfig({
       modules: {
         localsConvention: "camelCaseOnly",
       },
+      preprocessorOptions: {
+        scss: {
+          api: "modern",
+        },
+      },
     },
     plugins: [
+      sassDts({
+        enabledMode: ["development", "production"],
+      }),
       react({
         babel: {
           plugins: [

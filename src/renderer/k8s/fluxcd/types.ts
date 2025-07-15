@@ -1,20 +1,16 @@
 import { Renderer } from "@freelensapp/extensions";
-import { type Condition, Selector } from "../core/types";
 
-export interface LocalObjectReference {
-  name: string;
-}
+import type { LocalObjectReference } from "@freelensapp/kube-object";
 
-export interface NamespacedObjectReference {
-  name: string;
+import type { Selector } from "../core/types";
+
+export interface NamespacedObjectReference extends LocalObjectReference {
   namespace?: string;
 }
 
-export interface NamespacedObjectKindReference {
+export interface NamespacedObjectKindReference extends NamespacedObjectReference {
   apiVersion?: string;
   kind: string;
-  name: string;
-  namespace?: string;
 }
 
 export interface Image {
@@ -42,31 +38,10 @@ export interface Snapshot {
   }[];
 }
 
-export interface FluxCDObjectCRD {
-  apiVersions: string[];
-  plural: string;
-  singular: string;
-  shortNames: string[];
+export interface FluxCDKubeObjectCRD extends Renderer.K8sApi.LensExtensionKubeObjectCRD {
   title: string;
 }
 
-export interface FluxCDObjectStatic {
-  readonly crd: FluxCDObjectCRD;
-  getApi(): Renderer.K8sApi.KubeApi | undefined;
-  getStore(): Renderer.K8sApi.KubeObjectStore | undefined;
-}
-
-export type FluxCDObject = typeof Renderer.K8sApi.KubeObject<any, any, any> & FluxCDObjectStatic;
-
-export interface FluxCDStatusConditions {
-  observedGeneration?: number;
-  conditions?: Condition[];
-  lastAppliedRevision?: string;
-  lastAttemptedRevision?: string;
-  lastHandledReconcileAt: string;
-  snapshot: Snapshot;
-}
-
-export interface FluxCDSpecSuspend {
+export interface FluxCDKubeObjectSpecSuspend {
   suspend?: boolean;
 }
