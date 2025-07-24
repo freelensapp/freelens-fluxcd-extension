@@ -8,8 +8,6 @@
 }
 
 .kustomizationSubstitute {
-  display: flex;
-
   :global(.TableCell) {
     &.key {
       flex-grow: 0.7;

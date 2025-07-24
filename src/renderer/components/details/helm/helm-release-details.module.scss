@@ -8,8 +8,6 @@
 }
 
 .helmReleaseHistory {
-  display: flex;
-
   :global(.TableCell) {
     &.version {
       flex-grow: 0.5;
