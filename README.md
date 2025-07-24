@@ -28,7 +28,7 @@ Features include:
 ## Requirements
 
 - Kubernetes >= 1.24
-- Freelens >= 1.3.1
+- Freelens >= 1.5.1
 - Flux >= v2.0.0
 - kustomize-controller >= v0.1.0
 - helm-controller >= v0.1.0
@@ -67,8 +67,8 @@ nvm install
 mise install
 # or
 winget install CoreyButler.NVMforWindows
-nvm install 22.16.1
-nvm use 22.16.1
+nvm install 22.16.0
+nvm use 22.16.0
 ```
 
 Install Pnpm:

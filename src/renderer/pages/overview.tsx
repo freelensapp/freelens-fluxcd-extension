@@ -1,4 +1,4 @@
-import { Renderer } from "@freelensapp/extensions";
+import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PieChart } from "../components/pie-chart";
@@ -21,6 +21,10 @@ import stylesInline from "./overview.module.scss?inline";
 const {
   Component: { Events, NamespaceSelectFilter, TabLayout },
 } = Renderer;
+
+const {
+  Util: { cssNames },
+} = Common;
 
 function filterItems(items: Renderer.K8sApi.KubeEvent[]): Renderer.K8sApi.KubeEvent[] {
   const events = items.filter((event) => {
@@ -51,7 +55,7 @@ export const FluxCDOverview = observer(() => {
       const namespaceStore = Renderer.K8sApi.namespaceStore;
 
       return (
-        <div className={`${styles.chartColumn} column`} hidden={!store.getAllByNs([]).length}>
+        <div className={cssNames(styles.chartColumn, "column")} hidden={!store.getAllByNs([]).length}>
           <PieChart
             title={title}
             objects={store.items.filter((item) => namespaceStore?.contextNamespaces.includes(item.getNs()!))}

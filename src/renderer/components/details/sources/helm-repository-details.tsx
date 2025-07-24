@@ -7,6 +7,10 @@ const {
   Component: { DrawerItem, Badge },
 } = Renderer;
 
+const {
+  Util: { openBrowser },
+} = Common;
+
 export class FluxCDHelmRepositoryDetails extends React.Component<
   Renderer.Component.KubeObjectDetailsProps<HelmRepository>
 > {
@@ -27,7 +31,7 @@ export class FluxCDHelmRepositoryDetails extends React.Component<
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              Common.Util.openBrowser(object.spec.url);
+              openBrowser(object.spec.url);
             }}
           >
             {object.spec.url}
