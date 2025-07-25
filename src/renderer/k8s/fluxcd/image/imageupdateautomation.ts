@@ -10,6 +10,7 @@ export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObje
       kind: string;
     };
     interval: string;
+    suspend?: boolean;
   }
 > {
   static readonly kind = "ImageUpdateAutomation";

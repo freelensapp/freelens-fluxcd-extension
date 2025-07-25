@@ -5,7 +5,7 @@ import type { Condition, LocalObjectReference } from "@freelensapp/kube-object";
 import type { Patch } from "../../core/types";
 import type {
   FluxCDKubeObjectCRD,
-  FluxCDKubeObjectSpecSuspend,
+  FluxCDKubeObjectSpecWithSuspend,
   Image,
   JSON6902Patch,
   NamespacedObjectKindReference,
@@ -13,7 +13,7 @@ import type {
   Snapshot,
 } from "../types";
 
-export interface KustomizationSpec extends FluxCDKubeObjectSpecSuspend {
+export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   dependsOn?: NamespacedObjectReference[];
   decryption?: {
     provider: string;

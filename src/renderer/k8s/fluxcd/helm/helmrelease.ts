@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import {
   type FluxCDKubeObjectCRD,
-  type FluxCDKubeObjectSpecSuspend,
+  type FluxCDKubeObjectSpecWithSuspend,
   Image,
   JSON6902Patch,
   NamespacedObjectKindReference,
@@ -33,7 +33,7 @@ export interface HelmReleaseSnapshot {
   }[];
 }
 
-export interface HelmReleaseSpec extends FluxCDKubeObjectSpecSuspend {
+export interface HelmReleaseSpec extends FluxCDKubeObjectSpecWithSuspend {
   chart?: {
     metadata?: {
       labels?: Record<string, string>;

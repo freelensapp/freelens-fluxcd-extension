@@ -1,8 +1,17 @@
 import { Renderer } from "@freelensapp/extensions";
+import moment from "moment";
+
+import type { Condition } from "@freelensapp/kube-object";
 
 import type { DumpOptions } from "js-yaml";
 
-type KubeObject = Renderer.K8sApi.KubeObject<any, any, any>;
+import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatusWithConditions } from "./k8s/fluxcd/types";
+
+type KubeObjectWithCondition = Renderer.K8sApi.KubeObject<
+  Renderer.K8sApi.KubeObjectMetadata,
+  FluxCDKubeObjectStatusWithConditions,
+  {} | FluxCDKubeObjectSpecWithSuspend
+>;
 
 const {
   Navigation: { getDetailsUrl },
@@ -35,52 +44,44 @@ export function getMaybeDetailsUrl(url?: string): string {
   }
 }
 
-export function getStatusClass<T extends KubeObject>(obj: T) {
-  const status = getStatus(obj);
+function timeToUnix(dateStr?: string): number {
+  const m = moment(dateStr);
+  return m.isValid() ? m.unix() : 0;
+}
+
+export function getLastCondition<T extends KubeObjectWithCondition>(object: T): Condition | undefined {
+  return (object.status?.conditions?.sort(
+    (a, b) => timeToUnix(a.lastTransitionTime) - timeToUnix(b.lastTransitionTime),
+  ) ?? [])[0];
+}
+
+export function getStatusText<T extends KubeObjectWithCondition>(object: T) {
+  const condition = getLastCondition(object);
+  if ("suspend" in object.spec && object.spec.suspend) return "Suspended";
+  if (condition?.status === "True") return "Ready";
+  if (condition?.status === "False") return "Not Ready";
+  if (object.status?.conditions) return "In Progress";
+  return "Unknown";
+}
+
+export function getStatusMessage<T extends KubeObjectWithCondition>(object: T) {
+  return getLastCondition(object)?.message ?? "-";
+}
+
+export function getStatusClass<T extends KubeObjectWithCondition>(obj: T) {
+  const status = getStatusText(obj);
   switch (status) {
-    case "ready":
+    case "Ready":
       return "success";
-    case "not-ready":
+    case "Not Ready":
       return "error";
-    case "suspended":
+    case "Suspended":
       return "info";
-    case "in-progress":
+    case "In Progress":
       return "warning";
     default:
       return "";
   }
-}
-
-export function getStatusText<T extends KubeObject>(obj: T): string {
-  const status = getStatus(obj);
-  switch (status) {
-    case "ready":
-      return "Ready";
-    case "not-ready":
-      return "Not Ready";
-    case "suspended":
-      return "Suspended";
-    case "in-progress":
-      return "In Progress";
-    default:
-      return "Unknown";
-  }
-}
-
-export function getStatusMessage<T extends KubeObject>(object: T): string {
-  return object.status?.conditions?.find((c) => c.type === "Ready")?.message || "unknown";
-}
-
-function getStatus<T extends KubeObject>(object: T): string {
-  if (object.spec?.suspend) return "suspended";
-
-  const readyCondition = object.status?.conditions?.find((c) => c.type === "Ready");
-
-  if (readyCondition?.status === "True") return "ready";
-  if (readyCondition?.status === "False") return "not-ready";
-  if (object.status?.conditions) return "in-progress";
-
-  return "";
 }
 
 export function getHeight(data?: string): number {

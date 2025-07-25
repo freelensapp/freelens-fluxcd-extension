@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { LocalObjectReference } from "@freelensapp/kube-object";
+import type { Condition, LocalObjectReference } from "@freelensapp/kube-object";
 
 import type { Selector } from "../core/types";
 
@@ -42,6 +42,10 @@ export interface FluxCDKubeObjectCRD extends Renderer.K8sApi.LensExtensionKubeOb
   title: string;
 }
 
-export interface FluxCDKubeObjectSpecSuspend {
+export interface FluxCDKubeObjectSpecWithSuspend {
   suspend?: boolean;
+}
+
+export interface FluxCDKubeObjectStatusWithConditions {
+  conditions?: Condition[];
 }

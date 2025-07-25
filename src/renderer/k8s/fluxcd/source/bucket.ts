@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 
-export class Bucket extends Renderer.K8sApi.LensExtensionKubeObject<any, any, { url: string }> {
+export class Bucket extends Renderer.K8sApi.LensExtensionKubeObject<any, any, { url: string; suspend?: boolean }> {
   static readonly kind = "Bucket";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta1/buckets";

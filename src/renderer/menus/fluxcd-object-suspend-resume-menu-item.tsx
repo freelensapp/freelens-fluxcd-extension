@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { FluxCDKubeObjectSpecSuspend } from "../k8s/fluxcd/types";
+import type { FluxCDKubeObjectSpecWithSuspend } from "../k8s/fluxcd/types";
 
 const {
   Component: { MenuItem, Icon },
@@ -9,12 +9,12 @@ const {
 type FluxCDKubeObjectWithSuspend = Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,
   unknown,
-  FluxCDKubeObjectSpecSuspend
+  FluxCDKubeObjectSpecWithSuspend
 >;
 type FluxCDKubeObjectWithSuspendCtor = typeof Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,
   unknown,
-  FluxCDKubeObjectSpecSuspend
+  FluxCDKubeObjectSpecWithSuspend
 >;
 
 export interface FluxCDObjectSuspendResumeMenuItemProps
