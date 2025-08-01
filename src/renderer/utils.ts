@@ -49,10 +49,19 @@ function timeToUnix(dateStr?: string): number {
   return m.isValid() ? m.unix() : 0;
 }
 
+/**
+ * Gets the last condition using heuristic: first sorts fields by date and if
+ * the date is the same then prefers the "Ready" type or first from the list.
+ */
 export function getLastCondition<T extends KubeObjectWithCondition>(object: T): Condition | undefined {
-  return (object.status?.conditions?.sort(
-    (a, b) => timeToUnix(a.lastTransitionTime) - timeToUnix(b.lastTransitionTime),
-  ) ?? [])[0];
+  const conditions =
+    object.status?.conditions?.sort((a, b) => timeToUnix(a.lastTransitionTime) - timeToUnix(b.lastTransitionTime)) ??
+    [];
+  if (conditions.length > 1) {
+    const ready = conditions.find((a) => a.type == "Ready");
+    if (ready) return ready;
+  }
+  return conditions[0];
 }
 
 export function getStatusText<T extends KubeObjectWithCondition>(object: T) {
