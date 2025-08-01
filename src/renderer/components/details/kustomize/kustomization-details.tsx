@@ -11,20 +11,30 @@ import {
 import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 import {
   defaultYamlDumpOptions,
+  getConditionClass,
+  getConditionMessage,
+  getConditionText,
   getHeight,
   getMaybeDetailsUrl,
-  getStatusClass,
-  getStatusMessage,
-  getStatusText,
 } from "../../../utils";
 import { MaybeLink } from "../../maybe-link";
 import styles from "./kustomization-details.module.scss";
 import stylesInline from "./kustomization-details.module.scss?inline";
 
-import type { Condition } from "@freelensapp/kube-object";
-
 const {
-  Component: { Badge, DrawerItem, DrawerTitle, Icon, MonacoEditor, Table, TableCell, TableHead, TableRow, Tooltip },
+  Component: {
+    Badge,
+    BadgeBoolean,
+    DrawerItem,
+    DrawerTitle,
+    Icon,
+    MonacoEditor,
+    Table,
+    TableCell,
+    TableHead,
+    TableRow,
+    Tooltip,
+  },
   K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
 } = Renderer;
 
@@ -85,12 +95,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
   return (
     <>
       <style>{stylesInline}</style>
-      <div className={styles.kustomizationDetails}>
-        <DrawerItem name="Status">
-          <Badge className={getStatusClass(object)} label={getStatusText(object)} />
-        </DrawerItem>
-        <DrawerItem name="Message">
-          {object.status?.conditions?.find((s: Condition) => s.type === "Ready")?.message}
+      <div className={styles.details}>
+        <DrawerItem name="Condition">
+          <Badge className={getConditionClass(object)} label={getConditionText(object)} />
         </DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
         <DrawerItem name="Retry Interval" hidden={!object.spec.retryInterval}>
@@ -116,12 +123,15 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             {object.spec.targetNamespace}
           </MaybeLink>
         </DrawerItem>
-        <DrawerItem name="Prune">{object.spec.prune === true ? "Yes" : "No"}</DrawerItem>
-        <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
+        <DrawerItem name="Prune">
+          <BadgeBoolean value={object.spec.prune ?? false} />
+        </DrawerItem>
         <DrawerItem name="Timeout" hidden={!object.spec.timeout}>
           {object.spec.timeout}
         </DrawerItem>
-        <DrawerItem name="Force">{object.spec.force === true ? "Yes" : "No"}</DrawerItem>
+        <DrawerItem name="Force">
+          <BadgeBoolean value={object.spec.force ?? false} />
+        </DrawerItem>
         <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
           <MaybeLink
             key="link"
@@ -145,6 +155,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           </MaybeLink>
         </DrawerItem>
         <DrawerItem name="Last Applied Revision">{object.status?.lastAppliedRevision}</DrawerItem>
+        <DrawerItem name="Suspended">
+          <BadgeBoolean value={object.spec.suspend ?? false} />
+        </DrawerItem>
 
         {object.spec.healthChecks && (
           <div className="KustomizationHealthChecks flex column">
@@ -265,10 +278,14 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                     {reference?.status?.lastAppliedRevision}
                   </DrawerItem>
                   <DrawerItem name="Status" hidden={!reference}>
-                    {reference ? <Badge className={getStatusClass(reference)} label={getStatusText(reference)} /> : ""}
+                    {reference ? (
+                      <Badge className={getConditionClass(reference)} label={getConditionText(reference)} />
+                    ) : (
+                      ""
+                    )}
                   </DrawerItem>
                   <DrawerItem name="Message" hidden={!reference}>
-                    {reference && getStatusMessage(reference)}
+                    {reference && getConditionMessage(reference)}
                   </DrawerItem>
                 </div>
               );

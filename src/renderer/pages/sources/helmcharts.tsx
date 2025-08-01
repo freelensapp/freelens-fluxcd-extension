@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { HelmChart } from "../../k8s/fluxcd/source/helmchart";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },
@@ -30,9 +30,9 @@ export class HelmChartsPage extends React.Component {
         sortingCallbacks={{
           [sortBy.name]: (helmChart: HelmChart) => helmChart.getName(),
           [sortBy.namespace]: (helmChart: HelmChart) => helmChart.getNs(),
-          [sortBy.ready]: (helmChart: HelmChart) => getStatusText(helmChart),
+          [sortBy.ready]: (helmChart: HelmChart) => getConditionText(helmChart),
           [sortBy.chart]: (helmChart: HelmChart) => helmChart.spec.chart,
-          [sortBy.status]: (helmChart: HelmChart) => getStatusMessage(helmChart),
+          [sortBy.status]: (helmChart: HelmChart) => getConditionMessage(helmChart),
           [sortBy.age]: (helmChart: HelmChart) => helmChart.getCreationTimestamp(),
         }}
         searchFilters={[(helmChart: HelmChart) => helmChart.getSearchFields()]}
@@ -50,7 +50,7 @@ export class HelmChartsPage extends React.Component {
           helmChart.getNs(),
           this.renderStatus(helmChart),
           helmChart.spec.chart,
-          getStatusMessage(helmChart),
+          getConditionMessage(helmChart),
           <KubeObjectAge object={helmChart} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class HelmChartsPage extends React.Component {
   }
 
   renderStatus(helmChart: HelmChart) {
-    const className = getStatusClass(helmChart);
-    const text = getStatusText(helmChart);
+    const className = getConditionClass(helmChart);
+    const text = getConditionText(helmChart);
     return <Badge key="name" label={text} className={className} />;
   }
 }

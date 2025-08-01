@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Alert } from "../../k8s/fluxcd/notification/alert";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },
@@ -29,8 +29,8 @@ export class AlertsPage extends React.Component {
         sortingCallbacks={{
           [sortBy.name]: (alert: Alert) => alert.getName(),
           [sortBy.namespace]: (alert: Alert) => alert.getNs(),
-          [sortBy.ready]: (alert: Alert) => getStatusText(alert),
-          [sortBy.status]: (alert: Alert) => getStatusMessage(alert),
+          [sortBy.ready]: (alert: Alert) => getConditionText(alert),
+          [sortBy.status]: (alert: Alert) => getConditionMessage(alert),
           [sortBy.age]: (alert: Alert) => alert.getCreationTimestamp(),
         }}
         searchFilters={[(alert: Alert) => alert.getSearchFields()]}
@@ -46,7 +46,7 @@ export class AlertsPage extends React.Component {
           alert.getName(),
           alert.getNs(),
           this.renderStatus(alert),
-          getStatusMessage(alert),
+          getConditionMessage(alert),
           <KubeObjectAge object={alert} key="age" />,
         ]}
       />
@@ -54,8 +54,8 @@ export class AlertsPage extends React.Component {
   }
 
   renderStatus(alert: Alert) {
-    const className = getStatusClass(alert);
-    const text = getStatusText(alert);
+    const className = getConditionClass(alert);
+    const text = getConditionText(alert);
     return <Badge key="name" label={text} className={className} />;
   }
 }

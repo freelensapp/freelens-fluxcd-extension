@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { HelmRepository } from "../../k8s/fluxcd/source/helmrepository";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },
@@ -31,8 +31,8 @@ export class HelmRepositoriesPage extends React.Component {
           [sortBy.name]: (helmRepository: HelmRepository) => helmRepository.getName(),
           [sortBy.namespace]: (helmRepository: HelmRepository) => helmRepository.getNs(),
           [sortBy.url]: (helmRepository: HelmRepository) => helmRepository.spec.url,
-          [sortBy.ready]: (helmRepository: HelmRepository) => getStatusText(helmRepository),
-          [sortBy.status]: (helmRepository: HelmRepository) => getStatusMessage(helmRepository),
+          [sortBy.ready]: (helmRepository: HelmRepository) => getConditionText(helmRepository),
+          [sortBy.status]: (helmRepository: HelmRepository) => getConditionMessage(helmRepository),
           [sortBy.age]: (helmRepository: HelmRepository) => helmRepository.getCreationTimestamp(),
         }}
         searchFilters={[(helmRepository: HelmRepository) => helmRepository.getSearchFields()]}
@@ -50,7 +50,7 @@ export class HelmRepositoriesPage extends React.Component {
           helmRepository.getNs(),
           helmRepository.spec.url,
           this.renderStatus(helmRepository),
-          getStatusMessage(helmRepository),
+          getConditionMessage(helmRepository),
           <KubeObjectAge object={helmRepository} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class HelmRepositoriesPage extends React.Component {
   }
 
   renderStatus(helmRepository: HelmRepository) {
-    const className = getStatusClass(helmRepository);
-    const text = getStatusText(helmRepository);
+    const className = getConditionClass(helmRepository);
+    const text = getConditionText(helmRepository);
     return <Badge key="name" label={text} className={className} />;
   }
 }

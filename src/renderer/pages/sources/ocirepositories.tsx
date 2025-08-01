@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { OCIRepository } from "../../k8s/fluxcd/source/ocirepository";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },
@@ -31,8 +31,8 @@ export class OCIRepositoriesPage extends React.Component {
           [sortBy.name]: (ociRepository: OCIRepository) => ociRepository.getName(),
           [sortBy.namespace]: (ociRepository: OCIRepository) => ociRepository.getNs(),
           [sortBy.url]: (ociRepository: OCIRepository) => ociRepository.spec.url,
-          [sortBy.ready]: (ociRepository: OCIRepository) => getStatusText(ociRepository),
-          [sortBy.status]: (ociRepository: OCIRepository) => getStatusMessage(ociRepository),
+          [sortBy.ready]: (ociRepository: OCIRepository) => getConditionText(ociRepository),
+          [sortBy.status]: (ociRepository: OCIRepository) => getConditionMessage(ociRepository),
           [sortBy.age]: (ociRepository: OCIRepository) => ociRepository.getCreationTimestamp(),
         }}
         searchFilters={[(ociRepository: OCIRepository) => ociRepository.getSearchFields()]}
@@ -50,7 +50,7 @@ export class OCIRepositoriesPage extends React.Component {
           ociRepository.getNs(),
           ociRepository.spec.url,
           this.renderStatus(ociRepository),
-          getStatusMessage(ociRepository),
+          getConditionMessage(ociRepository),
           <KubeObjectAge object={ociRepository} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class OCIRepositoriesPage extends React.Component {
   }
 
   renderStatus(ociRepository: OCIRepository) {
-    const className = getStatusClass(ociRepository);
-    const text = getStatusText(ociRepository);
+    const className = getConditionClass(ociRepository);
+    const text = getConditionText(ociRepository);
     return <Badge key="name" label={text} className={className} />;
   }
 }

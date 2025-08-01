@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { ImagePolicy } from "../../k8s/fluxcd/image/imagepolicy";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },
@@ -31,8 +31,8 @@ export class ImagePoliciesPage extends React.Component {
           [sortBy.name]: (imagePolicy: ImagePolicy) => imagePolicy.getName(),
           [sortBy.namespace]: (imagePolicy: ImagePolicy) => imagePolicy.getNs(),
           [sortBy.repo]: (imagePolicy: ImagePolicy) => imagePolicy.spec.imageRepositoryRef.name,
-          [sortBy.ready]: (imagePolicy: ImagePolicy) => getStatusText(imagePolicy),
-          [sortBy.status]: (imagePolicy: ImagePolicy) => getStatusMessage(imagePolicy),
+          [sortBy.ready]: (imagePolicy: ImagePolicy) => getConditionText(imagePolicy),
+          [sortBy.status]: (imagePolicy: ImagePolicy) => getConditionMessage(imagePolicy),
           [sortBy.age]: (imagePolicy: ImagePolicy) => imagePolicy.getCreationTimestamp(),
         }}
         searchFilters={[(imagePolicy: ImagePolicy) => imagePolicy.getSearchFields()]}
@@ -50,7 +50,7 @@ export class ImagePoliciesPage extends React.Component {
           imagePolicy.getNs(),
           imagePolicy.spec.imageRepositoryRef.name,
           this.renderStatus(imagePolicy),
-          getStatusMessage(imagePolicy),
+          getConditionMessage(imagePolicy),
           <KubeObjectAge object={imagePolicy} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class ImagePoliciesPage extends React.Component {
   }
 
   renderStatus(imagePolicy: ImagePolicy) {
-    const className = getStatusClass(imagePolicy);
-    const text = getStatusText(imagePolicy);
+    const className = getConditionClass(imagePolicy);
+    const text = getConditionText(imagePolicy);
     return <Badge key="name" label={text} className={className} />;
   }
 }

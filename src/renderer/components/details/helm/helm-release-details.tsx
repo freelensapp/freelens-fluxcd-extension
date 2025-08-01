@@ -10,7 +10,18 @@ import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
 
 const {
-  Component: { DrawerItem, DrawerTitle, Icon, MonacoEditor, Table, TableCell, TableHead, TableRow, Tooltip },
+  Component: {
+    BadgeBoolean,
+    DrawerItem,
+    DrawerTitle,
+    Icon,
+    MonacoEditor,
+    Table,
+    TableCell,
+    TableHead,
+    TableRow,
+    Tooltip,
+  },
   K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
 } = Renderer;
 
@@ -113,7 +124,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
   return (
     <>
       <style>{stylesInline}</style>
-      <div className={styles.helmReleaseDetails}>
+      <div className={styles.details}>
         <DrawerItem name="Release Name">
           <MaybeLink key="link" to={getHelmReleaseUrl(object)} onClick={stopPropagation}>
             {releaseName}
@@ -131,7 +142,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           {object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version}
         </DrawerItem>
         <DrawerItem name="App Version">{object.status?.history?.[0]?.appVersion}</DrawerItem>
-        <DrawerItem name="Status" hidden={!object.status?.history?.[0]?.status}>
+        <DrawerItem name="History Last Status" hidden={!object.status?.history?.[0]?.status}>
           {object.status?.history?.[0]?.status}
         </DrawerItem>
         <DrawerItem name="Chart Interval" hidden={!object.spec.chart?.spec.interval}>
@@ -200,6 +211,9 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
         </DrawerItem>
         <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
           {object.status?.conditions?.[0].message}
+        </DrawerItem>
+        <DrawerItem name="Suspended">
+          <BadgeBoolean value={object.spec.suspend ?? false} />
         </DrawerItem>
 
         {object.spec.valuesFrom && (

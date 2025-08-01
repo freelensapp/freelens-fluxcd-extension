@@ -1,5 +1,5 @@
 declare const classNames: {
-  readonly kustomizationDetails: "kustomizationDetails";
+  readonly details: "details";
   readonly title: "title";
   readonly kustomizationSubstitute: "kustomizationSubstitute";
   readonly tableCell: "tableCell";

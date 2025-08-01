@@ -2,6 +2,8 @@ declare const classNames: {
   readonly page: "page";
   readonly tableCell: "tableCell";
   readonly revision: "revision";
+  readonly url: "url";
+  readonly ref: "ref";
   readonly condition: "condition";
   readonly message: "message";
   readonly age: "age";

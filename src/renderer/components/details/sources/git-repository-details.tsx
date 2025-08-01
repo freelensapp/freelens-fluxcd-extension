@@ -1,50 +1,27 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository";
-import { getStatusClass, getStatusText } from "../../../utils";
+import { getConditionClass, getConditionText, getGitRef } from "../../../utils";
 
 const {
-  Component: { DrawerItem, Badge },
+  Component: { Badge, BadgeBoolean, DrawerItem },
 } = Renderer;
 
-const {
-  Util: { openBrowser },
-} = Common;
+export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<GitRepository>> = (props) => {
+  const { object } = props;
 
-export class FluxCDGitRepositoryDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<GitRepository>
-> {
-  getRef(object: GitRepository) {
-    const ref = object.spec.ref;
-
-    return ref.branch ?? ref.tag ?? ref.semver ?? ref.name ?? ref.commit;
-  }
-
-  render() {
-    const { object } = this.props;
-
-    return (
-      <div>
-        <DrawerItem name="Status">{object.status?.conditions?.find((s: any) => s.type === "Ready").message}</DrawerItem>
-        <DrawerItem name="Ready">
-          <Badge className={getStatusClass(object)} label={getStatusText(object)} />
-        </DrawerItem>
-        <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-        <DrawerItem name="Timeout">{object.spec.timeout}</DrawerItem>
-        <DrawerItem name="Target Ref">{this.getRef(object)}</DrawerItem>
-        <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
-        <DrawerItem name="Url">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              openBrowser(object.spec.url);
-            }}
-          >
-            {object.spec.url}
-          </a>
-        </DrawerItem>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <DrawerItem name="Condition">
+        <Badge className={getConditionClass(object)} label={getConditionText(object)} />
+      </DrawerItem>
+      <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
+      <DrawerItem name="Timeout">{object.spec.timeout}</DrawerItem>
+      <DrawerItem name="Target Ref">{getGitRef(object.spec.ref) ?? "N/A"}</DrawerItem>
+      <DrawerItem name="Revision">{object.status?.artifact?.revision || "N/A"}</DrawerItem>
+      <DrawerItem name="Suspended">
+        <BadgeBoolean value={object.spec.suspend ?? false} />
+      </DrawerItem>
+    </div>
+  );
+};

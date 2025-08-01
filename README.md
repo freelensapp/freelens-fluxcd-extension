@@ -32,11 +32,13 @@ Features include:
 - Flux >= v2.0.0
 - kustomize-controller >= v0.1.0
 - helm-controller >= v0.1.0
+- source-controller >= v0.1.0
 
 ## API supported
 
-- [helm.toolkit.fluxcd.io/v2beta1](https://github.com/fluxcd/helm-controller/blob/main/docs/spec/v2beta1/helmreleases.md)
-- [kustomize.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/kustomize-controller/blob/v1.6.0/docs/spec/v1beta1/kustomizations.md)
+- [helm.toolkit.fluxcd.io/v2beta1](https://github.com/fluxcd/helm-controller/blob/v0.1.0/docs/spec/v2beta1/)
+- [kustomize.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/kustomize-controller/blob/v0.1.0/docs/spec/v1beta1/)
+- [source.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/source-controller/blob/v0.1.0/docs/api/)
 
 ## Install
 

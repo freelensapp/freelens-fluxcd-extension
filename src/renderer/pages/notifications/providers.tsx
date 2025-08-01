@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Provider } from "../../k8s/fluxcd/notification/provider";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },
@@ -31,8 +31,8 @@ export class ProvidersPage extends React.Component {
           [sortBy.name]: (provider: Provider) => provider.getName(),
           [sortBy.namespace]: (provider: Provider) => provider.getNs(),
           [sortBy.type]: (provider: Provider) => provider.spec.type,
-          [sortBy.ready]: (provider: Provider) => getStatusText(provider),
-          [sortBy.status]: (provider: Provider) => getStatusMessage(provider),
+          [sortBy.ready]: (provider: Provider) => getConditionText(provider),
+          [sortBy.status]: (provider: Provider) => getConditionMessage(provider),
           [sortBy.age]: (provider: Provider) => provider.getCreationTimestamp(),
         }}
         searchFilters={[(provider: Provider) => provider.getSearchFields()]}
@@ -50,7 +50,7 @@ export class ProvidersPage extends React.Component {
           provider.getNs(),
           provider.spec.type,
           this.renderStatus(provider),
-          getStatusMessage(provider),
+          getConditionMessage(provider),
           <KubeObjectAge object={provider} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class ProvidersPage extends React.Component {
   }
 
   renderStatus(provider: Provider) {
-    const className = getStatusClass(provider);
-    const text = getStatusText(provider);
+    const className = getConditionClass(provider);
+    const text = getConditionText(provider);
     return <Badge key="name" label={text} className={className} />;
   }
 }

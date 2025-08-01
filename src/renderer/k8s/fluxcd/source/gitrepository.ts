@@ -1,21 +1,48 @@
 import { Renderer } from "@freelensapp/extensions";
 
+import type { LocalObjectReference } from "@freelensapp/kube-object";
+
+import type { AccessFrom, Artifact, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
+
+export interface GitRepositoryRef {
+  branch?: string;
+  tag?: string;
+  semver?: string;
+  commit?: string;
+  name?: string;
+}
+
+export interface GitRepositoryInclude {
+  repository: LocalObjectReference;
+  fromPath: string;
+  toPath: string;
+}
+
+export interface GitRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
+  url: string;
+  secretRef?: LocalObjectReference;
+  interval: string;
+  timeout?: string;
+  ref?: GitRepositoryRef;
+  verify?: { mode?: string; secretRef?: LocalObjectReference };
+  ignore?: string;
+  suspend?: boolean;
+  gitImplementation?: "go-git" | "libgit2";
+  recurseSubmodules?: boolean;
+  include?: GitRepositoryInclude[];
+  accessFrom?: AccessFrom;
+}
+
+export interface GitRepositoryStatus extends FluxCDKubeObjectStatus {
+  url?: string;
+  artifact?: Artifact;
+  includedArtifacts?: Artifact[];
+}
+
 export class GitRepository extends Renderer.K8sApi.LensExtensionKubeObject<
-  any,
-  any,
-  {
-    url: string;
-    interval: string;
-    timeout: string;
-    suspend: boolean;
-    ref: {
-      branch: string;
-      tag: string;
-      semver: string;
-      name: string;
-      commit: string;
-    };
-  }
+  Renderer.K8sApi.KubeObjectMetadata,
+  GitRepositoryStatus,
+  GitRepositorySpec
 > {
   static readonly kind = "GitRepository";
   static readonly namespaced = true;

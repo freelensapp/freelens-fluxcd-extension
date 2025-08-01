@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { ImageRepository } from "../../k8s/fluxcd/image/imagerepository";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },
@@ -31,8 +31,8 @@ export class ImageRepositoriesPage extends React.Component {
           [sortBy.name]: (imageRepository: ImageRepository) => imageRepository.getName(),
           [sortBy.namespace]: (imageRepository: ImageRepository) => imageRepository.getNs(),
           [sortBy.image]: (imageRepository: ImageRepository) => imageRepository.spec.image,
-          [sortBy.ready]: (imageRepository: ImageRepository) => getStatusText(imageRepository),
-          [sortBy.status]: (imageRepository: ImageRepository) => getStatusMessage(imageRepository),
+          [sortBy.ready]: (imageRepository: ImageRepository) => getConditionText(imageRepository),
+          [sortBy.status]: (imageRepository: ImageRepository) => getConditionMessage(imageRepository),
           [sortBy.age]: (imageRepository: ImageRepository) => imageRepository.getCreationTimestamp(),
         }}
         searchFilters={[(imageRepository: ImageRepository) => imageRepository.getSearchFields()]}
@@ -50,7 +50,7 @@ export class ImageRepositoriesPage extends React.Component {
           imageRepository.getNs(),
           imageRepository.spec.image,
           this.renderStatus(imageRepository),
-          getStatusMessage(imageRepository),
+          getConditionMessage(imageRepository),
           <KubeObjectAge object={imageRepository} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class ImageRepositoriesPage extends React.Component {
   }
 
   renderStatus(imageRepository: ImageRepository) {
-    const className = getStatusClass(imageRepository);
-    const text = getStatusText(imageRepository);
+    const className = getConditionClass(imageRepository);
+    const text = getConditionText(imageRepository);
     return <Badge key="name" label={text} className={className} />;
   }
 }

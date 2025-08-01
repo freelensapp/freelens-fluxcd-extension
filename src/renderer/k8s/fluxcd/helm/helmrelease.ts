@@ -2,13 +2,14 @@ import { Renderer } from "@freelensapp/extensions";
 import {
   type FluxCDKubeObjectCRD,
   type FluxCDKubeObjectSpecWithSuspend,
+  type FluxCDKubeObjectStatus,
   Image,
   JSON6902Patch,
   NamespacedObjectKindReference,
   NamespacedObjectReference,
 } from "../types";
 
-import type { Condition, LocalObjectReference } from "@freelensapp/kube-object";
+import type { LocalObjectReference } from "@freelensapp/kube-object";
 
 import type { Patch, Selector } from "../../core/types";
 
@@ -151,10 +152,8 @@ export interface HelmReleaseSpec extends FluxCDKubeObjectSpecWithSuspend {
   }[];
 }
 
-export interface HelmReleaseStatus {
-  observedGeneration?: number;
+export interface HelmReleaseStatus extends FluxCDKubeObjectStatus {
   observedPostRenderersDigest?: string;
-  conditions?: Condition[];
   lastAppliedRevision?: string;
   lastAttemptedRevision?: string;
   lastAttemptedValuesChecksum?: string;

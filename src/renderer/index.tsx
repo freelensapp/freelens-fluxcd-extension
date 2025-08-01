@@ -1,6 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { HelmReleaseDetails } from "./components/details/helm/helm-release-details";
 import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
+import { GitRepositoryDetails } from "./components/details/sources/git-repository-details";
 import svgIcon from "./icons/fluxcd.svg?raw";
 import { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
 import { ImagePolicy } from "./k8s/fluxcd/image/imagepolicy";
@@ -69,7 +70,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: GitRepository.crd.plural,
       components: {
-        Page: () => <GitRepositoriesPage />,
+        Page: () => <GitRepositoriesPage extension={this} />,
       },
     },
     {
@@ -138,6 +139,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "fluxcd",
       title: "FluxCD",
+      target: { pageId: "dashboard" },
       components: {
         Icon: FluxCDIcon,
       },
@@ -279,13 +281,21 @@ export default class FluxCDExtension extends Renderer.LensExtension {
 
   kubeObjectDetailItems = [
     {
+      kind: GitRepository.kind,
+      apiVersions: GitRepository.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository>) => (
+          <GitRepositoryDetails {...props} />
+        ),
+      },
+    },
+    {
       kind: HelmRelease.kind,
       apiVersions: HelmRelease.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository>) => (
-          <HelmReleaseDetails {...props} />
-        ),
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRelease>) => <HelmReleaseDetails {...props} />,
       },
     },
     {
@@ -301,6 +311,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
   ];
 
   kubeObjectMenuItems = [
+    {
+      kind: GitRepository.kind,
+      apiVersions: GitRepository.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={GitRepository} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository.kind,
+      apiVersions: GitRepository.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={GitRepository} />
+        ),
+      },
+    },
     {
       kind: HelmRelease.kind,
       apiVersions: HelmRelease.crd.apiVersions,

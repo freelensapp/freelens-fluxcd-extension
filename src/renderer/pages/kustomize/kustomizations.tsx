@@ -2,8 +2,8 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
 import { withErrorPage } from "../../components/error-page";
-import { Kustomization } from "../../k8s/fluxcd/kustomize/kustomization";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 import styles from "./kustomizations.module.scss";
 import stylesInline from "./kustomizations.module.scss?inline";
 
@@ -17,64 +17,65 @@ const {
   Util: { stopPropagation },
 } = Common;
 
+const KubeObject = Kustomization;
+type KubeObject = Kustomization;
+type KubeObjectApi = KustomizationApi;
+
+function getLastAppliedRevision(object: KubeObject): string | undefined {
+  return object.status?.lastAppliedRevision?.replace(/^refs\/(heads|tags)\//, "");
+}
+
+const sortingCallbacks = {
+  name: (object: KubeObject) => object.getName(),
+  namespace: (object: KubeObject) => object.getNs(),
+  revision: (object: KubeObject) => object.status?.lastAppliedRevision,
+  condition: (object: KubeObject) => getConditionText(object),
+  message: (object: KubeObject) => getConditionText(object),
+  age: (object: KubeObject) => object.getCreationTimestamp(),
+};
+
+const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
+  { title: "Name", sortBy: "name" },
+  { title: "Namespace", sortBy: "namespace" },
+  { title: "Revision", sortBy: "revision", className: styles.revision },
+  { title: "Condition", sortBy: "condition", className: styles.condition },
+  { title: "Message", sortBy: "message", className: styles.message },
+  { title: "Age", sortBy: "age", className: styles.age },
+];
+
 export interface KustomizationsPageProps {
   extension: Renderer.LensExtension;
 }
 
 export const KustomizationsPage = observer((props: KustomizationsPageProps) =>
   withErrorPage(props, () => {
-    const store = Kustomization.getStore();
-    if (!store) return <></>;
-
-    const sortingCallbacks = {
-      name: (kustomization: Kustomization) => kustomization.getName(),
-      namespace: (kustomization: Kustomization) => kustomization.getNs(),
-      revision: (kustomization: Kustomization) => kustomization.status?.lastAppliedRevision,
-      status: (kustomization: Kustomization) => getStatusText(kustomization),
-      message: (kustomization: Kustomization) => getStatusText(kustomization),
-      age: (kustomization: Kustomization) => kustomization.getCreationTimestamp(),
-    };
-
-    const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
-      { title: "Name", sortBy: "name" },
-      { title: "Namespace", sortBy: "namespace" },
-      { title: "Revision", sortBy: "revision", className: styles.revision },
-      { title: "Status", sortBy: "status", className: styles.status },
-      { title: "Message", sortBy: "message", className: styles.message },
-      { title: "Age", sortBy: "age", className: styles.age },
-    ];
+    const store = KubeObject.getStore<KubeObject>();
 
     return (
       <>
         <style>{stylesInline}</style>
-        <KubeObjectListLayout
-          tableId="kustomizationsTable"
-          className={styles.kustomizations}
+        <KubeObjectListLayout<KubeObject, KubeObjectApi>
+          tableId={`${KubeObject.crd.plural}Table`}
+          className={styles.page}
           store={store}
           sortingCallbacks={sortingCallbacks}
-          searchFilters={[(kustomization: Kustomization) => kustomization.getSearchFields()]}
-          renderHeaderTitle="Kustomizations"
+          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+          renderHeaderTitle={KubeObject.crd.title}
           renderTableHeader={renderTableHeader}
-          renderTableContents={(kustomization: Kustomization) => {
-            const lastAppliedRevision =
-              kustomization.status?.lastAppliedRevision?.replace(/^refs\/(heads|tags)\//, "") || "N/A";
-            const statusMessage = getStatusMessage(kustomization);
-
-            return [
-              <WithTooltip>{kustomization.getName()}</WithTooltip>,
-              <Link
-                key="link"
-                to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: kustomization.getNs() }))}
-                onClick={stopPropagation}
-              >
-                <WithTooltip>{kustomization.getNs()}</WithTooltip>
-              </Link>,
-              <WithTooltip>{lastAppliedRevision}</WithTooltip>,
-              <Badge className={getStatusClass(kustomization)} label={getStatusText(kustomization)} />,
-              <WithTooltip>{statusMessage}</WithTooltip>,
-              <KubeObjectAge object={kustomization} key="age" />,
-            ];
-          }}
+          renderTableContents={(object: KubeObject) => [
+            <WithTooltip>{object.getName()}</WithTooltip>,
+            <Link
+              key="link"
+              to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.getNs() }))}
+              onClick={stopPropagation}
+            >
+              <WithTooltip>{object.getNs()}</WithTooltip>
+            </Link>,
+            <WithTooltip>{getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
+            <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
+            <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
+            <KubeObjectAge object={object} key="age" />,
+          ]}
         />
       </>
     );

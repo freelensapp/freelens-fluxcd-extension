@@ -13,6 +13,22 @@ export interface NamespacedObjectKindReference extends NamespacedObjectReference
   kind: string;
 }
 
+export interface NamespaceSelector {
+  matchLabels?: Record<string, string>;
+}
+
+export interface AccessFrom {
+  namespaceSelectors?: NamespaceSelector[];
+}
+
+export interface Artifact {
+  path: string;
+  url: string;
+  revision: string;
+  checksum: string;
+  lastUpdateTime?: string;
+}
+
 export interface Image {
   name: string;
   newName?: string;
@@ -48,4 +64,9 @@ export interface FluxCDKubeObjectSpecWithSuspend {
 
 export interface FluxCDKubeObjectStatusWithConditions {
   conditions?: Condition[];
+}
+
+export interface FluxCDKubeObjectStatus extends FluxCDKubeObjectStatusWithConditions {
+  observedGeneration?: number;
+  lastHandledReconcileAt?: string;
 }

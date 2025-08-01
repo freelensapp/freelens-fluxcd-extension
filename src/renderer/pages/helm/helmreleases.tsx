@@ -2,8 +2,8 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
 import { withErrorPage } from "../../components/error-page";
-import { HelmRelease } from "../../k8s/fluxcd/helm/helmrelease";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 import styles from "./helmreleases.module.scss";
 import stylesInline from "./helmreleases.module.scss?inline";
 
@@ -17,24 +17,34 @@ const {
   Util: { stopPropagation },
 } = Common;
 
+const KubeObject = HelmRelease;
+type KubeObject = HelmRelease;
+type KubeObjectApi = HelmReleaseApi;
+
+function getAppVersion(object: KubeObject): string | undefined {
+  return object.status?.history?.[0]?.appVersion;
+}
+
+function getChartVersion(object: KubeObject): string | undefined {
+  return object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version;
+}
+
 export interface HelmReleasesPageProps {
   extension: Renderer.LensExtension;
 }
 
 export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
   withErrorPage(props, () => {
-    const store = HelmRelease.getStore();
-    if (!store) return <></>;
+    const store = KubeObject.getStore<KubeObject>();
 
     const sortingCallbacks = {
-      name: (helmRelease: HelmRelease) => helmRelease.getName(),
-      namespace: (helmRelease: HelmRelease) => helmRelease.getNs(),
-      ready: (helmRelease: HelmRelease) => getStatusText(helmRelease),
-      chartVersion: (helmRelease: HelmRelease) =>
-        helmRelease.status?.history?.[0]?.chartVersion ?? helmRelease.spec.chart?.spec.version,
-      appVersion: (helmRelease: HelmRelease) => helmRelease.status?.history?.[0]?.appVersion,
-      status: (helmRelease: HelmRelease) => getStatusMessage(helmRelease),
-      age: (helmRelease: HelmRelease) => helmRelease.getCreationTimestamp(),
+      name: (object: KubeObject) => object.getName(),
+      namespace: (object: KubeObject) => object.getNs(),
+      ready: (object: KubeObject) => getConditionText(object),
+      chartVersion: (object: KubeObject) => getChartVersion(object),
+      appVersion: (object: KubeObject) => getAppVersion(object),
+      condition: (object: KubeObject) => getConditionMessage(object),
+      age: (object: KubeObject) => object.getCreationTimestamp(),
     };
 
     const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
@@ -43,40 +53,36 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
       { title: "Ready", sortBy: "ready", className: styles.ready },
       { title: "Chart Version", sortBy: "chartVersion" },
       { title: "App Version", sortBy: "appVersion" },
-      { title: "Status", sortBy: "status" },
+      { title: "Condition", sortBy: "condition" },
       { title: "Age", sortBy: "age", className: styles.age },
     ];
 
     return (
       <>
         <style>{stylesInline}</style>
-        <KubeObjectListLayout
-          tableId="helmReleasesTable"
-          className={styles.helmReleases}
+        <KubeObjectListLayout<KubeObject, KubeObjectApi>
+          tableId={`${KubeObject.crd.plural}Table`}
+          className={styles.page}
           store={store}
           sortingCallbacks={sortingCallbacks}
-          searchFilters={[(helmRelease: HelmRelease) => helmRelease.getSearchFields()]}
+          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
           renderHeaderTitle="Helm Releases"
           renderTableHeader={renderTableHeader}
-          renderTableContents={(helmRelease: HelmRelease) => {
-            const status = getStatusMessage(helmRelease);
-            const chartVersion = helmRelease.status?.history?.[0]?.chartVersion ?? helmRelease.spec.chart?.spec.version;
-            const appVersion = helmRelease.status?.history?.[0]?.appVersion;
-
+          renderTableContents={(object: KubeObject) => {
             return [
-              <WithTooltip>{helmRelease.getName()}</WithTooltip>,
+              <WithTooltip>{object.getName()}</WithTooltip>,
               <Link
                 key="link"
-                to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: helmRelease.getNs() }))}
+                to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.getNs() }))}
                 onClick={stopPropagation}
               >
-                <WithTooltip>{helmRelease.getNs()}</WithTooltip>
+                <WithTooltip>{object.getNs()}</WithTooltip>
               </Link>,
-              <Badge key="name" label={getStatusText(helmRelease)} className={getStatusClass(helmRelease)} />,
-              <WithTooltip>{chartVersion}</WithTooltip>,
-              <WithTooltip>{appVersion}</WithTooltip>,
-              <WithTooltip>{status}</WithTooltip>,
-              <KubeObjectAge object={helmRelease} key="age" />,
+              <Badge key="name" label={getConditionText(object)} className={getConditionClass(object)} />,
+              <WithTooltip>{getChartVersion(object)}</WithTooltip>,
+              <WithTooltip>{getAppVersion(object)}</WithTooltip>,
+              <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
+              <KubeObjectAge object={object} key="age" />,
             ];
           }}
         />

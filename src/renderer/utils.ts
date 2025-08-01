@@ -5,6 +5,7 @@ import type { Condition } from "@freelensapp/kube-object";
 
 import type { DumpOptions } from "js-yaml";
 
+import type { GitRepository, GitRepositoryRef } from "./k8s/fluxcd/source/gitrepository";
 import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatusWithConditions } from "./k8s/fluxcd/types";
 
 type KubeObjectWithCondition = Renderer.K8sApi.KubeObject<
@@ -45,7 +46,7 @@ export function getLastCondition<T extends KubeObjectWithCondition>(object: T): 
   return conditions[0];
 }
 
-export function getStatusText<T extends KubeObjectWithCondition>(object: T) {
+export function getConditionText<T extends KubeObjectWithCondition>(object: T) {
   const condition = getLastCondition(object);
   if ("suspend" in object.spec && object.spec.suspend) return "Suspended";
   if (condition?.status === "True") return "Ready";
@@ -54,12 +55,12 @@ export function getStatusText<T extends KubeObjectWithCondition>(object: T) {
   return "Unknown";
 }
 
-export function getStatusMessage<T extends KubeObjectWithCondition>(object: T) {
+export function getConditionMessage<T extends KubeObjectWithCondition>(object: T) {
   return getLastCondition(object)?.message ?? "-";
 }
 
-export function getStatusClass<T extends KubeObjectWithCondition>(obj: T) {
-  const status = getStatusText(obj);
+export function getConditionClass<T extends KubeObjectWithCondition>(obj: T) {
+  const status = getConditionText(obj);
   switch (status) {
     case "Ready":
       return "success";
@@ -91,3 +92,12 @@ export const defaultYamlDumpOptions: DumpOptions = {
   quotingType: '"',
   sortKeys: true,
 };
+
+export function getGitRef(ref?: GitRepositoryRef): string | undefined {
+  if (!ref) return;
+  return ref.name?.replace(/^refs\/(heads|tags)\//, "") ?? ref.branch ?? ref.tag ?? ref.semver ?? ref.commit;
+}
+
+export function getGitRevision(object: GitRepository): string | undefined {
+  return object.status?.artifact?.revision?.replace(/^refs\/(heads|tags)\//, "");
+}

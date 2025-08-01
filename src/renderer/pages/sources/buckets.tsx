@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Bucket } from "../../k8s/fluxcd/source/bucket";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },
@@ -31,8 +31,8 @@ export class BucketsPage extends React.Component {
           [sortBy.name]: (bucket: Bucket) => bucket.getName(),
           [sortBy.namespace]: (bucket: Bucket) => bucket.getNs(),
           [sortBy.url]: (bucket: Bucket) => bucket.spec.url,
-          [sortBy.ready]: (bucket: Bucket) => getStatusText(bucket),
-          [sortBy.status]: (bucket: Bucket) => getStatusMessage(bucket),
+          [sortBy.ready]: (bucket: Bucket) => getConditionText(bucket),
+          [sortBy.status]: (bucket: Bucket) => getConditionMessage(bucket),
           [sortBy.age]: (bucket: Bucket) => bucket.getCreationTimestamp(),
         }}
         searchFilters={[(bucket: Bucket) => bucket.getSearchFields()]}
@@ -50,7 +50,7 @@ export class BucketsPage extends React.Component {
           bucket.getNs(),
           bucket.spec.url,
           this.renderStatus(bucket),
-          getStatusMessage(bucket),
+          getConditionMessage(bucket),
           <KubeObjectAge object={bucket} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class BucketsPage extends React.Component {
   }
 
   renderStatus(bucket: Bucket) {
-    const className = getStatusClass(bucket);
-    const text = getStatusText(bucket);
+    const className = getConditionClass(bucket);
+    const text = getConditionText(bucket);
     return <Badge key="name" label={text} className={className} />;
   }
 }

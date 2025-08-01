@@ -1,5 +1,5 @@
 declare const classNames: {
-  readonly helmReleaseDetails: "helmReleaseDetails";
+  readonly details: "details";
   readonly title: "title";
   readonly helmReleaseHistory: "helmReleaseHistory";
   readonly tableCell: "tableCell";

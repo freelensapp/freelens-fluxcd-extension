@@ -1,11 +1,12 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { Condition, LocalObjectReference } from "@freelensapp/kube-object";
+import type { LocalObjectReference } from "@freelensapp/kube-object";
 
 import type { Patch } from "../../core/types";
 import type {
   FluxCDKubeObjectCRD,
   FluxCDKubeObjectSpecWithSuspend,
+  FluxCDKubeObjectStatus,
   Image,
   JSON6902Patch,
   NamespacedObjectKindReference,
@@ -47,12 +48,9 @@ export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   force?: boolean;
 }
 
-export interface KustomizationStatus {
-  observedGeneration?: number;
-  conditions?: Condition[];
+export interface KustomizationStatus extends FluxCDKubeObjectStatus {
   lastAppliedRevision?: string;
   lastAttemptedRevision?: string;
-  lastHandledReconcileAt: string;
   snapshot: Snapshot;
 }
 

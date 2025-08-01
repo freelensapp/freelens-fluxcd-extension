@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { ImageUpdateAutomation } from "../../k8s/fluxcd/image/imageupdateautomation";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },
@@ -29,8 +29,8 @@ export class ImageUpdateAutomationsPage extends React.Component {
         sortingCallbacks={{
           [sortBy.name]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getName(),
           [sortBy.namespace]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getNs(),
-          [sortBy.ready]: (imageUpdateAutomation: ImageUpdateAutomation) => getStatusText(imageUpdateAutomation),
-          [sortBy.status]: (imageUpdateAutomation: ImageUpdateAutomation) => getStatusMessage(imageUpdateAutomation),
+          [sortBy.ready]: (imageUpdateAutomation: ImageUpdateAutomation) => getConditionText(imageUpdateAutomation),
+          [sortBy.status]: (imageUpdateAutomation: ImageUpdateAutomation) => getConditionMessage(imageUpdateAutomation),
           [sortBy.age]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getCreationTimestamp(),
         }}
         searchFilters={[(imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getSearchFields()]}
@@ -46,7 +46,7 @@ export class ImageUpdateAutomationsPage extends React.Component {
           imageUpdateAutomation.getName(),
           imageUpdateAutomation.getNs(),
           this.renderStatus(imageUpdateAutomation),
-          getStatusMessage(imageUpdateAutomation),
+          getConditionMessage(imageUpdateAutomation),
           <KubeObjectAge object={imageUpdateAutomation} key="age" />,
         ]}
       />
@@ -54,8 +54,8 @@ export class ImageUpdateAutomationsPage extends React.Component {
   }
 
   renderStatus(imageUpdateAutomation: ImageUpdateAutomation) {
-    const className = getStatusClass(imageUpdateAutomation);
-    const text = getStatusText(imageUpdateAutomation);
+    const className = getConditionClass(imageUpdateAutomation);
+    const text = getConditionText(imageUpdateAutomation);
     return <Badge key="name" label={text} className={className} />;
   }
 }

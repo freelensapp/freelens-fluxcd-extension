@@ -1,7 +1,7 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver";
-import { getStatusClass, getStatusText } from "../../../utils";
+import { getConditionClass, getConditionText } from "../../../utils";
 
 interface ReceiverDetailsState {
   events: Renderer.K8sApi.KubeEvent[];
@@ -60,7 +60,7 @@ export class FluxCDReceiverDetails extends React.Component<
       <div>
         <DrawerItem name="Status">{object.status?.conditions?.find((s: any) => s.type === "Ready").message}</DrawerItem>
         <DrawerItem name="Ready">
-          <Badge className={getStatusClass(object)} label={getStatusText(object)} />
+          <Badge className={getConditionClass(object)} label={getConditionText(object)} />
         </DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
         <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
