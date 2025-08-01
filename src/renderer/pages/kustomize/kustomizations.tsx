@@ -9,14 +9,14 @@ import styles from "./kustomizations.module.scss";
 import stylesInline from "./kustomizations.module.scss?inline";
 
 const {
+  Util: { stopPropagation },
+} = Common;
+
+const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout, MaybeLink, WithTooltip },
   K8sApi: { namespacesApi },
   Navigation: { getDetailsUrl },
 } = Renderer;
-
-const {
-  Util: { stopPropagation },
-} = Common;
 
 const KubeObject = Kustomization;
 type KubeObject = Kustomization;

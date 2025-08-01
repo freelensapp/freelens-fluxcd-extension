@@ -1,7 +1,23 @@
 .page {
   :global(.TableCell) {
-    &.ready {
+    &.source {
+      flex-grow: 1;
+    }
+
+    &.chartVersion {
       flex-grow: 0.7;
+    }
+
+    &.appVersion {
+      flex-grow: 0.7;
+    }
+
+    &.condition {
+      flex-grow: 0.7;
+    }
+
+    &.message {
+      flex-grow: 1.3;
     }
 
     &.age {

@@ -1,14 +1,20 @@
-import { Renderer } from "@freelensapp/extensions";
+import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
+import { Link } from "react-router-dom";
 import { getGitRef, getGitRevision } from "../../components/details/sources/git-repository-details";
 import { withErrorPage } from "../../components/error-page";
 import { GitRepository, type GitRepositoryApi } from "../../k8s/fluxcd/source/gitrepository";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
 import styles from "./gitrepositories.module.scss";
 import stylesInline from "./gitrepositories.module.scss?inline";
 
 const {
+  Util: { stopPropagation },
+} = Common;
+
+const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout, WithTooltip },
+  K8sApi: { namespacesApi },
 } = Renderer;
 
 const KubeObject = GitRepository;
@@ -54,11 +60,17 @@ export const GitRepositoriesPage = observer((props: GitRepositoriesPageProps) =>
           store={store}
           sortingCallbacks={sortingCallbacks}
           searchFilters={[(object: KubeObject) => object.getSearchFields()]}
-          renderHeaderTitle="Git Repositories"
+          renderHeaderTitle={KubeObject.crd.title}
           renderTableHeader={renderTableHeader}
           renderTableContents={(object: KubeObject) => [
             <WithTooltip>{object.getName()}</WithTooltip>,
-            <WithTooltip>{object.getNs()}</WithTooltip>,
+            <Link
+              key="link"
+              to={getMaybeDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.getNs() }))}
+              onClick={stopPropagation}
+            >
+              <WithTooltip>{object.getNs()}</WithTooltip>
+            </Link>,
             <WithTooltip>{object.spec.url}</WithTooltip>,
             <WithTooltip>{getGitRef(object.spec.ref) || "N/A"}</WithTooltip>,
             <WithTooltip>{getGitRevision(object) || "N/A"}</WithTooltip>,

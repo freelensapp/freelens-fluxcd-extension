@@ -1,21 +1,26 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
+import {
+  getSourceRefName,
+  getSourceRefText,
+  getSourceRefUrl,
+} from "../../components/details/helm/helm-release-details";
 import { withErrorPage } from "../../components/error-page";
 import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
 import styles from "./helmreleases.module.scss";
 import stylesInline from "./helmreleases.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectListLayout, KubeObjectAge, WithTooltip },
+  Util: { stopPropagation },
+} = Common;
+
+const {
+  Component: { Badge, KubeObjectListLayout, KubeObjectAge, MaybeLink, WithTooltip },
   K8sApi: { namespacesApi },
   Navigation: { getDetailsUrl },
 } = Renderer;
-
-const {
-  Util: { stopPropagation },
-} = Common;
 
 const KubeObject = HelmRelease;
 type KubeObject = HelmRelease;
@@ -40,20 +45,22 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
     const sortingCallbacks = {
       name: (object: KubeObject) => object.getName(),
       namespace: (object: KubeObject) => object.getNs(),
-      ready: (object: KubeObject) => getConditionText(object),
+      source: (object: KubeObject) => getSourceRefName(object),
+      condition: (object: KubeObject) => getConditionText(object),
       chartVersion: (object: KubeObject) => getChartVersion(object),
       appVersion: (object: KubeObject) => getAppVersion(object),
-      condition: (object: KubeObject) => getConditionMessage(object),
+      message: (object: KubeObject) => getConditionMessage(object),
       age: (object: KubeObject) => object.getCreationTimestamp(),
     };
 
     const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
       { title: "Name", sortBy: "name" },
       { title: "Namespace", sortBy: "namespace" },
-      { title: "Ready", sortBy: "ready", className: styles.ready },
+      { title: "Source", sortBy: "source", className: styles.source },
       { title: "Chart Version", sortBy: "chartVersion" },
       { title: "App Version", sortBy: "appVersion" },
-      { title: "Condition", sortBy: "condition" },
+      { title: "Condition", sortBy: "condition", className: styles.condition },
+      { title: "Message", sortBy: "message", className: styles.message },
       { title: "Age", sortBy: "age", className: styles.age },
     ];
 
@@ -66,7 +73,7 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
           store={store}
           sortingCallbacks={sortingCallbacks}
           searchFilters={[(object: KubeObject) => object.getSearchFields()]}
-          renderHeaderTitle="Helm Releases"
+          renderHeaderTitle={KubeObject.crd.title}
           renderTableHeader={renderTableHeader}
           renderTableContents={(object: KubeObject) => {
             return [
@@ -78,9 +85,14 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
               >
                 <WithTooltip>{object.getNs()}</WithTooltip>
               </Link>,
+              <WithTooltip tooltip={getSourceRefText(object)}>
+                <MaybeLink to={getMaybeDetailsUrl(getSourceRefUrl(object))} onClick={stopPropagation}>
+                  {getSourceRefName(object)}
+                </MaybeLink>
+              </WithTooltip>,
+              <WithTooltip>{getChartVersion(object) ?? "N/A"}</WithTooltip>,
+              <WithTooltip>{getAppVersion(object) ?? "N/A"}</WithTooltip>,
               <Badge key="name" label={getConditionText(object)} className={getConditionClass(object)} />,
-              <WithTooltip>{getChartVersion(object)}</WithTooltip>,
-              <WithTooltip>{getAppVersion(object)}</WithTooltip>,
               <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
               <KubeObjectAge object={object} key="age" />,
             ];
