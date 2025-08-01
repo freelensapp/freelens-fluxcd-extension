@@ -1,7 +1,11 @@
-import { Renderer } from "@freelensapp/extensions";
+import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { HelmChart } from "../../../k8s/fluxcd/source/helmchart";
-import { getStatusClass, getStatusText, lowerAndPluralize } from "../../../utils";
+import { getStatusClass, getStatusText } from "../../../utils";
+
+const {
+  Util: { lowerAndPluralize },
+} = Common;
 
 const {
   Component: { DrawerItem, Badge },

@@ -17,25 +17,6 @@ const {
   Navigation: { getDetailsUrl },
 } = Renderer;
 
-// TODO: Use API 1.5
-export function lowerAndPluralize(str: string) {
-  const lowerStr = str.toLowerCase();
-
-  if (lowerStr.endsWith("y")) {
-    return lowerStr.replace(/y$/, "ies");
-  } else if (
-    lowerStr.endsWith("s") ||
-    lowerStr.endsWith("x") ||
-    lowerStr.endsWith("z") ||
-    lowerStr.endsWith("ch") ||
-    lowerStr.endsWith("sh")
-  ) {
-    return lowerStr + "es";
-  } else {
-    return lowerStr + "s";
-  }
-}
-
 export function getMaybeDetailsUrl(url?: string): string {
   if (url) {
     return getDetailsUrl(url);

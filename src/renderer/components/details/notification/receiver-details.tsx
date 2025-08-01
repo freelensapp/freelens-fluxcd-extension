@@ -1,12 +1,16 @@
-import { Renderer } from "@freelensapp/extensions";
+import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver";
-import { getStatusClass, getStatusText, lowerAndPluralize } from "../../../utils";
+import { getStatusClass, getStatusText } from "../../../utils";
 
 interface ReceiverDetailsState {
   events: Renderer.K8sApi.KubeEvent[];
   crds: Renderer.K8sApi.CustomResourceDefinition[];
 }
+
+const {
+  Util: { lowerAndPluralize },
+} = Common;
 
 const {
   Component: { DrawerItem, Badge },

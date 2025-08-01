@@ -1,7 +1,10 @@
-import { Renderer } from "@freelensapp/extensions";
+import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { ImagePolicy } from "../../../k8s/fluxcd/image/imagepolicy";
-import { lowerAndPluralize } from "../../../utils";
+
+const {
+  Util: { lowerAndPluralize },
+} = Common;
 
 const {
   Component: { DrawerItem },
