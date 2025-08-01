@@ -81,7 +81,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: HelmRelease.crd.plural,
       components: {
-        Page: () => <HelmReleasesPage />,
+        Page: () => <HelmReleasesPage extension={this} />,
       },
     },
     {
@@ -111,7 +111,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: Kustomization.crd.plural,
       components: {
-        Page: () => <KustomizationsPage />,
+        Page: () => <KustomizationsPage extension={this} />,
       },
     },
     {
