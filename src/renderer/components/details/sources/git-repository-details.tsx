@@ -1,11 +1,20 @@
 import { Renderer } from "@freelensapp/extensions";
 import React from "react";
-import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository";
-import { getConditionClass, getConditionText, getGitRef } from "../../../utils";
+import { GitRepository, type GitRepositoryRef } from "../../../k8s/fluxcd/source/gitrepository";
+import { getConditionClass, getConditionText } from "../../../utils";
 
 const {
   Component: { Badge, BadgeBoolean, DrawerItem },
 } = Renderer;
+
+export function getGitRef(ref?: GitRepositoryRef): string | undefined {
+  if (!ref) return;
+  return ref.name?.replace(/^refs\/(heads|tags)\//, "") ?? ref.branch ?? ref.tag ?? ref.semver ?? ref.commit;
+}
+
+export function getGitRevision(object: GitRepository): string | undefined {
+  return object.status?.artifact?.revision?.replace(/^refs\/(heads|tags)\//, "");
+}
 
 export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<GitRepository>> = (props) => {
   const { object } = props;

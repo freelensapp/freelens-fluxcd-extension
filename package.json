@@ -1,6 +1,6 @@
 {
   "name": "@freelensapp/fluxcd-extension",
-  "version": "3.3.0-115",
+  "version": "3.3.0-120",
   "description": "Freelens extension for FluxCD",
   "repository": {
     "type": "git",

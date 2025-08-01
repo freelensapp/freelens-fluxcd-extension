@@ -5,7 +5,6 @@ import type { Condition } from "@freelensapp/kube-object";
 
 import type { DumpOptions } from "js-yaml";
 
-import type { GitRepository, GitRepositoryRef } from "./k8s/fluxcd/source/gitrepository";
 import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatusWithConditions } from "./k8s/fluxcd/types";
 
 type KubeObjectWithCondition = Renderer.K8sApi.KubeObject<
@@ -92,12 +91,3 @@ export const defaultYamlDumpOptions: DumpOptions = {
   quotingType: '"',
   sortKeys: true,
 };
-
-export function getGitRef(ref?: GitRepositoryRef): string | undefined {
-  if (!ref) return;
-  return ref.name?.replace(/^refs\/(heads|tags)\//, "") ?? ref.branch ?? ref.tag ?? ref.semver ?? ref.commit;
-}
-
-export function getGitRevision(object: GitRepository): string | undefined {
-  return object.status?.artifact?.revision?.replace(/^refs\/(heads|tags)\//, "");
-}

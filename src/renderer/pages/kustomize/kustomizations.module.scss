@@ -1,5 +1,9 @@
 .page {
   :global(.TableCell) {
+    &.source {
+      flex-grow: 1;
+    }
+
     &.revision {
       flex-grow: 1.3;
     }

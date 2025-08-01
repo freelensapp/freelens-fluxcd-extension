@@ -42,6 +42,21 @@ const {
   Util: { stopPropagation },
 } = Common;
 
+export function getSourceRefText(object: Kustomization): string {
+  return [
+    object.spec.sourceRef.kind,
+    ": ",
+    object.spec.sourceRef.namespace ? `${object.spec.sourceRef.namespace}/` : "",
+    object.spec.sourceRef.name,
+  ].join("");
+}
+
+export function getSourceRefUrl(object: Kustomization): string | undefined {
+  const ref = object.spec.sourceRef;
+  if (!ref) return;
+  return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
+}
+
 export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Kustomization>> = (props) => {
   const { object } = props;
   const namespace = object.getNs();
@@ -51,12 +66,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
   const [substituteFromYaml, setSubstituteFromYaml] = useState<Record<string, string>>({});
 
   const getRefUrl = (ref: NamespacedObjectKindReference) => {
-    if (!ref) return;
-    return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
-  };
-
-  const getSourceRefUrl = (object: Kustomization) => {
-    const ref = object.spec.sourceRef;
     if (!ref) return;
     return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
   };
@@ -108,10 +117,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         </DrawerItem>
         <DrawerItem name="Source">
           <MaybeLink key="link" to={getMaybeDetailsUrl(sourceRefUrl)} onClick={stopPropagation}>
-            {object.spec.sourceRef.kind}
-            {": "}
-            {object.spec.sourceRef.namespace ? `${object.spec.sourceRef.namespace}/` : ""}
-            {object.spec.sourceRef.name}
+            {getSourceRefText(object)}
           </MaybeLink>
         </DrawerItem>
         <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>

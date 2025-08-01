@@ -1,14 +1,15 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
+import { getSourceRefText, getSourceRefUrl } from "../../components/details/kustomize/kustomization-details";
 import { withErrorPage } from "../../components/error-page";
 import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
 import styles from "./kustomizations.module.scss";
 import stylesInline from "./kustomizations.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, WithTooltip },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, MaybeLink, WithTooltip },
   K8sApi: { namespacesApi },
   Navigation: { getDetailsUrl },
 } = Renderer;
@@ -28,6 +29,7 @@ function getLastAppliedRevision(object: KubeObject): string | undefined {
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
+  source: (object: KubeObject) => object.spec.sourceRef.name,
   revision: (object: KubeObject) => object.status?.lastAppliedRevision,
   condition: (object: KubeObject) => getConditionText(object),
   message: (object: KubeObject) => getConditionText(object),
@@ -37,6 +39,7 @@ const sortingCallbacks = {
 const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
+  { title: "Source", sortBy: "source", className: styles.source },
   { title: "Revision", sortBy: "revision", className: styles.revision },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Message", sortBy: "message", className: styles.message },
@@ -71,6 +74,11 @@ export const KustomizationsPage = observer((props: KustomizationsPageProps) =>
             >
               <WithTooltip>{object.getNs()}</WithTooltip>
             </Link>,
+            <WithTooltip tooltip={getSourceRefText(object)}>
+              <MaybeLink key="link" to={getMaybeDetailsUrl(getSourceRefUrl(object))} onClick={stopPropagation}>
+                {object.spec.sourceRef.name}
+              </MaybeLink>
+            </WithTooltip>,
             <WithTooltip>{getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
             <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
             <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
