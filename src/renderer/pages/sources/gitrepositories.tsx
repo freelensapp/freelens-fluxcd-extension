@@ -1,7 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
-import { getGitRef, getGitRevision } from "../../components/details/sources/git-repository-details";
 import { withErrorPage } from "../../components/error-page";
 import { GitRepository, type GitRepositoryApi } from "../../k8s/fluxcd/source/gitrepository";
 import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
@@ -25,8 +24,8 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   url: (object: KubeObject) => object.spec.url,
-  ref: (object: KubeObject) => getGitRef(object.spec.ref),
-  revision: (object: KubeObject) => getGitRevision(object),
+  ref: (object: KubeObject) => GitRepository.getGitRef(object.spec.ref),
+  revision: (object: KubeObject) => GitRepository.getGitRevision(object),
   condition: (object: KubeObject) => getConditionText(object),
   message: (object: KubeObject) => getConditionText(object),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -72,8 +71,8 @@ export const GitRepositoriesPage = observer((props: GitRepositoriesPageProps) =>
               <WithTooltip>{object.getNs()}</WithTooltip>
             </Link>,
             <WithTooltip>{object.spec.url}</WithTooltip>,
-            <WithTooltip>{getGitRef(object.spec.ref) || "N/A"}</WithTooltip>,
-            <WithTooltip>{getGitRevision(object) || "N/A"}</WithTooltip>,
+            <WithTooltip>{GitRepository.getGitRef(object.spec.ref) || "N/A"}</WithTooltip>,
+            <WithTooltip>{GitRepository.getGitRevision(object) || "N/A"}</WithTooltip>,
             <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
             <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,

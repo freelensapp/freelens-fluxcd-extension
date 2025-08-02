@@ -74,6 +74,25 @@ export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<
     shortNames: ["ks"],
     title: "Kustomizations",
   };
+
+  static getLastAppliedRevision(object: Kustomization): string | undefined {
+    return object.status?.lastAppliedRevision?.replace(/^refs\/(heads|tags)\//, "");
+  }
+
+  static getSourceRefText(object: Kustomization): string {
+    return [
+      object.spec.sourceRef.kind,
+      ": ",
+      object.spec.sourceRef.namespace ? `${object.spec.sourceRef.namespace}/` : "",
+      object.spec.sourceRef.name,
+    ].join("");
+  }
+
+  static getSourceRefUrl(object: Kustomization): string | undefined {
+    const ref = object.spec.sourceRef;
+    if (!ref) return;
+    return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
+  }
 }
 
 export class KustomizationApi extends Renderer.K8sApi.KubeApi<Kustomization> {}

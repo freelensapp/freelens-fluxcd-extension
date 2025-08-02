@@ -59,6 +59,15 @@ export class GitRepository extends Renderer.K8sApi.LensExtensionKubeObject<
     shortNames: [],
     title: "Git Repositories",
   };
+
+  static getGitRef(ref?: GitRepositoryRef): string | undefined {
+    if (!ref) return;
+    return ref.name?.replace(/^refs\/(heads|tags)\//, "") ?? ref.branch ?? ref.tag ?? ref.semver ?? ref.commit;
+  }
+
+  static getGitRevision(object: GitRepository): string | undefined {
+    return object.status?.artifact?.revision?.replace(/^refs\/(heads|tags)\//, "");
+  }
 }
 
 export class GitRepositoryApi extends Renderer.K8sApi.KubeApi<GitRepository> {}

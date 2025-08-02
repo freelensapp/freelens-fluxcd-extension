@@ -29,64 +29,6 @@ const {
   Util: { stopPropagation },
 } = Common;
 
-function getChartRefNamespace(object: HelmRelease) {
-  return object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace ?? object.getNs()!;
-}
-
-function getHelmChartName(object: HelmRelease) {
-  const ns = getChartRefNamespace(object);
-  return `${ns}-${object.metadata.name}`;
-}
-
-function getHelmReleaseUrl(object: HelmRelease, namespace: string) {
-  return `/helm/releases/${object.spec.storageNamespace ?? namespace}/${getReleaseNameShortened(object)}`;
-}
-
-function getReleaseName(object: HelmRelease) {
-  if (object.spec.releaseName !== undefined) {
-    return object.spec.releaseName;
-  }
-  if (object.spec.targetNamespace !== undefined) {
-    return `${object.spec.targetNamespace}-${object.metadata.name}`;
-  }
-  return object.metadata.name;
-}
-
-function getReleaseNameShortened(object: HelmRelease) {
-  const name = getReleaseName(object);
-  if (name.length > 53) {
-    const hash = crypto.createHash("sha256").update(name).digest("hex").slice(0, 12);
-    return `${name.slice(0, 40)}-${hash}`;
-  }
-  return name;
-}
-
-export function getSourceRefUrl(object: HelmRelease): string | undefined {
-  const ref = object.spec.chart?.spec.sourceRef ?? object.spec.chartRef;
-  if (!ref) return;
-  return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
-}
-
-export function getSourceRefName(object: HelmRelease): string | undefined {
-  return object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name;
-}
-
-export function getSourceRefText(object: HelmRelease): string {
-  return [
-    object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind,
-    ": ",
-    (object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace)
-      ? `${object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace}/`
-      : "",
-    getSourceRefName(object) ?? "-",
-  ].join("");
-}
-
-function getHelmChartUrl(object: HelmRelease): string | undefined {
-  if (!object.spec.chart?.spec.sourceRef) return;
-  return Renderer.K8sApi.apiManager.lookupApiLink(object.spec.chart?.spec.sourceRef, object);
-}
-
 export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmRelease>> = (props) => {
   const { object } = props;
   const [valuesFromYaml, setValuesFromYaml] = useState<Record<string, string | undefined>>({});
@@ -140,13 +82,13 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
       <style>{stylesInline}</style>
       <div className={styles.details}>
         <DrawerItem name="Release Name">
-          <MaybeLink key="link" to={getHelmReleaseUrl(object, namespace)} onClick={stopPropagation}>
-            {getReleaseNameShortened(object)}
+          <MaybeLink key="link" to={HelmRelease.getHelmReleaseUrl(object, namespace)} onClick={stopPropagation}>
+            {HelmRelease.getReleaseNameShortened(object)}
           </MaybeLink>
         </DrawerItem>
         <DrawerItem name="Helm Chart" hidden={!object.spec.chart}>
-          <MaybeLink key="link" to={getMaybeDetailsUrl(getHelmChartUrl(object))} onClick={stopPropagation}>
-            {getHelmChartName(object)}
+          <MaybeLink key="link" to={getMaybeDetailsUrl(HelmRelease.getHelmChartUrl(object))} onClick={stopPropagation}>
+            {HelmRelease.getHelmChartName(object)}
           </MaybeLink>
         </DrawerItem>
         <DrawerItem name="Chart Name">
@@ -208,8 +150,8 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           {object.spec.upgrade?.crds}
         </DrawerItem>
         <DrawerItem name="Source">
-          <MaybeLink to={getMaybeDetailsUrl(getSourceRefUrl(object))} onClick={stopPropagation}>
-            {getSourceRefText(object)}
+          <MaybeLink to={getMaybeDetailsUrl(HelmRelease.getSourceRefUrl(object))} onClick={stopPropagation}>
+            {HelmRelease.getSourceRefText(object)}
           </MaybeLink>
         </DrawerItem>
         <DrawerItem name="First Deployed" hidden={!object.status?.history?.[0].firstDeployed}>

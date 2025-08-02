@@ -1,7 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
-import { getSourceRefText, getSourceRefUrl } from "../../components/details/kustomize/kustomization-details";
 import { withErrorPage } from "../../components/error-page";
 import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization";
 import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
@@ -21,10 +20,6 @@ const {
 const KubeObject = Kustomization;
 type KubeObject = Kustomization;
 type KubeObjectApi = KustomizationApi;
-
-function getLastAppliedRevision(object: KubeObject): string | undefined {
-  return object.status?.lastAppliedRevision?.replace(/^refs\/(heads|tags)\//, "");
-}
 
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
@@ -74,12 +69,16 @@ export const KustomizationsPage = observer((props: KustomizationsPageProps) =>
             >
               <WithTooltip>{object.getNs()}</WithTooltip>
             </Link>,
-            <WithTooltip tooltip={getSourceRefText(object)}>
-              <MaybeLink key="link" to={getMaybeDetailsUrl(getSourceRefUrl(object))} onClick={stopPropagation}>
+            <WithTooltip tooltip={Kustomization.getSourceRefText(object)}>
+              <MaybeLink
+                key="link"
+                to={getMaybeDetailsUrl(Kustomization.getSourceRefUrl(object))}
+                onClick={stopPropagation}
+              >
                 {object.spec.sourceRef.name}
               </MaybeLink>
             </WithTooltip>,
-            <WithTooltip>{getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
+            <WithTooltip>{Kustomization.getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
             <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
             <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,

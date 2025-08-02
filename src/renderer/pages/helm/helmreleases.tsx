@@ -1,11 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
-import {
-  getSourceRefName,
-  getSourceRefText,
-  getSourceRefUrl,
-} from "../../components/details/helm/helm-release-details";
 import { withErrorPage } from "../../components/error-page";
 import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease";
 import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
@@ -26,14 +21,6 @@ const KubeObject = HelmRelease;
 type KubeObject = HelmRelease;
 type KubeObjectApi = HelmReleaseApi;
 
-function getAppVersion(object: KubeObject): string | undefined {
-  return object.status?.history?.[0]?.appVersion;
-}
-
-function getChartVersion(object: KubeObject): string | undefined {
-  return object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version;
-}
-
 export interface HelmReleasesPageProps {
   extension: Renderer.LensExtension;
 }
@@ -45,10 +32,10 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
     const sortingCallbacks = {
       name: (object: KubeObject) => object.getName(),
       namespace: (object: KubeObject) => object.getNs(),
-      source: (object: KubeObject) => getSourceRefName(object),
+      source: (object: KubeObject) => KubeObject.getSourceRefName(object),
       condition: (object: KubeObject) => getConditionText(object),
-      chartVersion: (object: KubeObject) => getChartVersion(object),
-      appVersion: (object: KubeObject) => getAppVersion(object),
+      chartVersion: (object: KubeObject) => HelmRelease.getChartVersion(object),
+      appVersion: (object: KubeObject) => HelmRelease.getAppVersion(object),
       message: (object: KubeObject) => getConditionMessage(object),
       age: (object: KubeObject) => object.getCreationTimestamp(),
     };
@@ -85,13 +72,13 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
               >
                 <WithTooltip>{object.getNs()}</WithTooltip>
               </Link>,
-              <WithTooltip tooltip={getSourceRefText(object)}>
-                <MaybeLink to={getMaybeDetailsUrl(getSourceRefUrl(object))} onClick={stopPropagation}>
-                  {getSourceRefName(object)}
+              <WithTooltip tooltip={KubeObject.getSourceRefText(object)}>
+                <MaybeLink to={getMaybeDetailsUrl(KubeObject.getSourceRefUrl(object))} onClick={stopPropagation}>
+                  {KubeObject.getSourceRefName(object)}
                 </MaybeLink>
               </WithTooltip>,
-              <WithTooltip>{getChartVersion(object) ?? "N/A"}</WithTooltip>,
-              <WithTooltip>{getAppVersion(object) ?? "N/A"}</WithTooltip>,
+              <WithTooltip>{KubeObject.getChartVersion(object) ?? "N/A"}</WithTooltip>,
+              <WithTooltip>{KubeObject.getAppVersion(object) ?? "N/A"}</WithTooltip>,
               <Badge key="name" label={getConditionText(object)} className={getConditionClass(object)} />,
               <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
               <KubeObjectAge object={object} key="age" />,

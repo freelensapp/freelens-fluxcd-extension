@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { Renderer } from "@freelensapp/extensions";
 import {
   type FluxCDKubeObjectCRD,
@@ -187,6 +188,72 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
     shortNames: ["hr"],
     title: "Helm Releases",
   };
+
+  static getAppVersion(object: HelmRelease): string | undefined {
+    return object.status?.history?.[0]?.appVersion;
+  }
+
+  static getChartVersion(object: HelmRelease): string | undefined {
+    return object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version;
+  }
+
+  static getChartRefNamespace(object: HelmRelease) {
+    return object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace ?? object.getNs()!;
+  }
+
+  static getHelmChartName(object: HelmRelease) {
+    const ns = HelmRelease.getChartRefNamespace(object);
+    return `${ns}-${object.metadata.name}`;
+  }
+
+  static getHelmReleaseUrl(object: HelmRelease, namespace: string) {
+    return `/helm/releases/${object.spec.storageNamespace ?? namespace}/${HelmRelease.getReleaseNameShortened(object)}`;
+  }
+
+  static getReleaseName(object: HelmRelease) {
+    if (object.spec.releaseName !== undefined) {
+      return object.spec.releaseName;
+    }
+    if (object.spec.targetNamespace !== undefined) {
+      return `${object.spec.targetNamespace}-${object.metadata.name}`;
+    }
+    return object.metadata.name;
+  }
+
+  static getReleaseNameShortened(object: HelmRelease) {
+    const name = HelmRelease.getReleaseName(object);
+    if (name.length > 53) {
+      const hash = crypto.createHash("sha256").update(name).digest("hex").slice(0, 12);
+      return `${name.slice(0, 40)}-${hash}`;
+    }
+    return name;
+  }
+
+  static getSourceRefUrl(object: HelmRelease): string | undefined {
+    const ref = object.spec.chart?.spec.sourceRef ?? object.spec.chartRef;
+    if (!ref) return;
+    return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
+  }
+
+  static getSourceRefName(object: HelmRelease): string | undefined {
+    return object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name;
+  }
+
+  static getSourceRefText(object: HelmRelease): string {
+    return [
+      object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind,
+      ": ",
+      (object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace)
+        ? `${object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace}/`
+        : "",
+      HelmRelease.getSourceRefName(object) ?? "-",
+    ].join("");
+  }
+
+  static getHelmChartUrl(object: HelmRelease): string | undefined {
+    if (!object.spec.chart?.spec.sourceRef) return;
+    return Renderer.K8sApi.apiManager.lookupApiLink(object.spec.chart?.spec.sourceRef, object);
+  }
 }
 
 export class HelmReleaseApi extends Renderer.K8sApi.KubeApi<HelmRelease> {}
