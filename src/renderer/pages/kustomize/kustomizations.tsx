@@ -1,6 +1,5 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
-import { Link } from "react-router-dom";
 import { withErrorPage } from "../../components/error-page";
 import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization";
 import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
@@ -12,9 +11,7 @@ const {
 } = Common;
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, MaybeLink, WithTooltip },
-  K8sApi: { namespacesApi },
-  Navigation: { getDetailsUrl },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = Kustomization;
@@ -62,13 +59,7 @@ export const KustomizationsPage = observer((props: KustomizationsPageProps) =>
           renderTableHeader={renderTableHeader}
           renderTableContents={(object: KubeObject) => [
             <WithTooltip>{object.getName()}</WithTooltip>,
-            <Link
-              key="link"
-              to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.getNs() }))}
-              onClick={stopPropagation}
-            >
-              <WithTooltip>{object.getNs()}</WithTooltip>
-            </Link>,
+            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
             <WithTooltip tooltip={Kustomization.getSourceRefText(object)}>
               <MaybeLink
                 key="link"

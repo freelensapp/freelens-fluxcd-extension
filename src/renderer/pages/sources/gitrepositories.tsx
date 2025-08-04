@@ -1,19 +1,13 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
-import { Link } from "react-router-dom";
 import { withErrorPage } from "../../components/error-page";
 import { GitRepository, type GitRepositoryApi } from "../../k8s/fluxcd/source/gitrepository";
-import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 import styles from "./gitrepositories.module.scss";
 import stylesInline from "./gitrepositories.module.scss?inline";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, WithTooltip },
-  K8sApi: { namespacesApi },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = GitRepository;
@@ -63,13 +57,7 @@ export const GitRepositoriesPage = observer((props: GitRepositoriesPageProps) =>
           renderTableHeader={renderTableHeader}
           renderTableContents={(object: KubeObject) => [
             <WithTooltip>{object.getName()}</WithTooltip>,
-            <Link
-              key="link"
-              to={getMaybeDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.getNs() }))}
-              onClick={stopPropagation}
-            >
-              <WithTooltip>{object.getNs()}</WithTooltip>
-            </Link>,
+            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
             <WithTooltip>{object.spec.url}</WithTooltip>,
             <WithTooltip>{GitRepository.getGitRef(object.spec.ref) || "N/A"}</WithTooltip>,
             <WithTooltip>{GitRepository.getGitRevision(object) || "N/A"}</WithTooltip>,
