@@ -11,6 +11,7 @@ import type {
   JSON6902Patch,
   NamespacedObjectKindReference,
   NamespacedObjectReference,
+  ResourceInventory,
   Snapshot,
 } from "../types";
 
@@ -52,6 +53,7 @@ export interface KustomizationStatus extends FluxCDKubeObjectStatus {
   lastAppliedRevision?: string;
   lastAttemptedRevision?: string;
   snapshot: Snapshot;
+  inventory?: ResourceInventory;
 }
 
 export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<

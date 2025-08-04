@@ -46,6 +46,15 @@ export interface JSON6902Patch {
   target: Selector;
 }
 
+export interface ResourceInventory {
+  entries: ResourceRef[];
+}
+
+export interface ResourceRef {
+  id: string;
+  v: string;
+}
+
 export interface Snapshot {
   checksum: string;
   entries: {

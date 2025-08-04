@@ -5,5 +5,9 @@ declare const classNames: {
   readonly tableCell: "tableCell";
   readonly key: "key";
   readonly value: "value";
+  readonly inventory: "inventory";
+  readonly kind: "kind";
+  readonly name: "name";
+  readonly namespace: "namespace";
 };
 export = classNames;

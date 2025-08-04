@@ -18,3 +18,21 @@
     }
   }
 }
+
+.inventory {
+  table {
+  }
+  :global(.TableCell) {
+    &.kind {
+      flex-grow: 0.5;
+    }
+
+    &.name {
+      flex-grow: 0.7;
+    }
+
+    &.namespace {
+      flex-grow: 0.5;
+    }
+  }
+}

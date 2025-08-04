@@ -8,8 +8,10 @@ import {
   type KustomizationApi,
   type KustomizationStore,
 } from "../../../k8s/fluxcd/kustomize/kustomization";
-import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
+import { NamespacedObjectKindReference, type ResourceRef } from "../../../k8s/fluxcd/types";
+import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import {
+  createEnumFromKeys,
   defaultYamlDumpOptions,
   getConditionClass,
   getConditionMessage,
@@ -34,6 +36,7 @@ const {
     TableHead,
     TableRow,
     Tooltip,
+    WithTooltip,
   },
   K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
 } = Renderer;
@@ -42,6 +45,19 @@ const {
   Util: { stopPropagation },
 } = Common;
 
+const inventorySortable = {
+  kind: (reference: NamespacedObjectKindReference) => reference.kind,
+  name: (reference: NamespacedObjectKindReference) => reference.name,
+  namespace: (reference: NamespacedObjectKindReference) => reference.namespace,
+};
+
+const inventorySortableNames = createEnumFromKeys(inventorySortable);
+
+const inventorySortByDefault: { sortBy: keyof typeof inventorySortable; orderBy: Renderer.Component.TableOrderBy } = {
+  sortBy: inventorySortableNames.name,
+  orderBy: "asc",
+};
+
 export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Kustomization>> = (props) => {
   const { object } = props;
   const namespace = object.getNs();
@@ -49,11 +65,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
   const store = Kustomization.getStore() as KustomizationStore;
 
   const [substituteFromYaml, setSubstituteFromYaml] = useState<Record<string, string>>({});
-
-  const getRefUrl = (ref: NamespacedObjectKindReference) => {
-    if (!ref) return;
-    return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
-  };
 
   useEffect(() => {
     let mounted = true;
@@ -594,7 +605,87 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             </DrawerItem>
           </div>
         )}
+
+        {object.status?.inventory?.entries && (
+          <div className={styles.inventory}>
+            <DrawerTitle>Inventory</DrawerTitle>
+            <Table
+              selectable
+              tableId="inventory"
+              scrollable={false}
+              sortable={inventorySortable}
+              sortByDefault={inventorySortByDefault}
+              sortSyncWithUrl={false}
+            >
+              <TableHead flat sticky={false}>
+                <TableCell className={styles.kind} sortBy={inventorySortableNames.kind}>
+                  Kind
+                </TableCell>
+                <TableCell className={styles.name} sortBy={inventorySortableNames.name}>
+                  Name
+                </TableCell>
+                <TableCell className={styles.namespace} sortBy={inventorySortableNames.namespace}>
+                  Namespace
+                </TableCell>
+              </TableHead>
+              {object.status.inventory?.entries.map((inventoryResourceRef) => {
+                const objectRef = inventoryResourceRefToObjectRef(inventoryResourceRef);
+                if (!objectRef) return null;
+                return (
+                  <TableRow key={inventoryResourceRef.id} sortItem={objectRef} nowrap>
+                    <TableCell className={styles.kind}>
+                      <WithTooltip tooltip={inventoryKindTooltip(objectRef)}>{objectRef.kind}</WithTooltip>
+                    </TableCell>
+                    <TableCell className={styles.name}>
+                      <MaybeLink to={getMaybeDetailsUrl(getRefUrl(objectRef))} onClick={stopPropagation}>
+                        <WithTooltip>{objectRef.name}</WithTooltip>
+                      </MaybeLink>
+                    </TableCell>
+                    <TableCell className={styles.namespace}>
+                      <MaybeLink
+                        key="link"
+                        to={getMaybeDetailsUrl(
+                          namespacesApi.formatUrlForNotListing({
+                            name: objectRef.namespace ?? namespace,
+                          }),
+                        )}
+                        onClick={stopPropagation}
+                      >
+                        <WithTooltip>{objectRef.namespace ?? namespace}</WithTooltip>
+                      </MaybeLink>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </Table>
+          </div>
+        )}
       </div>
     </>
   );
 };
+
+function inventoryResourceRefToObjectRef(resource: ResourceRef): NamespacedObjectKindReference | undefined {
+  try {
+    const [namespace, name, group, kind] = resource.id.split("_");
+    const { v } = resource;
+    return {
+      apiVersion: `${group}/${v}`,
+      kind,
+      name,
+      namespace,
+    };
+  } catch (error) {
+    return;
+  }
+}
+
+function inventoryKindTooltip(objectRef: NamespacedObjectKindReference) {
+  return (
+    <span>
+      <b>apiVersion:</b>&nbsp;{objectRef.apiVersion}
+      <br />
+      <b>kind:</b>&nbsp;{objectRef.kind}
+    </span>
+  );
+}
