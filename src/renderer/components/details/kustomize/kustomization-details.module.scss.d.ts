@@ -9,5 +9,6 @@ declare const classNames: {
   readonly kind: "kind";
   readonly name: "name";
   readonly namespace: "namespace";
+  readonly healthChecks: "healthChecks";
 };
 export = classNames;

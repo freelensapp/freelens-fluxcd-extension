@@ -35,7 +35,6 @@ const {
     TableCell,
     TableHead,
     TableRow,
-    Tooltip,
     WithTooltip,
   },
   K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
@@ -45,16 +44,16 @@ const {
   Util: { stopPropagation },
 } = Common;
 
-const inventorySortable = {
+const referenceSortable = {
   kind: (reference: NamespacedObjectKindReference) => reference.kind,
   name: (reference: NamespacedObjectKindReference) => reference.name,
   namespace: (reference: NamespacedObjectKindReference) => reference.namespace,
 };
 
-const inventorySortableNames = createEnumFromKeys(inventorySortable);
+const referenceSortByNames = createEnumFromKeys(referenceSortable);
 
-const inventorySortByDefault: { sortBy: keyof typeof inventorySortable; orderBy: Renderer.Component.TableOrderBy } = {
-  sortBy: inventorySortableNames.name,
+const referenceSortByDefault: { sortBy: keyof typeof referenceSortable; orderBy: Renderer.Component.TableOrderBy } = {
+  sortBy: referenceSortByNames.name,
   orderBy: "asc",
 };
 
@@ -160,83 +159,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         <DrawerItem name="Suspended">
           <BadgeBoolean value={object.spec.suspend ?? false} />
         </DrawerItem>
-
-        {object.spec.healthChecks && (
-          <div className="KustomizationHealthChecks flex column">
-            <DrawerTitle>Health Checks</DrawerTitle>
-            <Table
-              selectable
-              tableId="healthChecks"
-              scrollable={false}
-              sortable={{
-                apiVersion: (reference: NamespacedObjectKindReference) => reference.apiVersion,
-                kind: (reference: NamespacedObjectKindReference) => reference.kind,
-                name: (reference: NamespacedObjectKindReference) => reference.name,
-                namespace: (reference: NamespacedObjectKindReference) => reference.namespace,
-              }}
-              sortByDefault={{ sortBy: "name", orderBy: "asc" }}
-              sortSyncWithUrl={false}
-              className="box grow"
-            >
-              <TableHead flat sticky={false}>
-                <TableCell className="apiVersion" sortBy="apiVersion">
-                  API Version
-                </TableCell>
-                <TableCell className="kind" sortBy="kind">
-                  Kind
-                </TableCell>
-                <TableCell className="name" sortBy="name">
-                  Name
-                </TableCell>
-                <TableCell className="appVersion" sortBy="namespace">
-                  Namespace
-                </TableCell>
-              </TableHead>
-              {object.spec.healthChecks.map((healthCheck) => (
-                <TableRow key={`${healthCheck.namespace}-${healthCheck.name}`} sortItem={healthCheck} nowrap>
-                  <TableCell className="apiVersion">
-                    <span id={`kustomizationHealthChecks-${healthCheck.name}-apiVersion`}>
-                      {healthCheck.apiVersion}
-                    </span>
-                    <Tooltip targetId={`kustomizationHealthChecks-${healthCheck.name}-apiVersion`}>
-                      {healthCheck.apiVersion}
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell className="kind">
-                    <span id={`kustomizationHealthChecks-${healthCheck.name}-kind`}>{healthCheck.kind}</span>
-                    <Tooltip targetId={`kustomizationHealthChecks-${healthCheck.name}-kind`}>
-                      {healthCheck.kind}
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell className="name" id={`kustomizationHealthChecks-${healthCheck.name}-name`}>
-                    <MaybeLink to={getMaybeDetailsUrl(getRefUrl(healthCheck))} onClick={stopPropagation}>
-                      {healthCheck.name}
-                    </MaybeLink>
-                    <Tooltip targetId={`kustomizationHealthChecks-${healthCheck.name}-name`}>
-                      {healthCheck.name}
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell className="namespace" id={`kustomizationHealthChecks-${healthCheck.namespace}-namespace`}>
-                    <MaybeLink
-                      key="link"
-                      to={getMaybeDetailsUrl(
-                        namespacesApi.formatUrlForNotListing({
-                          name: healthCheck.namespace ?? namespace,
-                        }),
-                      )}
-                      onClick={stopPropagation}
-                    >
-                      {healthCheck.namespace ?? namespace}
-                    </MaybeLink>
-                    <Tooltip targetId={`kustomizationHealthChecks-${healthCheck.namespace}-namespace`}>
-                      {healthCheck.namespace ?? namespace}
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </Table>
-          </div>
-        )}
 
         {object.spec.dependsOn && (
           <div className="KustomizationDependsOn">
@@ -606,6 +528,61 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           </div>
         )}
 
+        {object.spec.healthChecks && (
+          <div className="KustomizationHealthChecks flex column">
+            <DrawerTitle>Health Checks</DrawerTitle>
+            <Table
+              selectable
+              tableId="healthChecks"
+              scrollable={false}
+              sortable={referenceSortable}
+              sortByDefault={referenceSortByDefault}
+              sortSyncWithUrl={false}
+            >
+              <TableHead flat sticky={false}>
+                <TableCell className={styles.kind} sortBy={referenceSortByNames.kind}>
+                  Kind
+                </TableCell>
+                <TableCell className={styles.name} sortBy={referenceSortByNames.name}>
+                  Name
+                </TableCell>
+                <TableCell className={styles.namespace} sortBy={referenceSortByNames.namespace}>
+                  Namespace
+                </TableCell>
+              </TableHead>
+              {object.spec.healthChecks.map((healthCheck) => (
+                <TableRow
+                  key={`${healthCheck.namespace}_${healthCheck.name}_${healthCheck.kind}`}
+                  sortItem={healthCheck}
+                  nowrap
+                >
+                  <TableCell className={styles.kind}>
+                    <WithTooltip tooltip={inventoryKindTooltip(healthCheck)}>{healthCheck.kind}</WithTooltip>
+                  </TableCell>
+                  <TableCell className={styles.name}>
+                    <MaybeLink to={getMaybeDetailsUrl(getRefUrl(healthCheck))} onClick={stopPropagation}>
+                      <WithTooltip>{healthCheck.name}</WithTooltip>
+                    </MaybeLink>
+                  </TableCell>
+                  <TableCell className={styles.namespace}>
+                    <MaybeLink
+                      key="link"
+                      to={getMaybeDetailsUrl(
+                        namespacesApi.formatUrlForNotListing({
+                          name: healthCheck.namespace ?? namespace,
+                        }),
+                      )}
+                      onClick={stopPropagation}
+                    >
+                      <WithTooltip>{healthCheck.namespace ?? namespace}</WithTooltip>
+                    </MaybeLink>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </Table>
+          </div>
+        )}
+
         {object.status?.inventory?.entries && (
           <div className={styles.inventory}>
             <DrawerTitle>Inventory</DrawerTitle>
@@ -613,18 +590,18 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
               selectable
               tableId="inventory"
               scrollable={false}
-              sortable={inventorySortable}
-              sortByDefault={inventorySortByDefault}
+              sortable={referenceSortable}
+              sortByDefault={referenceSortByDefault}
               sortSyncWithUrl={false}
             >
               <TableHead flat sticky={false}>
-                <TableCell className={styles.kind} sortBy={inventorySortableNames.kind}>
+                <TableCell className={styles.kind} sortBy={referenceSortByNames.kind}>
                   Kind
                 </TableCell>
-                <TableCell className={styles.name} sortBy={inventorySortableNames.name}>
+                <TableCell className={styles.name} sortBy={referenceSortByNames.name}>
                   Name
                 </TableCell>
-                <TableCell className={styles.namespace} sortBy={inventorySortableNames.namespace}>
+                <TableCell className={styles.namespace} sortBy={referenceSortByNames.namespace}>
                   Namespace
                 </TableCell>
               </TableHead>
