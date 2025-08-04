@@ -7,7 +7,14 @@
   }
 }
 
-.kustomizationSubstitute {
+.editor {
+  resize: none;
+  overflow: hidden;
+  border: 1px solid var(--borderFaintColor);
+  border-radius: 4px;
+}
+
+.substitution {
   :global(.TableCell) {
     &.key {
       flex-grow: 0.7;

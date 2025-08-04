@@ -44,6 +44,31 @@ const {
   Util: { stopPropagation },
 } = Common;
 
+function inventoryResourceRefToObjectRef(resource: ResourceRef): NamespacedObjectKindReference | undefined {
+  try {
+    const [namespace, name, group, kind] = resource.id.split("_");
+    const { v } = resource;
+    return {
+      apiVersion: `${group}/${v}`,
+      kind,
+      name,
+      namespace,
+    };
+  } catch (error) {
+    return;
+  }
+}
+
+function inventoryKindTooltip(objectRef: NamespacedObjectKindReference) {
+  return (
+    <span>
+      <b>apiVersion:</b>&nbsp;{objectRef.apiVersion}
+      <br />
+      <b>kind:</b>&nbsp;{objectRef.kind}
+    </span>
+  );
+}
+
 const referenceSortable = {
   kind: (reference: NamespacedObjectKindReference) => reference.kind,
   name: (reference: NamespacedObjectKindReference) => reference.name,
@@ -72,9 +97,12 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
       for (const substituteFrom of object.spec.postBuild?.substituteFrom ?? []) {
         const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
         const name = substituteFrom.name;
+
         const variablesObject = await api.get({ name, namespace });
         if (!variablesObject) continue;
+
         const variablesFrom: Record<string, string> = {};
+
         for (let [key, value] of Object.entries(variablesObject.data)) {
           if (value === undefined) continue;
           if (substituteFrom.kind.toLowerCase() === "secret" && Base64.isValid(value)) {
@@ -83,8 +111,10 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             variablesFrom[key] = value;
           }
         }
+
         substituteFromYamlResult[`${namespace}/${name}`] = yaml.dump(variablesFrom, defaultYamlDumpOptions).trimEnd();
       }
+
       if (mounted) setSubstituteFromYaml(substituteFromYamlResult);
     })();
     return () => {
@@ -161,13 +191,13 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         </DrawerItem>
 
         {object.spec.dependsOn && (
-          <div className="KustomizationDependsOn">
+          <div>
             <DrawerTitle>Depends On</DrawerTitle>
             {object.spec.dependsOn.map((dependency) => {
               const reference = store.getByName(dependency.name, dependency.namespace ?? namespace);
               return (
                 <div className="dependency" key={dependency.name + (dependency.namespace ?? "")}>
-                  <div className="title flex gaps">
+                  <div className={styles.title}>
                     <Icon small material="list" />
                   </div>
 
@@ -218,7 +248,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         )}
 
         {object.spec.patches && (
-          <div className="KustomizationPatches">
+          <div>
             <DrawerTitle>Patches</DrawerTitle>
             {object.spec.patches.map((patch) => {
               const key = crypto
@@ -236,8 +266,8 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                 .digest("hex");
 
               return (
-                <div key={key} className="patch">
-                  <div className="title flex gaps">
+                <div key={key}>
+                  <div className={styles.title}>
                     <Icon small material="list" />
                   </div>
                   <DrawerItem name="Group" hidden={!patch.target?.group}>
@@ -261,29 +291,22 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                   <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
                     {patch.target?.annotationSelector}
                   </DrawerItem>
-                  <div className="DrawerItem">
-                    <span className="name">Patch</span>
-                  </div>
-                  <div className="flex column gaps editor">
-                    <MonacoEditor
-                      readOnly
-                      id={`patch-${key}`}
-                      style={{
-                        minHeight: getHeight(patch.patch),
-                        resize: "none",
-                        overflow: "hidden",
-                        border: "1px solid var(--borderFaintColor)",
-                        borderRadius: "4px",
-                      }}
-                      value={patch.patch}
-                      setInitialHeight
-                      options={{
-                        scrollbar: {
-                          alwaysConsumeMouseWheel: false,
-                        },
-                      }}
-                    />
-                  </div>
+                  <div className="DrawerItem">Patch</div>
+                  <MonacoEditor
+                    readOnly
+                    id={`patch-${key}`}
+                    className={styles.editor}
+                    style={{
+                      minHeight: getHeight(patch.patch),
+                    }}
+                    value={patch.patch}
+                    setInitialHeight
+                    options={{
+                      scrollbar: {
+                        alwaysConsumeMouseWheel: false,
+                      },
+                    }}
+                  />
                 </div>
               );
             })}
@@ -291,36 +314,34 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         )}
 
         {object.spec.patchesStrategicMerge && (
-          <div className="KustomizationPatchesStrategicMerge">
+          <div>
             <DrawerTitle>Patches: Strategic Merge</DrawerTitle>
             {object.spec.patchesStrategicMerge.map((patch) => {
               const key = crypto.createHash("sha256").update(patch).digest("hex");
 
               return (
-                <div key={key} className="patch">
-                  <div className="title flex gaps">
+                <div key={key}>
+                  <div className={styles.title}>
                     <Icon small material="list" />
                   </div>
-                  <div className="flex column gaps">
-                    <MonacoEditor
-                      readOnly
-                      id={`patch-${key}`}
-                      style={{
-                        minHeight: getHeight(patch),
-                        resize: "none",
-                        overflow: "hidden",
-                        border: "1px solid var(--borderFaintColor)",
-                        borderRadius: "4px",
-                      }}
-                      value={patch}
-                      setInitialHeight
-                      options={{
-                        scrollbar: {
-                          alwaysConsumeMouseWheel: false,
-                        },
-                      }}
-                    />
-                  </div>
+                  <MonacoEditor
+                    readOnly
+                    id={`patch-${key}`}
+                    style={{
+                      minHeight: getHeight(patch),
+                      resize: "none",
+                      overflow: "hidden",
+                      border: "1px solid var(--borderFaintColor)",
+                      borderRadius: "4px",
+                    }}
+                    value={patch}
+                    setInitialHeight
+                    options={{
+                      scrollbar: {
+                        alwaysConsumeMouseWheel: false,
+                      },
+                    }}
+                  />
                 </div>
               );
             })}
@@ -328,7 +349,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         )}
 
         {object.spec.patchesJson6902 && (
-          <div className="KustomizationPatchesJson6902">
+          <div>
             <DrawerTitle>Patches: RFC 6902</DrawerTitle>
             {object.spec.patchesJson6902.map((patch) => {
               const patchYaml = yaml.dump(patch.patch, defaultYamlDumpOptions);
@@ -347,8 +368,8 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                 .digest("hex");
 
               return (
-                <div key={key} className="patch">
-                  <div className="title flex gaps">
+                <div key={key}>
+                  <div className={styles.title}>
                     <Icon small material="list" />
                   </div>
                   <DrawerItem name="Group" hidden={!patch.target?.group}>
@@ -372,29 +393,25 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                   <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
                     {patch.target?.annotationSelector}
                   </DrawerItem>
-                  <div className="DrawerItem">
-                    <span className="name">Patch</span>
-                  </div>
-                  <div className="flex column gaps">
-                    <MonacoEditor
-                      readOnly
-                      id={`patch-${key}`}
-                      style={{
-                        minHeight: getHeight(patchYaml),
-                        resize: "none",
-                        overflow: "hidden",
-                        border: "1px solid var(--borderFaintColor)",
-                        borderRadius: "4px",
-                      }}
-                      value={patchYaml}
-                      setInitialHeight
-                      options={{
-                        scrollbar: {
-                          alwaysConsumeMouseWheel: false,
-                        },
-                      }}
-                    />
-                  </div>
+                  <div className="DrawerItem">Patch</div>
+                  <MonacoEditor
+                    readOnly
+                    id={`patch-${key}`}
+                    style={{
+                      minHeight: getHeight(patchYaml),
+                      resize: "none",
+                      overflow: "hidden",
+                      border: "1px solid var(--borderFaintColor)",
+                      borderRadius: "4px",
+                    }}
+                    value={patchYaml}
+                    setInitialHeight
+                    options={{
+                      scrollbar: {
+                        alwaysConsumeMouseWheel: false,
+                      },
+                    }}
+                  />
                 </div>
               );
             })}
@@ -402,12 +419,12 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         )}
 
         {object.spec.images && (
-          <div className="KustomizationImages">
+          <div>
             <DrawerTitle>Images</DrawerTitle>
             {object.spec.images.map((image) => {
               return (
-                <div className="image" key={image.name}>
-                  <div className="title flex gaps">
+                <div key={image.name}>
+                  <div className={styles.title}>
                     <Icon small material="list" />
                   </div>
                   <DrawerItem name="Name">{image.name}</DrawerItem>
@@ -427,7 +444,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         )}
 
         {object.spec.postBuild && (
-          <div className={styles.kustomizationSubstitute}>
+          <div className={styles.substitution}>
             <DrawerTitle>Post Build Variable Substitution</DrawerTitle>
             {object.spec.postBuild.substituteFrom?.map((substituteFrom) => {
               const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
@@ -435,8 +452,8 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
               const substituteFromYamlValue = substituteFromYaml[`${namespace}/${name}`] ?? "";
 
               return (
-                <div key={name} className="variablesFrom">
-                  <div className="title flex gaps">
+                <div key={name}>
+                  <div className={styles.title}>
                     <Icon small material="list" />
                   </div>
                   <DrawerItem name="Kind">{substituteFrom.kind}</DrawerItem>
@@ -449,54 +466,15 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                       {name}
                     </MaybeLink>
                   </DrawerItem>
-                  <div>
-                    <div className="DrawerItem">
-                      <span className="name">Variables</span>
-                    </div>
-                    <div className="flex column gaps">
-                      <MonacoEditor
-                        readOnly
-                        id={`variablesFromYaml-${namespace}-${name}`}
-                        style={{
-                          minHeight: getHeight(substituteFromYamlValue),
-                          resize: "none",
-                          overflow: "hidden",
-                          border: "1px solid var(--borderFaintColor)",
-                          borderRadius: "4px",
-                        }}
-                        value={substituteFromYamlValue}
-                        setInitialHeight
-                        options={{
-                          scrollbar: {
-                            alwaysConsumeMouseWheel: false,
-                          },
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            {substituteYaml && (
-              <>
-                <div className="title flex gaps">
-                  <Icon small material="list" />
-                </div>
-                <div className="DrawerItem">
-                  <span className="name">Variables</span>
-                </div>
-                <div className="flex column gaps">
+                  <div className="DrawerItem">Variables</div>
                   <MonacoEditor
                     readOnly
-                    id={`substituteYaml-${namespace}`}
+                    id={`variablesFromYaml-${namespace}-${name}`}
+                    className={styles.editor}
                     style={{
-                      minHeight: getHeight(substituteYaml),
-                      resize: "none",
-                      overflow: "hidden",
-                      border: "1px solid var(--borderFaintColor)",
-                      borderRadius: "4px",
+                      minHeight: getHeight(substituteFromYamlValue),
                     }}
-                    value={substituteYaml}
+                    value={substituteFromYamlValue}
                     setInitialHeight
                     options={{
                       scrollbar: {
@@ -505,13 +483,36 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                     }}
                   />
                 </div>
-              </>
+              );
+            })}
+            {substituteYaml && (
+              <div>
+                <div className={styles.title}>
+                  <Icon small material="list" />
+                </div>
+                <div className="DrawerItem">Variables</div>
+                <MonacoEditor
+                  readOnly
+                  id={`substituteYaml-${namespace}`}
+                  className={styles.editor}
+                  style={{
+                    minHeight: getHeight(substituteYaml),
+                  }}
+                  value={substituteYaml}
+                  setInitialHeight
+                  options={{
+                    scrollbar: {
+                      alwaysConsumeMouseWheel: false,
+                    },
+                  }}
+                />
+              </div>
             )}
           </div>
         )}
 
         {object.spec.decryption && (
-          <div className="KustomizationDecryption">
+          <div>
             <DrawerTitle>Decryption</DrawerTitle>
             <DrawerItem name="Provider">{object.spec.decryption.provider}</DrawerItem>
             <DrawerItem name="Secret Name">
@@ -641,28 +642,3 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
     </>
   );
 };
-
-function inventoryResourceRefToObjectRef(resource: ResourceRef): NamespacedObjectKindReference | undefined {
-  try {
-    const [namespace, name, group, kind] = resource.id.split("_");
-    const { v } = resource;
-    return {
-      apiVersion: `${group}/${v}`,
-      kind,
-      name,
-      namespace,
-    };
-  } catch (error) {
-    return;
-  }
-}
-
-function inventoryKindTooltip(objectRef: NamespacedObjectKindReference) {
-  return (
-    <span>
-      <b>apiVersion:</b>&nbsp;{objectRef.apiVersion}
-      <br />
-      <b>kind:</b>&nbsp;{objectRef.kind}
-    </span>
-  );
-}
