@@ -1,7 +1,7 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { HelmChart } from "../../../k8s/fluxcd/source/helmchart";
-import { getConditionClass, getConditionText } from "../../../utils";
+import { getConditionClass, getConditionText } from "../../conditions";
 
 const {
   Util: { lowerAndPluralize },

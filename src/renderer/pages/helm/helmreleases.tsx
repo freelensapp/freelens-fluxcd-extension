@@ -1,8 +1,9 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../components/conditions";
 import { withErrorPage } from "../../components/error-page";
 import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease";
-import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
+import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./helmreleases.module.scss";
 import stylesInline from "./helmreleases.module.scss?inline";
 

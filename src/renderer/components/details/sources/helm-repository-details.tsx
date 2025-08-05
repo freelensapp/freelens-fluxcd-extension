@@ -1,7 +1,8 @@
 import { Common, Renderer } from "@freelensapp/extensions";
+import { observer } from "mobx-react";
 import React from "react";
 import { HelmRepository } from "../../../k8s/fluxcd/source/helmrepository";
-import { getConditionClass, getConditionText } from "../../../utils";
+import { getConditionClass, getConditionText, StatusConditions } from "../../conditions";
 
 const {
   Component: { DrawerItem, Badge },
@@ -11,16 +12,13 @@ const {
   Util: { openBrowser },
 } = Common;
 
-export class FluxCDHelmRepositoryDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<HelmRepository>
-> {
-  render() {
-    const { object } = this.props;
+export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmRepository>> = observer(
+  (props) => {
+    const { object } = props;
 
     return (
       <div>
-        <DrawerItem name="Status">{object.status?.conditions?.find((s: any) => s.type === "Ready").message}</DrawerItem>
-        <DrawerItem name="Ready">
+        <DrawerItem name="Condition">
           <Badge className={getConditionClass(object)} label={getConditionText(object)} />
         </DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
@@ -37,7 +35,9 @@ export class FluxCDHelmRepositoryDetails extends React.Component<
             {object.spec.url}
           </a>
         </DrawerItem>
+
+        <StatusConditions object={object} />
       </div>
     );
-  }
-}
+  },
+);

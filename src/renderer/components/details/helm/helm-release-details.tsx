@@ -2,9 +2,11 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import crypto from "crypto";
 import { Base64 } from "js-base64";
 import yaml from "js-yaml";
-import React, { useEffect, useState } from "react";
+import { observer } from "mobx-react";
+import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease";
-import { defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
+import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
+import { StatusConditions } from "../../conditions";
 import { MaybeLink } from "../../maybe-link";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
@@ -20,7 +22,7 @@ const {
     TableCell,
     TableHead,
     TableRow,
-    Tooltip,
+    WithTooltip,
   },
   K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
 } = Renderer;
@@ -29,187 +31,203 @@ const {
   Util: { stopPropagation },
 } = Common;
 
-export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmRelease>> = (props) => {
-  const { object } = props;
-  const [valuesFromYaml, setValuesFromYaml] = useState<Record<string, string | undefined>>({});
+const historySortable = {
+  version: (snapshot: HelmReleaseSnapshot) => snapshot.version,
+  lastDeployed: (snapshot: HelmReleaseSnapshot) => snapshot.lastDeployed,
+  chartVersion: (snapshot: HelmReleaseSnapshot) => snapshot.chartVersion,
+  appVersion: (snapshot: HelmReleaseSnapshot) => snapshot.appVersion,
+  status: (snapshot: HelmReleaseSnapshot) => snapshot.status,
+};
 
-  const namespace = object.metadata.namespace ?? "default";
+const historySortByNames = createEnumFromKeys(historySortable);
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const valuesFromYamlResult: Record<string, string | undefined> = {};
-      const ns = object.getNs()!;
-      for (const valueFrom of object.spec.valuesFrom ?? []) {
-        const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
-        const name = valueFrom.name;
-        const valuesKey = valueFrom.valuesKey ?? "values.yaml";
-        const valuesObject = await api.get({ name, namespace: ns });
-        if (!valuesObject) continue;
-        const valuesYaml = valuesObject?.data?.[valuesKey];
-        if (!valuesYaml) continue;
-        if (valueFrom.kind.toLowerCase() === "secret" && Base64.isValid(valuesYaml)) {
-          valuesFromYamlResult[`${ns}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
-        } else {
-          valuesFromYamlResult[`${ns}/${name}/${valuesKey}`] = valuesYaml;
+const historySortByDefault: { sortBy: keyof typeof historySortable; orderBy: Renderer.Component.TableOrderBy } = {
+  sortBy: historySortByNames.version,
+  orderBy: "desc",
+};
+
+export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmRelease>> = observer(
+  (props) => {
+    const { object } = props;
+    const [valuesFromYaml, setValuesFromYaml] = useState<Record<string, string | undefined>>({});
+
+    const namespace = object.metadata.namespace ?? "default";
+
+    useEffect(() => {
+      let mounted = true;
+      (async () => {
+        const valuesFromYamlResult: Record<string, string | undefined> = {};
+        const ns = object.getNs()!;
+        for (const valueFrom of object.spec.valuesFrom ?? []) {
+          const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
+          const name = valueFrom.name;
+          const valuesKey = valueFrom.valuesKey ?? "values.yaml";
+          const valuesObject = await api.get({ name, namespace: ns });
+          if (!valuesObject) continue;
+          const valuesYaml = valuesObject?.data?.[valuesKey];
+          if (!valuesYaml) continue;
+          if (valueFrom.kind.toLowerCase() === "secret" && Base64.isValid(valuesYaml)) {
+            valuesFromYamlResult[`${ns}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
+          } else {
+            valuesFromYamlResult[`${ns}/${name}/${valuesKey}`] = valuesYaml;
+          }
         }
-      }
-      if (mounted) setValuesFromYaml(valuesFromYamlResult);
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [object]);
+        if (mounted) setValuesFromYaml(valuesFromYamlResult);
+      })();
+      return () => {
+        mounted = false;
+      };
+    }, [object]);
 
-  const valuesYaml = yaml.dump(object.spec.values, defaultYamlDumpOptions);
+    const valuesYaml = yaml.dump(object.spec.values, defaultYamlDumpOptions);
 
-  const images = object.spec.postRenderers
-    ?.filter((a) => a?.kustomize)
-    ?.map((a) => a?.kustomize)
-    ?.filter((a) => a?.images)
-    ?.map((a) => a?.images)
-    ?.flat();
+    const images = object.spec.postRenderers
+      ?.filter((a) => a?.kustomize)
+      ?.map((a) => a?.kustomize)
+      ?.filter((a) => a?.images)
+      ?.map((a) => a?.images)
+      ?.flat();
 
-  const patches = object.spec.postRenderers
-    ?.filter((a) => a?.kustomize)
-    ?.map((a) => a?.kustomize)
-    ?.filter((a) => a?.patches)
-    ?.map((a) => a?.patches)
-    ?.flat();
+    const patches = object.spec.postRenderers
+      ?.filter((a) => a?.kustomize)
+      ?.map((a) => a?.kustomize)
+      ?.filter((a) => a?.patches)
+      ?.map((a) => a?.patches)
+      ?.flat();
 
-  return (
-    <>
-      <style>{stylesInline}</style>
-      <div className={styles.details}>
-        <DrawerItem name="Release Name">
-          <MaybeLink key="link" to={HelmRelease.getHelmReleaseUrl(object, namespace)} onClick={stopPropagation}>
-            {HelmRelease.getReleaseNameShortened(object)}
-          </MaybeLink>
-        </DrawerItem>
-        <DrawerItem name="Helm Chart" hidden={!object.spec.chart}>
-          <MaybeLink key="link" to={getMaybeDetailsUrl(HelmRelease.getHelmChartUrl(object))} onClick={stopPropagation}>
-            {HelmRelease.getHelmChartName(object)}
-          </MaybeLink>
-        </DrawerItem>
-        <DrawerItem name="Chart Name">
-          {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}
-        </DrawerItem>
-        <DrawerItem name="Chart Version">
-          {object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version}
-        </DrawerItem>
-        <DrawerItem name="App Version">{object.status?.history?.[0]?.appVersion}</DrawerItem>
-        <DrawerItem name="History Last Status" hidden={!object.status?.history?.[0]?.status}>
-          {object.status?.history?.[0]?.status}
-        </DrawerItem>
-        <DrawerItem name="Chart Interval" hidden={!object.spec.chart?.spec.interval}>
-          {object.spec.chart?.spec.interval}
-        </DrawerItem>
-        <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-        <DrawerItem name="Max History" hidden={!object.spec.maxHistory}>
-          {object.spec.maxHistory}
-        </DrawerItem>
-        <DrawerItem name="Timeout" hidden={!object.spec.timeout}>
-          {object.spec.timeout}
-        </DrawerItem>
-        <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
-          <MaybeLink
-            key="link"
-            to={getMaybeDetailsUrl(
-              serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
-            )}
-            onClick={stopPropagation}
-          >
-            {object.spec.serviceAccountName}
-          </MaybeLink>
-        </DrawerItem>
-        <DrawerItem name="Storage Namespace" hidden={!object.spec.storageNamespace}>
-          <MaybeLink
-            key="link"
-            to={getMaybeDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.storageNamespace }))}
-            onClick={stopPropagation}
-          >
-            {object.spec.storageNamespace}
-          </MaybeLink>
-        </DrawerItem>
-        <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>
-          <MaybeLink
-            key="link"
-            to={getMaybeDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.targetNamespace }))}
-            onClick={stopPropagation}
-          >
-            {object.spec.targetNamespace}
-          </MaybeLink>
-        </DrawerItem>
-        <DrawerItem name="Drift Detection" hidden={!object.spec.driftDetection?.mode}>
-          {object.spec.driftDetection?.mode}
-        </DrawerItem>
-        <DrawerItem name="Install CRDs" hidden={!object.spec.install?.crds}>
-          {object.spec.install?.crds}
-        </DrawerItem>
-        <DrawerItem name="Upgrade CRDs" hidden={!object.spec.upgrade?.crds}>
-          {object.spec.upgrade?.crds}
-        </DrawerItem>
-        <DrawerItem name="Source">
-          <MaybeLink to={getMaybeDetailsUrl(HelmRelease.getSourceRefUrl(object))} onClick={stopPropagation}>
-            {HelmRelease.getSourceRefText(object)}
-          </MaybeLink>
-        </DrawerItem>
-        <DrawerItem name="First Deployed" hidden={!object.status?.history?.[0].firstDeployed}>
-          {object.status?.history?.[0].firstDeployed}
-        </DrawerItem>
-        <DrawerItem name="Last Deployed" hidden={!object.status?.history?.[0].lastDeployed}>
-          {object.status?.history?.[0].lastDeployed}
-        </DrawerItem>
-        <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
-          {object.status?.conditions?.[0].message}
-        </DrawerItem>
-        <DrawerItem name="Suspended">
-          <BadgeBoolean value={object.spec.suspend ?? false} />
-        </DrawerItem>
+    return (
+      <>
+        <style>{stylesInline}</style>
+        <div className={styles.details}>
+          <DrawerItem name="Release Name">
+            <MaybeLink key="link" to={HelmRelease.getHelmReleaseUrl(object, namespace)} onClick={stopPropagation}>
+              {HelmRelease.getReleaseNameShortened(object)}
+            </MaybeLink>
+          </DrawerItem>
+          <DrawerItem name="Helm Chart" hidden={!object.spec.chart}>
+            <MaybeLink
+              key="link"
+              to={getMaybeDetailsUrl(HelmRelease.getHelmChartUrl(object))}
+              onClick={stopPropagation}
+            >
+              {HelmRelease.getHelmChartName(object)}
+            </MaybeLink>
+          </DrawerItem>
+          <DrawerItem name="Chart Name">
+            {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}
+          </DrawerItem>
+          <DrawerItem name="Chart Version">
+            {object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version}
+          </DrawerItem>
+          <DrawerItem name="App Version">{object.status?.history?.[0]?.appVersion}</DrawerItem>
+          <DrawerItem name="History Last Status" hidden={!object.status?.history?.[0]?.status}>
+            {object.status?.history?.[0]?.status}
+          </DrawerItem>
+          <DrawerItem name="Chart Interval" hidden={!object.spec.chart?.spec.interval}>
+            {object.spec.chart?.spec.interval}
+          </DrawerItem>
+          <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
+          <DrawerItem name="Max History" hidden={!object.spec.maxHistory}>
+            {object.spec.maxHistory}
+          </DrawerItem>
+          <DrawerItem name="Timeout" hidden={!object.spec.timeout}>
+            {object.spec.timeout}
+          </DrawerItem>
+          <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
+            <MaybeLink
+              key="link"
+              to={getMaybeDetailsUrl(
+                serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
+              )}
+              onClick={stopPropagation}
+            >
+              {object.spec.serviceAccountName}
+            </MaybeLink>
+          </DrawerItem>
+          <DrawerItem name="Storage Namespace" hidden={!object.spec.storageNamespace}>
+            <MaybeLink
+              key="link"
+              to={getMaybeDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.storageNamespace }))}
+              onClick={stopPropagation}
+            >
+              {object.spec.storageNamespace}
+            </MaybeLink>
+          </DrawerItem>
+          <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>
+            <MaybeLink
+              key="link"
+              to={getMaybeDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.targetNamespace }))}
+              onClick={stopPropagation}
+            >
+              {object.spec.targetNamespace}
+            </MaybeLink>
+          </DrawerItem>
+          <DrawerItem name="Drift Detection" hidden={!object.spec.driftDetection?.mode}>
+            {object.spec.driftDetection?.mode}
+          </DrawerItem>
+          <DrawerItem name="Install CRDs" hidden={!object.spec.install?.crds}>
+            {object.spec.install?.crds}
+          </DrawerItem>
+          <DrawerItem name="Upgrade CRDs" hidden={!object.spec.upgrade?.crds}>
+            {object.spec.upgrade?.crds}
+          </DrawerItem>
+          <DrawerItem name="Source">
+            <MaybeLink to={getMaybeDetailsUrl(HelmRelease.getSourceRefUrl(object))} onClick={stopPropagation}>
+              {HelmRelease.getSourceRefText(object)}
+            </MaybeLink>
+          </DrawerItem>
+          <DrawerItem name="First Deployed" hidden={!object.status?.history?.[0].firstDeployed}>
+            {object.status?.history?.[0].firstDeployed}
+          </DrawerItem>
+          <DrawerItem name="Last Deployed" hidden={!object.status?.history?.[0].lastDeployed}>
+            {object.status?.history?.[0].lastDeployed}
+          </DrawerItem>
+          <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
+            {object.status?.conditions?.[0].message}
+          </DrawerItem>
+          <DrawerItem name="Suspended">
+            <BadgeBoolean value={object.spec.suspend ?? false} />
+          </DrawerItem>
 
-        {object.spec.valuesFrom && (
-          <div className="HelmReleaseValuesFrom">
-            <DrawerTitle>Values From</DrawerTitle>
-            {object.spec.valuesFrom.map((valueFrom) => {
-              const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
-              const name = valueFrom.name;
-              const valuesKey = valueFrom.valuesKey ?? "values.yaml";
-              const valuesYamlValue = valuesFromYaml[`${namespace}/${name}/${valuesKey}`] ?? "";
+          {object.spec.valuesFrom && (
+            <div>
+              <DrawerTitle>Values From</DrawerTitle>
+              {object.spec.valuesFrom.map((valueFrom) => {
+                const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
+                const name = valueFrom.name;
+                const valuesKey = valueFrom.valuesKey ?? "values.yaml";
+                const valuesYamlValue = valuesFromYaml[`${namespace}/${name}/${valuesKey}`] ?? "";
 
-              return (
-                <div key={name} className="valueFrom">
-                  <div className="title flex gaps">
-                    <Icon small material="list" />
-                  </div>
-                  <DrawerItem name="Kind">{valueFrom.kind}</DrawerItem>
-                  <DrawerItem name="Name">
-                    <MaybeLink
-                      key="link"
-                      to={getMaybeDetailsUrl(api.formatUrlForNotListing({ name, namespace }))}
-                      onClick={stopPropagation}
-                    >
-                      {name}
-                    </MaybeLink>
-                  </DrawerItem>
-                  <DrawerItem name="Values Key" hidden={!valueFrom.valuesKey}>
-                    {valueFrom.valuesKey}
-                  </DrawerItem>
-                  <DrawerItem name="Target Path" hidden={!valueFrom.targetPath}>
-                    {valueFrom.targetPath}
-                  </DrawerItem>
-                  <DrawerItem name="Optional" hidden={!valueFrom.optional}>
-                    {valueFrom.optional}
-                  </DrawerItem>
-                  <div className="flex column gaps">
+                return (
+                  <div key={name}>
+                    <div className={styles.title}>
+                      <Icon small material="list" />
+                    </div>
+                    <DrawerItem name="Kind">{valueFrom.kind}</DrawerItem>
+                    <DrawerItem name="Name">
+                      <MaybeLink
+                        key="link"
+                        to={getMaybeDetailsUrl(api.formatUrlForNotListing({ name, namespace }))}
+                        onClick={stopPropagation}
+                      >
+                        {name}
+                      </MaybeLink>
+                    </DrawerItem>
+                    <DrawerItem name="Values Key" hidden={!valueFrom.valuesKey}>
+                      {valueFrom.valuesKey}
+                    </DrawerItem>
+                    <DrawerItem name="Target Path" hidden={!valueFrom.targetPath}>
+                      {valueFrom.targetPath}
+                    </DrawerItem>
+                    <DrawerItem name="Optional" hidden={!valueFrom.optional}>
+                      {valueFrom.optional}
+                    </DrawerItem>
                     <MonacoEditor
                       readOnly
                       id={`valuesFrom-${namespace}-${name}-${valuesKey}`}
+                      className={styles.editor}
                       style={{
                         minHeight: getHeight(valuesYamlValue),
-                        resize: "none",
-                        overflow: "hidden",
-                        border: "1px solid var(--borderFaintColor)",
-                        borderRadius: "4px",
                       }}
                       value={valuesYamlValue}
                       setInitialHeight
@@ -220,25 +238,20 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                       }}
                     />
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
 
-        {object.spec.values && (
-          <div className="HelmReleaseValues">
-            <DrawerTitle>Values</DrawerTitle>
-            <div className="flex column gaps">
+          {object.spec.values && (
+            <div>
+              <DrawerTitle>Values</DrawerTitle>
               <MonacoEditor
                 readOnly
                 id="values"
+                className={styles.editor}
                 style={{
                   minHeight: getHeight(valuesYaml),
-                  resize: "none",
-                  overflow: "hidden",
-                  border: "1px solid var(--borderFaintColor)",
-                  borderRadius: "4px",
                 }}
                 value={valuesYaml}
                 setInitialHeight
@@ -249,67 +262,60 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                 }}
               />
             </div>
-          </div>
-        )}
+          )}
 
-        {patches && (
-          <div className="HelmReleasePatches">
-            <DrawerTitle>Patches</DrawerTitle>
-            {patches.map((patch) => {
-              if (!patch) return null;
-              const key = crypto
-                .createHash("sha256")
-                .update(
-                  [
-                    patch.patch,
-                    patch.target?.kind,
-                    patch.target?.name,
-                    patch.target?.namespace,
-                    patch.target?.labelSelector,
-                    patch.target?.annotationSelector,
-                  ].join(""),
-                )
-                .digest("hex");
+          {patches && (
+            <div>
+              <DrawerTitle>Patches</DrawerTitle>
+              {patches.map((patch) => {
+                if (!patch) return null;
+                const key = crypto
+                  .createHash("sha256")
+                  .update(
+                    [
+                      patch.patch,
+                      patch.target?.kind,
+                      patch.target?.name,
+                      patch.target?.namespace,
+                      patch.target?.labelSelector,
+                      patch.target?.annotationSelector,
+                    ].join(""),
+                  )
+                  .digest("hex");
 
-              return (
-                <div key={key} className="patch">
-                  <div className="title flex gaps">
-                    <Icon small material="list" />
-                  </div>
-                  <DrawerItem name="Group" hidden={!patch.target?.group}>
-                    {patch.target?.group}
-                  </DrawerItem>
-                  <DrawerItem name="Version" hidden={!patch.target?.version}>
-                    {patch.target?.version}
-                  </DrawerItem>
-                  <DrawerItem name="Kind" hidden={!patch.target?.kind}>
-                    {patch.target?.kind}
-                  </DrawerItem>
-                  <DrawerItem name="Name" hidden={!patch.target?.name}>
-                    {patch.target?.name}
-                  </DrawerItem>
-                  <DrawerItem name="Namespace" hidden={!patch.target?.namespace}>
-                    {patch.target?.namespace}
-                  </DrawerItem>
-                  <DrawerItem name="Label Selector" hidden={!patch.target?.labelSelector}>
-                    {patch.target?.labelSelector}
-                  </DrawerItem>
-                  <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
-                    {patch.target?.annotationSelector}
-                  </DrawerItem>
-                  <div className="DrawerItem">
-                    <span className="name">Patch</span>
-                  </div>
-                  <div className="flex column gaps">
+                return (
+                  <div key={key}>
+                    <div className={styles.title}>
+                      <Icon small material="list" />
+                    </div>
+                    <DrawerItem name="Group" hidden={!patch.target?.group}>
+                      {patch.target?.group}
+                    </DrawerItem>
+                    <DrawerItem name="Version" hidden={!patch.target?.version}>
+                      {patch.target?.version}
+                    </DrawerItem>
+                    <DrawerItem name="Kind" hidden={!patch.target?.kind}>
+                      {patch.target?.kind}
+                    </DrawerItem>
+                    <DrawerItem name="Name" hidden={!patch.target?.name}>
+                      {patch.target?.name}
+                    </DrawerItem>
+                    <DrawerItem name="Namespace" hidden={!patch.target?.namespace}>
+                      {patch.target?.namespace}
+                    </DrawerItem>
+                    <DrawerItem name="Label Selector" hidden={!patch.target?.labelSelector}>
+                      {patch.target?.labelSelector}
+                    </DrawerItem>
+                    <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
+                      {patch.target?.annotationSelector}
+                    </DrawerItem>
+                    <div className="DrawerItem">Patch</div>
                     <MonacoEditor
                       readOnly
                       id={`patch-${key}`}
+                      className={styles.editor}
                       style={{
                         minHeight: getHeight(patch.patch),
-                        resize: "none",
-                        overflow: "hidden",
-                        border: "1px solid var(--borderFaintColor)",
-                        borderRadius: "4px",
                       }}
                       value={patch.patch}
                       setInitialHeight
@@ -320,116 +326,79 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                       }}
                     />
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
 
-        {images && (
-          <div className="HelmReleaseImages">
-            <DrawerTitle>Images</DrawerTitle>
-            {images.map((image, idx) => {
-              if (!image) return null;
-              return (
-                <div className="image" key={image.name ?? idx}>
-                  <div className="title flex gaps">
-                    <Icon small material="list" />
+          {images && (
+            <div>
+              <DrawerTitle>Images</DrawerTitle>
+              {images.map((image, idx) => {
+                if (!image) return null;
+                return (
+                  <div key={image.name ?? idx}>
+                    <div className={styles.title}>
+                      <Icon small material="list" />
+                    </div>
+                    <DrawerItem name="Name">{image.name}</DrawerItem>
+                    <DrawerItem name="New Name" hidden={!image.newName}>
+                      {image.newName}
+                    </DrawerItem>
+                    <DrawerItem name="New Tag" hidden={!image.newTag}>
+                      {image.newTag}
+                    </DrawerItem>
+                    <DrawerItem name="Digest" hidden={!image.digest}>
+                      {image.digest}
+                    </DrawerItem>
                   </div>
-                  <DrawerItem name="Name">{image.name}</DrawerItem>
-                  <DrawerItem name="New Name" hidden={!image.newName}>
-                    {image.newName}
-                  </DrawerItem>
-                  <DrawerItem name="New Tag" hidden={!image.newTag}>
-                    {image.newTag}
-                  </DrawerItem>
-                  <DrawerItem name="Digest" hidden={!image.digest}>
-                    {image.digest}
-                  </DrawerItem>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
 
-        {object.status?.history && (
-          <div className={styles.helmReleaseHistory}>
-            <DrawerTitle>History</DrawerTitle>
-            <Table
-              selectable
-              tableId="history"
-              scrollable={false}
-              sortable={{
-                version: (snapshot: HelmReleaseSnapshot) => snapshot.version,
-                lastDeployed: (snapshot: HelmReleaseSnapshot) => snapshot.lastDeployed,
-                chartVersion: (snapshot: HelmReleaseSnapshot) => snapshot.chartVersion,
-                appVersion: (snapshot: HelmReleaseSnapshot) => snapshot.appVersion,
-                status: (snapshot: HelmReleaseSnapshot) => snapshot.status,
-              }}
-              sortByDefault={{ sortBy: "version", orderBy: "desc" }}
-              sortSyncWithUrl={false}
-              className="box grow"
-            >
-              <TableHead flat sticky={false}>
-                <TableCell className="version" sortBy="version">
-                  Version
-                </TableCell>
-                <TableCell className="lastDeployed" sortBy="lastDeployed">
-                  Last Deployed
-                </TableCell>
-                <TableCell className="chartVersion" sortBy="chartVersion">
-                  Chart Version
-                </TableCell>
-                <TableCell className="appVersion" sortBy="appVersion">
-                  App Version
-                </TableCell>
-                <TableCell className="status" sortBy="status">
-                  Status
-                </TableCell>
-              </TableHead>
-              {object.status?.history?.map((snapshot) => (
-                <TableRow key={snapshot.version} sortItem={snapshot} nowrap>
-                  <TableCell className="version">{snapshot.version}</TableCell>
-                  <TableCell className="lastDeployed">{snapshot.lastDeployed}</TableCell>
-                  <TableCell className="chartVersion" id={`helmReleaseHistory-${snapshot.version}-chartVersion`}>
-                    {snapshot.chartVersion}
-                    <Tooltip targetId={`helmReleaseHistory-${snapshot.version}-chartVersion`}>
-                      {snapshot.chartVersion}
-                    </Tooltip>
+          {object.status?.history && (
+            <div className={styles.history}>
+              <DrawerTitle>History</DrawerTitle>
+              <Table
+                selectable
+                tableId="history"
+                scrollable={false}
+                sortable={historySortable}
+                sortByDefault={historySortByDefault}
+                sortSyncWithUrl={false}
+              >
+                <TableHead flat sticky={false}>
+                  <TableCell sortBy={historySortByNames.version} className={styles.version}>
+                    Version
                   </TableCell>
-                  <TableCell className="appVersion" id={`helmReleaseHistory-${snapshot.version}-appVersion`}>
-                    {snapshot.appVersion}{" "}
-                    <Tooltip targetId={`helmReleaseHistory-${snapshot.version}-appVersion`}>
-                      {snapshot.appVersion}
-                    </Tooltip>
+                  <TableCell sortBy={historySortByNames.lastDeployed}>Last Deployed</TableCell>
+                  <TableCell sortBy={historySortByNames.chartVersion}>Chart Version</TableCell>
+                  <TableCell sortBy={historySortByNames.appVersion}>App Version</TableCell>
+                  <TableCell sortBy={historySortByNames.status} className={styles.status}>
+                    Status
                   </TableCell>
-                  <TableCell className="status">{snapshot.status}</TableCell>
-                </TableRow>
-              ))}
-            </Table>
-          </div>
-        )}
+                </TableHead>
+                {object.status?.history?.map((snapshot) => (
+                  <TableRow key={snapshot.version} sortItem={snapshot} nowrap>
+                    <TableCell className={styles.version}>{snapshot.version}</TableCell>
+                    <TableCell>{snapshot.lastDeployed}</TableCell>
+                    <TableCell>
+                      <WithTooltip>{snapshot.chartVersion}</WithTooltip>
+                    </TableCell>
+                    <TableCell>
+                      <WithTooltip>{snapshot.appVersion}</WithTooltip>
+                    </TableCell>
+                    <TableCell className={styles.status}>{snapshot.status}</TableCell>
+                  </TableRow>
+                ))}
+              </Table>
+            </div>
+          )}
 
-        {object.status?.conditions && (
-          <div className="HelmReleaseConditions">
-            <DrawerTitle>Conditions</DrawerTitle>
-            {object.status?.conditions?.map((condition, idx) => (
-              <div className="condition" key={idx}>
-                <div className="title flex gaps">
-                  <Icon small material="list" />
-                </div>
-                <DrawerItem name="Last Transition Time">{condition.lastTransitionTime}</DrawerItem>
-                <DrawerItem name="Reason">{condition.reason}</DrawerItem>
-                <DrawerItem name="Status">{condition.status}</DrawerItem>
-                <DrawerItem name="Type" hidden={!condition.type}>
-                  {condition.type}
-                </DrawerItem>
-                <DrawerItem name="Message">{condition.message}</DrawerItem>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
-  );
-};
+          <StatusConditions object={object} />
+        </div>
+      </>
+    );
+  },
+);

@@ -1,8 +1,9 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../components/conditions";
 import { withErrorPage } from "../../components/error-page";
 import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization";
-import { getConditionClass, getConditionMessage, getConditionText, getMaybeDetailsUrl } from "../../utils";
+import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./kustomizations.module.scss";
 import stylesInline from "./kustomizations.module.scss?inline";
 

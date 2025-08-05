@@ -1,8 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../components/conditions";
 import { Provider } from "../../k8s/fluxcd/notification/provider";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 
 const {
   Component: { Badge, KubeObjectAge, KubeObjectListLayout },

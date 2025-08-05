@@ -1,8 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../components/conditions";
 import { withErrorPage } from "../../components/error-page";
 import { GitRepository, type GitRepositoryApi } from "../../k8s/fluxcd/source/gitrepository";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../utils";
 import styles from "./gitrepositories.module.scss";
 import stylesInline from "./gitrepositories.module.scss?inline";
 

@@ -56,7 +56,7 @@ export class GitRepository extends Renderer.K8sApi.LensExtensionKubeObject<
     ],
     plural: "gitrepositories",
     singular: "gitrepository",
-    shortNames: [],
+    shortNames: ["gitrepo"],
     title: "Git Repositories",
   };
 

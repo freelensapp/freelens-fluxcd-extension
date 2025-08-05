@@ -7,7 +7,14 @@
   }
 }
 
-.helmReleaseHistory {
+.editor {
+  resize: none;
+  overflow: hidden;
+  border: 1px solid var(--borderFaintColor);
+  border-radius: 4px;
+}
+
+.history {
   :global(.TableCell) {
     &.version {
       flex-grow: 0.5;

@@ -1,0 +1,8 @@
+@use "../vars";
+
+.conditions {
+  .title {
+    margin-top: vars.$margin * 2;
+    margin-bottom: vars.$margin;
+  }
+}

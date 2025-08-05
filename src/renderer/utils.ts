@@ -1,17 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
-import moment from "moment";
-
-import type { Condition } from "@freelensapp/kube-object";
 
 import type { DumpOptions } from "js-yaml";
-
-import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatusWithConditions } from "./k8s/fluxcd/types";
-
-type KubeObjectWithCondition = Renderer.K8sApi.KubeObject<
-  Renderer.K8sApi.KubeObjectMetadata,
-  FluxCDKubeObjectStatusWithConditions,
-  {} | FluxCDKubeObjectSpecWithSuspend
->;
 
 const {
   Navigation: { getDetailsUrl },
@@ -22,55 +11,6 @@ export function getMaybeDetailsUrl(url?: string): string {
     return getDetailsUrl(url);
   } else {
     return "";
-  }
-}
-
-function timeToUnix(dateStr?: string): number {
-  const m = moment(dateStr);
-  return m.isValid() ? m.unix() : 0;
-}
-
-/**
- * Gets the last condition using heuristic: first sorts fields by date and if
- * the date is the same then prefers the "Ready" type or first from the list.
- */
-export function getLastCondition<T extends KubeObjectWithCondition>(object: T): Condition | undefined {
-  const conditions =
-    object.status?.conditions?.sort((a, b) => timeToUnix(a.lastTransitionTime) - timeToUnix(b.lastTransitionTime)) ??
-    [];
-  if (conditions.length > 1) {
-    const ready = conditions.find((a) => a.type == "Ready");
-    if (ready) return ready;
-  }
-  return conditions[0];
-}
-
-export function getConditionText<T extends KubeObjectWithCondition>(object: T) {
-  const condition = getLastCondition(object);
-  if ("suspend" in object.spec && object.spec.suspend) return "Suspended";
-  if (condition?.status === "True") return "Ready";
-  if (condition?.status === "False") return "Not Ready";
-  if (object.status?.conditions) return "In Progress";
-  return "Unknown";
-}
-
-export function getConditionMessage<T extends KubeObjectWithCondition>(object: T) {
-  return getLastCondition(object)?.message ?? "-";
-}
-
-export function getConditionClass<T extends KubeObjectWithCondition>(obj: T) {
-  const status = getConditionText(obj);
-  switch (status) {
-    case "Ready":
-      return "success";
-    case "Not Ready":
-      return "error";
-    case "Suspended":
-      return "info";
-    case "In Progress":
-      return "warning";
-    default:
-      return "";
   }
 }
 
