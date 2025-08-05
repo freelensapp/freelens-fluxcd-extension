@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../components/conditions";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
 import { Provider } from "../../k8s/fluxcd/notification/provider";
 
 const {

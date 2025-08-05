@@ -2,6 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { HelmReleaseDetails } from "./components/details/helm/helm-release-details";
 import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
 import { GitRepositoryDetails } from "./components/details/sources/git-repository-details";
+import { HelmRepositoryDetails } from "./components/details/sources/helm-repository-details";
 import svgIcon from "./icons/fluxcd.svg?raw";
 import { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
 import { ImagePolicy } from "./k8s/fluxcd/image/imagepolicy";
@@ -88,7 +89,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: HelmRepository.crd.plural,
       components: {
-        Page: () => <HelmRepositoriesPage />,
+        Page: () => <HelmRepositoriesPage extension={this} />,
       },
     },
     {
@@ -299,6 +300,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: HelmRepository.kind,
+      apiVersions: HelmRepository.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository>) => (
+          <HelmRepositoryDetails {...props} />
+        ),
+      },
+    },
+    {
       kind: Kustomization.kind,
       apiVersions: Kustomization.crd.apiVersions,
       priority: 10,
@@ -344,6 +355,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
           <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRelease} />
+        ),
+      },
+    },
+    {
+      kind: HelmRepository.kind,
+      apiVersions: HelmRepository.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRepository} />
+        ),
+      },
+    },
+    {
+      kind: HelmRepository.kind,
+      apiVersions: HelmRepository.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRepository} />
         ),
       },
     },

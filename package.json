@@ -1,6 +1,6 @@
 {
   "name": "@freelensapp/fluxcd-extension",
-  "version": "3.3.0-153",
+  "version": "3.3.0-170",
   "description": "Freelens extension for FluxCD",
   "repository": {
     "type": "git",
@@ -46,6 +46,7 @@
     "type:check": "tsc --noEmit -p tsconfig.json --composite false",
     "prebuild": "corepack pnpm type:check",
     "build": "electron-vite build",
+    "build:force": "electron-vite build",
     "bump-version": "corepack pnpm version --no-commit-hooks --no-git-tag-version",
     "pack:dev": "corepack pnpm bump-version prerelease && corepack pnpm build && corepack pnpm clean:tgz && corepack pnpm pack && corepack pnpm dlx shx@0.4.0 ls \"$PWD/*.tgz\"",
     "clean": "corepack pnpm clean:out",

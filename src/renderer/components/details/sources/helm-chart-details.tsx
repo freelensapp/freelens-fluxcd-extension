@@ -1,7 +1,7 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { HelmChart } from "../../../k8s/fluxcd/source/helmchart";
-import { getConditionClass, getConditionText } from "../../conditions";
+import { getConditionClass, getConditionText } from "../../status-conditions";
 
 const {
   Util: { lowerAndPluralize },
@@ -60,11 +60,11 @@ export class FluxCDHelmChartDetails extends React.Component<
         <DrawerItem name="Ready">
           <Badge className={getConditionClass(object)} label={getConditionText(object)} />
         </DrawerItem>
+        <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
         <DrawerItem name="Chart">{object.spec.chart}</DrawerItem>
         <DrawerItem name="Version">{object.spec.version}</DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
         <DrawerItem name="Reconcile Strategy">{object.spec.reconcileStrategy}</DrawerItem>
-        <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
         <DrawerItem name="Source">
           <a
             href="#"

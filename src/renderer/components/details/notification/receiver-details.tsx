@@ -1,7 +1,7 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver";
-import { getConditionClass, getConditionText } from "../../conditions";
+import { getConditionClass, getConditionText } from "../../status-conditions";
 
 interface ReceiverDetailsState {
   events: Renderer.K8sApi.KubeEvent[];

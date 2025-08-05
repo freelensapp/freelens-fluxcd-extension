@@ -1,8 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import moment from "moment";
-import styles from "./conditions.module.scss";
-import stylesInline from "./conditions.module.scss?inline";
+import styles from "./status-conditions.module.scss";
+import stylesInline from "./status-conditions.module.scss?inline";
 
 import type { Condition } from "@freelensapp/kube-object";
 

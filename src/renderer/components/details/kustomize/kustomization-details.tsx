@@ -12,8 +12,8 @@ import {
 import { NamespacedObjectKindReference, type ResourceRef } from "../../../k8s/fluxcd/types";
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
-import { getConditionClass, getConditionMessage, getConditionText, StatusConditions } from "../../conditions";
 import { MaybeLink } from "../../maybe-link";
+import { getConditionClass, getConditionMessage, getConditionText, StatusConditions } from "../../status-conditions";
 import styles from "./kustomization-details.module.scss";
 import stylesInline from "./kustomization-details.module.scss?inline";
 
@@ -129,6 +129,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           <DrawerItem name="Condition">
             <Badge className={getConditionClass(object)} label={getConditionText(object)} />
           </DrawerItem>
+          <DrawerItem name="Suspended">
+            <BadgeBoolean value={object.spec.suspend ?? false} />
+          </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
           <DrawerItem name="Retry Interval" hidden={!object.spec.retryInterval}>
             {object.spec.retryInterval}
@@ -182,9 +185,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             </MaybeLink>
           </DrawerItem>
           <DrawerItem name="Last Applied Revision">{object.status?.lastAppliedRevision}</DrawerItem>
-          <DrawerItem name="Suspended">
-            <BadgeBoolean value={object.spec.suspend ?? false} />
-          </DrawerItem>
 
           {object.spec.dependsOn && (
             <div>

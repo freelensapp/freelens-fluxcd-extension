@@ -1,65 +1,66 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
-import React from "react";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../components/conditions";
-import { HelmRepository } from "../../k8s/fluxcd/source/helmrepository";
+import { withErrorPage } from "../../components/error-page";
+import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
+import { HelmRepository, type HelmRepositoryApi } from "../../k8s/fluxcd/source/helmrepository";
+import styles from "./helmrepositories.module.scss";
+import stylesInline from "./helmrepositories.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-enum sortBy {
-  name = "name",
-  url = "url",
-  namespace = "namespace",
-  status = "status",
-  ready = "ready",
-  age = "age",
+const KubeObject = HelmRepository;
+type KubeObject = HelmRepository;
+type KubeObjectApi = HelmRepositoryApi;
+
+const sortingCallbacks = {
+  name: (object: KubeObject) => object.getName(),
+  namespace: (object: KubeObject) => object.getNs(),
+  url: (object: KubeObject) => object.spec.url,
+  condition: (object: KubeObject) => getConditionText(object),
+  message: (object: KubeObject) => getConditionText(object),
+  age: (object: KubeObject) => object.getCreationTimestamp(),
+};
+
+const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
+  { title: "Name", sortBy: "name" },
+  { title: "Namespace", sortBy: "namespace" },
+  { title: "URL", sortBy: "url", className: styles.url },
+  { title: "Condition", sortBy: "condition", className: styles.condition },
+  { title: "Message", sortBy: "message", className: styles.message },
+  { title: "Age", sortBy: "age", className: styles.age },
+];
+
+export interface HelmRepositoriesPageProps {
+  extension: Renderer.LensExtension;
 }
 
-@observer
-export class HelmRepositoriesPage extends React.Component {
-  render() {
-    const store = HelmRepository.getStore();
-    if (!store) return <></>;
+export const HelmRepositoriesPage = observer((props: HelmRepositoriesPageProps) =>
+  withErrorPage(props, () => {
+    const store = KubeObject.getStore<KubeObject>();
+
     return (
-      <KubeObjectListLayout
-        tableId="helmRepositoriesTable"
-        className="HelmRepositories"
-        store={store}
-        sortingCallbacks={{
-          [sortBy.name]: (helmRepository: HelmRepository) => helmRepository.getName(),
-          [sortBy.namespace]: (helmRepository: HelmRepository) => helmRepository.getNs(),
-          [sortBy.url]: (helmRepository: HelmRepository) => helmRepository.spec.url,
-          [sortBy.ready]: (helmRepository: HelmRepository) => getConditionText(helmRepository),
-          [sortBy.status]: (helmRepository: HelmRepository) => getConditionMessage(helmRepository),
-          [sortBy.age]: (helmRepository: HelmRepository) => helmRepository.getCreationTimestamp(),
-        }}
-        searchFilters={[(helmRepository: HelmRepository) => helmRepository.getSearchFields()]}
-        renderHeaderTitle="Helm Repositories"
-        renderTableHeader={[
-          { title: "Name", className: "name", sortBy: sortBy.name },
-          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
-          { title: "Url", className: "url", sortBy: sortBy.url },
-          { title: "Ready", className: "ready", sortBy: sortBy.ready },
-          { title: "Status", className: "status", sortBy: sortBy.status },
-          { title: "Age", className: "age", sortBy: sortBy.age },
-        ]}
-        renderTableContents={(helmRepository: HelmRepository) => [
-          helmRepository.getName(),
-          helmRepository.getNs(),
-          helmRepository.spec.url,
-          this.renderStatus(helmRepository),
-          getConditionMessage(helmRepository),
-          <KubeObjectAge object={helmRepository} key="age" />,
-        ]}
-      />
+      <>
+        <style>{stylesInline}</style>
+        <KubeObjectListLayout<KubeObject, KubeObjectApi>
+          tableId={`${KubeObject.crd.plural}Table`}
+          className={styles.page}
+          store={store}
+          sortingCallbacks={sortingCallbacks}
+          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+          renderHeaderTitle={KubeObject.crd.title}
+          renderTableHeader={renderTableHeader}
+          renderTableContents={(object: KubeObject) => [
+            <WithTooltip>{object.getName()}</WithTooltip>,
+            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
+            <WithTooltip>{object.spec.url}</WithTooltip>,
+            <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
+            <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
+            <KubeObjectAge object={object} key="age" />,
+          ]}
+        />
+      </>
     );
-  }
-
-  renderStatus(helmRepository: HelmRepository) {
-    const className = getConditionClass(helmRepository);
-    const text = getConditionText(helmRepository);
-    return <Badge key="name" label={text} className={className} />;
-  }
-}
+  }),
+);

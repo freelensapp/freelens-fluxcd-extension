@@ -6,10 +6,14 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
-import { StatusConditions } from "../../conditions";
 import { MaybeLink } from "../../maybe-link";
+import { StatusConditions } from "../../status-conditions";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
+
+const {
+  Util: { stopPropagation },
+} = Common;
 
 const {
   Component: {
@@ -26,10 +30,6 @@ const {
   },
   K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
 } = Renderer;
-
-const {
-  Util: { stopPropagation },
-} = Common;
 
 const historySortable = {
   version: (snapshot: HelmReleaseSnapshot) => snapshot.version,
@@ -123,6 +123,9 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="History Last Status" hidden={!object.status?.history?.[0]?.status}>
             {object.status?.history?.[0]?.status}
           </DrawerItem>
+          <DrawerItem name="Suspended">
+            <BadgeBoolean value={object.spec.suspend ?? false} />
+          </DrawerItem>
           <DrawerItem name="Chart Interval" hidden={!object.spec.chart?.spec.interval}>
             {object.spec.chart?.spec.interval}
           </DrawerItem>
@@ -184,9 +187,6 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           </DrawerItem>
           <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
             {object.status?.conditions?.[0].message}
-          </DrawerItem>
-          <DrawerItem name="Suspended">
-            <BadgeBoolean value={object.spec.suspend ?? false} />
           </DrawerItem>
 
           {object.spec.valuesFrom && (

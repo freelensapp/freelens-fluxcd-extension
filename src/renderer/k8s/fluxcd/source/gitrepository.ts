@@ -65,6 +65,16 @@ export class GitRepository extends Renderer.K8sApi.LensExtensionKubeObject<
     return ref.name?.replace(/^refs\/(heads|tags)\//, "") ?? ref.branch ?? ref.tag ?? ref.semver ?? ref.commit;
   }
 
+  static getGitRefFull(ref?: GitRepositoryRef): string | undefined {
+    if (!ref) return;
+    if (ref.name) return `name: ${ref.name}`;
+    if (ref.branch) return `branch: ${ref.branch}`;
+    if (ref.tag) return `tag: ${ref.tag}`;
+    if (ref.semver) return `semver: ${ref.semver}`;
+    if (ref.commit) return `commit: ${ref.commit}`;
+    return;
+  }
+
   static getGitRevision(object: GitRepository): string | undefined {
     return object.status?.artifact?.revision?.replace(/^refs\/(heads|tags)\//, "");
   }

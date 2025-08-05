@@ -18,7 +18,7 @@ export interface NamespaceSelector {
 }
 
 export interface AccessFrom {
-  namespaceSelectors?: NamespaceSelector[];
+  namespaceSelectors: NamespaceSelector[];
 }
 
 export interface Artifact {
@@ -27,6 +27,7 @@ export interface Artifact {
   revision: string;
   checksum: string;
   lastUpdateTime?: string;
+  size?: number;
 }
 
 export interface Image {
@@ -69,6 +70,10 @@ export interface FluxCDKubeObjectCRD extends Renderer.K8sApi.LensExtensionKubeOb
 
 export interface FluxCDKubeObjectSpecWithSuspend {
   suspend?: boolean;
+}
+
+export interface FluxCDKubeObjectStatusWithArtifact {
+  artifact?: Artifact;
 }
 
 export interface FluxCDKubeObjectStatusWithConditions {
