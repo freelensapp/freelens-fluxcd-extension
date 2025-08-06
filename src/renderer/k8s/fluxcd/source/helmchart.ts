@@ -1,22 +1,38 @@
 import { Renderer } from "@freelensapp/extensions";
 
+import type { AccessFrom, Artifact, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
+
+export interface LocalHelmChartSourceReference {
+  apiVersion?: string;
+  kind: "HelmRepository" | "HelmChart" | "Bucket";
+  name: string;
+}
+
+export interface HelmChartSpec extends FluxCDKubeObjectSpecWithSuspend {
+  chart: string;
+  version?: string;
+  sourceRef: LocalHelmChartSourceReference;
+  interval: string;
+  reconcileStrategy?: "ChartVersion" | "Revision";
+  valuesFiles?: string[];
+  valuesFile?: string;
+  suspend?: boolean;
+  accessFrom?: AccessFrom;
+}
+
+export interface HelmChartStatus extends FluxCDKubeObjectStatus {
+  url?: string;
+  artifact?: Artifact;
+}
+
 export class HelmChart extends Renderer.K8sApi.LensExtensionKubeObject<
-  any,
-  any,
-  {
-    chart: string;
-    suspend: boolean;
-    version: string;
-    reconcileStrategy: string;
-    interval: string;
-    timeout: string;
-    values: string;
-    sourceRef: { kind: string; name: string; namespace: string };
-  }
+  Renderer.K8sApi.KubeObjectMetadata,
+  HelmChartStatus,
+  HelmChartSpec
 > {
   static readonly kind = "HelmChart";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta1/helmcharts";
+  static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta1/helmrepositories";
 
   static readonly crd = {
     apiVersions: [

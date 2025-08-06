@@ -1,82 +1,60 @@
 import { Common, Renderer } from "@freelensapp/extensions";
+import { observer } from "mobx-react";
 import React from "react";
 import { HelmChart } from "../../../k8s/fluxcd/source/helmchart";
-import { getConditionClass, getConditionText } from "../../status-conditions";
+import { getRefUrl } from "../../../k8s/fluxcd/utils";
+import { getMaybeDetailsUrl } from "../../../utils";
+import { StatusArtifact } from "../../status-artifact";
+import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
 
 const {
-  Util: { lowerAndPluralize },
+  Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { DrawerItem, Badge },
+  Component: { Badge, BadgeBoolean, DrawerItem, MaybeLink },
 } = Renderer;
 
-interface HelmChartDetailsState {
-  crds: Renderer.K8sApi.CustomResourceDefinition[];
-}
+export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmChart>> = observer((props) => {
+  const { object } = props;
 
-export class FluxCDHelmChartDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<HelmChart>,
-  HelmChartDetailsState
-> {
-  public readonly state: Readonly<HelmChartDetailsState> = {
-    crds: [],
-  };
+  return (
+    <div>
+      <DrawerItem name="Condition">
+        <Badge className={getConditionClass(object)} label={getConditionText(object)} />
+      </DrawerItem>
+      <DrawerItem name="Suspended">
+        <BadgeBoolean value={object.spec.suspend ?? false} />
+      </DrawerItem>
+      <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
+      <DrawerItem name="Chart">{object.spec.chart}</DrawerItem>
+      <DrawerItem name="Version">{object.spec.version}</DrawerItem>
+      <DrawerItem name="Reconcile Strategy">{object.spec.reconcileStrategy}</DrawerItem>
+      <DrawerItem name="Source">
+        <MaybeLink to={getMaybeDetailsUrl(getRefUrl(object.spec.sourceRef, object))} onClick={stopPropagation}>
+          {object.spec.sourceRef?.kind}: {object.spec.sourceRef?.name}
+        </MaybeLink>
+      </DrawerItem>
+      <DrawerItem name="Values Files" hidden={!object.spec.valuesFiles || !object.spec.valuesFiles.length}>
+        {object.spec.valuesFiles?.length ? (
+          <ul>
+            {object.spec.valuesFiles.map((file) => (
+              <li>{file}</li>
+            ))}
+          </ul>
+        ) : (
+          <></>
+        )}
+      </DrawerItem>
+      <DrawerItem name="Values File" hidden={!object.spec.valuesFile}>
+        <ul>
+          <li>{object.spec.valuesFile}</li>
+        </ul>
+      </DrawerItem>
 
-  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
-    const { crds } = this.state;
+      <StatusArtifact object={object} />
 
-    if (!kind || !crds) return;
-
-    return crds.find((crd) => crd.spec.names.kind === kind);
-  }
-
-  sourceUrl(resource: HelmChart): string {
-    const name = resource.spec.sourceRef.name;
-    const ns = resource.spec.sourceRef.namespace ?? resource.metadata.namespace;
-    const kind = lowerAndPluralize(resource.spec.sourceRef.kind);
-    const crd = this.getCrd(resource.spec.sourceRef.kind);
-    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
-    const group = crd?.spec.group;
-
-    if (!apiVersion || !group) return "";
-
-    return `/apis/${group}/${apiVersion}/namespaces/${ns}/${kind}/${name}`;
-  }
-
-  async componentDidMount() {
-    const crdStore = Renderer.K8sApi.crdStore;
-    if (crdStore) {
-      crdStore.loadAll().then((l) => this.setState({ crds: l! }));
-    }
-  }
-
-  render() {
-    const { object } = this.props;
-
-    return (
-      <div>
-        <DrawerItem name="Status">{object.status?.conditions?.find((s: any) => s.type === "Ready").message}</DrawerItem>
-        <DrawerItem name="Ready">
-          <Badge className={getConditionClass(object)} label={getConditionText(object)} />
-        </DrawerItem>
-        <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
-        <DrawerItem name="Chart">{object.spec.chart}</DrawerItem>
-        <DrawerItem name="Version">{object.spec.version}</DrawerItem>
-        <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-        <DrawerItem name="Reconcile Strategy">{object.spec.reconcileStrategy}</DrawerItem>
-        <DrawerItem name="Source">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              Renderer.Navigation.showDetails(this.sourceUrl(object), true);
-            }}
-          >
-            {object.spec.sourceRef.kind}:{object.spec.sourceRef.name}
-          </a>
-        </DrawerItem>
-      </div>
-    );
-  }
-}
+      <StatusConditions object={object} />
+    </div>
+  );
+});

@@ -557,7 +557,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                       <WithTooltip tooltip={inventoryKindTooltip(healthCheck)}>{healthCheck.kind}</WithTooltip>
                     </TableCell>
                     <TableCell className={styles.name}>
-                      <MaybeLink to={getMaybeDetailsUrl(getRefUrl(healthCheck))} onClick={stopPropagation}>
+                      <MaybeLink to={getMaybeDetailsUrl(getRefUrl(healthCheck, object))} onClick={stopPropagation}>
                         <WithTooltip>{healthCheck.name}</WithTooltip>
                       </MaybeLink>
                     </TableCell>
@@ -611,7 +611,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                         <WithTooltip tooltip={inventoryKindTooltip(objectRef)}>{objectRef.kind}</WithTooltip>
                       </TableCell>
                       <TableCell className={styles.name}>
-                        <MaybeLink to={getMaybeDetailsUrl(getRefUrl(objectRef))} onClick={stopPropagation}>
+                        <MaybeLink to={getMaybeDetailsUrl(getRefUrl(objectRef, object))} onClick={stopPropagation}>
                           <WithTooltip>{objectRef.name}</WithTooltip>
                         </MaybeLink>
                       </TableCell>

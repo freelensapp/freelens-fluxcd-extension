@@ -2,6 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { HelmReleaseDetails } from "./components/details/helm/helm-release-details";
 import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
 import { GitRepositoryDetails } from "./components/details/sources/git-repository-details";
+import { HelmChartDetails } from "./components/details/sources/helm-chart-details";
 import { HelmRepositoryDetails } from "./components/details/sources/helm-repository-details";
 import svgIcon from "./icons/fluxcd.svg?raw";
 import { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
@@ -77,7 +78,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: HelmChart.crd.plural,
       components: {
-        Page: () => <HelmChartsPage />,
+        Page: () => <HelmChartsPage extension={this} />,
       },
     },
     {
@@ -292,6 +293,14 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: HelmChart.kind,
+      apiVersions: HelmChart.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart>) => <HelmChartDetails {...props} />,
+      },
+    },
+    {
       kind: HelmRelease.kind,
       apiVersions: HelmRelease.crd.apiVersions,
       priority: 10,
@@ -337,6 +346,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
           <FluxCDObjectSuspendResumeMenuItem {...props} resource={GitRepository} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart.kind,
+      apiVersions: HelmChart.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmChart} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart.kind,
+      apiVersions: HelmChart.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmChart} />
         ),
       },
     },
