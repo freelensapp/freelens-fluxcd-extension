@@ -12,7 +12,7 @@ const {
 } = Common;
 
 const {
-  Component: { Badge, KubeObjectListLayout, KubeObjectAge, MaybeLink, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, BadgeBoolean, KubeObjectListLayout, KubeObjectAge, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = HelmRelease;
@@ -23,9 +23,10 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   source: (object: KubeObject) => KubeObject.getSourceRefName(object),
-  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   chartVersion: (object: KubeObject) => HelmRelease.getChartVersion(object),
   appVersion: (object: KubeObject) => HelmRelease.getAppVersion(object),
+  resumed: (object: KubeObject) => String(!object.spec.suspend),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   message: (object: KubeObject) => getConditionMessage(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
@@ -36,6 +37,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Source", sortBy: "source", className: styles.source },
   { title: "Chart Version", sortBy: "chartVersion" },
   { title: "App Version", sortBy: "appVersion" },
+  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Message", sortBy: "message", className: styles.message },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -71,6 +73,7 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
               </WithTooltip>,
               <WithTooltip>{KubeObject.getChartVersion(object) ?? "N/A"}</WithTooltip>,
               <WithTooltip>{KubeObject.getAppVersion(object) ?? "N/A"}</WithTooltip>,
+              <BadgeBoolean value={!object.spec.suspend} />,
               <Badge
                 key="name"
                 label={getConditionText(object.status?.conditions)}

@@ -123,8 +123,8 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="History Last Status" hidden={!object.status?.history?.[0]?.status}>
             {object.status?.history?.[0]?.status}
           </DrawerItem>
-          <DrawerItem name="Suspended">
-            <BadgeBoolean value={object.spec.suspend ?? false} />
+          <DrawerItem name="Resumed">
+            <BadgeBoolean value={!object.spec.suspend} />
           </DrawerItem>
           <DrawerItem name="Chart Interval" hidden={!object.spec.chart?.spec.interval}>
             {object.spec.chart?.spec.interval}

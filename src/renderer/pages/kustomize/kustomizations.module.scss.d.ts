@@ -3,6 +3,7 @@ declare const classNames: {
   readonly tableCell: "tableCell";
   readonly source: "source";
   readonly revision: "revision";
+  readonly resumed: "resumed";
   readonly condition: "condition";
   readonly message: "message";
   readonly age: "age";

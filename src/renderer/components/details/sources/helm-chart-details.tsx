@@ -26,8 +26,8 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
           label={getConditionText(object.status?.conditions)}
         />
       </DrawerItem>
-      <DrawerItem name="Suspended">
-        <BadgeBoolean value={object.spec.suspend ?? false} />
+      <DrawerItem name="Resumed">
+        <BadgeBoolean value={!object.spec.suspend} />
       </DrawerItem>
       <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
       <DrawerItem name="Chart">{object.spec.chart}</DrawerItem>

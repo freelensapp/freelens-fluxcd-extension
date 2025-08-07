@@ -4,6 +4,7 @@ declare const classNames: {
   readonly revision: "revision";
   readonly url: "url";
   readonly ref: "ref";
+  readonly resumed: "resumed";
   readonly condition: "condition";
   readonly message: "message";
   readonly age: "age";

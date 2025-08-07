@@ -4,7 +4,11 @@
       flex-grow: 1.5;
     }
 
-    &.condition {
+    &.resumed {
+      flex-grow: 0.5;
+    }
+
+    s &.condition {
       flex-grow: 0.7;
     }
 

@@ -7,7 +7,7 @@ import styles from "./buckets.module.scss";
 import stylesInline from "./buckets.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = Bucket;
@@ -19,6 +19,7 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   provider: (object: KubeObject) => object.spec.provider,
   bucket: (object: KubeObject) => object.spec.bucketName,
+  resumed: (object: KubeObject) => String(!object.spec.suspend),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   message: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -29,6 +30,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Namespace", sortBy: "namespace" },
   { title: "Provider", sortBy: "provider", className: styles.provider },
   { title: "Bucket", sortBy: "bucket", className: styles.bucket },
+  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Message", sortBy: "message", className: styles.message },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -58,6 +60,7 @@ export const BucketsPage = observer((props: BucketsPageProps) =>
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
             <WithTooltip>{object.spec.provider ?? "generic"}</WithTooltip>,
             <WithTooltip>{object.spec.bucketName}</WithTooltip>,
+            <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
               className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}

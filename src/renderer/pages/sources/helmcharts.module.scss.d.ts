@@ -7,6 +7,7 @@ declare const classNames: {
   readonly version: "version";
   readonly sourceKind: "sourceKind";
   readonly sourceName: "sourceName";
+  readonly resumed: "resumed";
   readonly condition: "condition";
   readonly message: "message";
   readonly age: "age";

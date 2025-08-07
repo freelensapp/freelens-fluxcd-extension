@@ -7,7 +7,7 @@ import styles from "./helmrepositories.module.scss";
 import stylesInline from "./helmrepositories.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = HelmRepository;
@@ -18,6 +18,7 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   url: (object: KubeObject) => object.spec.url,
+  resumed: (object: KubeObject) => String(!object.spec.suspend),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   message: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -27,6 +28,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
   { title: "URL", sortBy: "url", className: styles.url },
+  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Message", sortBy: "message", className: styles.message },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -55,6 +57,7 @@ export const HelmRepositoriesPage = observer((props: HelmRepositoriesPageProps) 
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
             <WithTooltip>{object.spec.url}</WithTooltip>,
+            <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
               className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}

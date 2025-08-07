@@ -12,7 +12,7 @@ const {
 } = Common;
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = Kustomization;
@@ -24,6 +24,7 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   source: (object: KubeObject) => object.spec.sourceRef.name,
   revision: (object: KubeObject) => object.status?.lastAppliedRevision,
+  resumed: (object: KubeObject) => String(!object.spec.suspend),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   message: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -34,6 +35,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Namespace", sortBy: "namespace" },
   { title: "Source", sortBy: "source", className: styles.source },
   { title: "Revision", sortBy: "revision", className: styles.revision },
+  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Message", sortBy: "message", className: styles.message },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -71,6 +73,7 @@ export const KustomizationsPage = observer((props: KustomizationsPageProps) =>
               </MaybeLink>
             </WithTooltip>,
             <WithTooltip>{Kustomization.getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
+            <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
               className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}

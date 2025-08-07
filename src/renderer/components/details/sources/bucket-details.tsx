@@ -27,8 +27,8 @@ export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<B
           label={getConditionText(object.status?.conditions)}
         />
       </DrawerItem>
-      <DrawerItem name="Suspended">
-        <BadgeBoolean value={object.spec.suspend ?? false} />
+      <DrawerItem name="Resumed">
+        <BadgeBoolean value={!object.spec.suspend} />
       </DrawerItem>
       <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
       <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>

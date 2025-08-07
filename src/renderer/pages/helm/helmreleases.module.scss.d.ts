@@ -2,6 +2,7 @@ declare const classNames: {
   readonly page: "page";
   readonly tableCell: "tableCell";
   readonly source: "source";
+  readonly resumed: "resumed";
   readonly chartVersion: "chartVersion";
   readonly appVersion: "appVersion";
   readonly condition: "condition";

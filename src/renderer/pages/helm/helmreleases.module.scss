@@ -4,6 +4,10 @@
       flex-grow: 1;
     }
 
+    &.resumed {
+      flex-grow: 0.5;
+    }
+
     &.chartVersion {
       flex-grow: 0.7;
     }

@@ -4,6 +4,7 @@ declare const classNames: {
   readonly revision: "revision";
   readonly provider: "provider";
   readonly bucket: "bucket";
+  readonly resumed: "resumed";
   readonly condition: "condition";
   readonly message: "message";
   readonly age: "age";

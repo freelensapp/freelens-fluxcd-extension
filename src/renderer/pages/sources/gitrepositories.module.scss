@@ -12,6 +12,10 @@
       flex-grow: 0.7;
     }
 
+    &.resumed {
+      flex-grow: 0.5;
+    }
+
     &.condition {
       flex-grow: 0.7;
     }

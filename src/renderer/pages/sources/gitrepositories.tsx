@@ -7,7 +7,7 @@ import styles from "./gitrepositories.module.scss";
 import stylesInline from "./gitrepositories.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = GitRepository;
@@ -20,6 +20,7 @@ const sortingCallbacks = {
   url: (object: KubeObject) => object.spec.url,
   ref: (object: KubeObject) => GitRepository.getGitRef(object.spec.ref),
   revision: (object: KubeObject) => GitRepository.getGitRevision(object),
+  resumed: (object: KubeObject) => String(!object.spec.suspend),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   message: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -31,6 +32,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "URL", sortBy: "url", className: styles.url },
   { title: "Target Ref", sortBy: "ref", className: styles.ref },
   { title: "Revision", sortBy: "revision", className: styles.revision },
+  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Message", sortBy: "message", className: styles.message },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -61,6 +63,7 @@ export const GitRepositoriesPage = observer((props: GitRepositoriesPageProps) =>
             <WithTooltip>{object.spec.url}</WithTooltip>,
             <WithTooltip>{GitRepository.getGitRef(object.spec.ref) || "N/A"}</WithTooltip>,
             <WithTooltip>{GitRepository.getGitRevision(object) || "N/A"}</WithTooltip>,
+            <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
               className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}

@@ -13,7 +13,7 @@ const {
 } = Common;
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = HelmChart;
@@ -27,6 +27,7 @@ const sortingCallbacks = {
   version: (object: KubeObject) => object.spec.version,
   sourceKind: (object: KubeObject) => object.spec.sourceRef.kind,
   sourceName: (object: KubeObject) => object.spec.sourceRef.name,
+  resumed: (object: KubeObject) => String(!object.spec.suspend),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   message: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -39,6 +40,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Version", sortBy: "version", className: styles.version },
   { title: "Source Kind", sortBy: "sourceKind", className: styles.sourceKind },
   { title: "Source Name", sortBy: "sourceName", className: styles.sourceName },
+  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Message", sortBy: "message", className: styles.message },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -74,6 +76,7 @@ export const HelmChartsPage = observer((props: HelmChartsPageProps) =>
                 {object.spec.sourceRef?.name}
               </MaybeLink>
             </WithTooltip>,
+            <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
               className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}
