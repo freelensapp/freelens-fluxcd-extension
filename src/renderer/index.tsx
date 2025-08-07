@@ -1,6 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { HelmReleaseDetails } from "./components/details/helm/helm-release-details";
 import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
+import { BucketDetails } from "./components/details/sources/bucket-details";
 import { GitRepositoryDetails } from "./components/details/sources/git-repository-details";
 import { HelmChartDetails } from "./components/details/sources/helm-chart-details";
 import { HelmRepositoryDetails } from "./components/details/sources/helm-repository-details";
@@ -67,7 +68,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: Bucket.crd.plural,
       components: {
-        Page: () => <BucketsPage />,
+        Page: () => <BucketsPage extension={this} />,
       },
     },
     {
@@ -284,6 +285,14 @@ export default class FluxCDExtension extends Renderer.LensExtension {
 
   kubeObjectDetailItems = [
     {
+      kind: Bucket.kind,
+      apiVersions: Bucket.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket>) => <BucketDetails {...props} />,
+      },
+    },
+    {
       kind: GitRepository.kind,
       apiVersions: GitRepository.crd.apiVersions,
       priority: 10,
@@ -342,6 +351,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
   ];
 
   kubeObjectMenuItems = [
+    {
+      kind: Bucket.kind,
+      apiVersions: Bucket.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Bucket} />
+        ),
+      },
+    },
+    {
+      kind: Bucket.kind,
+      apiVersions: Bucket.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Bucket} />
+        ),
+      },
+    },
     {
       kind: GitRepository.kind,
       apiVersions: GitRepository.crd.apiVersions,

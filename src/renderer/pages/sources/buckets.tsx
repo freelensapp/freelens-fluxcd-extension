@@ -1,65 +1,69 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
-import React from "react";
+import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
-import { Bucket } from "../../k8s/fluxcd/source/bucket";
+import { Bucket, type BucketApi } from "../../k8s/fluxcd/source/bucket";
+import styles from "./buckets.module.scss";
+import stylesInline from "./buckets.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-enum sortBy {
-  name = "name",
-  url = "url",
-  namespace = "namespace",
-  status = "status",
-  ready = "ready",
-  age = "age",
+const KubeObject = Bucket;
+type KubeObject = Bucket;
+type KubeObjectApi = BucketApi;
+
+const sortingCallbacks = {
+  name: (object: KubeObject) => object.getName(),
+  namespace: (object: KubeObject) => object.getNs(),
+  provider: (object: KubeObject) => object.spec.provider,
+  bucket: (object: KubeObject) => object.spec.bucketName,
+  condition: (object: KubeObject) => getConditionText(object),
+  message: (object: KubeObject) => getConditionText(object),
+  age: (object: KubeObject) => object.getCreationTimestamp(),
+};
+
+const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
+  { title: "Name", sortBy: "name" },
+  { title: "Namespace", sortBy: "namespace" },
+  { title: "Provider", sortBy: "provider", className: styles.provider },
+  { title: "Bucket", sortBy: "bucket", className: styles.bucket },
+  { title: "Condition", sortBy: "condition", className: styles.condition },
+  { title: "Message", sortBy: "message", className: styles.message },
+  { title: "Age", sortBy: "age", className: styles.age },
+];
+
+export interface BucketsPageProps {
+  extension: Renderer.LensExtension;
 }
 
-@observer
-export class BucketsPage extends React.Component {
-  render() {
-    const store = Bucket.getStore();
-    if (!store) return <></>;
+export const BucketsPage = observer((props: BucketsPageProps) =>
+  withErrorPage(props, () => {
+    const store = KubeObject.getStore<KubeObject>();
+
     return (
-      <KubeObjectListLayout
-        tableId="bucketsTable"
-        className="Buckets"
-        store={store}
-        sortingCallbacks={{
-          [sortBy.name]: (bucket: Bucket) => bucket.getName(),
-          [sortBy.namespace]: (bucket: Bucket) => bucket.getNs(),
-          [sortBy.url]: (bucket: Bucket) => bucket.spec.url,
-          [sortBy.ready]: (bucket: Bucket) => getConditionText(bucket),
-          [sortBy.status]: (bucket: Bucket) => getConditionMessage(bucket),
-          [sortBy.age]: (bucket: Bucket) => bucket.getCreationTimestamp(),
-        }}
-        searchFilters={[(bucket: Bucket) => bucket.getSearchFields()]}
-        renderHeaderTitle="Buckets"
-        renderTableHeader={[
-          { title: "Name", className: "name", sortBy: sortBy.name },
-          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
-          { title: "Url", className: "url", sortBy: sortBy.url },
-          { title: "Ready", className: "ready", sortBy: sortBy.ready },
-          { title: "Status", className: "status", sortBy: sortBy.status },
-          { title: "Age", className: "age", sortBy: sortBy.age },
-        ]}
-        renderTableContents={(bucket: Bucket) => [
-          bucket.getName(),
-          bucket.getNs(),
-          bucket.spec.url,
-          this.renderStatus(bucket),
-          getConditionMessage(bucket),
-          <KubeObjectAge object={bucket} key="age" />,
-        ]}
-      />
+      <>
+        <style>{stylesInline}</style>
+        <KubeObjectListLayout<KubeObject, KubeObjectApi>
+          tableId={`${KubeObject.crd.plural}Table`}
+          className={styles.page}
+          store={store}
+          sortingCallbacks={sortingCallbacks}
+          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+          renderHeaderTitle={KubeObject.crd.title}
+          renderTableHeader={renderTableHeader}
+          renderTableContents={(object: KubeObject) => [
+            <WithTooltip>{object.getName()}</WithTooltip>,
+            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
+            <WithTooltip>{object.spec.provider ?? "generic"}</WithTooltip>,
+            <WithTooltip>{object.spec.bucketName}</WithTooltip>,
+            <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
+            <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
+            <KubeObjectAge object={object} key="age" />,
+          ]}
+        />
+      </>
     );
-  }
-
-  renderStatus(bucket: Bucket) {
-    const className = getConditionClass(bucket);
-    const text = getConditionText(bucket);
-    return <Badge key="name" label={text} className={className} />;
-  }
-}
+  }),
+);
