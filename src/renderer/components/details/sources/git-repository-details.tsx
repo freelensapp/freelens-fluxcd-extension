@@ -23,6 +23,9 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
     const namespace = object.getNs();
     const api = GitRepository.getApi() as GitRepositoryApi;
 
+    const gitRefFull = GitRepository.getGitRefFull(object.spec.ref);
+    const gitRevision = GitRepository.getGitRevision(object);
+
     return (
       <>
         <style>{stylesInline}</style>
@@ -35,9 +38,13 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
           <DrawerItem name="Timeout">{object.spec.timeout}</DrawerItem>
-          <DrawerItem name="Git Ref">{GitRepository.getGitRefFull(object.spec.ref) ?? "N/A"}</DrawerItem>
-          <DrawerItem name="Revision">{GitRepository.getGitRevision(object) || "N/A"}</DrawerItem>
-          <DrawerItem name="Git credentials" hidden={!object.spec.secretRef}>
+          <DrawerItem name="Git Ref" hidden={!gitRefFull}>
+            {gitRefFull}
+          </DrawerItem>
+          <DrawerItem name="Revision" hidden={!gitRevision}>
+            {gitRevision}
+          </DrawerItem>
+          <DrawerItem name="Git Credentials" hidden={!object.spec.secretRef}>
             <MaybeLink
               key="link"
               to={getMaybeDetailsUrl(
@@ -61,8 +68,7 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
               {object.spec.verify?.secretRef?.name}
             </MaybeLink>
           </DrawerItem>
-          <div hidden={!object.spec.ignore}>
-            <div className="DrawerItem">Source Ignore</div>
+          <DrawerItem name="Source Ignore" hidden={!object.spec.ignore}>
             <MonacoEditor
               readOnly
               id="ignore"
@@ -78,8 +84,8 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
                 },
               }}
             />
-          </div>
-          <DrawerItem name="Git Implementation">{object.spec.gitImplementation || "go-git"}</DrawerItem>
+          </DrawerItem>
+          <DrawerItem name="Git Implementation">{object.spec.gitImplementation ?? "go-git"}</DrawerItem>
           <DrawerItem
             name="Recurse Submodules"
             hidden={object.spec.gitImplementation && object.spec.gitImplementation !== "go-git"}

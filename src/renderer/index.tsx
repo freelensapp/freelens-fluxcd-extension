@@ -4,6 +4,7 @@ import { KustomizationDetails } from "./components/details/kustomize/kustomizati
 import { GitRepositoryDetails } from "./components/details/sources/git-repository-details";
 import { HelmChartDetails } from "./components/details/sources/helm-chart-details";
 import { HelmRepositoryDetails } from "./components/details/sources/helm-repository-details";
+import { OCIRepositoryDetails } from "./components/details/sources/oci-repository-details";
 import svgIcon from "./icons/fluxcd.svg?raw";
 import { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
 import { ImagePolicy } from "./k8s/fluxcd/image/imagepolicy";
@@ -120,7 +121,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: OCIRepository.crd.plural,
       components: {
-        Page: () => <OCIRepositoriesPage />,
+        Page: () => <OCIRepositoriesPage extension={this} />,
       },
     },
     {
@@ -328,6 +329,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
         ),
       },
     },
+    {
+      kind: OCIRepository.kind,
+      apiVersions: OCIRepository.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<OCIRepository>) => (
+          <OCIRepositoryDetails {...props} />
+        ),
+      },
+    },
   ];
 
   kubeObjectMenuItems = [
@@ -418,6 +429,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
           <FluxCDObjectSuspendResumeMenuItem {...props} resource={Kustomization} />
+        ),
+      },
+    },
+    {
+      kind: OCIRepository.kind,
+      apiVersions: OCIRepository.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={OCIRepository} />
+        ),
+      },
+    },
+    {
+      kind: OCIRepository.kind,
+      apiVersions: OCIRepository.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={OCIRepository} />
         ),
       },
     },

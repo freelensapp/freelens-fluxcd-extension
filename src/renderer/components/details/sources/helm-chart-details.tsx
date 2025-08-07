@@ -28,28 +28,19 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
       </DrawerItem>
       <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
       <DrawerItem name="Chart">{object.spec.chart}</DrawerItem>
-      <DrawerItem name="Version">{object.spec.version}</DrawerItem>
-      <DrawerItem name="Reconcile Strategy">{object.spec.reconcileStrategy}</DrawerItem>
+      <DrawerItem name="Version">{object.spec.version ?? "*"}</DrawerItem>
+      <DrawerItem name="Reconcile Strategy">{object.spec.reconcileStrategy ?? "ChartVersion"}</DrawerItem>
       <DrawerItem name="Source">
         <MaybeLink to={getMaybeDetailsUrl(getRefUrl(object.spec.sourceRef, object))} onClick={stopPropagation}>
           {object.spec.sourceRef?.kind}: {object.spec.sourceRef?.name}
         </MaybeLink>
       </DrawerItem>
-      <DrawerItem name="Values Files" hidden={!object.spec.valuesFiles || !object.spec.valuesFiles.length}>
-        {object.spec.valuesFiles?.length ? (
-          <ul>
-            {object.spec.valuesFiles.map((file) => (
-              <li>{file}</li>
-            ))}
-          </ul>
-        ) : (
-          <></>
-        )}
+      <DrawerItem name="Values Files" hidden={!object.spec.valuesFiles?.length}>
+        {object.spec.valuesFiles?.length &&
+          object.spec.valuesFiles.map((file) => <DrawerItem name="">{file}</DrawerItem>)}
       </DrawerItem>
       <DrawerItem name="Values File" hidden={!object.spec.valuesFile}>
-        <ul>
-          <li>{object.spec.valuesFile}</li>
-        </ul>
+        <DrawerItem name="">{object.spec.valuesFile}</DrawerItem>
       </DrawerItem>
 
       <StatusArtifact object={object} />

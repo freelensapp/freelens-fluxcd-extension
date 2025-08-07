@@ -22,7 +22,7 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
           <BadgeBoolean value={object.spec.suspend ?? false} />
         </DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-        <DrawerItem name="Timeout">{object.spec.timeout}</DrawerItem>
+        <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>
 
         <StatusArtifact object={object} />
 
