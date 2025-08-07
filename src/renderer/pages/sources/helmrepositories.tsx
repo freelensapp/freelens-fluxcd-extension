@@ -18,8 +18,8 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   url: (object: KubeObject) => object.spec.url,
-  condition: (object: KubeObject) => getConditionText(object),
-  message: (object: KubeObject) => getConditionText(object),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
+  message: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -55,8 +55,11 @@ export const HelmRepositoriesPage = observer((props: HelmRepositoriesPageProps) 
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
             <WithTooltip>{object.spec.url}</WithTooltip>,
-            <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
-            <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
+            <Badge
+              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(object.status?.conditions)}
+            />,
+            <WithTooltip>{getConditionMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
           ]}
         />

@@ -31,8 +31,8 @@ export class ReceiversPage extends React.Component {
           [sortBy.name]: (receiver: Receiver) => receiver.getName(),
           [sortBy.namespace]: (receiver: Receiver) => receiver.getNs(),
           [sortBy.type]: (receiver: Receiver) => receiver.spec.type,
-          [sortBy.ready]: (receiver: Receiver) => getConditionText(receiver),
-          [sortBy.status]: (receiver: Receiver) => getConditionMessage(receiver),
+          [sortBy.ready]: (receiver: Receiver) => getConditionText(receiver.status?.conditions),
+          [sortBy.status]: (receiver: Receiver) => getConditionMessage(receiver.status?.conditions),
           [sortBy.age]: (receiver: Receiver) => receiver.getCreationTimestamp(),
         }}
         searchFilters={[(receiver: Receiver) => [...receiver.getSearchFields(), receiver.status?.webhookPath]]}
@@ -50,7 +50,7 @@ export class ReceiversPage extends React.Component {
           receiver.getNs(),
           receiver.spec.type,
           this.renderStatus(receiver),
-          getConditionMessage(receiver),
+          getConditionMessage(receiver.status?.conditions),
           <KubeObjectAge object={receiver} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class ReceiversPage extends React.Component {
   }
 
   renderStatus(receiver: Receiver) {
-    const className = getConditionClass(receiver);
-    const text = getConditionText(receiver);
+    const className = getConditionClass(receiver.status?.conditions);
+    const text = getConditionText(receiver.status?.conditions);
     return <Badge key="name" label={text} className={className} />;
   }
 }

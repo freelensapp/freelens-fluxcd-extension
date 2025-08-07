@@ -31,8 +31,9 @@ export class ImageRepositoriesPage extends React.Component {
           [sortBy.name]: (imageRepository: ImageRepository) => imageRepository.getName(),
           [sortBy.namespace]: (imageRepository: ImageRepository) => imageRepository.getNs(),
           [sortBy.image]: (imageRepository: ImageRepository) => imageRepository.spec.image,
-          [sortBy.ready]: (imageRepository: ImageRepository) => getConditionText(imageRepository),
-          [sortBy.status]: (imageRepository: ImageRepository) => getConditionMessage(imageRepository),
+          [sortBy.ready]: (imageRepository: ImageRepository) => getConditionText(imageRepository.status?.conditions),
+          [sortBy.status]: (imageRepository: ImageRepository) =>
+            getConditionMessage(imageRepository.status?.conditions),
           [sortBy.age]: (imageRepository: ImageRepository) => imageRepository.getCreationTimestamp(),
         }}
         searchFilters={[(imageRepository: ImageRepository) => imageRepository.getSearchFields()]}
@@ -50,7 +51,7 @@ export class ImageRepositoriesPage extends React.Component {
           imageRepository.getNs(),
           imageRepository.spec.image,
           this.renderStatus(imageRepository),
-          getConditionMessage(imageRepository),
+          getConditionMessage(imageRepository.status?.conditions),
           <KubeObjectAge object={imageRepository} key="age" />,
         ]}
       />
@@ -58,8 +59,8 @@ export class ImageRepositoriesPage extends React.Component {
   }
 
   renderStatus(imageRepository: ImageRepository) {
-    const className = getConditionClass(imageRepository);
-    const text = getConditionText(imageRepository);
+    const className = getConditionClass(imageRepository.status?.conditions);
+    const text = getConditionText(imageRepository.status?.conditions);
     return <Badge key="name" label={text} className={className} />;
   }
 }

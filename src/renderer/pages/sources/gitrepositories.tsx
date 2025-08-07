@@ -20,8 +20,8 @@ const sortingCallbacks = {
   url: (object: KubeObject) => object.spec.url,
   ref: (object: KubeObject) => GitRepository.getGitRef(object.spec.ref),
   revision: (object: KubeObject) => GitRepository.getGitRevision(object),
-  condition: (object: KubeObject) => getConditionText(object),
-  message: (object: KubeObject) => getConditionText(object),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
+  message: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -61,8 +61,11 @@ export const GitRepositoriesPage = observer((props: GitRepositoriesPageProps) =>
             <WithTooltip>{object.spec.url}</WithTooltip>,
             <WithTooltip>{GitRepository.getGitRef(object.spec.ref) || "N/A"}</WithTooltip>,
             <WithTooltip>{GitRepository.getGitRevision(object) || "N/A"}</WithTooltip>,
-            <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
-            <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
+            <Badge
+              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(object.status?.conditions)}
+            />,
+            <WithTooltip>{getConditionMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
           ]}
         />

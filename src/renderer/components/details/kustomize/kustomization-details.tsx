@@ -127,7 +127,10 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
         <style>{stylesInline}</style>
         <div className={styles.details}>
           <DrawerItem name="Condition">
-            <Badge className={getConditionClass(object)} label={getConditionText(object)} />
+            <Badge
+              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(object.status?.conditions)}
+            />
           </DrawerItem>
           <DrawerItem name="Suspended">
             <BadgeBoolean value={object.spec.suspend ?? false} />
@@ -229,13 +232,16 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                     </DrawerItem>
                     <DrawerItem name="Status" hidden={!reference}>
                       {reference ? (
-                        <Badge className={getConditionClass(reference)} label={getConditionText(reference)} />
+                        <Badge
+                          className={getConditionClass(reference.status?.conditions)}
+                          label={getConditionText(reference.status?.conditions)}
+                        />
                       ) : (
                         ""
                       )}
                     </DrawerItem>
                     <DrawerItem name="Message" hidden={!reference}>
-                      {reference && getConditionMessage(reference)}
+                      {reference && getConditionMessage(reference.status?.conditions)}
                     </DrawerItem>
                   </div>
                 );
@@ -635,7 +641,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             </div>
           )}
 
-          <StatusConditions object={object} />
+          <StatusConditions conditions={object.status?.conditions} />
         </div>
       </>
     );

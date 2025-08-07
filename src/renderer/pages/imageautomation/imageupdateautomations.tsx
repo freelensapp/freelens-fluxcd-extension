@@ -29,8 +29,10 @@ export class ImageUpdateAutomationsPage extends React.Component {
         sortingCallbacks={{
           [sortBy.name]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getName(),
           [sortBy.namespace]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getNs(),
-          [sortBy.ready]: (imageUpdateAutomation: ImageUpdateAutomation) => getConditionText(imageUpdateAutomation),
-          [sortBy.status]: (imageUpdateAutomation: ImageUpdateAutomation) => getConditionMessage(imageUpdateAutomation),
+          [sortBy.ready]: (imageUpdateAutomation: ImageUpdateAutomation) =>
+            getConditionText(imageUpdateAutomation.status?.conditions),
+          [sortBy.status]: (imageUpdateAutomation: ImageUpdateAutomation) =>
+            getConditionMessage(imageUpdateAutomation.status?.conditions),
           [sortBy.age]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getCreationTimestamp(),
         }}
         searchFilters={[(imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getSearchFields()]}
@@ -46,7 +48,7 @@ export class ImageUpdateAutomationsPage extends React.Component {
           imageUpdateAutomation.getName(),
           imageUpdateAutomation.getNs(),
           this.renderStatus(imageUpdateAutomation),
-          getConditionMessage(imageUpdateAutomation),
+          getConditionMessage(imageUpdateAutomation.status?.conditions),
           <KubeObjectAge object={imageUpdateAutomation} key="age" />,
         ]}
       />
@@ -54,8 +56,8 @@ export class ImageUpdateAutomationsPage extends React.Component {
   }
 
   renderStatus(imageUpdateAutomation: ImageUpdateAutomation) {
-    const className = getConditionClass(imageUpdateAutomation);
-    const text = getConditionText(imageUpdateAutomation);
+    const className = getConditionClass(imageUpdateAutomation.status?.conditions);
+    const text = getConditionText(imageUpdateAutomation.status?.conditions);
     return <Badge key="name" label={text} className={className} />;
   }
 }

@@ -29,8 +29,8 @@ export class AlertsPage extends React.Component {
         sortingCallbacks={{
           [sortBy.name]: (alert: Alert) => alert.getName(),
           [sortBy.namespace]: (alert: Alert) => alert.getNs(),
-          [sortBy.ready]: (alert: Alert) => getConditionText(alert),
-          [sortBy.status]: (alert: Alert) => getConditionMessage(alert),
+          [sortBy.ready]: (alert: Alert) => getConditionText(alert.status?.conditions),
+          [sortBy.status]: (alert: Alert) => getConditionMessage(alert.status?.conditions),
           [sortBy.age]: (alert: Alert) => alert.getCreationTimestamp(),
         }}
         searchFilters={[(alert: Alert) => alert.getSearchFields()]}
@@ -46,7 +46,7 @@ export class AlertsPage extends React.Component {
           alert.getName(),
           alert.getNs(),
           this.renderStatus(alert),
-          getConditionMessage(alert),
+          getConditionMessage(alert.status?.conditions),
           <KubeObjectAge object={alert} key="age" />,
         ]}
       />
@@ -54,8 +54,8 @@ export class AlertsPage extends React.Component {
   }
 
   renderStatus(alert: Alert) {
-    const className = getConditionClass(alert);
-    const text = getConditionText(alert);
+    const className = getConditionClass(alert.status?.conditions);
+    const text = getConditionText(alert.status?.conditions);
     return <Badge key="name" label={text} className={className} />;
   }
 }

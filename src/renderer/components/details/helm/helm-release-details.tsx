@@ -396,7 +396,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             </div>
           )}
 
-          <StatusConditions object={object} />
+          <StatusConditions conditions={object.status?.conditions} />
         </div>
       </>
     );

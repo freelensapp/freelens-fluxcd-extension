@@ -31,7 +31,10 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
         <style>{stylesInline}</style>
         <div className={styles.details}>
           <DrawerItem name="Condition">
-            <Badge className={getConditionClass(object)} label={getConditionText(object)} />
+            <Badge
+              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(object.status?.conditions)}
+            />
           </DrawerItem>
           <DrawerItem name="Suspended">
             <BadgeBoolean value={object.spec.suspend ?? false} />
@@ -135,9 +138,9 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
             </DrawerItem>
           )}
 
-          <StatusArtifact object={object} />
+          <StatusArtifact artifact={object.status?.artifact} />
 
-          <StatusConditions object={object} />
+          <StatusConditions conditions={object.status?.conditions} />
         </div>
       </>
     );

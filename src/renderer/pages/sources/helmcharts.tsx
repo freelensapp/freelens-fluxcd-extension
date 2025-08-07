@@ -27,8 +27,8 @@ const sortingCallbacks = {
   version: (object: KubeObject) => object.spec.version,
   sourceKind: (object: KubeObject) => object.spec.sourceRef.kind,
   sourceName: (object: KubeObject) => object.spec.sourceRef.name,
-  condition: (object: KubeObject) => getConditionText(object),
-  message: (object: KubeObject) => getConditionText(object),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
+  message: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -74,8 +74,11 @@ export const HelmChartsPage = observer((props: HelmChartsPageProps) =>
                 {object.spec.sourceRef?.name}
               </MaybeLink>
             </WithTooltip>,
-            <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
-            <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
+            <Badge
+              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(object.status?.conditions)}
+            />,
+            <WithTooltip>{getConditionMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
           ]}
         />

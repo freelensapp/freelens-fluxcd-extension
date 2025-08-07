@@ -31,8 +31,8 @@ export class ProvidersPage extends React.Component {
           [sortBy.name]: (provider: Provider) => provider.getName(),
           [sortBy.namespace]: (provider: Provider) => provider.getNs(),
           [sortBy.type]: (provider: Provider) => provider.spec.type,
-          [sortBy.ready]: (provider: Provider) => getConditionText(provider),
-          [sortBy.status]: (provider: Provider) => getConditionMessage(provider),
+          [sortBy.ready]: (provider: Provider) => getConditionText(provider.status?.conditions),
+          [sortBy.status]: (provider: Provider) => getConditionMessage(provider.status?.conditions),
           [sortBy.age]: (provider: Provider) => provider.getCreationTimestamp(),
         }}
         searchFilters={[(provider: Provider) => provider.getSearchFields()]}
@@ -50,7 +50,7 @@ export class ProvidersPage extends React.Component {
           provider.getNs(),
           provider.spec.type,
           this.renderStatus(provider),
-          getConditionMessage(provider),
+          getConditionMessage(provider.status?.conditions),
           <KubeObjectAge object={provider} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class ProvidersPage extends React.Component {
   }
 
   renderStatus(provider: Provider) {
-    const className = getConditionClass(provider);
-    const text = getConditionText(provider);
+    const className = getConditionClass(provider.status?.conditions);
+    const text = getConditionText(provider.status?.conditions);
     return <Badge key="name" label={text} className={className} />;
   }
 }

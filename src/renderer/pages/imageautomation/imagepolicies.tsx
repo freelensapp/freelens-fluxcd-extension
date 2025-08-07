@@ -31,8 +31,8 @@ export class ImagePoliciesPage extends React.Component {
           [sortBy.name]: (imagePolicy: ImagePolicy) => imagePolicy.getName(),
           [sortBy.namespace]: (imagePolicy: ImagePolicy) => imagePolicy.getNs(),
           [sortBy.repo]: (imagePolicy: ImagePolicy) => imagePolicy.spec.imageRepositoryRef.name,
-          [sortBy.ready]: (imagePolicy: ImagePolicy) => getConditionText(imagePolicy),
-          [sortBy.status]: (imagePolicy: ImagePolicy) => getConditionMessage(imagePolicy),
+          [sortBy.ready]: (imagePolicy: ImagePolicy) => getConditionText(imagePolicy.status?.conditions),
+          [sortBy.status]: (imagePolicy: ImagePolicy) => getConditionMessage(imagePolicy.status?.conditions),
           [sortBy.age]: (imagePolicy: ImagePolicy) => imagePolicy.getCreationTimestamp(),
         }}
         searchFilters={[(imagePolicy: ImagePolicy) => imagePolicy.getSearchFields()]}
@@ -50,7 +50,7 @@ export class ImagePoliciesPage extends React.Component {
           imagePolicy.getNs(),
           imagePolicy.spec.imageRepositoryRef.name,
           this.renderStatus(imagePolicy),
-          getConditionMessage(imagePolicy),
+          getConditionMessage(imagePolicy.status?.conditions),
           <KubeObjectAge object={imagePolicy} key="age" />,
         ]}
       />
@@ -58,8 +58,8 @@ export class ImagePoliciesPage extends React.Component {
   }
 
   renderStatus(imagePolicy: ImagePolicy) {
-    const className = getConditionClass(imagePolicy);
-    const text = getConditionText(imagePolicy);
+    const className = getConditionClass(imagePolicy.status?.conditions);
+    const text = getConditionText(imagePolicy.status?.conditions);
     return <Badge key="name" label={text} className={className} />;
   }
 }

@@ -24,8 +24,8 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   source: (object: KubeObject) => object.spec.sourceRef.name,
   revision: (object: KubeObject) => object.status?.lastAppliedRevision,
-  condition: (object: KubeObject) => getConditionText(object),
-  message: (object: KubeObject) => getConditionText(object),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
+  message: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -71,8 +71,11 @@ export const KustomizationsPage = observer((props: KustomizationsPageProps) =>
               </MaybeLink>
             </WithTooltip>,
             <WithTooltip>{Kustomization.getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
-            <Badge className={getConditionClass(object)} label={getConditionText(object)} />,
-            <WithTooltip>{getConditionMessage(object)}</WithTooltip>,
+            <Badge
+              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(object.status?.conditions)}
+            />,
+            <WithTooltip>{getConditionMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
           ]}
         />

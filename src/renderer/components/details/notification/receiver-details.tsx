@@ -60,7 +60,10 @@ export class FluxCDReceiverDetails extends React.Component<
       <div>
         <DrawerItem name="Status">{object.status?.conditions?.find((s: any) => s.type === "Ready").message}</DrawerItem>
         <DrawerItem name="Ready">
-          <Badge className={getConditionClass(object)} label={getConditionText(object)} />
+          <Badge
+            className={getConditionClass(object.status?.conditions)}
+            label={getConditionText(object.status?.conditions)}
+          />
         </DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
         <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>

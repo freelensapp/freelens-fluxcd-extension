@@ -72,15 +72,8 @@ export interface FluxCDKubeObjectSpecWithSuspend {
   suspend?: boolean;
 }
 
-export interface FluxCDKubeObjectStatusWithArtifact {
-  artifact?: Artifact;
-}
-
-export interface FluxCDKubeObjectStatusWithConditions {
-  conditions?: Condition[];
-}
-
-export interface FluxCDKubeObjectStatus extends FluxCDKubeObjectStatusWithConditions {
+export interface FluxCDKubeObjectStatus {
   observedGeneration?: number;
   lastHandledReconcileAt?: string;
+  conditions?: Condition[];
 }
