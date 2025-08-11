@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import React from "react";
 import { GitRepository, type GitRepositoryApi } from "../../../k8s/fluxcd/source/gitrepository";
 import { getHeight, getMaybeDetailsUrl } from "../../../utils";
+import { SpecAccessFrom } from "../../spec-access-from";
 import { StatusArtifact } from "../../status-artifact";
 import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
 import styles from "./git-repository-details.module.scss";
@@ -123,20 +124,7 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
             </div>
           )}
 
-          {object.spec.accessFrom && (
-            <DrawerItem name="Access From">
-              {object.spec.accessFrom?.namespaceSelectors.map((namespaceSelector) => (
-                <div key={namespaceSelector.matchLabels?.toString()}>
-                  <div>Match Labels:</div>
-                  <div className={styles.matchLabels}>
-                    {Object.entries(namespaceSelector.matchLabels ?? {}).map(([key, value], index) => (
-                      <Badge label={`${key}=${value ?? ""}`} key={index} />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </DrawerItem>
-          )}
+          <SpecAccessFrom accessFrom={object.spec.accessFrom} />
 
           <StatusArtifact artifact={object.status?.artifact} />
 

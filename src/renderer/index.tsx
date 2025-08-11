@@ -1,5 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import { HelmReleaseDetails } from "./components/details/helm/helm-release-details";
+import { ImageRepositoryDetails } from "./components/details/image/image-repository-details";
 import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
 import { BucketDetails } from "./components/details/sources/bucket-details";
 import { GitRepositoryDetails } from "./components/details/sources/git-repository-details";
@@ -29,9 +30,9 @@ import {
   type FluxCDObjectSuspendResumeMenuItemProps,
 } from "./menus/fluxcd-object-suspend-resume-menu-item";
 import { HelmReleasesPage } from "./pages/helm/helmreleases";
-import { ImagePoliciesPage } from "./pages/imageautomation/imagepolicies";
-import { ImageRepositoriesPage } from "./pages/imageautomation/imagerepositories";
-import { ImageUpdateAutomationsPage } from "./pages/imageautomation/imageupdateautomations";
+import { ImagePoliciesPage } from "./pages/image/imagepolicies";
+import { ImageRepositoriesPage } from "./pages/image/imagerepositories";
+import { ImageUpdateAutomationsPage } from "./pages/image/imageupdateautomations";
 import { KustomizationsPage } from "./pages/kustomize/kustomizations";
 import { AlertsPage } from "./pages/notifications/alerts";
 import { ProvidersPage } from "./pages/notifications/providers";
@@ -104,7 +105,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: ImageRepository.crd.plural,
       components: {
-        Page: () => <ImageRepositoriesPage />,
+        Page: () => <ImageRepositoriesPage extension={this} />,
       },
     },
     {
@@ -329,6 +330,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ImageRepository.kind,
+      apiVersions: ImageRepository.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageRepository>) => (
+          <ImageRepositoryDetails {...props} />
+        ),
+      },
+    },
+    {
       kind: Kustomization.kind,
       apiVersions: Kustomization.crd.apiVersions,
       priority: 10,
@@ -438,6 +449,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
           <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRepository} />
+        ),
+      },
+    },
+    {
+      kind: ImageRepository.kind,
+      apiVersions: ImageRepository.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ImageRepository} />
+        ),
+      },
+    },
+    {
+      kind: ImageRepository.kind,
+      apiVersions: ImageRepository.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageRepository} />
         ),
       },
     },
