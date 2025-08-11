@@ -64,7 +64,7 @@ jobs:
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
 
       - name: Build packages
-        run: pnpm --color=always --stream build
+        run: pnpm --color=always --stream build:production
 
       - name: Run Knip (development)
         run: pnpm --color=always --stream knip:development

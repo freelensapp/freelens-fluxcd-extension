@@ -8,8 +8,6 @@
   "ignoreDependencies": [
     // used as vite plugin
     "@babel/plugin-proposal-decorators",
-    // provided by the application
-    "@freelensapp/extensions",
     // part of the extensions API
     "@types/chart.js"
   ],
