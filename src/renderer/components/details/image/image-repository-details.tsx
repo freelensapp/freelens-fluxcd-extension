@@ -5,6 +5,7 @@ import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository";
 import { getMaybeDetailsUrl } from "../../../utils";
 import { SpecAccessFrom } from "../../spec-access-from";
 import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
+import { TimestampAgeLocalDate } from "../../timestamp-age-local-date";
 
 const {
   Util: { stopPropagation },
@@ -81,7 +82,9 @@ export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetai
           {object.status?.lastScanResult && (
             <div>
               <DrawerTitle>Scan Result</DrawerTitle>
-              <DrawerItem name="Scan Time">{object.status.lastScanResult.scanTime}</DrawerItem>
+              <DrawerItem name="Scan Time">
+                <TimestampAgeLocalDate timestamp={object.status.lastScanResult.scanTime} />
+              </DrawerItem>
               <DrawerItem name="Tag Count">{object.status.lastScanResult.tagCount}</DrawerItem>
               <DrawerItem name="Latest Tags" hidden={!object.status.lastScanResult.latestTags?.length}>
                 {object.status.lastScanResult.latestTags.map((tag) => (

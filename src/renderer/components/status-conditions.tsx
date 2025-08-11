@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import moment from "moment";
 import styles from "./status-conditions.module.scss";
 import stylesInline from "./status-conditions.module.scss?inline";
+import { TimestampAgeLocalDate } from "./timestamp-age-local-date";
 
 import type { Condition } from "@freelensapp/kube-object";
 
@@ -98,7 +99,9 @@ export const StatusConditions: React.FC<StatusConditionsProps> = observer((props
             <div className={styles.title}>
               <Icon small material="list" />
             </div>
-            <DrawerItem name="Last Transition Time">{condition.lastTransitionTime}</DrawerItem>
+            <DrawerItem name="Last Transition Time">
+              <TimestampAgeLocalDate timestamp={condition.lastTransitionTime} />
+            </DrawerItem>
             <DrawerItem name="Reason">{condition.reason}</DrawerItem>
             <DrawerItem name="Status">{condition.status}</DrawerItem>
             <DrawerItem name="Type" hidden={!condition.type}>
