@@ -2,11 +2,11 @@ import { Renderer } from "@freelensapp/extensions";
 import { HelmReleaseDetails } from "./components/details/helm/helm-release-details";
 import { ImageRepositoryDetails } from "./components/details/image/image-repository-details";
 import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
-import { BucketDetails } from "./components/details/sources/bucket-details";
-import { GitRepositoryDetails } from "./components/details/sources/git-repository-details";
-import { HelmChartDetails } from "./components/details/sources/helm-chart-details";
-import { HelmRepositoryDetails } from "./components/details/sources/helm-repository-details";
-import { OCIRepositoryDetails } from "./components/details/sources/oci-repository-details";
+import { BucketDetails } from "./components/details/source/bucket-details";
+import { GitRepositoryDetails } from "./components/details/source/git-repository-details";
+import { HelmChartDetails } from "./components/details/source/helm-chart-details";
+import { HelmRepositoryDetails } from "./components/details/source/helm-repository-details";
+import { OCIRepositoryDetails } from "./components/details/source/oci-repository-details";
 import svgIcon from "./icons/fluxcd.svg?raw";
 import { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
 import { ImagePolicy } from "./k8s/fluxcd/image/imagepolicy";
@@ -38,11 +38,11 @@ import { AlertsPage } from "./pages/notifications/alerts";
 import { ProvidersPage } from "./pages/notifications/providers";
 import { ReceiversPage } from "./pages/notifications/receivers";
 import { FluxCDOverview } from "./pages/overview";
-import { BucketsPage } from "./pages/sources/buckets";
-import { GitRepositoriesPage } from "./pages/sources/gitrepositories";
-import { HelmChartsPage } from "./pages/sources/helmcharts";
-import { HelmRepositoriesPage } from "./pages/sources/helmrepositories";
-import { OCIRepositoriesPage } from "./pages/sources/ocirepositories";
+import { BucketsPage } from "./pages/source/buckets";
+import { GitRepositoriesPage } from "./pages/source/gitrepositories";
+import { HelmChartsPage } from "./pages/source/helmcharts";
+import { HelmRepositoriesPage } from "./pages/source/helmrepositories";
+import { OCIRepositoriesPage } from "./pages/source/ocirepositories";
 
 const {
   Component: { Icon },
