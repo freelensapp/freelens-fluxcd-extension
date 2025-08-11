@@ -17,7 +17,7 @@ type KubeObjectApi = ImageRepositoryApi;
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
-  lastScan: (object: KubeObject) => object.status?.lastScanResult?.scanTime,
+  image: (object: KubeObject) => object.spec.image,
   tags: (object: KubeObject) => object.status?.lastScanResult?.tagCount,
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   message: (object: KubeObject) => getConditionText(object.status?.conditions),
@@ -27,7 +27,7 @@ const sortingCallbacks = {
 const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
-  { title: "Last Scan", sortBy: "lastScan", className: styles.lastScan },
+  { title: "Image", sortBy: "image", className: styles.image },
   { title: "Tags", sortBy: "tags", className: styles.tags },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Message", sortBy: "message", className: styles.message },
@@ -56,7 +56,7 @@ export const ImageRepositoriesPage = observer((props: ImageRepositoriesPageProps
           renderTableContents={(object: KubeObject) => [
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip>{object.status?.lastScanResult?.scanTime}</WithTooltip>,
+            <WithTooltip>{object.spec.image}</WithTooltip>,
             <WithTooltip>{object.status?.lastScanResult?.tagCount}</WithTooltip>,
             <Badge
               className={getConditionClass(object.status?.conditions)}
