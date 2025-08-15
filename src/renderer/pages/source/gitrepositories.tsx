@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
+import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { GitRepository, type GitRepositoryApi } from "../../k8s/fluxcd/source/gitrepository";
 import styles from "./gitrepositories.module.scss";
 import stylesInline from "./gitrepositories.module.scss?inline";
@@ -22,7 +22,7 @@ const sortingCallbacks = {
   revision: (object: KubeObject) => GitRepository.getGitRevision(object),
   resumed: (object: KubeObject) => String(!object.spec.suspend),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
-  message: (object: KubeObject) => getConditionText(object.status?.conditions),
+  status: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -34,7 +34,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Revision", sortBy: "revision", className: styles.revision },
   { title: "Resumed", sortBy: "resumed", className: styles.resumed },
   { title: "Condition", sortBy: "condition", className: styles.condition },
-  { title: "Message", sortBy: "message", className: styles.message },
+  { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
 ];
 
@@ -68,7 +68,7 @@ export const GitRepositoriesPage = observer((props: GitRepositoriesPageProps) =>
               className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}
             />,
-            <WithTooltip>{getConditionMessage(object.status?.conditions)}</WithTooltip>,
+            <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
           ]}
         />

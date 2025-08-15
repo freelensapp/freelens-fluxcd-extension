@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
+import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { ImageRepository, type ImageRepositoryApi } from "../../k8s/fluxcd/image/imagerepository";
 import styles from "./imagerepositories.module.scss";
 import stylesInline from "./imagerepositories.module.scss?inline";
@@ -20,7 +20,7 @@ const sortingCallbacks = {
   image: (object: KubeObject) => object.spec.image,
   tags: (object: KubeObject) => object.status?.lastScanResult?.tagCount,
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
-  message: (object: KubeObject) => getConditionText(object.status?.conditions),
+  status: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -30,7 +30,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Image", sortBy: "image", className: styles.image },
   { title: "Tags", sortBy: "tags", className: styles.tags },
   { title: "Condition", sortBy: "condition", className: styles.condition },
-  { title: "Message", sortBy: "message", className: styles.message },
+  { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
 ];
 
@@ -62,7 +62,7 @@ export const ImageRepositoriesPage = observer((props: ImageRepositoriesPageProps
               className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}
             />,
-            <WithTooltip>{getConditionMessage(object.status?.conditions)}</WithTooltip>,
+            <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
           ]}
         />

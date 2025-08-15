@@ -8,11 +8,11 @@
       flex-grow: 0.5;
     }
 
-    s &.condition {
+    &.condition {
       flex-grow: 0.7;
     }
 
-    &.message {
+    &.status {
       flex-grow: 1.5;
     }
 

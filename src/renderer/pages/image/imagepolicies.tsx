@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
+import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { ImagePolicy } from "../../k8s/fluxcd/image/imagepolicy";
 
 const {
@@ -32,7 +32,7 @@ export class ImagePoliciesPage extends React.Component {
           [sortBy.namespace]: (imagePolicy: ImagePolicy) => imagePolicy.getNs(),
           [sortBy.repo]: (imagePolicy: ImagePolicy) => imagePolicy.spec.imageRepositoryRef.name,
           [sortBy.ready]: (imagePolicy: ImagePolicy) => getConditionText(imagePolicy.status?.conditions),
-          [sortBy.status]: (imagePolicy: ImagePolicy) => getConditionMessage(imagePolicy.status?.conditions),
+          [sortBy.status]: (imagePolicy: ImagePolicy) => getStatusMessage(imagePolicy.status?.conditions),
           [sortBy.age]: (imagePolicy: ImagePolicy) => imagePolicy.getCreationTimestamp(),
         }}
         searchFilters={[(imagePolicy: ImagePolicy) => imagePolicy.getSearchFields()]}
@@ -50,7 +50,7 @@ export class ImagePoliciesPage extends React.Component {
           imagePolicy.getNs(),
           imagePolicy.spec.imageRepositoryRef.name,
           this.renderStatus(imagePolicy),
-          getConditionMessage(imagePolicy.status?.conditions),
+          getStatusMessage(imagePolicy.status?.conditions),
           <KubeObjectAge object={imagePolicy} key="age" />,
         ]}
       />

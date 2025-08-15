@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
+import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { ImageUpdateAutomation } from "../../k8s/fluxcd/image/imageupdateautomation";
 
 const {
@@ -32,7 +32,7 @@ export class ImageUpdateAutomationsPage extends React.Component {
           [sortBy.ready]: (imageUpdateAutomation: ImageUpdateAutomation) =>
             getConditionText(imageUpdateAutomation.status?.conditions),
           [sortBy.status]: (imageUpdateAutomation: ImageUpdateAutomation) =>
-            getConditionMessage(imageUpdateAutomation.status?.conditions),
+            getStatusMessage(imageUpdateAutomation.status?.conditions),
           [sortBy.age]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getCreationTimestamp(),
         }}
         searchFilters={[(imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getSearchFields()]}
@@ -48,7 +48,7 @@ export class ImageUpdateAutomationsPage extends React.Component {
           imageUpdateAutomation.getName(),
           imageUpdateAutomation.getNs(),
           this.renderStatus(imageUpdateAutomation),
-          getConditionMessage(imageUpdateAutomation.status?.conditions),
+          getStatusMessage(imageUpdateAutomation.status?.conditions),
           <KubeObjectAge object={imageUpdateAutomation} key="age" />,
         ]}
       />

@@ -4,14 +4,13 @@ import React from "react";
 import { OCIRepository } from "../../../k8s/fluxcd/source/ocirepository";
 import { getMaybeDetailsUrl } from "../../../utils";
 import { StatusArtifact } from "../../status-artifact";
-import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
 
 const {
   Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, DrawerTitle, MaybeLink },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, MaybeLink },
   K8sApi: { secretsApi, serviceAccountsApi },
 } = Renderer;
 
@@ -22,12 +21,6 @@ export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
 
     return (
       <div>
-        <DrawerItem name="Condition">
-          <Badge
-            className={getConditionClass(object.status?.conditions)}
-            label={getConditionText(object.status?.conditions)}
-          />
-        </DrawerItem>
         <DrawerItem name="Resumed">
           <BadgeBoolean value={!object.spec.suspend} />
         </DrawerItem>
@@ -135,8 +128,6 @@ export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
         )}
 
         <StatusArtifact artifact={object.status?.artifact} />
-
-        <StatusConditions conditions={object.status?.conditions} />
       </div>
     );
   },

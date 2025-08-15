@@ -9,7 +9,7 @@ declare const classNames: {
   readonly sourceName: "sourceName";
   readonly resumed: "resumed";
   readonly condition: "condition";
-  readonly message: "message";
+  readonly status: "status";
   readonly age: "age";
 };
 export = classNames;

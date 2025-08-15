@@ -8,7 +8,6 @@ import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmr
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { MaybeLink } from "../../maybe-link";
-import { StatusConditions } from "../../status-conditions";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
 
@@ -396,8 +395,6 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
               </Table>
             </div>
           )}
-
-          <StatusConditions conditions={object.status?.conditions} />
         </div>
       </>
     );

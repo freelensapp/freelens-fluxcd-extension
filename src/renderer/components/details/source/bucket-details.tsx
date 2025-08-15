@@ -4,14 +4,13 @@ import React from "react";
 import { Bucket } from "../../../k8s/fluxcd/source/bucket";
 import { getMaybeDetailsUrl } from "../../../utils";
 import { StatusArtifact } from "../../status-artifact";
-import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
 
 const {
   Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, MaybeLink },
+  Component: { BadgeBoolean, DrawerItem, MaybeLink },
   K8sApi: { secretsApi },
 } = Renderer;
 
@@ -21,12 +20,6 @@ export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<B
 
   return (
     <div>
-      <DrawerItem name="Condition">
-        <Badge
-          className={getConditionClass(object.status?.conditions)}
-          label={getConditionText(object.status?.conditions)}
-        />
-      </DrawerItem>
       <DrawerItem name="Resumed">
         <BadgeBoolean value={!object.spec.suspend} />
       </DrawerItem>
@@ -51,8 +44,6 @@ export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<B
       </DrawerItem>
 
       <StatusArtifact artifact={object.status?.artifact} />
-
-      <StatusConditions conditions={object.status?.conditions} />
     </div>
   );
 });

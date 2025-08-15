@@ -4,7 +4,7 @@ declare const classNames: {
   readonly url: "url";
   readonly resumed: "resumed";
   readonly condition: "condition";
-  readonly message: "message";
+  readonly status: "status";
   readonly age: "age";
 };
 export = classNames;

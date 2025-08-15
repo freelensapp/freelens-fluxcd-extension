@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
+import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { Provider } from "../../k8s/fluxcd/notification/provider";
 
 const {
@@ -32,7 +32,7 @@ export class ProvidersPage extends React.Component {
           [sortBy.namespace]: (provider: Provider) => provider.getNs(),
           [sortBy.type]: (provider: Provider) => provider.spec.type,
           [sortBy.ready]: (provider: Provider) => getConditionText(provider.status?.conditions),
-          [sortBy.status]: (provider: Provider) => getConditionMessage(provider.status?.conditions),
+          [sortBy.status]: (provider: Provider) => getStatusMessage(provider.status?.conditions),
           [sortBy.age]: (provider: Provider) => provider.getCreationTimestamp(),
         }}
         searchFilters={[(provider: Provider) => provider.getSearchFields()]}
@@ -50,7 +50,7 @@ export class ProvidersPage extends React.Component {
           provider.getNs(),
           provider.spec.type,
           this.renderStatus(provider),
-          getConditionMessage(provider.status?.conditions),
+          getStatusMessage(provider.status?.conditions),
           <KubeObjectAge object={provider} key="age" />,
         ]}
       />

@@ -6,7 +6,7 @@ declare const classNames: {
   readonly ref: "ref";
   readonly resumed: "resumed";
   readonly condition: "condition";
-  readonly message: "message";
+  readonly status: "status";
   readonly age: "age";
 };
 export = classNames;

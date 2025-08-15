@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
+import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { Alert } from "../../k8s/fluxcd/notification/alert";
 
 const {
@@ -30,7 +30,7 @@ export class AlertsPage extends React.Component {
           [sortBy.name]: (alert: Alert) => alert.getName(),
           [sortBy.namespace]: (alert: Alert) => alert.getNs(),
           [sortBy.ready]: (alert: Alert) => getConditionText(alert.status?.conditions),
-          [sortBy.status]: (alert: Alert) => getConditionMessage(alert.status?.conditions),
+          [sortBy.status]: (alert: Alert) => getStatusMessage(alert.status?.conditions),
           [sortBy.age]: (alert: Alert) => alert.getCreationTimestamp(),
         }}
         searchFilters={[(alert: Alert) => alert.getSearchFields()]}
@@ -46,7 +46,7 @@ export class AlertsPage extends React.Component {
           alert.getName(),
           alert.getNs(),
           this.renderStatus(alert),
-          getConditionMessage(alert.status?.conditions),
+          getStatusMessage(alert.status?.conditions),
           <KubeObjectAge object={alert} key="age" />,
         ]}
       />

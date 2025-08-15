@@ -4,14 +4,13 @@ import React from "react";
 import { HelmRepository } from "../../../k8s/fluxcd/source/helmrepository";
 import { getMaybeDetailsUrl } from "../../../utils";
 import { StatusArtifact } from "../../status-artifact";
-import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
 
 const {
   Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, MaybeLink },
+  Component: { BadgeBoolean, DrawerItem, MaybeLink },
   K8sApi: { secretsApi },
 } = Renderer;
 
@@ -22,12 +21,6 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
 
     return (
       <div>
-        <DrawerItem name="Condition">
-          <Badge
-            className={getConditionClass(object.status?.conditions)}
-            label={getConditionText(object.status?.conditions)}
-          />
-        </DrawerItem>
         <DrawerItem name="Resumed">
           <BadgeBoolean value={!object.spec.suspend} />
         </DrawerItem>
@@ -47,8 +40,6 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
         </DrawerItem>
 
         <StatusArtifact artifact={object.status?.artifact} />
-
-        <StatusConditions conditions={object.status?.conditions} />
       </div>
     );
   },

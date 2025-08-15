@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { getConditionClass, getConditionMessage, getConditionText } from "../../components/status-conditions";
+import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { Receiver } from "../../k8s/fluxcd/notification/receiver";
 
 const {
@@ -32,7 +32,7 @@ export class ReceiversPage extends React.Component {
           [sortBy.namespace]: (receiver: Receiver) => receiver.getNs(),
           [sortBy.type]: (receiver: Receiver) => receiver.spec.type,
           [sortBy.ready]: (receiver: Receiver) => getConditionText(receiver.status?.conditions),
-          [sortBy.status]: (receiver: Receiver) => getConditionMessage(receiver.status?.conditions),
+          [sortBy.status]: (receiver: Receiver) => getStatusMessage(receiver.status?.conditions),
           [sortBy.age]: (receiver: Receiver) => receiver.getCreationTimestamp(),
         }}
         searchFilters={[(receiver: Receiver) => [...receiver.getSearchFields(), receiver.status?.webhookPath]]}
@@ -50,7 +50,7 @@ export class ReceiversPage extends React.Component {
           receiver.getNs(),
           receiver.spec.type,
           this.renderStatus(receiver),
-          getConditionMessage(receiver.status?.conditions),
+          getStatusMessage(receiver.status?.conditions),
           <KubeObjectAge object={receiver} key="age" />,
         ]}
       />

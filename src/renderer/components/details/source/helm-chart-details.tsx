@@ -5,14 +5,13 @@ import { HelmChart } from "../../../k8s/fluxcd/source/helmchart";
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { getMaybeDetailsUrl } from "../../../utils";
 import { StatusArtifact } from "../../status-artifact";
-import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
 
 const {
   Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, MaybeLink },
+  Component: { BadgeBoolean, DrawerItem, MaybeLink },
 } = Renderer;
 
 export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmChart>> = observer((props) => {
@@ -20,12 +19,6 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
 
   return (
     <div>
-      <DrawerItem name="Condition">
-        <Badge
-          className={getConditionClass(object.status?.conditions)}
-          label={getConditionText(object.status?.conditions)}
-        />
-      </DrawerItem>
       <DrawerItem name="Resumed">
         <BadgeBoolean value={!object.spec.suspend} />
       </DrawerItem>
@@ -47,8 +40,6 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
       </DrawerItem>
 
       <StatusArtifact artifact={object.status?.artifact} />
-
-      <StatusConditions conditions={object.status?.conditions} />
     </div>
   );
 });

@@ -5,7 +5,6 @@ import { GitRepository, type GitRepositoryApi } from "../../../k8s/fluxcd/source
 import { getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { SpecAccessFrom } from "../../spec-access-from";
 import { StatusArtifact } from "../../status-artifact";
-import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
 import styles from "./git-repository-details.module.scss";
 import stylesInline from "./git-repository-details.module.scss?inline";
 
@@ -14,7 +13,7 @@ const {
 } = Common;
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, DrawerTitle, Icon, MaybeLink, MonacoEditor },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, MaybeLink, MonacoEditor },
   K8sApi: { secretsApi },
 } = Renderer;
 
@@ -31,12 +30,6 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
       <>
         <style>{stylesInline}</style>
         <div className={styles.details}>
-          <DrawerItem name="Condition">
-            <Badge
-              className={getConditionClass(object.status?.conditions)}
-              label={getConditionText(object.status?.conditions)}
-            />
-          </DrawerItem>
           <DrawerItem name="Resumed">
             <BadgeBoolean value={!object.spec.suspend} />
           </DrawerItem>
@@ -127,8 +120,6 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
           <SpecAccessFrom accessFrom={object.spec.accessFrom} />
 
           <StatusArtifact artifact={object.status?.artifact} />
-
-          <StatusConditions conditions={object.status?.conditions} />
         </div>
       </>
     );

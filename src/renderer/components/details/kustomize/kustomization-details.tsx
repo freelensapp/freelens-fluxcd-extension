@@ -13,7 +13,7 @@ import { NamespacedObjectKindReference, type ResourceRef } from "../../../k8s/fl
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { MaybeLink } from "../../maybe-link";
-import { getConditionClass, getConditionMessage, getConditionText, StatusConditions } from "../../status-conditions";
+import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import styles from "./kustomization-details.module.scss";
 import stylesInline from "./kustomization-details.module.scss?inline";
 
@@ -126,12 +126,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
       <>
         <style>{stylesInline}</style>
         <div className={styles.details}>
-          <DrawerItem name="Condition">
-            <Badge
-              className={getConditionClass(object.status?.conditions)}
-              label={getConditionText(object.status?.conditions)}
-            />
-          </DrawerItem>
           <DrawerItem name="Resumed">
             <BadgeBoolean value={!object.spec.suspend} />
           </DrawerItem>
@@ -230,7 +224,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                     <DrawerItem name="Revision" hidden={!reference?.status?.lastAppliedRevision}>
                       {reference?.status?.lastAppliedRevision}
                     </DrawerItem>
-                    <DrawerItem name="Status" hidden={!reference}>
+                    <DrawerItem name="Condition" hidden={!reference}>
                       {reference ? (
                         <Badge
                           className={getConditionClass(reference.status?.conditions)}
@@ -240,8 +234,8 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                         ""
                       )}
                     </DrawerItem>
-                    <DrawerItem name="Message" hidden={!reference}>
-                      {reference && getConditionMessage(reference.status?.conditions)}
+                    <DrawerItem name="Status" hidden={!reference}>
+                      {reference && getStatusMessage(reference.status?.conditions)}
                     </DrawerItem>
                   </div>
                 );
@@ -640,8 +634,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
               </Table>
             </div>
           )}
-
-          <StatusConditions conditions={object.status?.conditions} />
         </div>
       </>
     );

@@ -1,15 +1,6 @@
-import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
 import moment from "moment";
-import { DurationAbsoluteTimestamp } from "./duration-absolute";
-import styles from "./status-conditions.module.scss";
-import stylesInline from "./status-conditions.module.scss?inline";
 
 import type { Condition } from "@freelensapp/kube-object";
-
-const {
-  Component: { DrawerTitle, DrawerItem, Icon },
-} = Renderer;
 
 function timeToUnix(dateStr?: string): number {
   const m = moment(dateStr, moment.ISO_8601, true);
@@ -56,7 +47,7 @@ export function getConditionText(conditions?: Condition[]) {
   return "Unknown";
 }
 
-export function getConditionMessage(conditions?: Condition[]) {
+export function getStatusMessage(conditions?: Condition[]) {
   if (!conditions || !conditions.length) return;
   return getLastCondition(conditions)?.message;
 }
@@ -79,38 +70,3 @@ export function getConditionClass(conditions?: Condition[]) {
       return "";
   }
 }
-
-export interface StatusConditionsProps {
-  conditions?: Condition[];
-}
-
-export const StatusConditions: React.FC<StatusConditionsProps> = observer((props) => {
-  const { conditions } = props;
-
-  if (!conditions) return null;
-
-  return (
-    <>
-      <style>{stylesInline}</style>
-      <div className={styles.conditions}>
-        <DrawerTitle>Conditions</DrawerTitle>
-        {sortConditions(conditions)?.map((condition, idx) => (
-          <div key={idx}>
-            <div className={styles.title}>
-              <Icon small material="list" />
-            </div>
-            <DrawerItem name="Last Transition Time">
-              <DurationAbsoluteTimestamp timestamp={condition.lastTransitionTime} />
-            </DrawerItem>
-            <DrawerItem name="Reason">{condition.reason}</DrawerItem>
-            <DrawerItem name="Status">{condition.status}</DrawerItem>
-            <DrawerItem name="Type" hidden={!condition.type}>
-              {condition.type}
-            </DrawerItem>
-            <DrawerItem name="Message">{condition.message}</DrawerItem>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-});

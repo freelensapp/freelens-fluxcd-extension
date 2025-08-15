@@ -6,7 +6,7 @@ declare const classNames: {
   readonly chartVersion: "chartVersion";
   readonly appVersion: "appVersion";
   readonly condition: "condition";
-  readonly message: "message";
+  readonly status: "status";
   readonly age: "age";
 };
 export = classNames;

@@ -5,14 +5,13 @@ import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository";
 import { getMaybeDetailsUrl } from "../../../utils";
 import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { SpecAccessFrom } from "../../spec-access-from";
-import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
 
 const {
   Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, DrawerTitle, MaybeLink },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, MaybeLink },
   K8sApi: { secretsApi, serviceAccountsApi },
 } = Renderer;
 
@@ -24,12 +23,6 @@ export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetai
     return (
       <>
         <div>
-          <DrawerItem name="Condition">
-            <Badge
-              className={getConditionClass(object.status?.conditions)}
-              label={getConditionText(object.status?.conditions)}
-            />
-          </DrawerItem>
           <DrawerItem name="Resumed">
             <BadgeBoolean value={!object.spec.suspend} />
           </DrawerItem>
@@ -93,8 +86,6 @@ export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetai
               </DrawerItem>
             </div>
           )}
-
-          <StatusConditions conditions={object.status?.conditions} />
         </div>
       </>
     );
