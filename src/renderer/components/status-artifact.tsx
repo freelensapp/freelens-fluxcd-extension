@@ -1,6 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { DurationAbsoluteTimestamp } from "./duration-absolute";
+import { HumanizeBytes } from "./humanizeBytes";
 import styles from "./status-artifact.module.scss";
 import stylesInline from "./status-artifact.module.scss?inline";
 
@@ -34,7 +35,7 @@ export const StatusArtifact: React.FC<StatusArtifactProps> = observer((props) =>
             {artifact.checksum}
           </DrawerItem>
           <DrawerItem name="Size" hidden={!artifact.size}>
-            {artifact.size}
+            <HumanizeBytes value={artifact.size} />
           </DrawerItem>
           <DrawerItem name="Last Update Time">
             <DurationAbsoluteTimestamp timestamp={artifact.lastUpdateTime} />
