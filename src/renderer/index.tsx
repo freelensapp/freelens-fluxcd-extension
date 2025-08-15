@@ -2,6 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { HelmReleaseDetails } from "./components/details/helm/helm-release-details";
 import { ImagePolicyDetails } from "./components/details/image/image-policy-details";
 import { ImageRepositoryDetails } from "./components/details/image/image-repository-details";
+import { ImageUpdateAutomationDetails } from "./components/details/image/image-update-automation-details";
 import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
 import { BucketDetails } from "./components/details/source/bucket-details";
 import { GitRepositoryDetails } from "./components/details/source/git-repository-details";
@@ -112,7 +113,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: ImageUpdateAutomation.crd.plural,
       components: {
-        Page: () => <ImageUpdateAutomationsPage />,
+        Page: () => <ImageUpdateAutomationsPage extension={this} />,
       },
     },
     {
@@ -224,7 +225,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: OCIRepository.crd.plural,
       parentId: "source",
       target: { pageId: OCIRepository.crd.plural },
-      title: "OCI Repositories",
+      title: OCIRepository.crd.title,
       components: {},
     },
     {
@@ -245,14 +246,14 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: ImagePolicy.crd.plural,
       parentId: "image",
       target: { pageId: ImagePolicy.crd.plural },
-      title: "Image Policies",
+      title: ImagePolicy.crd.title,
       components: {},
     },
     {
       id: ImageUpdateAutomation.crd.plural,
       parentId: "image",
       target: { pageId: ImageUpdateAutomation.crd.plural },
-      title: "Image Update Automations",
+      title: ImageUpdateAutomation.crd.title,
       components: {},
     },
     {
@@ -345,6 +346,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageRepository>) => (
           <ImageRepositoryDetails {...props} />
+        ),
+      },
+    },
+    {
+      kind: ImageUpdateAutomation.kind,
+      apiVersions: ImageUpdateAutomation.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation>) => (
+          <ImageUpdateAutomationDetails {...props} />
         ),
       },
     },
@@ -485,6 +496,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
           <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageRepository} />
+        ),
+      },
+    },
+    {
+      kind: ImageUpdateAutomation.kind,
+      apiVersions: ImageUpdateAutomation.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ImageUpdateAutomation} />
+        ),
+      },
+    },
+    {
+      kind: ImageUpdateAutomation.kind,
+      apiVersions: ImageUpdateAutomation.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation} />
         ),
       },
     },

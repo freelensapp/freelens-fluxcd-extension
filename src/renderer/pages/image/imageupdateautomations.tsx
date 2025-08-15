@@ -1,63 +1,83 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
-import React from "react";
+import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { ImageUpdateAutomation } from "../../k8s/fluxcd/image/imageupdateautomation";
+import { ImageUpdateAutomation, type ImageUpdateAutomationApi } from "../../k8s/fluxcd/image/imageupdateautomation";
+import styles from "./imageupdateautomations.module.scss";
+import stylesInline from "./imageupdateautomations.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
+  Component: {
+    Badge,
+    KubeObjectAge,
+    KubeObjectListLayout,
+    LocaleDate,
+    NamespaceSelectBadge,
+    ReactiveDuration,
+    WithTooltip,
+  },
 } = Renderer;
 
-enum sortBy {
-  name = "name",
-  namespace = "namespace",
-  status = "status",
-  ready = "ready",
-  age = "age",
+const KubeObject = ImageUpdateAutomation;
+type KubeObject = ImageUpdateAutomation;
+type KubeObjectApi = ImageUpdateAutomationApi;
+
+const sortingCallbacks = {
+  name: (object: KubeObject) => object.getName(),
+  namespace: (object: KubeObject) => object.getNs(),
+  lastRun: (object: KubeObject) => object.status?.lastAutomationRunTime,
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
+  status: (object: KubeObject) => getConditionText(object.status?.conditions),
+  age: (object: KubeObject) => object.getCreationTimestamp(),
+};
+
+const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
+  { title: "Name", sortBy: "name" },
+  { title: "Namespace", sortBy: "namespace" },
+  { title: "Last Run", sortBy: "lastRun", className: styles.lastRun },
+  { title: "Condition", sortBy: "condition", className: styles.condition },
+  { title: "Status", sortBy: "status", className: styles.status },
+  { title: "Age", sortBy: "age", className: styles.age },
+];
+
+export interface ImageUpdateAutomationsPageProps {
+  extension: Renderer.LensExtension;
 }
 
-@observer
-export class ImageUpdateAutomationsPage extends React.Component {
-  render() {
-    const store = ImageUpdateAutomation.getStore();
-    if (!store) return <></>;
+export const ImageUpdateAutomationsPage = observer((props: ImageUpdateAutomationsPageProps) =>
+  withErrorPage(props, () => {
+    const store = KubeObject.getStore<KubeObject>();
+
     return (
-      <KubeObjectListLayout
-        tableId="imageUpdateAutomationsTable"
-        className="ImageUpdateAutomations"
-        store={store}
-        sortingCallbacks={{
-          [sortBy.name]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getName(),
-          [sortBy.namespace]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getNs(),
-          [sortBy.ready]: (imageUpdateAutomation: ImageUpdateAutomation) =>
-            getConditionText(imageUpdateAutomation.status?.conditions),
-          [sortBy.status]: (imageUpdateAutomation: ImageUpdateAutomation) =>
-            getStatusMessage(imageUpdateAutomation.status?.conditions),
-          [sortBy.age]: (imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getCreationTimestamp(),
-        }}
-        searchFilters={[(imageUpdateAutomation: ImageUpdateAutomation) => imageUpdateAutomation.getSearchFields()]}
-        renderHeaderTitle="Image Update Automations"
-        renderTableHeader={[
-          { title: "Name", className: "name", sortBy: sortBy.name },
-          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
-          { title: "Ready", className: "ready", sortBy: sortBy.ready },
-          { title: "Status", className: "status", sortBy: sortBy.status },
-          { title: "Age", className: "age", sortBy: sortBy.age },
-        ]}
-        renderTableContents={(imageUpdateAutomation: ImageUpdateAutomation) => [
-          imageUpdateAutomation.getName(),
-          imageUpdateAutomation.getNs(),
-          this.renderStatus(imageUpdateAutomation),
-          getStatusMessage(imageUpdateAutomation.status?.conditions),
-          <KubeObjectAge object={imageUpdateAutomation} key="age" />,
-        ]}
-      />
+      <>
+        <style>{stylesInline}</style>
+        <KubeObjectListLayout<KubeObject, KubeObjectApi>
+          tableId={`${KubeObject.crd.plural}Table`}
+          className={styles.page}
+          store={store}
+          sortingCallbacks={sortingCallbacks}
+          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+          renderHeaderTitle={KubeObject.crd.title}
+          renderTableHeader={renderTableHeader}
+          renderTableContents={(object: KubeObject) => [
+            <WithTooltip>{object.getName()}</WithTooltip>,
+            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
+            <WithTooltip
+              tooltip={
+                object.status?.lastAutomationRunTime ? <LocaleDate date={object.status?.lastAutomationRunTime} /> : null
+              }
+            >
+              <ReactiveDuration timestamp={object.metadata.creationTimestamp} compact={false} />
+            </WithTooltip>,
+            <Badge
+              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(object.status?.conditions)}
+            />,
+            <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
+            <KubeObjectAge object={object} key="age" />,
+          ]}
+        />
+      </>
     );
-  }
-
-  renderStatus(imageUpdateAutomation: ImageUpdateAutomation) {
-    const className = getConditionClass(imageUpdateAutomation.status?.conditions);
-    const text = getConditionText(imageUpdateAutomation.status?.conditions);
-    return <Badge key="name" label={text} className={className} />;
-  }
-}
+  }),
+);

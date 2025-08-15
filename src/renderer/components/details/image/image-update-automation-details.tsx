@@ -1,73 +1,128 @@
 import { Common, Renderer } from "@freelensapp/extensions";
+import { observer } from "mobx-react";
 import React from "react";
 import { ImageUpdateAutomation } from "../../../k8s/fluxcd/image/imageupdateautomation";
+import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository";
+import { getHeight, getMaybeDetailsUrl } from "../../../utils";
+import styles from "./image-update-automation-details.module.scss";
+import stylesInline from "./image-update-automation-details.module.scss?inline";
 
 const {
-  Util: { lowerAndPluralize },
+  Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { DrawerItem },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, MaybeLink, MonacoEditor },
+  K8sApi: { secretsApi },
 } = Renderer;
 
-interface ImageUpdateAutomationDetailsState {
-  crds: Renderer.K8sApi.CustomResourceDefinition[];
-}
+export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation>> =
+  observer((props) => {
+    const { object } = props;
 
-export class FluxCDImageUpdateAutomationDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation>,
-  ImageUpdateAutomationDetailsState
-> {
-  public readonly state: Readonly<ImageUpdateAutomationDetailsState> = {
-    crds: [],
-  };
-
-  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
-    const { crds } = this.state;
-
-    if (!kind || !crds) return;
-
-    return crds.find((crd) => crd.spec.names.kind === kind);
-  }
-
-  sourceUrl(resource: ImageUpdateAutomation): string {
-    const name = resource.spec.sourceRef.name;
-    const ns = resource.spec.sourceRef.namespace ?? resource.metadata.namespace;
-    const kind = lowerAndPluralize(resource.spec.sourceRef.kind);
-    const crd = this.getCrd(resource.spec.sourceRef.kind);
-    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
-    const group = crd?.spec.group;
-
-    if (!apiVersion || !group) return "";
-
-    return `/apis/${group}/${apiVersion}/namespaces/${ns}/${kind}/${name}`;
-  }
-
-  async componentDidMount() {
-    const crdStore = Renderer.K8sApi.crdStore;
-    if (crdStore) {
-      crdStore.loadAll().then((l) => this.setState({ crds: l! }));
-    }
-  }
-
-  render() {
-    const { object } = this.props;
+    const namespace = object.getNs();
+    const gitRefFull = GitRepository.getGitRefFull(object.spec.git?.checkout?.ref);
 
     return (
-      <div>
-        <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-        <DrawerItem name="Source">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              Renderer.Navigation.showDetails(this.sourceUrl(object), true);
-            }}
-          >
-            {object.spec.sourceRef.kind}:{object.spec.sourceRef.name}
-          </a>
-        </DrawerItem>
-      </div>
+      <>
+        <style>{stylesInline}</style>
+        <div className={styles.details}>
+          <DrawerItem name="Resumed">
+            <BadgeBoolean value={!object.spec.suspend} />
+          </DrawerItem>
+          <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
+          <DrawerItem name="Git Repository">
+            <MaybeLink
+              key="link"
+              to={getMaybeDetailsUrl(ImageUpdateAutomation.getSourceUrl(object))}
+              onClick={stopPropagation}
+            >
+              {object.spec.sourceRef?.name}
+            </MaybeLink>
+          </DrawerItem>
+          <DrawerItem name="Git Ref" hidden={!gitRefFull}>
+            {gitRefFull}
+          </DrawerItem>
+          <DrawerItem name="Commit Author" hidden={!object.spec.git?.commit?.author}>
+            {ImageUpdateAutomation.getCommitAuthor(object)}
+          </DrawerItem>
+          <DrawerItem name="Signing Key" hidden={!object.spec.git?.commit?.signingKey}>
+            <MaybeLink
+              key="link"
+              to={getMaybeDetailsUrl(
+                secretsApi.formatUrlForNotListing({
+                  name: object.spec.git?.commit?.signingKey?.secretRef?.name,
+                  namespace,
+                }),
+              )}
+              onClick={stopPropagation}
+            >
+              {object.spec.git?.commit?.signingKey?.secretRef?.name}
+            </MaybeLink>
+          </DrawerItem>
+          <DrawerItem name="Message Template" hidden={!object.spec.git?.commit?.messageTemplate}>
+            <MonacoEditor
+              readOnly
+              id="ignore"
+              className={styles.editor}
+              style={{
+                minHeight: getHeight(object.spec.git?.commit?.messageTemplate ?? ""),
+              }}
+              value={object.spec.git?.commit?.messageTemplate ?? ""}
+              setInitialHeight
+              options={{
+                scrollbar: {
+                  alwaysConsumeMouseWheel: false,
+                },
+              }}
+              language={"handlebars" as any}
+            />
+          </DrawerItem>
+
+          <DrawerTitle>Push Specification</DrawerTitle>
+          <DrawerItem name="Branch" hidden={!object.spec.git?.push?.branch}>
+            {object.spec.git?.push?.branch}
+          </DrawerItem>
+          <DrawerItem name="Git Refspec" hidden={!object.spec.git?.push?.refspec}>
+            {object.spec.git?.push?.refspec}
+          </DrawerItem>
+          <DrawerItem name="Options" hidden={!object.spec.git?.push?.options}>
+            {Object.entries(object.spec.git?.push?.options ?? {}).map(([key, value]) => (
+              <DrawerItem key={key} name={key}>
+                {value}
+              </DrawerItem>
+            ))}
+          </DrawerItem>
+
+          {object.spec.update && (
+            <>
+              <DrawerTitle>Update Strategy</DrawerTitle>
+              <DrawerItem name="Strategy">{object.spec.update.strategy}</DrawerItem>
+              <DrawerItem name="Path">{object.spec.update.path}</DrawerItem>
+            </>
+          )}
+
+          {object?.status?.observedPolicies && (
+            <>
+              <DrawerTitle>Observed Policies</DrawerTitle>
+              {Object.entries(object.status.observedPolicies ?? {}).map(([key, value]) => (
+                <>
+                  <div key={key}>
+                    <div className={styles.title}>
+                      <Icon small material="list" />
+                      <span>{key}</span>
+                    </div>
+                    <DrawerItem name="Name">{value.name}</DrawerItem>
+                    <DrawerItem name="Tag">{value.tag}</DrawerItem>
+                    <DrawerItem name="Digest" hidden={!value.digest}>
+                      {value.digest}
+                    </DrawerItem>
+                  </div>
+                </>
+              ))}
+            </>
+          )}
+        </div>
+      </>
     );
-  }
-}
+  });

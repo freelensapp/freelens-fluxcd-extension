@@ -1,17 +1,72 @@
 import { Renderer } from "@freelensapp/extensions";
 
+import type { LocalObjectReference } from "@freelensapp/kube-object";
+
+import type { GitRepositoryRef } from "../source/gitrepository";
+import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus, NamespacedObjectKindReference } from "../types";
+
+export interface GitCheckoutSpec {
+  ref: GitRepositoryRef;
+}
+
+export interface CommitUser {
+  name?: string;
+  email: string;
+}
+
+export interface SigningKey {
+  secretRef?: LocalObjectReference;
+}
+
+export interface CommitSpec {
+  author?: CommitUser;
+  signingKey?: SigningKey;
+  messageTemplate?: string;
+}
+
+export interface PushSpec {
+  branch?: string;
+  refspec?: string;
+  options?: Record<string, string>;
+}
+
+export interface GitSpec {
+  checkout?: GitCheckoutSpec;
+  commit?: CommitSpec;
+  push?: PushSpec;
+}
+
+export interface UpdateStrategy {
+  strategy: string;
+  path?: string;
+}
+
+export interface ImageRef {
+  name: string;
+  tag: string;
+  digest?: string;
+}
+
+export interface ImageUpdateAutomationSpec extends FluxCDKubeObjectSpecWithSuspend {
+  sourceRef: NamespacedObjectKindReference;
+  git?: GitSpec;
+  interval: string;
+  update?: UpdateStrategy;
+  suspend?: boolean;
+}
+
+export interface ImageUpdateAutomationStatus extends FluxCDKubeObjectStatus {
+  lastAutomationRunTime?: string;
+  lastPushCommit?: string;
+  lastPushTime?: string;
+  // v1beta2
+  observedPolicies?: Record<string, ImageRef>;
+}
+
 export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObject<
-  any,
-  any,
-  {
-    sourceRef: {
-      name: string;
-      namespace: string;
-      kind: string;
-    };
-    interval: string;
-    suspend?: boolean;
-  }
+  Renderer.K8sApi.KubeObjectMetadata,
+  ImageUpdateAutomationStatus,
+  ImageUpdateAutomationSpec
 > {
   static readonly kind = "ImageUpdateAutomation";
   static readonly namespaced = true;
@@ -24,6 +79,17 @@ export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObje
     shortNames: [],
     title: "Image Update Automations",
   };
+
+  static getSourceUrl(object: ImageUpdateAutomation): string | undefined {
+    if (!object.spec.sourceRef) return;
+    return Renderer.K8sApi.apiManager.lookupApiLink(object.spec.sourceRef, object);
+  }
+
+  static getCommitAuthor(object: ImageUpdateAutomation): string | undefined {
+    const { email, name } = object.spec.git?.commit?.author ?? {};
+    if (!email) return;
+    return name ? `${name} <${email}>` : email;
+  }
 }
 
 export class ImageUpdateAutomationApi extends Renderer.K8sApi.KubeApi<ImageUpdateAutomation> {}
