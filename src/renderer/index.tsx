@@ -1,5 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import { HelmReleaseDetails } from "./components/details/helm/helm-release-details";
+import { ImagePolicyDetails } from "./components/details/image/image-policy-details";
 import { ImageRepositoryDetails } from "./components/details/image/image-repository-details";
 import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
 import { BucketDetails } from "./components/details/source/bucket-details";
@@ -99,7 +100,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: ImagePolicy.crd.plural,
       components: {
-        Page: () => <ImagePoliciesPage />,
+        Page: () => <ImagePoliciesPage extension={this} />,
       },
     },
     {
@@ -330,6 +331,14 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ImagePolicy.kind,
+      apiVersions: ImagePolicy.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImagePolicy>) => <ImagePolicyDetails {...props} />,
+      },
+    },
+    {
       kind: ImageRepository.kind,
       apiVersions: ImageRepository.crd.apiVersions,
       priority: 10,
@@ -449,6 +458,15 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
           <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRepository} />
+        ),
+      },
+    },
+    {
+      kind: ImagePolicy.kind,
+      apiVersions: ImagePolicy.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ImagePolicy} />
         ),
       },
     },

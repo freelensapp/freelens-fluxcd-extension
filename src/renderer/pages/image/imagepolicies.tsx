@@ -1,65 +1,72 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
-import React from "react";
+import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { ImagePolicy } from "../../k8s/fluxcd/image/imagepolicy";
+import { ImagePolicy, type ImagePolicyApi } from "../../k8s/fluxcd/image/imagepolicy";
+import styles from "./imagepolicies.module.scss";
+import stylesInline from "./imagepolicies.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-enum sortBy {
-  name = "name",
-  namespace = "namespace",
-  status = "status",
-  ready = "ready",
-  age = "age",
-  repo = "repo",
+const KubeObject = ImagePolicy;
+type KubeObject = ImagePolicy;
+type KubeObjectApi = ImagePolicyApi;
+
+const sortingCallbacks = {
+  name: (object: KubeObject) => object.getName(),
+  namespace: (object: KubeObject) => object.getNs(),
+  repository: (object: KubeObject) => object.spec.imageRepositoryRef.name,
+  latestTag: (object: KubeObject) => object.status?.latestImage?.split(":")[1],
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
+  status: (object: KubeObject) => getConditionText(object.status?.conditions),
+  age: (object: KubeObject) => object.getCreationTimestamp(),
+};
+
+const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
+  { title: "Name", sortBy: "name" },
+  { title: "Namespace", sortBy: "namespace" },
+  { title: "Repository", sortBy: "repository", className: styles.repository },
+  { title: "Latest Tag", sortBy: "latestTag", className: styles.latestTag },
+  { title: "Condition", sortBy: "condition", className: styles.condition },
+  { title: "Status", sortBy: "status", className: styles.status },
+  { title: "Age", sortBy: "age", className: styles.age },
+];
+
+export interface ImagePoliciesPageProps {
+  extension: Renderer.LensExtension;
 }
 
-@observer
-export class ImagePoliciesPage extends React.Component {
-  render() {
-    const store = ImagePolicy.getStore();
-    if (!store) return <></>;
+export const ImagePoliciesPage = observer((props: ImagePoliciesPageProps) =>
+  withErrorPage(props, () => {
+    const store = KubeObject.getStore<KubeObject>();
+
     return (
-      <KubeObjectListLayout
-        tableId="imagePoliciesTable"
-        className="ImagePolicies"
-        store={store}
-        sortingCallbacks={{
-          [sortBy.name]: (imagePolicy: ImagePolicy) => imagePolicy.getName(),
-          [sortBy.namespace]: (imagePolicy: ImagePolicy) => imagePolicy.getNs(),
-          [sortBy.repo]: (imagePolicy: ImagePolicy) => imagePolicy.spec.imageRepositoryRef.name,
-          [sortBy.ready]: (imagePolicy: ImagePolicy) => getConditionText(imagePolicy.status?.conditions),
-          [sortBy.status]: (imagePolicy: ImagePolicy) => getStatusMessage(imagePolicy.status?.conditions),
-          [sortBy.age]: (imagePolicy: ImagePolicy) => imagePolicy.getCreationTimestamp(),
-        }}
-        searchFilters={[(imagePolicy: ImagePolicy) => imagePolicy.getSearchFields()]}
-        renderHeaderTitle="Image Policies"
-        renderTableHeader={[
-          { title: "Name", className: "name", sortBy: sortBy.name },
-          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
-          { title: "Image Repository", className: "image", sortBy: sortBy.repo },
-          { title: "Ready", className: "ready", sortBy: sortBy.ready },
-          { title: "Status", className: "status", sortBy: sortBy.status },
-          { title: "Age", className: "age", sortBy: sortBy.age },
-        ]}
-        renderTableContents={(imagePolicy: ImagePolicy) => [
-          imagePolicy.getName(),
-          imagePolicy.getNs(),
-          imagePolicy.spec.imageRepositoryRef.name,
-          this.renderStatus(imagePolicy),
-          getStatusMessage(imagePolicy.status?.conditions),
-          <KubeObjectAge object={imagePolicy} key="age" />,
-        ]}
-      />
+      <>
+        <style>{stylesInline}</style>
+        <KubeObjectListLayout<KubeObject, KubeObjectApi>
+          tableId={`${KubeObject.crd.plural}Table`}
+          className={styles.page}
+          store={store}
+          sortingCallbacks={sortingCallbacks}
+          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+          renderHeaderTitle={KubeObject.crd.title}
+          renderTableHeader={renderTableHeader}
+          renderTableContents={(object: KubeObject) => [
+            <WithTooltip>{object.getName()}</WithTooltip>,
+            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
+            <WithTooltip>{object.spec.imageRepositoryRef.name}</WithTooltip>,
+            <WithTooltip>{object.status?.latestImage?.split(":")[1]}</WithTooltip>,
+            <Badge
+              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(object.status?.conditions)}
+            />,
+            <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
+            <KubeObjectAge object={object} key="age" />,
+          ]}
+        />
+      </>
     );
-  }
-
-  renderStatus(imagePolicy: ImagePolicy) {
-    const className = getConditionClass(imagePolicy.status?.conditions);
-    const text = getConditionText(imagePolicy.status?.conditions);
-    return <Badge key="name" label={text} className={className} />;
-  }
-}
+  }),
+);

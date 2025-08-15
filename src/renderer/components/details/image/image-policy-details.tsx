@@ -1,72 +1,48 @@
 import { Common, Renderer } from "@freelensapp/extensions";
+import { observer } from "mobx-react";
 import React from "react";
 import { ImagePolicy } from "../../../k8s/fluxcd/image/imagepolicy";
+import { getMaybeDetailsUrl } from "../../../utils";
 
 const {
-  Util: { lowerAndPluralize },
+  Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { DrawerItem },
+  Component: { DrawerItem, MaybeLink },
 } = Renderer;
 
-interface ImagePolicyDetailsState {
-  crds: Renderer.K8sApi.CustomResourceDefinition[];
-}
-
-export class FluxCDImagePolicyDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<ImagePolicy>,
-  ImagePolicyDetailsState
-> {
-  public readonly state: Readonly<ImagePolicyDetailsState> = {
-    crds: [],
-  };
-
-  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
-    const { crds } = this.state;
-
-    if (!kind || !crds) return;
-
-    return crds.find((crd) => crd.spec.names.kind === kind);
-  }
-
-  sourceUrl(resource: ImagePolicy): string {
-    const name = resource.spec.imageRepositoryRef.name;
-    const ns = resource.spec.imageRepositoryRef.namespace ?? resource.metadata.namespace;
-    const kind = lowerAndPluralize("ImageRepository");
-    const crd = this.getCrd("ImageRepository");
-    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
-    const group = crd?.spec.group;
-
-    if (!apiVersion || !group) return "";
-
-    return `/apis/${group}/${apiVersion}/namespaces/${ns}/${kind}/${name}`;
-  }
-
-  async componentDidMount() {
-    const crdStore = Renderer.K8sApi.crdStore;
-    if (crdStore) {
-      crdStore.loadAll().then((l) => this.setState({ crds: l! }));
-    }
-  }
-
-  render() {
-    const { object } = this.props;
+export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImagePolicy>> = observer(
+  (props) => {
+    const { object } = props;
 
     return (
-      <div>
-        <DrawerItem name="Source">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              Renderer.Navigation.showDetails(this.sourceUrl(object), true);
-            }}
-          >
-            ImageRepository:{object.spec.imageRepositoryRef.name}
-          </a>
-        </DrawerItem>
-      </div>
+      <>
+        <div>
+          <DrawerItem name="Image Repository">
+            <MaybeLink
+              key="link"
+              to={getMaybeDetailsUrl(ImagePolicy.getImageRepositoryUrl(object))}
+              onClick={stopPropagation}
+            >
+              {object.spec.imageRepositoryRef.name}
+            </MaybeLink>
+          </DrawerItem>
+          <DrawerItem name="SemVer Policy" hidden={!object.spec.policy.semver}>
+            {object.spec.policy.semver?.range}
+          </DrawerItem>
+          <DrawerItem name="Alphabetical Policy" hidden={!object.spec.policy.alphabetical}>
+            {object.spec.policy.alphabetical?.order ?? "asc"}
+          </DrawerItem>
+          <DrawerItem name="Numerical Policy" hidden={!object.spec.policy.numerical}>
+            {object.spec.policy.numerical?.order ?? "asc"}
+          </DrawerItem>
+          <DrawerItem name="Filter Tags" hidden={!object.spec.filterTags}>
+            <DrawerItem name="pattern">{object.spec.filterTags?.pattern}</DrawerItem>
+            <DrawerItem name="extract">{object.spec.filterTags?.extract}</DrawerItem>
+          </DrawerItem>
+        </div>
+      </>
     );
-  }
-}
+  },
+);

@@ -1,14 +1,44 @@
 import { Renderer } from "@freelensapp/extensions";
 
+import type { FluxCDKubeObjectStatus, NamespacedObjectReference } from "../types";
+
+export interface SemVerPolicy {
+  range: string;
+}
+
+export interface AlphabeticalPolicy {
+  order?: "asc" | "desc";
+}
+
+export interface NumericalPolicy {
+  order?: "asc" | "desc";
+}
+
+export interface ImagePolicyChoice {
+  semver?: SemVerPolicy;
+  alphabetical?: AlphabeticalPolicy;
+  numerical?: NumericalPolicy;
+}
+
+export interface TagFilter {
+  pattern: string;
+  extract: string;
+}
+
+export interface ImagePolicySpec {
+  imageRepositoryRef: NamespacedObjectReference;
+  policy: ImagePolicyChoice;
+  filterTags?: TagFilter;
+}
+
+export interface ImagePolicyStatus extends FluxCDKubeObjectStatus {
+  latestImage?: string;
+}
+
 export class ImagePolicy extends Renderer.K8sApi.LensExtensionKubeObject<
-  any,
-  any,
-  {
-    imageRepositoryRef: {
-      name: string;
-      namespace: string;
-    };
-  }
+  Renderer.K8sApi.KubeObjectMetadata,
+  ImagePolicyStatus,
+  ImagePolicySpec
 > {
   static readonly kind = "ImagePolicy";
   static readonly namespaced = true;
@@ -21,6 +51,17 @@ export class ImagePolicy extends Renderer.K8sApi.LensExtensionKubeObject<
     shortNames: [],
     title: "Image Policies",
   };
+
+  static getImageRepositoryUrl(object: ImagePolicy): string | undefined {
+    if (!object.spec.imageRepositoryRef) return;
+    const ref = {
+      name: object.spec.imageRepositoryRef.name,
+      namespace: object.spec.imageRepositoryRef.namespace ?? object.getNs()!,
+      kind: "ImageRepository",
+      apiVersion: "image.toolkit.fluxcd.io/v1beta1",
+    };
+    return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
+  }
 }
 
 export class ImagePolicyApi extends Renderer.K8sApi.KubeApi<ImagePolicy> {}
