@@ -1,9 +1,9 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import moment from "moment";
+import { DurationAbsoluteTimestamp } from "./duration-absolute";
 import styles from "./status-conditions.module.scss";
 import stylesInline from "./status-conditions.module.scss?inline";
-import { TimestampAgeLocalDate } from "./timestamp-age-local-date";
 
 import type { Condition } from "@freelensapp/kube-object";
 
@@ -12,7 +12,7 @@ const {
 } = Renderer;
 
 function timeToUnix(dateStr?: string): number {
-  const m = moment(dateStr);
+  const m = moment(dateStr, moment.ISO_8601, true);
   return m.isValid() ? m.unix() : 0;
 }
 
@@ -100,7 +100,7 @@ export const StatusConditions: React.FC<StatusConditionsProps> = observer((props
               <Icon small material="list" />
             </div>
             <DrawerItem name="Last Transition Time">
-              <TimestampAgeLocalDate timestamp={condition.lastTransitionTime} />
+              <DurationAbsoluteTimestamp timestamp={condition.lastTransitionTime} />
             </DrawerItem>
             <DrawerItem name="Reason">{condition.reason}</DrawerItem>
             <DrawerItem name="Status">{condition.status}</DrawerItem>

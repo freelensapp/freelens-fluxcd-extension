@@ -1,8 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
+import { DurationAbsoluteTimestamp } from "./duration-absolute";
 import styles from "./status-artifact.module.scss";
 import stylesInline from "./status-artifact.module.scss?inline";
-import { TimestampAgeLocalDate } from "./timestamp-age-local-date";
 
 import type { Artifact } from "../k8s/fluxcd/types";
 
@@ -37,7 +37,7 @@ export const StatusArtifact: React.FC<StatusArtifactProps> = observer((props) =>
             {artifact.size}
           </DrawerItem>
           <DrawerItem name="Last Update Time">
-            <TimestampAgeLocalDate timestamp={artifact.lastUpdateTime} />
+            <DurationAbsoluteTimestamp timestamp={artifact.lastUpdateTime} />
           </DrawerItem>
         </div>
       </div>

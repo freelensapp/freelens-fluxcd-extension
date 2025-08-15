@@ -3,9 +3,9 @@ import { observer } from "mobx-react";
 import React from "react";
 import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository";
 import { getMaybeDetailsUrl } from "../../../utils";
+import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { SpecAccessFrom } from "../../spec-access-from";
 import { getConditionClass, getConditionText, StatusConditions } from "../../status-conditions";
-import { TimestampAgeLocalDate } from "../../timestamp-age-local-date";
 
 const {
   Util: { stopPropagation },
@@ -83,7 +83,7 @@ export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetai
             <div>
               <DrawerTitle>Scan Result</DrawerTitle>
               <DrawerItem name="Scan Time">
-                <TimestampAgeLocalDate timestamp={object.status.lastScanResult.scanTime} />
+                <DurationAbsoluteTimestamp timestamp={object.status.lastScanResult.scanTime} />
               </DrawerItem>
               <DrawerItem name="Tag Count">{object.status.lastScanResult.tagCount}</DrawerItem>
               <DrawerItem name="Latest Tags" hidden={!object.status.lastScanResult.latestTags?.length}>

@@ -6,9 +6,9 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
+import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { MaybeLink } from "../../maybe-link";
 import { StatusConditions } from "../../status-conditions";
-import { TimestampAgeLocalDate } from "../../timestamp-age-local-date";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
 
@@ -181,10 +181,10 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             </MaybeLink>
           </DrawerItem>
           <DrawerItem name="First Deployed" hidden={!object.status?.history?.[0].firstDeployed}>
-            <TimestampAgeLocalDate timestamp={object.status?.history?.[0].firstDeployed} />
+            <DurationAbsoluteTimestamp timestamp={object.status?.history?.[0].firstDeployed} />
           </DrawerItem>
           <DrawerItem name="Last Deployed" hidden={!object.status?.history?.[0].lastDeployed}>
-            <TimestampAgeLocalDate timestamp={object.status?.history?.[0].lastDeployed} />
+            <DurationAbsoluteTimestamp timestamp={object.status?.history?.[0].lastDeployed} />
           </DrawerItem>
           <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
             {object.status?.conditions?.[0].message}
