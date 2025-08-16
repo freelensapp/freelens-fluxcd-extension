@@ -128,17 +128,17 @@ export const FluxCDOverview = observer(() => {
             <div className={styles.statuses}>
               {getChart(Kustomization.crd.title, Kustomization)}
               {getChart(HelmRelease.crd.title, HelmRelease)}
-              {/* {getChart("Git Repositories", this.stores[GitRepository.kind])}
-              {getChart("Helm Repositories", this.stores[HelmRepository.kind])}
-              {getChart("Helm Charts", this.stores[HelmChart.kind])}
-              {getChart("Buckets", this.stores[Bucket.kind])}
-              {getChart("OCI Repositories", this.stores[OCIRepository.kind])}
-              {getChart("Image Repositories", this.stores[ImageRepository.kind])}
-              {getChart("Image Policies", this.stores[ImagePolicy.kind])}
-              {getChart("Image Automations", this.stores[ImageUpdateAutomation.kind])}
-              {getChart("Alerts", this.stores[Alert.kind])}
-              {getChart("Providers", this.stores[Provider.kind])}
-              {getChart("Receivers", this.stores[Receiver.kind])} */}
+              {getChart(GitRepository.crd.title, GitRepository)}
+              {getChart(HelmRepository.crd.title, HelmRepository)}
+              {getChart(HelmChart.crd.title, HelmChart)}
+              {getChart(Bucket.crd.title, Bucket)}
+              {getChart(OCIRepository.crd.title, OCIRepository)}
+              {getChart(ImageRepository.crd.title, ImageRepository)}
+              {getChart(ImagePolicy.crd.title, ImagePolicy)}
+              {getChart(ImageUpdateAutomation.crd.title, ImageUpdateAutomation)}
+              {getChart(Alert.crd.title, Alert)}
+              {getChart(Provider.crd.title, Provider)}
+              {getChart(Receiver.crd.title, Receiver)}
             </div>
           </div>
 
