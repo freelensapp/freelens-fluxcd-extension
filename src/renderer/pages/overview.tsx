@@ -1,6 +1,7 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { InfoPage } from "../components/info-page";
 import { PieChart } from "../components/pie-chart";
 import { HelmRelease } from "../k8s/fluxcd/helm/helmrelease";
 import { ImagePolicy } from "../k8s/fluxcd/image/imagepolicy";
@@ -119,11 +120,7 @@ export const FluxCDOverviewPage = observer(() => {
   }, []);
 
   if (crds.length === 0) {
-    return (
-      <div className={styles.infoPage}>
-        <p className={styles.infoMessage}>Loading Flux components...</p>
-      </div>
-    );
+    return <InfoPage message="Loading Flux components..." />;
   }
 
   return (
