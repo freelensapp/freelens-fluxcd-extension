@@ -1,28 +1,37 @@
 import { Renderer } from "@freelensapp/extensions";
 
+import type { LocalObjectReference } from "@freelensapp/kube-object";
+
+import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus, NamespacedObjectKindReference } from "../types";
+
+export interface AlertSpec extends FluxCDKubeObjectSpecWithSuspend {
+  providerRef: LocalObjectReference;
+  eventSeverity?: "info" | "error";
+  eventSources?: NamespacedObjectKindReference[];
+  // v1beta2
+  eventMetadata?: Record<string, string>;
+  exclusionList?: string[];
+  summary?: string;
+  suspend?: boolean;
+}
+
+export interface AlertStatus extends FluxCDKubeObjectStatus {}
+
 export class Alert extends Renderer.K8sApi.LensExtensionKubeObject<
-  any,
-  any,
-  {
-    eventSources: [
-      {
-        kind: string;
-        name: string;
-        namespace: string;
-        filters: [{ name: string; values: string[] }];
-      },
-    ];
-    suspend: boolean;
-    eventSeverity: string;
-    providerRef: { name: string; namespace: string };
-  }
+  Renderer.K8sApi.KubeObjectMetadata,
+  AlertStatus,
+  AlertSpec
 > {
   static readonly kind = "Alert";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta1/alerts";
 
   static readonly crd = {
-    apiVersions: ["notification.toolkit.fluxcd.io/v1beta1", "notification.toolkit.fluxcd.io/v1beta2"],
+    apiVersions: [
+      "notification.toolkit.fluxcd.io/v1beta1",
+      "notification.toolkit.fluxcd.io/v1beta2",
+      "notification.toolkit.fluxcd.io/v1beta3",
+    ],
     plural: "alerts",
     singular: "alert",
     shortNames: [],

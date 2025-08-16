@@ -4,6 +4,9 @@ import { ImagePolicyDetails } from "./components/details/image/image-policy-deta
 import { ImageRepositoryDetails } from "./components/details/image/image-repository-details";
 import { ImageUpdateAutomationDetails } from "./components/details/image/image-update-automation-details";
 import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
+import { AlertDetails } from "./components/details/notification/alert-details";
+import { ProviderDetails } from "./components/details/notification/provider-details";
+import { ReceiverDetails } from "./components/details/notification/receiver-details";
 import { BucketDetails } from "./components/details/source/bucket-details";
 import { GitRepositoryDetails } from "./components/details/source/git-repository-details";
 import { HelmChartDetails } from "./components/details/source/helm-chart-details";
@@ -65,7 +68,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: Alert.crd.plural,
       components: {
-        Page: () => <AlertsPage />,
+        Page: () => <AlertsPage extension={this} />,
       },
     },
     {
@@ -131,13 +134,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: Provider.crd.plural,
       components: {
-        Page: () => <ProvidersPage />,
+        Page: () => <ProvidersPage extension={this} />,
       },
     },
     {
       id: Receiver.crd.plural,
       components: {
-        Page: () => <ReceiversPage />,
+        Page: () => <ReceiversPage extension={this} />,
       },
     },
   ];
@@ -288,6 +291,14 @@ export default class FluxCDExtension extends Renderer.LensExtension {
 
   kubeObjectDetailItems = [
     {
+      kind: Alert.kind,
+      apiVersions: Alert.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert>) => <AlertDetails {...props} />,
+      },
+    },
+    {
       kind: Bucket.kind,
       apiVersions: Bucket.crd.apiVersions,
       priority: 10,
@@ -379,9 +390,43 @@ export default class FluxCDExtension extends Renderer.LensExtension {
         ),
       },
     },
+    {
+      kind: Provider.kind,
+      apiVersions: Provider.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider>) => <ProviderDetails {...props} />,
+      },
+    },
+    {
+      kind: Receiver.kind,
+      apiVersions: Receiver.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver>) => <ReceiverDetails {...props} />,
+      },
+    },
   ];
 
   kubeObjectMenuItems = [
+    {
+      kind: Alert.kind,
+      apiVersions: Alert.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Alert} />
+        ),
+      },
+    },
+    {
+      kind: Alert.kind,
+      apiVersions: Alert.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Alert} />
+        ),
+      },
+    },
     {
       kind: Bucket.kind,
       apiVersions: Bucket.crd.apiVersions,
@@ -550,6 +595,42 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
           <FluxCDObjectSuspendResumeMenuItem {...props} resource={OCIRepository} />
+        ),
+      },
+    },
+    {
+      kind: Provider.kind,
+      apiVersions: Provider.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Provider} />
+        ),
+      },
+    },
+    {
+      kind: Provider.kind,
+      apiVersions: Provider.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Provider} />
+        ),
+      },
+    },
+    {
+      kind: Receiver.kind,
+      apiVersions: Receiver.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver} />
+        ),
+      },
+    },
+    {
+      kind: Receiver.kind,
+      apiVersions: Receiver.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver} />
         ),
       },
     },

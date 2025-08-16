@@ -1,33 +1,52 @@
 import { Renderer } from "@freelensapp/extensions";
 
+import type { LocalObjectReference } from "@freelensapp/kube-object";
+
+import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus, NamespacedObjectKindReference } from "../types";
+
+export interface ReceiverSpec extends FluxCDKubeObjectSpecWithSuspend {
+  type:
+    | "generic"
+    | "generic-hmac"
+    | "github"
+    | "gitlab"
+    | "bitbucket"
+    | "harbor"
+    | "dockerhub"
+    | "quay"
+    | "gcr"
+    | "nexus"
+    | "acr";
+  events: string[];
+  resources: NamespacedObjectKindReference[];
+  secretRef?: LocalObjectReference;
+  suspend?: boolean;
+}
+
+export interface ReceiverStatus extends FluxCDKubeObjectStatus {
+  url?: string;
+}
+
 export class Receiver extends Renderer.K8sApi.LensExtensionKubeObject<
-  any,
-  any,
-  {
-    type: string;
-    interval: string;
-    suspend: boolean;
-    slack: { channel: string };
-    events: string[];
-    resources: [
-      {
-        kind: string;
-        name: string;
-        namespace: string;
-      },
-    ];
-  }
+  Renderer.K8sApi.KubeObjectMetadata,
+  ReceiverStatus,
+  ReceiverSpec
 > {
   static readonly kind = "Receiver";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta1/receivers";
 
   static readonly crd = {
-    apiVersions: ["notification.toolkit.fluxcd.io/v1beta1", "notification.toolkit.fluxcd.io/v1beta2"],
+    apiVersions: [
+      "notification.toolkit.fluxcd.io/v1beta1",
+      "notification.toolkit.fluxcd.io/v1beta2",
+      "notification.toolkit.fluxcd.io/v1beta3",
+      "notification.toolkit.fluxcd.io/v1",
+    ],
     plural: "receivers",
     singular: "receiver",
     shortNames: [],
-    title: "Receiver",
+    title: "Receivers",
   };
 }
 

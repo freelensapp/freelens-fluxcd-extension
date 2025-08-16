@@ -13,6 +13,7 @@ import { NamespacedObjectKindReference, type ResourceRef } from "../../../k8s/fl
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { MaybeLink } from "../../maybe-link";
+import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import styles from "./kustomization-details.module.scss";
 import stylesInline from "./kustomization-details.module.scss?inline";
@@ -51,16 +52,6 @@ function inventoryResourceRefToObjectRef(resource: ResourceRef): NamespacedObjec
   } catch (error) {
     return;
   }
-}
-
-function inventoryKindTooltip(objectRef: NamespacedObjectKindReference) {
-  return (
-    <span>
-      <b>apiVersion:</b>&nbsp;{objectRef.apiVersion}
-      <br />
-      <b>kind:</b>&nbsp;{objectRef.kind}
-    </span>
-  );
 }
 
 const referenceSortable = {
@@ -554,7 +545,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                     nowrap
                   >
                     <TableCell className={styles.kind}>
-                      <WithTooltip tooltip={inventoryKindTooltip(healthCheck)}>{healthCheck.kind}</WithTooltip>
+                      <WithTooltip tooltip={<ObjectRefTooltip objectRef={healthCheck} />}>
+                        {healthCheck.kind}
+                      </WithTooltip>
                     </TableCell>
                     <TableCell className={styles.name}>
                       <MaybeLink to={getMaybeDetailsUrl(getRefUrl(healthCheck, object))} onClick={stopPropagation}>
@@ -608,7 +601,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                   return (
                     <TableRow key={inventoryResourceRef.id} sortItem={objectRef} nowrap>
                       <TableCell className={styles.kind}>
-                        <WithTooltip tooltip={inventoryKindTooltip(objectRef)}>{objectRef.kind}</WithTooltip>
+                        <WithTooltip tooltip={<ObjectRefTooltip objectRef={objectRef} />}>{objectRef.kind}</WithTooltip>
                       </TableCell>
                       <TableCell className={styles.name}>
                         <MaybeLink to={getMaybeDetailsUrl(getRefUrl(objectRef, object))} onClick={stopPropagation}>

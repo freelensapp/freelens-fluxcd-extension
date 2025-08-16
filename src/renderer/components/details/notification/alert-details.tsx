@@ -1,96 +1,58 @@
 import { Common, Renderer } from "@freelensapp/extensions";
+import { observer } from "mobx-react";
 import React from "react";
 import { Alert } from "../../../k8s/fluxcd/notification/alert";
-
-interface AlertDetailsState {
-  events: Renderer.K8sApi.KubeEvent[];
-  crds: Renderer.K8sApi.CustomResourceDefinition[];
-}
+import { getRefUrl } from "../../../k8s/fluxcd/utils";
+import { getMaybeDetailsUrl } from "../../../utils";
 
 const {
-  Util: { lowerAndPluralize },
+  Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { DrawerItem, Badge },
+  Component: { Badge, BadgeBoolean, DrawerItem, DrawerTitle, MaybeLink },
 } = Renderer;
 
-export class FluxCDAlertDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<Alert>,
-  AlertDetailsState
-> {
-  public readonly state: Readonly<AlertDetailsState> = {
-    events: [],
-    crds: [],
-  };
+export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Alert>> = observer((props) => {
+  const { object } = props;
 
-  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
-    const { crds } = this.state;
-
-    if (!kind || !crds) return;
-
-    return crds.find((crd) => crd.spec.names.kind === kind);
-  }
-
-  sourceUrl(resource: any, overwriteKind?: string) {
-    const name = resource.name;
-    const ns = resource.namespace ?? this.props.object.metadata.namespace;
-    const resourceKind = overwriteKind ?? resource.kind;
-    const kind = lowerAndPluralize(resourceKind);
-    const crd = this.getCrd(resourceKind);
-    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
-    const group = crd?.spec.group;
-
-    if (!apiVersion || !group) return "";
-
-    return `/apis/${group}/${apiVersion}/namespaces/${ns}/${kind}/${name}`;
-  }
-
-  async componentDidMount() {
-    const crdStore = Renderer.K8sApi.crdStore;
-    if (crdStore) {
-      crdStore.loadAll().then((l) => this.setState({ crds: l! }));
-    }
-  }
-
-  render() {
-    const { object } = this.props;
-
-    return (
-      <div>
-        <DrawerItem name="Event Severity">{object.spec.eventSeverity}</DrawerItem>
-        <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
-        <DrawerItem name="Provider">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              Renderer.Navigation.showDetails(this.sourceUrl(object.spec.providerRef, "Provider"), true);
-            }}
-          >
-            Provider:{object.spec.providerRef.name}
-          </a>
-        </DrawerItem>
-        <DrawerItem name="Resources">
-          {object.spec.eventSources.map((eventSource, index: number) => (
-            <li key={index}>
-              {eventSource.name === "*" ? (
+  return (
+    <div>
+      <DrawerItem name="Resumed">
+        <BadgeBoolean value={!object.spec.suspend} />
+      </DrawerItem>
+      <DrawerItem name="Event Severity">{object.spec.eventSeverity}</DrawerItem>
+      <DrawerItem name="Event Sources">
+        {object.spec.eventSources?.map((eventSource, index: number) => (
+          <DrawerItem key={index} name="">
+            {eventSource.name === "*" ? (
+              <Badge label={`${eventSource.kind}:${eventSource.name}`} />
+            ) : (
+              <MaybeLink to={getMaybeDetailsUrl(getRefUrl(eventSource, object))} onClick={stopPropagation}>
                 <Badge label={`${eventSource.kind}:${eventSource.name}`} />
-              ) : (
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    Renderer.Navigation.showDetails(this.sourceUrl(eventSource), true);
-                  }}
-                >
-                  {eventSource.kind}:{eventSource.name}
-                </a>
-              )}
-            </li>
+              </MaybeLink>
+            )}
+          </DrawerItem>
+        ))}
+      </DrawerItem>
+      <DrawerItem name="Provider">
+        <MaybeLink
+          to={getMaybeDetailsUrl(getRefUrl({ kind: "Provider", name: object.spec.providerRef?.name ?? "" }, object))}
+          onClick={stopPropagation}
+        >
+          {object.spec.providerRef?.name}
+        </MaybeLink>
+      </DrawerItem>
+      {object.spec.eventMetadata && (
+        <>
+          <DrawerTitle>Event Metadata</DrawerTitle>
+          {Object.entries(object.spec.eventMetadata).map(([name, value], index) => (
+            <DrawerItem key={index} name={name}>
+              {value}
+            </DrawerItem>
           ))}
-        </DrawerItem>
-      </div>
-    );
-  }
-}
+        </>
+      )}
+    </div>
+  );
+});

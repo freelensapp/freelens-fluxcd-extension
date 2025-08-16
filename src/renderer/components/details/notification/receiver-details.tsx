@@ -1,91 +1,118 @@
 import { Common, Renderer } from "@freelensapp/extensions";
+import { observer } from "mobx-react";
 import React from "react";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver";
+import { getRefUrl } from "../../../k8s/fluxcd/utils";
+import { createEnumFromKeys, getMaybeDetailsUrl } from "../../../utils";
+import { ObjectRefTooltip } from "../../object-ref-tooltip";
+import styles from "./receiver-details.module.scss";
+import stylesInline from "./receiver-details.module.scss?inline";
 
-interface ReceiverDetailsState {
-  events: Renderer.K8sApi.KubeEvent[];
-  crds: Renderer.K8sApi.CustomResourceDefinition[];
-}
+import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 
 const {
-  Util: { lowerAndPluralize },
+  Util: { stopPropagation },
 } = Common;
 
 const {
-  Component: { DrawerItem, Badge },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, MaybeLink, Table, TableCell, TableHead, TableRow, WithTooltip },
+  K8sApi: { namespacesApi, secretsApi },
 } = Renderer;
 
-export class FluxCDReceiverDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<Receiver>,
-  ReceiverDetailsState
-> {
-  public readonly state: Readonly<ReceiverDetailsState> = {
-    events: [],
-    crds: [],
-  };
+const resourceSortable = {
+  kind: (resource: NamespacedObjectKindReference) => resource.kind,
+  name: (resource: NamespacedObjectKindReference) => resource.name,
+  namespace: (resource: NamespacedObjectKindReference) => resource.namespace,
+};
 
-  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
-    const { crds } = this.state;
+const resourceSortByNames = createEnumFromKeys(resourceSortable);
 
-    if (!kind || !crds) return;
+const resourceSortByDefault: { sortBy: keyof typeof resourceSortable; orderBy: Renderer.Component.TableOrderBy } = {
+  sortBy: resourceSortByNames.name,
+  orderBy: "asc",
+};
 
-    return crds.find((crd) => crd.spec.names.kind === kind);
-  }
+export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Receiver>> = observer((props) => {
+  const { object } = props;
+  const namespace = object.getNs();
 
-  sourceUrl(resource: any) {
-    const name = resource.name;
-    const ns = resource.namespace ?? this.props.object.metadata.namespace;
-    const kind = lowerAndPluralize(resource.kind);
-    const crd = this.getCrd(resource.kind);
-    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
-    const group = crd?.spec.group;
-
-    if (!apiVersion || !group) return "";
-
-    return `/apis/${group}/${apiVersion}/namespaces/${ns}/${kind}/${name}`;
-  }
-
-  async componentDidMount() {
-    const crdStore = Renderer.K8sApi.crdStore;
-    if (crdStore) {
-      crdStore.loadAll().then((l) => this.setState({ crds: l! }));
-    }
-  }
-
-  render() {
-    const { object } = this.props;
-
-    return (
-      <div>
-        <DrawerItem name="Status">{object.status?.conditions?.find((s: any) => s.type === "Ready").message}</DrawerItem>
-        <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-        <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
-        <DrawerItem name="Webhook Path">
-          <a href="#">{object.status?.webhookPath}</a>
+  return (
+    <>
+      <style>{stylesInline}</style>
+      <div className={styles.details}>
+        <DrawerItem name="Resumed">
+          <BadgeBoolean value={!object.spec.suspend} />
         </DrawerItem>
+        <DrawerItem name="Type">{object.spec.type}</DrawerItem>
         <DrawerItem name="Events">
-          {object.spec.events.map((e: string, index: number) => (
-            <li key={index}>
-              <Badge label={e} />
-            </li>
+          {object.spec.events?.map((event, index: number) => (
+            <DrawerItem key={index} name="">
+              {event}
+            </DrawerItem>
           ))}
         </DrawerItem>
-        <DrawerItem name="Resources">
-          {object.spec.resources.map((resource, index: number) => (
-            <li key={index}>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  Renderer.Navigation.showDetails(this.sourceUrl(resource), true);
-                }}
-              >
-                {resource.kind}:{resource.name}
-              </a>
-            </li>
-          ))}
+        <DrawerItem name="Credentials" hidden={!object.spec.secretRef}>
+          <MaybeLink
+            key="link"
+            to={getMaybeDetailsUrl(secretsApi.formatUrlForNotListing({ name: object.spec.secretRef?.name, namespace }))}
+            onClick={stopPropagation}
+          >
+            {object.spec.secretRef?.name}
+          </MaybeLink>
         </DrawerItem>
+
+        <div className={styles.resources}>
+          <DrawerTitle>Resources</DrawerTitle>
+          <Table
+            selectable
+            tableId="inventory"
+            scrollable={false}
+            sortable={resourceSortable}
+            sortByDefault={resourceSortByDefault}
+            sortSyncWithUrl={false}
+          >
+            <TableHead flat sticky={false}>
+              <TableCell className={styles.kind} sortBy={resourceSortByNames.kind}>
+                Kind
+              </TableCell>
+              <TableCell className={styles.name} sortBy={resourceSortByNames.name}>
+                Name
+              </TableCell>
+              <TableCell className={styles.namespace} sortBy={resourceSortByNames.namespace}>
+                Namespace
+              </TableCell>
+            </TableHead>
+            {object.spec.resources.map((resource) => {
+              if (!resource) return null;
+              return (
+                <TableRow key={`${resource.kind}-${resource.name}`} sortItem={resource} nowrap>
+                  <TableCell className={styles.kind}>
+                    <WithTooltip tooltip={<ObjectRefTooltip objectRef={resource} />}>{resource.kind}</WithTooltip>
+                  </TableCell>
+                  <TableCell className={styles.name}>
+                    <MaybeLink to={getMaybeDetailsUrl(getRefUrl(resource, object))} onClick={stopPropagation}>
+                      <WithTooltip>{resource.name}</WithTooltip>
+                    </MaybeLink>
+                  </TableCell>
+                  <TableCell className={styles.namespace}>
+                    <MaybeLink
+                      key="link"
+                      to={getMaybeDetailsUrl(
+                        namespacesApi.formatUrlForNotListing({
+                          name: resource.namespace ?? namespace,
+                        }),
+                      )}
+                      onClick={stopPropagation}
+                    >
+                      <WithTooltip>{resource.namespace ?? namespace}</WithTooltip>
+                    </MaybeLink>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </Table>
+        </div>
       </div>
-    );
-  }
-}
+    </>
+  );
+});
