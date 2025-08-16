@@ -47,22 +47,26 @@ export const FluxCDOverview = observer(() => {
 
   const getChart = useCallback(
     (title: string, resource: typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>) => {
-      const store = resource.getStore();
-      if (!store) return <></>;
-      const crd = getCrd(store);
-      if (!crd) return <></>;
+      try {
+        const store = resource.getStore();
+        if (!store) return <></>;
+        const crd = getCrd(store);
+        if (!crd) return <></>;
 
-      const namespaceStore = Renderer.K8sApi.namespaceStore;
+        const namespaceStore = Renderer.K8sApi.namespaceStore;
 
-      return (
-        <div className={cssNames(styles.chartColumn, "column")} hidden={!store.getAllByNs([]).length}>
-          <PieChart
-            title={title}
-            objects={store.items.filter((item) => namespaceStore?.contextNamespaces.includes(item.getNs()!))}
-            crd={crd}
-          />
-        </div>
-      );
+        return (
+          <div className={cssNames(styles.chartColumn, "column")} hidden={!store.getAllByNs([]).length}>
+            <PieChart
+              title={title}
+              objects={store.items.filter((item) => namespaceStore?.contextNamespaces.includes(item.getNs()!))}
+              crd={crd}
+            />
+          </div>
+        );
+      } catch (_) {
+        return null;
+      }
     },
     [getCrd],
   );
