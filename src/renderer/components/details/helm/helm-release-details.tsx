@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { DurationAbsoluteTimestamp } from "../../duration-absolute";
+import { LinkToNamespace } from "../../link-to-namespace";
+import { LinkToObject } from "../../link-to-object";
+import { LinkToServiceAccount } from "../../link-to-service-account";
 import { MaybeLink } from "../../maybe-link";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
@@ -28,7 +31,7 @@ const {
     TableRow,
     WithTooltip,
   },
-  K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
+  K8sApi: { configMapApi, secretsApi },
 } = Renderer;
 
 const historySortable = {
@@ -104,14 +107,8 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
               {HelmRelease.getReleaseNameShortened(object)}
             </MaybeLink>
           </DrawerItem>
-          <DrawerItem name="Helm Chart" hidden={!object.spec.chart}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(HelmRelease.getHelmChartUrl(object))}
-              onClick={stopPropagation}
-            >
-              {HelmRelease.getHelmChartName(object)}
-            </MaybeLink>
+          <DrawerItem name="Helm Chart" hidden={!object.spec.chartRef}>
+            <LinkToObject objectRef={object.spec.chartRef} object={object} />
           </DrawerItem>
           <DrawerItem name="Chart Name">
             {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}
@@ -137,33 +134,13 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             {object.spec.timeout}
           </DrawerItem>
           <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(
-                serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.serviceAccountName}
-            </MaybeLink>
+            <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="Storage Namespace" hidden={!object.spec.storageNamespace}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.storageNamespace }))}
-              onClick={stopPropagation}
-            >
-              {object.spec.storageNamespace}
-            </MaybeLink>
+            <LinkToNamespace namespace={object.spec.storageNamespace} />
           </DrawerItem>
           <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.targetNamespace }))}
-              onClick={stopPropagation}
-            >
-              {object.spec.targetNamespace}
-            </MaybeLink>
+            <LinkToNamespace namespace={object.spec.targetNamespace} />
           </DrawerItem>
           <DrawerItem name="Drift Detection" hidden={!object.spec.driftDetection?.mode}>
             {object.spec.driftDetection?.mode}

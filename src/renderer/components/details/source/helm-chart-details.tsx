@@ -1,17 +1,12 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { HelmChart } from "../../../k8s/fluxcd/source/helmchart";
-import { getRefUrl } from "../../../k8s/fluxcd/utils";
-import { getMaybeDetailsUrl } from "../../../utils";
+import { LinkToObject } from "../../link-to-object";
 import { StatusArtifact } from "../../status-artifact";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { BadgeBoolean, DrawerItem, MaybeLink },
+  Component: { BadgeBoolean, DrawerItem },
 } = Renderer;
 
 export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmChart>> = observer((props) => {
@@ -27,9 +22,7 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
       <DrawerItem name="Version">{object.spec.version ?? "*"}</DrawerItem>
       <DrawerItem name="Reconcile Strategy">{object.spec.reconcileStrategy ?? "ChartVersion"}</DrawerItem>
       <DrawerItem name="Source">
-        <MaybeLink to={getMaybeDetailsUrl(getRefUrl(object.spec.sourceRef, object))} onClick={stopPropagation}>
-          {object.spec.sourceRef?.kind}: {object.spec.sourceRef?.name}
-        </MaybeLink>
+        <LinkToObject objectRef={object.spec.sourceRef} object={object} />
       </DrawerItem>
       <DrawerItem name="Values Files" hidden={!object.spec.valuesFiles?.length}>
         {object.spec.valuesFiles?.length &&

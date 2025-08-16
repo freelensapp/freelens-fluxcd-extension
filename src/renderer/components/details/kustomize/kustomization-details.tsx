@@ -4,14 +4,14 @@ import { Base64 } from "js-base64";
 import yaml from "js-yaml";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
-import {
-  Kustomization,
-  type KustomizationApi,
-  type KustomizationStore,
-} from "../../../k8s/fluxcd/kustomize/kustomization";
+import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization";
 import { NamespacedObjectKindReference, type ResourceRef } from "../../../k8s/fluxcd/types";
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
+import { LinkToNamespace } from "../../link-to-namespace";
+import { LinkToObject } from "../../link-to-object";
+import { LinkToSecret } from "../../link-to-secret";
+import { LinkToServiceAccount } from "../../link-to-service-account";
 import { MaybeLink } from "../../maybe-link";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
@@ -32,7 +32,7 @@ const {
     TableRow,
     WithTooltip,
   },
-  K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
+  K8sApi: { configMapApi, secretsApi },
 } = Renderer;
 
 const {
@@ -71,7 +71,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
   (props) => {
     const { object } = props;
     const namespace = object.getNs();
-    const api = Kustomization.getApi() as KustomizationApi;
     const store = Kustomization.getStore() as KustomizationStore;
 
     const [substituteFromYaml, setSubstituteFromYaml] = useState<Record<string, string>>({});
@@ -133,13 +132,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             </MaybeLink>
           </DrawerItem>
           <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.targetNamespace }))}
-              onClick={stopPropagation}
-            >
-              {object.spec.targetNamespace}
-            </MaybeLink>
+            <LinkToNamespace namespace={object.spec.targetNamespace} />
           </DrawerItem>
           <DrawerItem name="Prune">
             <BadgeBoolean value={object.spec.prune ?? false} />
@@ -151,26 +144,10 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             <BadgeBoolean value={object.spec.force ?? false} />
           </DrawerItem>
           <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(
-                serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.serviceAccountName}
-            </MaybeLink>
+            <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="Kube Config" hidden={!object.spec.kubeConfig?.secretRef.name}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(
-                secretsApi.formatUrlForNotListing({ name: object.spec.kubeConfig?.secretRef.name, namespace }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.kubeConfig?.secretRef.name}
-            </MaybeLink>
+            <LinkToSecret name={object.spec.kubeConfig?.secretRef.name} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="Last Applied Revision">{object.status?.lastAppliedRevision}</DrawerItem>
 
@@ -186,31 +163,10 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                     </div>
 
                     <DrawerItem name="Name">
-                      <MaybeLink
-                        key="link"
-                        to={getMaybeDetailsUrl(
-                          api.formatUrlForNotListing({
-                            name: dependency.name,
-                            namespace: dependency.namespace ?? namespace,
-                          }),
-                        )}
-                        onClick={stopPropagation}
-                      >
-                        {dependency.name}
-                      </MaybeLink>
+                      <LinkToObject objectRef={dependency} object={object} />
                     </DrawerItem>
                     <DrawerItem name="Namespace">
-                      <MaybeLink
-                        key="link"
-                        to={getMaybeDetailsUrl(
-                          namespacesApi.formatUrlForNotListing({
-                            name: dependency.namespace ?? namespace,
-                          }),
-                        )}
-                        onClick={stopPropagation}
-                      >
-                        {dependency.namespace ?? namespace}
-                      </MaybeLink>
+                      <LinkToNamespace namespace={dependency.namespace ?? namespace} />
                     </DrawerItem>
                     <DrawerItem name="Revision" hidden={!reference?.status?.lastAppliedRevision}>
                       {reference?.status?.lastAppliedRevision}
@@ -503,15 +459,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
               <DrawerTitle>Decryption</DrawerTitle>
               <DrawerItem name="Provider">{object.spec.decryption.provider}</DrawerItem>
               <DrawerItem name="Secret Name">
-                <MaybeLink
-                  key="link"
-                  to={getMaybeDetailsUrl(
-                    secretsApi.formatUrlForNotListing({ name: object.spec.decryption.secretRef.name, namespace }),
-                  )}
-                  onClick={stopPropagation}
-                >
-                  {object.spec.decryption.secretRef.name}
-                </MaybeLink>
+                <LinkToSecret name={object.spec.decryption.secretRef.name} namespace={namespace} />
               </DrawerItem>
             </div>
           )}
@@ -555,17 +503,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                       </MaybeLink>
                     </TableCell>
                     <TableCell className={styles.namespace}>
-                      <MaybeLink
-                        key="link"
-                        to={getMaybeDetailsUrl(
-                          namespacesApi.formatUrlForNotListing({
-                            name: healthCheck.namespace ?? namespace,
-                          }),
-                        )}
-                        onClick={stopPropagation}
-                      >
-                        <WithTooltip>{healthCheck.namespace ?? namespace}</WithTooltip>
-                      </MaybeLink>
+                      <LinkToNamespace namespace={healthCheck.namespace ?? namespace} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -609,17 +547,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                         </MaybeLink>
                       </TableCell>
                       <TableCell className={styles.namespace}>
-                        <MaybeLink
-                          key="link"
-                          to={getMaybeDetailsUrl(
-                            namespacesApi.formatUrlForNotListing({
-                              name: objectRef.namespace ?? namespace,
-                            }),
-                          )}
-                          onClick={stopPropagation}
-                        >
-                          <WithTooltip>{objectRef.namespace ?? namespace}</WithTooltip>
-                        </MaybeLink>
+                        <LinkToNamespace namespace={objectRef.namespace ?? namespace} />
                       </TableCell>
                     </TableRow>
                   );

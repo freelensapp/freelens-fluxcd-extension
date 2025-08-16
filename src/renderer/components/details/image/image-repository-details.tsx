@@ -1,18 +1,14 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository";
-import { getMaybeDetailsUrl } from "../../../utils";
 import { DurationAbsoluteTimestamp } from "../../duration-absolute";
+import { LinkToSecret } from "../../link-to-secret";
+import { LinkToServiceAccount } from "../../link-to-service-account";
 import { SpecAccessFrom } from "../../spec-access-from";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, MaybeLink },
-  K8sApi: { secretsApi, serviceAccountsApi },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle },
 } = Renderer;
 
 export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImageRepository>> = observer(
@@ -37,37 +33,13 @@ export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetai
             ))}
           </DrawerItem>
           <DrawerItem name="Image Registry Credentials" hidden={!object.spec.secretRef}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(
-                secretsApi.formatUrlForNotListing({ name: object.spec.secretRef?.name, namespace }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.secretRef?.name}
-            </MaybeLink>
+            <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(
-                serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.serviceAccountName}
-            </MaybeLink>
+            <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="TLS Certificate" hidden={!object.spec.certSecretRef}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(
-                secretsApi.formatUrlForNotListing({ name: object.spec.certSecretRef?.name, namespace }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.secretRef?.name}
-            </MaybeLink>
+            <LinkToSecret name={object.spec.certSecretRef?.name} namespace={namespace} />
           </DrawerItem>
 
           <SpecAccessFrom accessFrom={object.spec.accessFrom} />

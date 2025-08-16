@@ -1,17 +1,12 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Bucket } from "../../../k8s/fluxcd/source/bucket";
-import { getMaybeDetailsUrl } from "../../../utils";
+import { LinkToSecret } from "../../link-to-secret";
 import { StatusArtifact } from "../../status-artifact";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { BadgeBoolean, DrawerItem, MaybeLink },
-  K8sApi: { secretsApi },
+  Component: { BadgeBoolean, DrawerItem },
 } = Renderer;
 
 export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Bucket>> = observer((props) => {
@@ -34,13 +29,7 @@ export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<B
         <BadgeBoolean value={object.spec.insecure} />
       </DrawerItem>
       <DrawerItem name="Authentication Credentials" hidden={!object.spec.secretRef}>
-        <MaybeLink
-          key="link"
-          to={getMaybeDetailsUrl(secretsApi.formatUrlForNotListing({ name: object.spec.secretRef?.name, namespace }))}
-          onClick={stopPropagation}
-        >
-          {object.spec.secretRef?.name}
-        </MaybeLink>
+        <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
       </DrawerItem>
 
       <StatusArtifact artifact={object.status?.artifact} />

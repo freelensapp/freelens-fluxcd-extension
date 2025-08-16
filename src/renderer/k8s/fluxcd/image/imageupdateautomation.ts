@@ -80,11 +80,6 @@ export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObje
     title: "Image Update Automations",
   };
 
-  static getSourceUrl(object: ImageUpdateAutomation): string | undefined {
-    if (!object.spec.sourceRef) return;
-    return Renderer.K8sApi.apiManager.lookupApiLink(object.spec.sourceRef, object);
-  }
-
   static getCommitAuthor(object: ImageUpdateAutomation): string | undefined {
     const { email, name } = object.spec.git?.commit?.author ?? {};
     if (!email) return;

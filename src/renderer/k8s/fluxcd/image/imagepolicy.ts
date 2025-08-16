@@ -51,17 +51,6 @@ export class ImagePolicy extends Renderer.K8sApi.LensExtensionKubeObject<
     shortNames: [],
     title: "Image Policies",
   };
-
-  static getImageRepositoryUrl(object: ImagePolicy): string | undefined {
-    if (!object.spec.imageRepositoryRef) return;
-    const ref = {
-      name: object.spec.imageRepositoryRef.name,
-      namespace: object.spec.imageRepositoryRef.namespace ?? object.getNs()!,
-      kind: "ImageRepository",
-      apiVersion: "image.toolkit.fluxcd.io/v1beta1",
-    };
-    return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
-  }
 }
 
 export class ImagePolicyApi extends Renderer.K8sApi.KubeApi<ImagePolicy> {}

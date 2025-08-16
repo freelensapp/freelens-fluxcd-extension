@@ -1,16 +1,11 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Alert } from "../../../k8s/fluxcd/notification/alert";
-import { getRefUrl } from "../../../k8s/fluxcd/utils";
-import { getMaybeDetailsUrl } from "../../../utils";
+import { LinkToObject } from "../../link-to-object";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { Badge, BadgeBoolean, DrawerItem, DrawerTitle, MaybeLink },
+  Component: { Badge, BadgeBoolean, DrawerItem, DrawerTitle },
 } = Renderer;
 
 export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Alert>> = observer((props) => {
@@ -23,25 +18,21 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
       </DrawerItem>
       <DrawerItem name="Event Severity">{object.spec.eventSeverity}</DrawerItem>
       <DrawerItem name="Event Sources">
-        {object.spec.eventSources?.map((eventSource, index: number) => (
-          <DrawerItem key={index} name="">
-            {eventSource.name === "*" ? (
-              <Badge label={`${eventSource.kind}:${eventSource.name}`} />
-            ) : (
-              <MaybeLink to={getMaybeDetailsUrl(getRefUrl(eventSource, object))} onClick={stopPropagation}>
-                <Badge label={`${eventSource.kind}:${eventSource.name}`} />
-              </MaybeLink>
-            )}
-          </DrawerItem>
-        ))}
+        {object.spec.eventSources?.map((eventSource, index: number) => {
+          const badge = <Badge label={`${eventSource.kind}:${eventSource.name}`} />;
+          return (
+            <DrawerItem key={index} name="">
+              {eventSource.name === "*" ? (
+                badge
+              ) : (
+                <LinkToObject objectRef={eventSource} object={object} content={badge} />
+              )}
+            </DrawerItem>
+          );
+        })}
       </DrawerItem>
       <DrawerItem name="Provider">
-        <MaybeLink
-          to={getMaybeDetailsUrl(getRefUrl({ kind: "Provider", name: object.spec.providerRef?.name ?? "" }, object))}
-          onClick={stopPropagation}
-        >
-          {object.spec.providerRef?.name}
-        </MaybeLink>
+        <LinkToObject objectRef={object.spec.providerRef} object={object} />
       </DrawerItem>
       {object.spec.eventMetadata && (
         <>

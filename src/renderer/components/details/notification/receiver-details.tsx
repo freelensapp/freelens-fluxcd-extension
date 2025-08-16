@@ -1,9 +1,11 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver";
-import { getRefUrl } from "../../../k8s/fluxcd/utils";
-import { createEnumFromKeys, getMaybeDetailsUrl } from "../../../utils";
+import { createEnumFromKeys } from "../../../utils";
+import { LinkToNamespace } from "../../link-to-namespace";
+import { LinkToObject } from "../../link-to-object";
+import { LinkToSecret } from "../../link-to-secret";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import styles from "./receiver-details.module.scss";
 import stylesInline from "./receiver-details.module.scss?inline";
@@ -11,12 +13,7 @@ import stylesInline from "./receiver-details.module.scss?inline";
 import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, MaybeLink, Table, TableCell, TableHead, TableRow, WithTooltip },
-  K8sApi: { namespacesApi, secretsApi },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Table, TableCell, TableHead, TableRow, WithTooltip },
 } = Renderer;
 
 const resourceSortable = {
@@ -52,13 +49,7 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
           ))}
         </DrawerItem>
         <DrawerItem name="Credentials" hidden={!object.spec.secretRef}>
-          <MaybeLink
-            key="link"
-            to={getMaybeDetailsUrl(secretsApi.formatUrlForNotListing({ name: object.spec.secretRef?.name, namespace }))}
-            onClick={stopPropagation}
-          >
-            {object.spec.secretRef?.name}
-          </MaybeLink>
+          <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
         </DrawerItem>
 
         <div className={styles.resources}>
@@ -90,22 +81,10 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
                     <WithTooltip tooltip={<ObjectRefTooltip objectRef={resource} />}>{resource.kind}</WithTooltip>
                   </TableCell>
                   <TableCell className={styles.name}>
-                    <MaybeLink to={getMaybeDetailsUrl(getRefUrl(resource, object))} onClick={stopPropagation}>
-                      <WithTooltip>{resource.name}</WithTooltip>
-                    </MaybeLink>
+                    <LinkToObject objectRef={resource} object={object} />
                   </TableCell>
                   <TableCell className={styles.namespace}>
-                    <MaybeLink
-                      key="link"
-                      to={getMaybeDetailsUrl(
-                        namespacesApi.formatUrlForNotListing({
-                          name: resource.namespace ?? namespace,
-                        }),
-                      )}
-                      onClick={stopPropagation}
-                    >
-                      <WithTooltip>{resource.namespace ?? namespace}</WithTooltip>
-                    </MaybeLink>
+                    <LinkToNamespace namespace={resource.namespace ?? namespace} />
                   </TableCell>
                 </TableRow>
               );

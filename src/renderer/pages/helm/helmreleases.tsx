@@ -66,13 +66,13 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
             return [
               <WithTooltip>{object.getName()}</WithTooltip>,
               <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-              <WithTooltip tooltip={KubeObject.getSourceRefText(object)}>
-                <MaybeLink to={getMaybeDetailsUrl(KubeObject.getSourceRefUrl(object))} onClick={stopPropagation}>
-                  {KubeObject.getSourceRefName(object)}
+              <WithTooltip tooltip={HelmRelease.getSourceRefText(object)}>
+                <MaybeLink to={getMaybeDetailsUrl(HelmRelease.getSourceRefUrl(object))} onClick={stopPropagation}>
+                  {HelmRelease.getSourceRefName(object)}
                 </MaybeLink>
               </WithTooltip>,
-              <WithTooltip>{KubeObject.getChartVersion(object) ?? "N/A"}</WithTooltip>,
-              <WithTooltip>{KubeObject.getAppVersion(object) ?? "N/A"}</WithTooltip>,
+              <WithTooltip>{HelmRelease.getChartVersion(object) ?? "N/A"}</WithTooltip>,
+              <WithTooltip>{HelmRelease.getAppVersion(object) ?? "N/A"}</WithTooltip>,
               <BadgeBoolean value={!object.spec.suspend} />,
               <Badge
                 key="name"

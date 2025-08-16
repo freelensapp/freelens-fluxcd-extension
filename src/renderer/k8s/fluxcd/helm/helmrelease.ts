@@ -249,11 +249,6 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
       HelmRelease.getSourceRefName(object) ?? "-",
     ].join("");
   }
-
-  static getHelmChartUrl(object: HelmRelease): string | undefined {
-    if (!object.spec.chart?.spec.sourceRef) return;
-    return Renderer.K8sApi.apiManager.lookupApiLink(object.spec.chart?.spec.sourceRef, object);
-  }
 }
 
 export class HelmReleaseApi extends Renderer.K8sApi.KubeApi<HelmRelease> {}

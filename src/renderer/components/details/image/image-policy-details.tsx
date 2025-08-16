@@ -1,15 +1,11 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { ImagePolicy } from "../../../k8s/fluxcd/image/imagepolicy";
-import { getMaybeDetailsUrl } from "../../../utils";
+import { LinkToObject } from "../../link-to-object";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { DrawerItem, MaybeLink },
+  Component: { DrawerItem },
 } = Renderer;
 
 export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImagePolicy>> = observer(
@@ -20,13 +16,7 @@ export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
       <>
         <div>
           <DrawerItem name="Image Repository">
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(ImagePolicy.getImageRepositoryUrl(object))}
-              onClick={stopPropagation}
-            >
-              {object.spec.imageRepositoryRef.name}
-            </MaybeLink>
+            <LinkToObject objectRef={object.spec.imageRepositoryRef} object={object} />
           </DrawerItem>
           <DrawerItem name="SemVer Policy" hidden={!object.spec.policy.semver}>
             {object.spec.policy.semver?.range}

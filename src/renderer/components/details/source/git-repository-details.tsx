@@ -1,27 +1,23 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { GitRepository, type GitRepositoryApi } from "../../../k8s/fluxcd/source/gitrepository";
-import { getHeight, getMaybeDetailsUrl } from "../../../utils";
+import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository";
+import { getHeight } from "../../../utils";
+import { LinkToObject } from "../../link-to-object";
+import { LinkToSecret } from "../../link-to-secret";
 import { SpecAccessFrom } from "../../spec-access-from";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./git-repository-details.module.scss";
 import stylesInline from "./git-repository-details.module.scss?inline";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, MaybeLink, MonacoEditor },
-  K8sApi: { secretsApi },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, MonacoEditor },
 } = Renderer;
 
 export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<GitRepository>> = observer(
   (props) => {
     const { object } = props;
     const namespace = object.getNs();
-    const api = GitRepository.getApi() as GitRepositoryApi;
 
     const gitRefFull = GitRepository.getGitRefFull(object.spec.ref);
     const gitRevision = GitRepository.getGitRevision(object);
@@ -42,28 +38,12 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
             {gitRevision}
           </DrawerItem>
           <DrawerItem name="Git Credentials" hidden={!object.spec.secretRef}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(
-                secretsApi.formatUrlForNotListing({ name: object.spec.secretRef?.name, namespace }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.secretRef?.name}
-            </MaybeLink>
+            <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="Verify OpenPGP signature" hidden={!object.spec.verify}>
             {object.spec.verify?.mode ?? "unknown"}
             {": "}
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(
-                secretsApi.formatUrlForNotListing({ name: object.spec.verify?.secretRef?.name, namespace }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.verify?.secretRef?.name}
-            </MaybeLink>
+            <LinkToSecret name={object.spec.verify?.secretRef?.name} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="Source Ignore" hidden={!object.spec.ignore}>
             <MonacoEditor
@@ -101,13 +81,7 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
                       <Icon small material="list" />
                     </div>
                     <DrawerItem name="Git Repository">
-                      <MaybeLink
-                        key="link"
-                        to={getMaybeDetailsUrl(api.formatUrlForNotListing({ name, namespace }))}
-                        onClick={stopPropagation}
-                      >
-                        {name}
-                      </MaybeLink>
+                      <LinkToObject objectRef={include.repository} object={object} />
                     </DrawerItem>
                     <DrawerItem name="From Path">{include.fromPath}</DrawerItem>
                     <DrawerItem name="To Path">{include.toPath}</DrawerItem>

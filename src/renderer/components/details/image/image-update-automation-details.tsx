@@ -1,19 +1,16 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { ImageUpdateAutomation } from "../../../k8s/fluxcd/image/imageupdateautomation";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository";
-import { getHeight, getMaybeDetailsUrl } from "../../../utils";
+import { getHeight } from "../../../utils";
+import { LinkToObject } from "../../link-to-object";
+import { LinkToSecret } from "../../link-to-secret";
 import styles from "./image-update-automation-details.module.scss";
 import stylesInline from "./image-update-automation-details.module.scss?inline";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, MaybeLink, MonacoEditor },
-  K8sApi: { secretsApi },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, MonacoEditor },
 } = Renderer;
 
 export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation>> =
@@ -32,13 +29,7 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
           <DrawerItem name="Git Repository">
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(ImageUpdateAutomation.getSourceUrl(object))}
-              onClick={stopPropagation}
-            >
-              {object.spec.sourceRef?.name}
-            </MaybeLink>
+            <LinkToObject objectRef={object.spec.sourceRef} object={object} />
           </DrawerItem>
           <DrawerItem name="Git Ref" hidden={!gitRefFull}>
             {gitRefFull}
@@ -47,18 +38,7 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
             {ImageUpdateAutomation.getCommitAuthor(object)}
           </DrawerItem>
           <DrawerItem name="Signing Key" hidden={!object.spec.git?.commit?.signingKey}>
-            <MaybeLink
-              key="link"
-              to={getMaybeDetailsUrl(
-                secretsApi.formatUrlForNotListing({
-                  name: object.spec.git?.commit?.signingKey?.secretRef?.name,
-                  namespace,
-                }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.git?.commit?.signingKey?.secretRef?.name}
-            </MaybeLink>
+            <LinkToSecret name={object.spec.git?.commit?.signingKey?.secretRef?.name} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="Message Template" hidden={!object.spec.git?.commit?.messageTemplate}>
             <MonacoEditor

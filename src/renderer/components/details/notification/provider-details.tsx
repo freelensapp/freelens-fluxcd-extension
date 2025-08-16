@@ -1,16 +1,11 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Provider } from "../../../k8s/fluxcd/notification/provider";
-import { getMaybeDetailsUrl } from "../../../utils";
+import { LinkToSecret } from "../../link-to-secret";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { BadgeBoolean, DrawerItem, MaybeLink },
-  K8sApi: { secretsApi },
+  Component: { BadgeBoolean, DrawerItem },
 } = Renderer;
 
 export const ProviderDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Provider>> = observer((props) => {
@@ -38,24 +33,10 @@ export const ProviderDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
         {object.spec.proxy}
       </DrawerItem>
       <DrawerItem name="Credentials" hidden={!object.spec.secretRef}>
-        <MaybeLink
-          key="link"
-          to={getMaybeDetailsUrl(secretsApi.formatUrlForNotListing({ name: object.spec.secretRef?.name, namespace }))}
-          onClick={stopPropagation}
-        >
-          {object.spec.secretRef?.name}
-        </MaybeLink>
+        <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
       </DrawerItem>
       <DrawerItem name="TLS Certificate" hidden={!object.spec.certSecretRef}>
-        <MaybeLink
-          key="link"
-          to={getMaybeDetailsUrl(
-            secretsApi.formatUrlForNotListing({ name: object.spec.certSecretRef?.name, namespace }),
-          )}
-          onClick={stopPropagation}
-        >
-          {object.spec.secretRef?.name}
-        </MaybeLink>
+        <LinkToSecret name={object.spec.certSecretRef?.name} namespace={namespace} />
       </DrawerItem>
     </div>
   );
