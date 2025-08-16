@@ -5,5 +5,7 @@ declare const classNames: {
   readonly chartTitle: "chartTitle";
   readonly chartItem: "chartItem";
   readonly fluxContent: "fluxContent";
+  readonly infoPage: "infoPage";
+  readonly infoMessage: "infoMessage";
 };
 export = classNames;

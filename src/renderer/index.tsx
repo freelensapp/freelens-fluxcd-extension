@@ -42,7 +42,7 @@ import { KustomizationsPage } from "./pages/kustomize/kustomizations";
 import { AlertsPage } from "./pages/notifications/alerts";
 import { ProvidersPage } from "./pages/notifications/providers";
 import { ReceiversPage } from "./pages/notifications/receivers";
-import { FluxCDOverview } from "./pages/overview";
+import { FluxCDOverviewPage } from "./pages/overview";
 import { BucketsPage } from "./pages/source/buckets";
 import { GitRepositoriesPage } from "./pages/source/gitrepositories";
 import { HelmChartsPage } from "./pages/source/helmcharts";
@@ -62,7 +62,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "dashboard",
       components: {
-        Page: () => <FluxCDOverview />,
+        Page: () => <FluxCDOverviewPage />,
       },
     },
     {

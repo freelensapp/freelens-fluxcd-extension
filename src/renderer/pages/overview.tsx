@@ -28,12 +28,12 @@ const {
 
 function filterItems(items: Renderer.K8sApi.KubeEvent[]): Renderer.K8sApi.KubeEvent[] {
   const events = items.filter((event) => {
-    return event.involvedObject.apiVersion.includes(".toolkit.fluxcd.io/");
+    return event?.involvedObject?.apiVersion?.includes(".toolkit.fluxcd.io/");
   });
   return events;
 }
 
-export const FluxCDOverview = observer(() => {
+export const FluxCDOverviewPage = observer(() => {
   const [crds, setCrds] = useState<Renderer.K8sApi.CustomResourceDefinition[]>([]);
   const watches = useRef<(() => void)[]>([]);
   const abortController = useRef(new AbortController());
@@ -99,10 +99,14 @@ export const FluxCDOverview = observer(() => {
         Provider,
         Receiver,
       ]) {
-        const store = object.getStore();
-        if (!store) continue;
-        await store.loadAll({ namespaces });
-        watches.current.push(store.subscribe());
+        try {
+          const store = object.getStore();
+          if (!store) continue;
+          await store.loadAll({ namespaces });
+          watches.current.push(store.subscribe());
+        } catch (_) {
+          continue;
+        }
       }
     })();
 
@@ -115,7 +119,11 @@ export const FluxCDOverview = observer(() => {
   }, []);
 
   if (crds.length === 0) {
-    return <div>No Flux components found in the cluster</div>;
+    return (
+      <div className={styles.infoPage}>
+        <p className={styles.infoMessage}>Loading Flux components...</p>
+      </div>
+    );
   }
 
   return (
