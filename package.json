@@ -59,7 +59,7 @@
     "clean:all": "corepack pnpm \"/^clean:(dts|node_modules|out|tgz)$/\""
   },
   "devDependencies": {
-    "@babel/plugin-proposal-decorators": "^7.27.1",
+    "@babel/plugin-proposal-decorators": "^7.28.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@freelensapp/extensions": "^1.5.3",
     "@freelensapp/kube-object": "^1.5.3",

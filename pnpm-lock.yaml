@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@babel/plugin-proposal-decorators':
-        specifier: ^7.27.1
-        version: 7.27.1(@babel/core@7.27.7)
+        specifier: ^7.28.0
+        version: 7.28.0(@babel/core@7.27.7)
       '@electron-toolkit/tsconfig':
         specifier: ^1.0.1
         version: 1.0.1(@types/node@22.16.4)
@@ -170,8 +170,8 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
 
-  '@babel/plugin-proposal-decorators@7.27.1':
-    resolution: {integrity: sha512-DTxe4LBPrtFdsWzgpmbBKevg3e9PBy+dXRt19kSbucbZvL2uqtdqwwpluL1jfxYE0wIDTFp1nTy/q6gNLsxXrg==}
+  '@babel/plugin-proposal-decorators@7.28.0':
+    resolution: {integrity: sha512-zOiZqvANjWDUaUS9xMxbMcK/Zccztbe/6ikvUXaG9nsPH3w6qh5UaPGAnirI/WhIbZ8m3OHU0ReyPrknG+ZKeg==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -3135,7 +3135,7 @@ snapshots:
     dependencies:
       '@babel/types': 7.27.7
 
-  '@babel/plugin-proposal-decorators@7.27.1(@babel/core@7.27.7)':
+  '@babel/plugin-proposal-decorators@7.28.0(@babel/core@7.27.7)':
     dependencies:
       '@babel/core': 7.27.7
       '@babel/helper-create-class-features-plugin': 7.27.1(@babel/core@7.27.7)
