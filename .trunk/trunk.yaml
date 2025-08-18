@@ -7,63 +7,69 @@ cli:
 plugins:
   sources:
     - id: trunk
-      ref: v1.7.0
+      ref: v1.7.1
       uri: https://github.com/trunk-io/plugins
 # Many linters and tools depend on runtimes - configure them here. (https://docs.trunk.io/runtimes)
 runtimes:
   enabled:
     - go@1.21.0
-    - node@22.15.1!
+    - node@22.16.0! # datasource=node-version depName=node
     - python@3.10.8
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
-tools:
-  definitions:
-    - name: yamlfmt
-      runtime: go
-      package: github.com/google/yamlfmt/cmd/yamlfmt
-      shims: [yamlfmt]
-      known_good_version: 0.16.0
 lint:
   definitions:
-    - name: yamlfmt
-      files: [yaml]
-      description: Formats yaml files
+    # See https://github.com/trunk-io/plugins/pull/1063
+    - name: biome
+      files:
+        - astro
+        - css
+        - graphql
+        - html
+        - javascript
+        - json
+        - typescript
       commands:
-        - name: format
-          output: rewrite
-          run: yamlfmt ${target}
-          run_from: ${parent}
-          success_codes: [0, 1]
-          cache_results: true
-          formatter: true
-          in_place: true
+        - output: regex
+          success_codes:
+            - 0
+            - 1
           batch: true
-      tools: [yamlfmt]
-      direct_configs:
-        - .yamlfmt
-        - .yamlfmt.yaml
-        - .yamlfmt.yml
-        - yamlfmt.yaml
-        - yamlfmt.yml
-      suggest_if: config_present
-      version_command:
-        parse_regex: ${semver}
-        run: yamlfmt -version
-      known_good_version: 0.16.0
+          cache_results: false
+          name: lint
+          parse_regex: ^::(?P<severity>.*) title=(?P<code>[^,]+),file=(?P<path>[^,]+),line=(?P<line>[^,]+),endLine=[^,]+,col=(?P<col>[^,]+),endColumn=[^:]+::(?P<message>.*)
+          read_output_from: stdout
+          run: biome check --config-path=${workspace}/biome.jsonc --reporter=github ${target}
+          run_from: ${root_or_parent_with(biome.jsonc)}
+        - output: regex
+          success_codes:
+            - 0
+          batch: true
+          cache_results: false
+          formatter: true
+          name: fmt
+          parse_regex: ^::(?P<severity>.*) title=(?P<code>[^,]+),file=(?P<path>[^,]+),line=(?P<line>[^,]+),endLine=[^,]+,col=(?P<col>[^,]+),endColumn=[^:]+::(?P<message>.*)
+          read_output_from: stdout
+          run: biome format --config-path=${workspace}/biome.jsonc --reporter=github --write ${target}
+          run_from: ${root_or_parent_with(biome.jsonc)}
+      run_timeout: 1m
+
+    # Prettier checks only *.scss files
+    - name: prettier
+      files:
+        - sass
   enabled:
     - actionlint@1.7.7
-    - biome@1.9.4
+    - biome@2.1.1! # datasource=npm depName=@biomejs/biome
     - git-diff-check
     - markdownlint@0.45.0
-    - oxipng@9.1.5
-    - svgo@3.3.2
-    - yamlfmt@0.17.0
+    - prettier@3.6.2! # datasource=npm depName=prettier
+    - svgo@4.0.0
+    - yamlfmt@0.17.2
     - yamllint@1.37.1
   disabled:
     - checkov
     - eslint
     - osv-scanner
-    - prettier
     - renovate
     - trufflehog
 actions:

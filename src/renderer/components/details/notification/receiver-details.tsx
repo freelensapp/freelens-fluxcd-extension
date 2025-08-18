@@ -1,95 +1,97 @@
 import { Renderer } from "@freelensapp/extensions";
+import { observer } from "mobx-react";
 import React from "react";
-import { crdStore } from "../../../k8s/core/crd";
-import { Receiver } from "../../../k8s/fluxcd/notifications/receiver";
-import { getStatusClass, getStatusText, lowerAndPluralize } from "../../../utils";
+import { Receiver } from "../../../k8s/fluxcd/notification/receiver";
+import { createEnumFromKeys } from "../../../utils";
+import { LinkToNamespace } from "../../link-to-namespace";
+import { LinkToObject } from "../../link-to-object";
+import { LinkToSecret } from "../../link-to-secret";
+import { ObjectRefTooltip } from "../../object-ref-tooltip";
+import styles from "./receiver-details.module.scss";
+import stylesInline from "./receiver-details.module.scss?inline";
 
-interface ReceiverDetailsState {
-  events: Renderer.K8sApi.KubeEvent[];
-  crds: Renderer.K8sApi.CustomResourceDefinition[];
-}
+import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 
 const {
-  Component: { DrawerItem, Badge },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Table, TableCell, TableHead, TableRow, WithTooltip },
 } = Renderer;
 
-export class FluxCDReceiverDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<Receiver>,
-  ReceiverDetailsState
-> {
-  public readonly state: Readonly<ReceiverDetailsState> = {
-    events: [],
-    crds: [],
-  };
+const resourceSortable = {
+  kind: (resource: NamespacedObjectKindReference) => resource.kind,
+  name: (resource: NamespacedObjectKindReference) => resource.name,
+  namespace: (resource: NamespacedObjectKindReference) => resource.namespace,
+};
 
-  getCrd(kind: string): Renderer.K8sApi.CustomResourceDefinition | undefined {
-    const { crds } = this.state;
+const resourceSortByNames = createEnumFromKeys(resourceSortable);
 
-    if (!kind) {
-      return;
-    }
+const resourceSortByDefault: { sortBy: keyof typeof resourceSortable; orderBy: Renderer.Component.TableOrderBy } = {
+  sortBy: resourceSortByNames.name,
+  orderBy: "asc",
+};
 
-    if (!crds) {
-      return;
-    }
+export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Receiver>> = observer((props) => {
+  const { object } = props;
+  const namespace = object.getNs();
 
-    return crds.find((crd) => crd.spec.names.kind === kind);
-  }
-
-  sourceUrl(resource: any) {
-    const name = resource.name;
-    const ns = resource.namespace ?? this.props.object.metadata.namespace;
-    const kind = lowerAndPluralize(resource.kind);
-    const crd = this.getCrd(resource.kind);
-    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
-    const group = crd?.spec.group;
-
-    if (!apiVersion || !group) return "";
-
-    return `/apis/${group}/${apiVersion}/namespaces/${ns}/${kind}/${name}`;
-  }
-
-  async componentDidMount() {
-    crdStore.loadAll().then((l: any) => this.setState({ crds: l as Renderer.K8sApi.CustomResourceDefinition[] }));
-  }
-
-  render() {
-    const { object } = this.props;
-
-    return (
-      <div>
-        <DrawerItem name="Status">{object.status?.conditions?.find((s: any) => s.type === "Ready").message}</DrawerItem>
-        <DrawerItem name="Ready">
-          <Badge className={getStatusClass(object)} label={getStatusText(object)} />
+  return (
+    <>
+      <style>{stylesInline}</style>
+      <div className={styles.details}>
+        <DrawerItem name="Resumed">
+          <BadgeBoolean value={!object.spec.suspend} />
         </DrawerItem>
-        <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-        <DrawerItem name="Suspended">{object.spec.suspend === true ? "Yes" : "No"}</DrawerItem>
-        <DrawerItem name="Webhook Path">
-          <a href="#">{object.status?.webhookPath}</a>
-        </DrawerItem>
+        <DrawerItem name="Type">{object.spec.type}</DrawerItem>
         <DrawerItem name="Events">
-          {object.spec.events.map((e: string, index: number) => (
-            <li key={index}>
-              <Badge label={e} />
-            </li>
+          {object.spec.events?.map((event, index: number) => (
+            <DrawerItem key={index} name="">
+              {event}
+            </DrawerItem>
           ))}
         </DrawerItem>
-        <DrawerItem name="Resources">
-          {object.spec.resources.map((resource, index: number) => (
-            <li key={index}>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  Renderer.Navigation.showDetails(this.sourceUrl(resource), true);
-                }}
-              >
-                {resource.kind}:{resource.name}
-              </a>
-            </li>
-          ))}
+        <DrawerItem name="Credentials" hidden={!object.spec.secretRef}>
+          <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
         </DrawerItem>
+
+        <div className={styles.resources}>
+          <DrawerTitle>Resources</DrawerTitle>
+          <Table
+            selectable
+            tableId="inventory"
+            scrollable={false}
+            sortable={resourceSortable}
+            sortByDefault={resourceSortByDefault}
+            sortSyncWithUrl={false}
+          >
+            <TableHead flat sticky={false}>
+              <TableCell className={styles.kind} sortBy={resourceSortByNames.kind}>
+                Kind
+              </TableCell>
+              <TableCell className={styles.name} sortBy={resourceSortByNames.name}>
+                Name
+              </TableCell>
+              <TableCell className={styles.namespace} sortBy={resourceSortByNames.namespace}>
+                Namespace
+              </TableCell>
+            </TableHead>
+            {object.spec.resources.map((resource) => {
+              if (!resource) return null;
+              return (
+                <TableRow key={`${resource.kind}-${resource.name}`} sortItem={resource} nowrap>
+                  <TableCell className={styles.kind}>
+                    <WithTooltip tooltip={<ObjectRefTooltip objectRef={resource} />}>{resource.kind}</WithTooltip>
+                  </TableCell>
+                  <TableCell className={styles.name}>
+                    <LinkToObject objectRef={resource} object={object} />
+                  </TableCell>
+                  <TableCell className={styles.namespace}>
+                    <LinkToNamespace namespace={resource.namespace ?? namespace} />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </Table>
+        </div>
       </div>
-    );
-  }
-}
+    </>
+  );
+});

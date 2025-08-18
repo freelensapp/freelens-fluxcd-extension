@@ -1,6 +1,6 @@
 {
   "name": "@freelensapp/fluxcd-extension",
-  "version": "3.2.1-0",
+  "version": "3.3.0-302",
   "description": "Freelens extension for FluxCD",
   "repository": {
     "type": "git",
@@ -13,8 +13,8 @@
     "out/**/*"
   ],
   "engines": {
-    "node": ">= 22.14.0",
-    "freelens": "^1.3.0"
+    "node": ">= 22.16.0",
+    "freelens": "^1.5.3"
   },
   "copyright": "© 2025 Freelens Authors",
   "license": "MIT",
@@ -22,58 +22,64 @@
     "name": "Freelens Authors",
     "email": "freelens@freelens.app"
   },
-  "contributors": [
-    {
-      "name": "Stanislaw Wozniak",
-      "url": "https://github.com/sponte"
-    },
-    {
-      "name": "Oliver Kaufmann",
-      "email": "okaufmann91@gmail.com",
-      "url": "https://x.com/okaufmannCH"
-    }
-  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "biome": "pnpm dlx @biomejs/biome@1.9.4",
-    "biome:check": "pnpm biome check",
-    "biome:fix": "pnpm biome check --fix",
-    "prebuild": "pnpm typecheck",
+    "biome": "corepack pnpm dlx @biomejs/biome@2.1.1",
+    "biome:check": "corepack pnpm biome check",
+    "biome:fix": "corepack pnpm biome check --fix",
+    "prettier": "pnpm dlx prettier@3.6.2",
+    "prettier:check": "pnpm prettier --check .",
+    "prettier:fix": "pnpm prettier --write .",
+    "trunk": "pnpm dlx @trunkio/launcher@1.3.4",
+    "trunk:check": "pnpm trunk check",
+    "trunk:fix": "pnpm trunk check --fix",
+    "lint": "corepack pnpm lint:check",
+    "lint:check": "corepack pnpm \"/^(biome|prettier):check$/\"",
+    "lint:fix": "corepack pnpm \"/^(biome|prettier):fix$/\"",
+    "knip": "corepack pnpm dlx knip@5.61.3 --dependencies --no-gitignore",
+    "knip:check": "corepack pnpm \"/^knip:(development|production)$/\"",
+    "knip:development": "corepack pnpm knip",
+    "knip:production": "corepack pnpm knip --production --strict",
+    "type:check": "tsc --noEmit -p tsconfig.json --composite false",
+    "prebuild": "corepack pnpm type:check",
     "build": "electron-vite build",
-    "bump-version": "pnpm version --no-commit-hooks --no-git-tag-version",
-    "clean": "pnpm dlx rimraf@6.0.1 binaries dist static/build",
-    "clean:node_modules": "pnpm dlx rimraf@6.0.1 node_modules",
-    "knip": "pnpm dlx knip@5.60.2 --dependencies",
-    "knip:development": "pnpm knip",
-    "knip:production": "pnpm knip --production --strict",
-    "lint": "pnpm biome:check",
-    "lint:fix": "pnpm biome:fix",
-    "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
+    "build:production": "VITE_PRESERVE_MODULES=false electron-vite build",
+    "build:force": "electron-vite build",
+    "bump-version": "corepack pnpm version --no-commit-hooks --no-git-tag-version",
+    "pack:dev": "corepack pnpm bump-version prerelease && corepack pnpm build:force && corepack pnpm build && corepack pnpm clean:tgz && corepack pnpm pack && corepack pnpm dlx shx@0.4.0 ls \"$PWD/*.tgz\"",
+    "clean": "corepack pnpm clean:out",
+    "clean:dts": "corepack pnpm dlx shx@0.4.0 rm -f \"src/**/*.scss.d.ts\"",
+    "clean:node_modules": "corepack pnpm dlx shx@0.4.0 rm -rf node_modules",
+    "clean:out": "corepack pnpm dlx shx@0.4.0 rm -rf out",
+    "clean:tgz": "corepack pnpm dlx shx@0.4.0 rm -f \"*.tgz\"",
+    "clean:all": "corepack pnpm \"/^clean:(dts|node_modules|out|tgz)$/\""
   },
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.27.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@freelensapp/extensions": "^1.3.1",
+    "@freelensapp/extensions": "^1.5.3",
+    "@freelensapp/kube-object": "^1.5.3",
     "@types/chart.js": "^2.9.41",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.15.30",
+    "@types/node": "^22.16.4",
     "@types/react": "^17.0.87",
     "@types/react-router-dom": "^5.3.3",
-    "@vitejs/plugin-react": "^4.5.1",
+    "@vitejs/plugin-react": "^4.6.0",
     "electron-vite": "^3.1.0",
     "js-base64": "^3.7.7",
     "js-yaml": "^4.1.0",
-    "mobx": "^6.13.7",
-    "mobx-react": "^7.6.0",
+    "mobx": "6.13.7",
+    "mobx-react": "7.6.0",
     "moment": "^2.30.1",
-    "pnpm": "^10.12.1",
-    "react": "^17.0.2",
-    "sass": "^1.89.1",
-    "typescript": "^5.8.3",
+    "react": "17.0.2",
+    "sass": "^1.89.2",
+    "typescript": "5.8.3",
     "vite": "^6.3.5",
-    "vite-plugin-external": "^6.2.2"
+    "vite-plugin-external": "^6.2.2",
+    "vite-plugin-sass-dts": "^1.3.31"
   },
   "keywords": [
     "extension",
@@ -84,5 +90,5 @@
     "flux",
     "fluxcd"
   ],
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748"
 }

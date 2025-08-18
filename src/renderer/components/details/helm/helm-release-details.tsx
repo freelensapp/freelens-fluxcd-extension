@@ -1,155 +1,87 @@
-import crypto from "crypto";
 import { Common, Renderer } from "@freelensapp/extensions";
+import crypto from "crypto";
 import { Base64 } from "js-base64";
 import yaml from "js-yaml";
-import React from "react";
-import { Link } from "react-router-dom";
-import { crdStore } from "../../../k8s/core/crd";
+import { observer } from "mobx-react";
+import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease";
-import { defaultYamlDumpOptions, getHeight, lowerAndPluralize } from "../../../utils";
-
-import styleInline from "./helm-release-details.scss?inline";
-
-const {
-  Component: { DrawerItem, DrawerTitle, Icon, MonacoEditor, Table, TableCell, TableHead, TableRow, Tooltip },
-  K8sApi: { configMapApi, namespacesApi, secretsApi, serviceAccountsApi },
-  Navigation: { getDetailsUrl },
-} = Renderer;
+import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
+import { DurationAbsoluteTimestamp } from "../../duration-absolute";
+import { LinkToNamespace } from "../../link-to-namespace";
+import { LinkToObject } from "../../link-to-object";
+import { LinkToServiceAccount } from "../../link-to-service-account";
+import { MaybeLink } from "../../maybe-link";
+import styles from "./helm-release-details.module.scss";
+import stylesInline from "./helm-release-details.module.scss?inline";
 
 const {
   Util: { stopPropagation },
 } = Common;
 
-interface HelmReleaseDetailsState {
-  crds: Renderer.K8sApi.CustomResourceDefinition[];
-  valuesFromYaml: Record<string, string | undefined>;
-}
+const {
+  Component: {
+    BadgeBoolean,
+    DrawerItem,
+    DrawerTitle,
+    Icon,
+    MonacoEditor,
+    Table,
+    TableCell,
+    TableHead,
+    TableRow,
+    WithTooltip,
+  },
+  K8sApi: { configMapApi, secretsApi },
+} = Renderer;
 
-enum historySortBy {
-  version = "version",
-  lastDeployed = "lastDeployed",
-  chartVersion = "chartVersion",
-  appVersion = "appVersion",
-  status = "status",
-}
+const historySortable = {
+  version: (snapshot: HelmReleaseSnapshot) => snapshot.version,
+  lastDeployed: (snapshot: HelmReleaseSnapshot) => snapshot.lastDeployed,
+  chartVersion: (snapshot: HelmReleaseSnapshot) => snapshot.chartVersion,
+  appVersion: (snapshot: HelmReleaseSnapshot) => snapshot.appVersion,
+  status: (snapshot: HelmReleaseSnapshot) => snapshot.status,
+};
 
-export class FluxCDHelmReleaseDetails extends React.Component<
-  Renderer.Component.KubeObjectDetailsProps<HelmRelease>,
-  HelmReleaseDetailsState
-> {
-  public readonly state: Readonly<HelmReleaseDetailsState> = {
-    crds: [],
-    valuesFromYaml: {},
-  };
+const historySortByNames = createEnumFromKeys(historySortable);
 
-  getCrd(kind?: string): Renderer.K8sApi.CustomResourceDefinition | null {
-    const { crds } = this.state;
+const historySortByDefault: { sortBy: keyof typeof historySortable; orderBy: Renderer.Component.TableOrderBy } = {
+  sortBy: historySortByNames.version,
+  orderBy: "desc",
+};
 
-    if (!kind) {
-      return null;
-    }
-
-    if (!crds) {
-      return null;
-    }
-
-    return crds.find((crd) => crd.spec.names.kind === kind) ?? null;
-  }
-
-  sourceUrl(resource: HelmRelease): string {
-    const name = resource.spec.chart?.spec.sourceRef.name ?? resource.spec.chartRef?.name;
-    const namespace = this.getChartRefNamespace(resource);
-    const kind = lowerAndPluralize(resource.spec.chart?.spec.sourceRef.kind ?? resource.spec.chartRef?.kind ?? "");
-    const crd = this.getCrd(resource.spec.chart?.spec.sourceRef.kind ?? resource.spec.chartRef?.kind);
-    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
-    const group = crd?.spec.group;
-
-    if (!apiVersion || !group) return "";
-
-    return `/apis/${group}/${apiVersion}/namespaces/${namespace}/${kind}/${name}`;
-  }
-
-  helmChartUrl(resource: HelmRelease): string | undefined {
-    if (!resource.spec.chart) return;
-
-    const name = resource.metadata.name;
-    const namespace = this.getChartRefNamespace(resource);
-    const kind = lowerAndPluralize("HelmChart");
-    const crd = this.getCrd(resource.spec.chart?.spec.sourceRef.kind ?? resource.spec.chartRef?.kind);
-    const apiVersion = crd?.spec.versions?.find((v: any) => v.storage === true)?.name;
-    const group = crd?.spec.group;
-
-    if (!apiVersion || !group) return;
-
-    return `/apis/${group}/${apiVersion}/namespaces/${namespace}/${kind}/${namespace}-${name}`;
-  }
-
-  async componentDidMount() {
-    crdStore.loadAll().then((l) => this.setState({ crds: l! }));
-
-    const { object } = this.props;
-    const namespace = object.getNs()!;
-
-    const valuesFromYaml: typeof this.state.valuesFromYaml = {};
-
-    for (const valueFrom of object.spec.valuesFrom ?? []) {
-      const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
-      const name = valueFrom.name;
-      const valuesKey = valueFrom.valuesKey ?? "values.yaml";
-      const valuesObject = await api.get({ name, namespace });
-      if (!valuesObject) continue;
-
-      const valuesYaml = valuesObject?.data?.[valuesKey];
-      if (!valuesYaml) continue;
-
-      if (valueFrom.kind.toLowerCase() === "secret" && Base64.isValid(valuesYaml)) {
-        valuesFromYaml[`${namespace}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
-      } else {
-        valuesFromYaml[`${namespace}/${name}/${valuesKey}`] = valuesYaml;
-      }
-    }
-
-    this.setState({ valuesFromYaml });
-  }
-
-  getChartRefNamespace(resource: HelmRelease) {
-    return resource.spec.chart?.spec.sourceRef.namespace ?? resource.spec.chartRef?.namespace ?? resource.getNs()!;
-  }
-
-  getHelmChartName(resource: HelmRelease) {
-    const namespace = this.getChartRefNamespace(resource);
-
-    return `${namespace}-${resource.metadata.name}`;
-  }
-
-  getReleaseName(resource: HelmRelease) {
-    if (resource.spec.releaseName !== undefined) {
-      return resource.spec.releaseName;
-    }
-
-    if (resource.spec.targetNamespace !== undefined) {
-      return `${resource.spec.targetNamespace}-${resource.metadata.name}`;
-    }
-
-    return resource.metadata.name;
-  }
-
-  getReleaseNameShortened(resource: HelmRelease) {
-    const name = this.getReleaseName(resource);
-
-    if (name.length > 53) {
-      const hash = crypto.createHash("sha256").update(name).digest("hex").slice(0, 12);
-      return `${name.slice(0, 40)}-${hash}`;
-    }
-
-    return name;
-  }
-
-  render() {
-    const { object } = this.props;
+export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmRelease>> = observer(
+  (props) => {
+    const { object } = props;
+    const [valuesFromYaml, setValuesFromYaml] = useState<Record<string, string | undefined>>({});
 
     const namespace = object.metadata.namespace ?? "default";
-    const releaseName = this.getReleaseNameShortened(object);
+
+    useEffect(() => {
+      let mounted = true;
+      (async () => {
+        const valuesFromYamlResult: Record<string, string | undefined> = {};
+        const ns = object.getNs()!;
+        for (const valueFrom of object.spec.valuesFrom ?? []) {
+          const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
+          const name = valueFrom.name;
+          const valuesKey = valueFrom.valuesKey ?? "values.yaml";
+          const valuesObject = await api.get({ name, namespace: ns });
+          if (!valuesObject) continue;
+          const valuesYaml = valuesObject?.data?.[valuesKey];
+          if (!valuesYaml) continue;
+          if (valueFrom.kind.toLowerCase() === "secret" && Base64.isValid(valuesYaml)) {
+            valuesFromYamlResult[`${ns}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
+          } else {
+            valuesFromYamlResult[`${ns}/${name}/${valuesKey}`] = valuesYaml;
+          }
+        }
+        if (mounted) setValuesFromYaml(valuesFromYamlResult);
+      })();
+      return () => {
+        mounted = false;
+      };
+    }, [object]);
+
     const valuesYaml = yaml.dump(object.spec.values, defaultYamlDumpOptions);
 
     const images = object.spec.postRenderers
@@ -168,27 +100,15 @@ export class FluxCDHelmReleaseDetails extends React.Component<
 
     return (
       <>
-        <style>{styleInline}</style>
-        <div className="HelmReleaseDetails">
+        <style>{stylesInline}</style>
+        <div className={styles.details}>
           <DrawerItem name="Release Name">
-            <Link
-              key="link"
-              to={`/helm/releases/${object.spec.storageNamespace ?? namespace}/${releaseName}`}
-              onClick={stopPropagation}
-            >
-              {releaseName}
-            </Link>
+            <MaybeLink key="link" to={HelmRelease.getHelmReleaseUrl(object, namespace)} onClick={stopPropagation}>
+              {HelmRelease.getReleaseNameShortened(object)}
+            </MaybeLink>
           </DrawerItem>
-          <DrawerItem name="Helm Chart" hidden={!object.spec.chart}>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                Renderer.Navigation.showDetails(this.helmChartUrl(object), true);
-              }}
-            >
-              {this.getHelmChartName(object)}
-            </a>
+          <DrawerItem name="Helm Chart" hidden={!object.spec.chartRef}>
+            <LinkToObject objectRef={object.spec.chartRef} object={object} />
           </DrawerItem>
           <DrawerItem name="Chart Name">
             {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}
@@ -197,8 +117,11 @@ export class FluxCDHelmReleaseDetails extends React.Component<
             {object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version}
           </DrawerItem>
           <DrawerItem name="App Version">{object.status?.history?.[0]?.appVersion}</DrawerItem>
-          <DrawerItem name="Status" hidden={!object.status?.history?.[0]?.status}>
+          <DrawerItem name="History Last Status" hidden={!object.status?.history?.[0]?.status}>
             {object.status?.history?.[0]?.status}
+          </DrawerItem>
+          <DrawerItem name="Resumed">
+            <BadgeBoolean value={!object.spec.suspend} />
           </DrawerItem>
           <DrawerItem name="Chart Interval" hidden={!object.spec.chart?.spec.interval}>
             {object.spec.chart?.spec.interval}
@@ -211,33 +134,13 @@ export class FluxCDHelmReleaseDetails extends React.Component<
             {object.spec.timeout}
           </DrawerItem>
           <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
-            <Link
-              key="link"
-              to={getDetailsUrl(
-                serviceAccountsApi.formatUrlForNotListing({ name: object.spec.serviceAccountName, namespace }),
-              )}
-              onClick={stopPropagation}
-            >
-              {object.spec.serviceAccountName}
-            </Link>
+            <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="Storage Namespace" hidden={!object.spec.storageNamespace}>
-            <Link
-              key="link"
-              to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.storageNamespace }))}
-              onClick={stopPropagation}
-            >
-              {object.spec.storageNamespace}
-            </Link>
+            <LinkToNamespace namespace={object.spec.storageNamespace} />
           </DrawerItem>
           <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>
-            <Link
-              key="link"
-              to={getDetailsUrl(namespacesApi.formatUrlForNotListing({ name: object.spec.targetNamespace }))}
-              onClick={stopPropagation}
-            >
-              {object.spec.targetNamespace}
-            </Link>
+            <LinkToNamespace namespace={object.spec.targetNamespace} />
           </DrawerItem>
           <DrawerItem name="Drift Detection" hidden={!object.spec.driftDetection?.mode}>
             {object.spec.driftDetection?.mode}
@@ -249,53 +152,43 @@ export class FluxCDHelmReleaseDetails extends React.Component<
             {object.spec.upgrade?.crds}
           </DrawerItem>
           <DrawerItem name="Source">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                Renderer.Navigation.showDetails(this.sourceUrl(object), true);
-              }}
-            >
-              {object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind}
-              {": "}
-              {(object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace)
-                ? `${object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace}/`
-                : ""}
-              {object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name}
-            </a>
+            <MaybeLink to={getMaybeDetailsUrl(HelmRelease.getSourceRefUrl(object))} onClick={stopPropagation}>
+              {HelmRelease.getSourceRefText(object)}
+            </MaybeLink>
           </DrawerItem>
           <DrawerItem name="First Deployed" hidden={!object.status?.history?.[0].firstDeployed}>
-            {object.status?.history?.[0].firstDeployed}
+            <DurationAbsoluteTimestamp timestamp={object.status?.history?.[0].firstDeployed} />
           </DrawerItem>
           <DrawerItem name="Last Deployed" hidden={!object.status?.history?.[0].lastDeployed}>
-            {object.status?.history?.[0].lastDeployed}
+            <DurationAbsoluteTimestamp timestamp={object.status?.history?.[0].lastDeployed} />
           </DrawerItem>
           <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
             {object.status?.conditions?.[0].message}
           </DrawerItem>
 
           {object.spec.valuesFrom && (
-            <div className="HelmReleaseValuesFrom">
+            <div>
               <DrawerTitle>Values From</DrawerTitle>
               {object.spec.valuesFrom.map((valueFrom) => {
                 const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
                 const name = valueFrom.name;
-                const valuesYaml = this.state.valuesFromYaml[`${namespace}/${name}/${valueFrom.valuesKey}`] && "";
+                const valuesKey = valueFrom.valuesKey ?? "values.yaml";
+                const valuesYamlValue = valuesFromYaml[`${namespace}/${name}/${valuesKey}`] ?? "";
 
                 return (
-                  <div key={name} className="valueFrom">
-                    <div className="title flex gaps">
+                  <div key={name}>
+                    <div className={styles.title}>
                       <Icon small material="list" />
                     </div>
                     <DrawerItem name="Kind">{valueFrom.kind}</DrawerItem>
                     <DrawerItem name="Name">
-                      <Link
+                      <MaybeLink
                         key="link"
-                        to={getDetailsUrl(api.formatUrlForNotListing({ name, namespace }))}
+                        to={getMaybeDetailsUrl(api.formatUrlForNotListing({ name, namespace }))}
                         onClick={stopPropagation}
                       >
                         {name}
-                      </Link>
+                      </MaybeLink>
                     </DrawerItem>
                     <DrawerItem name="Values Key" hidden={!valueFrom.valuesKey}>
                       {valueFrom.valuesKey}
@@ -306,26 +199,21 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                     <DrawerItem name="Optional" hidden={!valueFrom.optional}>
                       {valueFrom.optional}
                     </DrawerItem>
-                    <div className="flex column gaps">
-                      <MonacoEditor
-                        readOnly
-                        id={`valuesFrom-${namespace}-${name}-${valueFrom.valuesKey}`}
-                        style={{
-                          minHeight: getHeight(valuesYaml),
-                          resize: "none",
-                          overflow: "hidden",
-                          border: "1px solid var(--borderFaintColor)",
-                          borderRadius: "4px",
-                        }}
-                        value={valuesYaml ?? ""}
-                        setInitialHeight
-                        options={{
-                          scrollbar: {
-                            alwaysConsumeMouseWheel: false,
-                          },
-                        }}
-                      />
-                    </div>
+                    <MonacoEditor
+                      readOnly
+                      id={`valuesFrom-${namespace}-${name}-${valuesKey}`}
+                      className={styles.editor}
+                      style={{
+                        minHeight: getHeight(valuesYamlValue),
+                      }}
+                      value={valuesYamlValue}
+                      setInitialHeight
+                      options={{
+                        scrollbar: {
+                          alwaysConsumeMouseWheel: false,
+                        },
+                      }}
+                    />
                   </div>
                 );
               })}
@@ -333,37 +221,31 @@ export class FluxCDHelmReleaseDetails extends React.Component<
           )}
 
           {object.spec.values && (
-            <div className="HelmReleaseValues">
+            <div>
               <DrawerTitle>Values</DrawerTitle>
-              <div className="flex column gaps">
-                <MonacoEditor
-                  readOnly
-                  id="values"
-                  style={{
-                    minHeight: getHeight(valuesYaml),
-                    resize: "none",
-                    overflow: "hidden",
-                    border: "1px solid var(--borderFaintColor)",
-                    borderRadius: "4px",
-                  }}
-                  value={valuesYaml}
-                  setInitialHeight
-                  options={{
-                    scrollbar: {
-                      alwaysConsumeMouseWheel: false,
-                    },
-                  }}
-                />
-              </div>
+              <MonacoEditor
+                readOnly
+                id="values"
+                className={styles.editor}
+                style={{
+                  minHeight: getHeight(valuesYaml),
+                }}
+                value={valuesYaml}
+                setInitialHeight
+                options={{
+                  scrollbar: {
+                    alwaysConsumeMouseWheel: false,
+                  },
+                }}
+              />
             </div>
           )}
 
           {patches && (
-            <div className="HelmReleasePatches">
+            <div>
               <DrawerTitle>Patches</DrawerTitle>
               {patches.map((patch) => {
-                if (!patch) return;
-
+                if (!patch) return null;
                 const key = crypto
                   .createHash("sha256")
                   .update(
@@ -379,8 +261,8 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                   .digest("hex");
 
                 return (
-                  <div key={key} className="patch">
-                    <div className="title flex gaps">
+                  <div key={key}>
+                    <div className={styles.title}>
                       <Icon small material="list" />
                     </div>
                     <DrawerItem name="Group" hidden={!patch.target?.group}>
@@ -404,29 +286,22 @@ export class FluxCDHelmReleaseDetails extends React.Component<
                     <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
                       {patch.target?.annotationSelector}
                     </DrawerItem>
-                    <div className="DrawerItem">
-                      <span className="name">Patch</span>
-                    </div>
-                    <div className="flex column gaps">
-                      <MonacoEditor
-                        readOnly
-                        id={`patch-${key}`}
-                        style={{
-                          minHeight: getHeight(patch.patch),
-                          resize: "none",
-                          overflow: "hidden",
-                          border: "1px solid var(--borderFaintColor)",
-                          borderRadius: "4px",
-                        }}
-                        value={patch.patch}
-                        setInitialHeight
-                        options={{
-                          scrollbar: {
-                            alwaysConsumeMouseWheel: false,
-                          },
-                        }}
-                      />
-                    </div>
+                    <div className="DrawerItem">Patch</div>
+                    <MonacoEditor
+                      readOnly
+                      id={`patch-${key}`}
+                      className={styles.editor}
+                      style={{
+                        minHeight: getHeight(patch.patch),
+                      }}
+                      value={patch.patch}
+                      setInitialHeight
+                      options={{
+                        scrollbar: {
+                          alwaysConsumeMouseWheel: false,
+                        },
+                      }}
+                    />
                   </div>
                 );
               })}
@@ -434,13 +309,13 @@ export class FluxCDHelmReleaseDetails extends React.Component<
           )}
 
           {images && (
-            <div className="HelmReleaseImages">
+            <div>
               <DrawerTitle>Images</DrawerTitle>
-              {images.map((image) => {
-                if (!image) return;
+              {images.map((image, idx) => {
+                if (!image) return null;
                 return (
-                  <div className="image">
-                    <div className="title flex gaps">
+                  <div key={image.name ?? idx}>
+                    <div className={styles.title}>
                       <Icon small material="list" />
                     </div>
                     <DrawerItem name="Name">{image.name}</DrawerItem>
@@ -460,84 +335,45 @@ export class FluxCDHelmReleaseDetails extends React.Component<
           )}
 
           {object.status?.history && (
-            <div className="HelmReleaseHistory flex column">
+            <div className={styles.history}>
               <DrawerTitle>History</DrawerTitle>
               <Table
                 selectable
                 tableId="history"
                 scrollable={false}
-                sortable={{
-                  [historySortBy.version]: (snapshot: HelmReleaseSnapshot) => snapshot.version,
-                  [historySortBy.lastDeployed]: (snapshot: HelmReleaseSnapshot) => snapshot.lastDeployed,
-                  [historySortBy.chartVersion]: (snapshot: HelmReleaseSnapshot) => snapshot.chartVersion,
-                  [historySortBy.appVersion]: (snapshot: HelmReleaseSnapshot) => snapshot.appVersion,
-                  [historySortBy.status]: (snapshot: HelmReleaseSnapshot) => snapshot.status,
-                }}
-                sortByDefault={{ sortBy: historySortBy.version, orderBy: "desc" }}
+                sortable={historySortable}
+                sortByDefault={historySortByDefault}
                 sortSyncWithUrl={false}
-                className="box grow"
               >
                 <TableHead flat sticky={false}>
-                  <TableCell className="version" sortBy={historySortBy.version}>
+                  <TableCell sortBy={historySortByNames.version} className={styles.version}>
                     Version
                   </TableCell>
-                  <TableCell className="lastDeployed" sortBy={historySortBy.lastDeployed}>
-                    Last Deployed
-                  </TableCell>
-                  <TableCell className="chartVersion" sortBy={historySortBy.chartVersion}>
-                    Chart Version
-                  </TableCell>
-                  <TableCell className="appVersion" sortBy={historySortBy.appVersion}>
-                    App Version
-                  </TableCell>
-                  <TableCell className="status" sortBy={historySortBy.status}>
+                  <TableCell sortBy={historySortByNames.lastDeployed}>Last Deployed</TableCell>
+                  <TableCell sortBy={historySortByNames.chartVersion}>Chart Version</TableCell>
+                  <TableCell sortBy={historySortByNames.appVersion}>App Version</TableCell>
+                  <TableCell sortBy={historySortByNames.status} className={styles.status}>
                     Status
                   </TableCell>
                 </TableHead>
                 {object.status?.history?.map((snapshot) => (
                   <TableRow key={snapshot.version} sortItem={snapshot} nowrap>
-                    <TableCell className="version">{snapshot.version}</TableCell>
-                    <TableCell className="lastDeployed">{snapshot.lastDeployed}</TableCell>
-                    <TableCell className="chartVersion" id={`helmReleaseHistory-${snapshot.version}-chartVersion`}>
-                      {snapshot.chartVersion}
-                      <Tooltip targetId={`helmReleaseHistory-${snapshot.version}-chartVersion`}>
-                        {snapshot.chartVersion}
-                      </Tooltip>
+                    <TableCell className={styles.version}>{snapshot.version}</TableCell>
+                    <TableCell>{snapshot.lastDeployed}</TableCell>
+                    <TableCell>
+                      <WithTooltip>{snapshot.chartVersion}</WithTooltip>
                     </TableCell>
-                    <TableCell className="appVersion" id={`helmReleaseHistory-${snapshot.version}-appVersion`}>
-                      {snapshot.appVersion}{" "}
-                      <Tooltip targetId={`helmReleaseHistory-${snapshot.version}-appVersion`}>
-                        {snapshot.appVersion}
-                      </Tooltip>
+                    <TableCell>
+                      <WithTooltip>{snapshot.appVersion}</WithTooltip>
                     </TableCell>
-                    <TableCell className="status">{snapshot.status}</TableCell>
+                    <TableCell className={styles.status}>{snapshot.status}</TableCell>
                   </TableRow>
                 ))}
               </Table>
             </div>
           )}
-
-          {object.status?.conditions && (
-            <div className="HelmReleaseConditions">
-              <DrawerTitle>Conditions</DrawerTitle>
-              {object.status?.conditions?.map((condition) => (
-                <div className="condition">
-                  <div className="title flex gaps">
-                    <Icon small material="list" />
-                  </div>
-                  <DrawerItem name="Last Transition Time">{condition.lastTransitionTime}</DrawerItem>
-                  <DrawerItem name="Reason">{condition.reason}</DrawerItem>
-                  <DrawerItem name="Status">{condition.status}</DrawerItem>
-                  <DrawerItem name="Type" hidden={!condition.type}>
-                    {condition.type}
-                  </DrawerItem>
-                  <DrawerItem name="Message">{condition.message}</DrawerItem>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </>
     );
-  }
-}
+  },
+);

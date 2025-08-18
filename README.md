@@ -28,15 +28,29 @@ Features include:
 ## Requirements
 
 - Kubernetes >= 1.24
-- Freelens >= 1.3.1
+- Freelens >= 1.5.3
 - Flux >= v2.0.0
 - kustomize-controller >= v0.1.0
 - helm-controller >= v0.1.0
+- image-automation-controller >= v0.1.0
+- image-reflector-controller >= v0.1.0
+- notification-controller >= v0.1.0
+- source-controller >= v0.1.0
 
 ## API supported
 
-- [helm.toolkit.fluxcd.io/v2beta1](https://github.com/fluxcd/helm-controller/blob/main/docs/spec/v2beta1/helmreleases.md)
-- [kustomize.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/kustomize-controller/blob/v1.6.0/docs/spec/v1beta1/kustomizations.md)
+- [helm.toolkit.fluxcd.io/v2beta1](https://github.com/fluxcd/helm-controller/blob/v0.1.0/docs/spec/v2beta1/)
+  (helm-controller)
+- [kustomize.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/kustomize-controller/blob/v0.1.0/docs/spec/v1beta1/)
+  (kustomize-controller)
+- [image.toolkit.fluxcd.io/v1alpha1](https://github.com/fluxcd/image-automation-controller/blob/v0.1.0/docs/api/)
+  (image-automation-controller)
+- [image.toolkit.fluxcd.io/v1alpha1](https://github.com/fluxcd/image-reflector-controller/blob/v0.1.0/docs/api/)
+  (image-reflector-controller)
+- [notification.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/notification-controller/blob/v0.1.0/docs/api/)
+  (notification-controller)
+- [source.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/source-controller/blob/v0.1.0/docs/api/)
+  (source-controller)
 
 ## Install
 
@@ -67,8 +81,8 @@ nvm install
 mise install
 # or
 winget install CoreyButler.NVMforWindows
-nvm install 22.15.1
-nvm use 22.15.1
+nvm install 22.16.0
+nvm use 22.16.0
 ```
 
 Install Pnpm:

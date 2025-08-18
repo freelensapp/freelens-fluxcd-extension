@@ -1,67 +1,59 @@
 import { Renderer } from "@freelensapp/extensions";
-
 import { observer } from "mobx-react";
-
-import React from "react";
-
-import { KubeAge } from "../../components/ui/kube-age";
-import { Receiver, receiverStore } from "../../k8s/fluxcd/notifications/receiver";
-import { getStatusClass, getStatusMessage, getStatusText } from "../../utils";
+import { withErrorPage } from "../../components/error-page";
+import { Receiver, type ReceiverApi } from "../../k8s/fluxcd/notification/receiver";
+import styles from "./receivers.module.scss";
+import stylesInline from "./receivers.module.scss?inline";
 
 const {
-  Component: { KubeObjectListLayout, Badge },
+  Component: { KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-enum sortBy {
-  name = "name",
-  namespace = "namespace",
-  status = "status",
-  ready = "ready",
-  age = "age",
-  type = "type",
+const KubeObject = Receiver;
+type KubeObject = Receiver;
+type KubeObjectApi = ReceiverApi;
+
+const sortingCallbacks = {
+  name: (object: KubeObject) => object.getName(),
+  namespace: (object: KubeObject) => object.getNs(),
+  type: (object: KubeObject) => object.spec.type,
+  age: (object: KubeObject) => object.getCreationTimestamp(),
+};
+
+const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
+  { title: "Name", sortBy: "name" },
+  { title: "Namespace", sortBy: "namespace" },
+  { title: "Type", sortBy: "type", className: styles.type },
+  { title: "Age", sortBy: "age", className: styles.age },
+];
+
+export interface ReceiversPageProps {
+  extension: Renderer.LensExtension;
 }
 
-@observer
-export class FluxCDReceivers extends React.Component<{ extension: Renderer.LensExtension }> {
-  render() {
+export const ReceiversPage = observer((props: ReceiversPageProps) =>
+  withErrorPage(props, () => {
+    const store = KubeObject.getStore<KubeObject>();
+
     return (
-      <KubeObjectListLayout
-        tableId="receiversTable"
-        className="Receivers"
-        store={receiverStore}
-        sortingCallbacks={{
-          [sortBy.name]: (receiver: Receiver) => receiver.getName(),
-          [sortBy.namespace]: (receiver: Receiver) => receiver.getNs(),
-          [sortBy.type]: (receiver: Receiver) => receiver.spec.type,
-          [sortBy.ready]: (receiver: Receiver) => getStatusText(receiver),
-          [sortBy.status]: (receiver: Receiver) => getStatusMessage(receiver),
-          [sortBy.age]: (receiver: Receiver) => receiver.getCreationTimestamp(),
-        }}
-        searchFilters={[(receiver: Receiver) => [...receiver.getSearchFields(), receiver.status?.webhookPath]]}
-        renderHeaderTitle="Receiver"
-        renderTableHeader={[
-          { title: "Name", className: "name", sortBy: sortBy.name },
-          { title: "Namespace", className: "namespace", sortBy: sortBy.namespace },
-          { title: "Type", className: "type", sortBy: sortBy.type },
-          { title: "Ready", className: "ready", sortBy: sortBy.ready },
-          { title: "Status", className: "status", sortBy: sortBy.status },
-          { title: "Age", className: "age", sortBy: sortBy.age },
-        ]}
-        renderTableContents={(receiver: Receiver) => [
-          receiver.getName(),
-          receiver.getNs(),
-          receiver.spec.type,
-          this.renderStatus(receiver),
-          getStatusMessage(receiver),
-          <KubeAge timestamp={receiver.getCreationTimestamp()} key="age" />,
-        ]}
-      />
+      <>
+        <style>{stylesInline}</style>
+        <KubeObjectListLayout<KubeObject, KubeObjectApi>
+          tableId={`${KubeObject.crd.plural}Table`}
+          className={styles.page}
+          store={store}
+          sortingCallbacks={sortingCallbacks}
+          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+          renderHeaderTitle={KubeObject.crd.title}
+          renderTableHeader={renderTableHeader}
+          renderTableContents={(object: KubeObject) => [
+            <WithTooltip>{object.getName()}</WithTooltip>,
+            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
+            <WithTooltip>{object.spec.type}</WithTooltip>,
+            <KubeObjectAge object={object} key="age" />,
+          ]}
+        />
+      </>
     );
-  }
-
-  renderStatus(receiver: Receiver) {
-    const className = getStatusClass(receiver);
-    const text = getStatusText(receiver);
-    return <Badge key="name" label={text} className={className} />;
-  }
-}
+  }),
+);

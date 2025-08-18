@@ -4,8 +4,9 @@
  */
 
 import { expect } from "@jest/globals";
-import type { ConsoleMessage, ElectronApplication, Page } from "playwright";
 import * as utils from "../helpers/utils";
+
+import type { ConsoleMessage, ElectronApplication, Page } from "playwright";
 
 describe("extensions page tests", () => {
   let window: Page;

@@ -1,0 +1,15 @@
+@use "../../../vars";
+
+.details {
+  .title {
+    margin-top: vars.$margin * 2;
+    margin-bottom: vars.$margin;
+  }
+}
+
+.editor {
+  resize: none;
+  overflow: hidden;
+  border: 1px solid var(--borderFaintColor);
+  border-radius: 4px;
+}

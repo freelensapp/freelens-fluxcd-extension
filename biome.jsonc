@@ -1,12 +1,30 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              {
+                "type": false
+              },
+              ":NODE:",
+              ":BLANK_LINE:",
+              "@freelensapp/**",
+              ":BLANK_LINE:",
+              ":PACKAGE:",
+              ":BLANK_LINE:",
+              ":PATH:"
+            ]
+          }
+        }
+      }
+    }
   },
   "files": {
-    "ignore": [".trunk/**", "**/dist/**", "**/package.json"]
+    "includes": ["**", "!**/.trunk/**", "!**/build/**", "!**/dist/**"]
   },
   "formatter": {
     "attributePosition": "auto",
@@ -19,43 +37,9 @@
     "lineWidth": 120,
     "useEditorconfig": true
   },
-  "organizeImports": {
-    "enabled": true
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "a11y": {
-        "noRedundantRoles": "off"
-      },
-      "complexity": {
-        "noUselessConstructor": "off",
-        "noUselessThisAlias": "error",
-        "noUselessTypeConstraint": "error"
-      },
-      "correctness": {
-        "noInvalidUseBeforeDeclaration": "error",
-        "useArrayLiterals": "off",
-        "useExhaustiveDependencies": "off"
-      },
-      "recommended": false,
-      "style": {
-        "noNamespace": "error",
-        "useAsConstAssertion": "error",
-        "useBlockStatements": "off",
-        "useNamingConvention": {
-          "level": "off",
-          "options": {
-            "strictCase": false
-          }
-        }
-      },
-      "suspicious": {
-        "noEmptyInterface": "off",
-        "noExtraNonNullAssertion": "error",
-        "noMisleadingInstantiator": "error",
-        "useNamespaceKeyword": "error"
-      }
+  "html": {
+    "formatter": {
+      "enabled": true
     }
   },
   "javascript": {
@@ -70,5 +54,58 @@
       "semicolons": "always",
       "trailingCommas": "all"
     }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "a11y": {
+        "noRedundantRoles": "off"
+      },
+      "complexity": {
+        // should be error later
+        "noBannedTypes": "off",
+        "noUselessConstructor": "off",
+        "noUselessThisAlias": "error",
+        "noUselessTypeConstraint": "error"
+      },
+      "correctness": {
+        "noInvalidUseBeforeDeclaration": "error",
+        // should be error later
+        "noUnusedVariables": "off",
+        "useExhaustiveDependencies": "off"
+      },
+      "recommended": false,
+      "style": {
+        "noNamespace": "error",
+        // should be error later
+        "noParameterAssign": "off",
+        "useArrayLiterals": "off",
+        "useAsConstAssertion": "error",
+        "useBlockStatements": "off",
+        "useNamingConvention": {
+          "level": "off",
+          "options": {
+            "strictCase": false
+          }
+        },
+        // should be error later
+        "useTemplate": "off"
+      },
+      "suspicious": {
+        "noEmptyInterface": "off",
+        // should be error later
+        "noExplicitAny": "off",
+        "noExtraNonNullAssertion": "error",
+        "noMisleadingInstantiator": "error",
+        // should be error later
+        "noUnsafeDeclarationMerging": "off",
+        "useNamespaceKeyword": "error"
+      }
+    }
+  },
+  "vcs": {
+    "clientKind": "git",
+    "enabled": true,
+    "useIgnoreFile": true
   }
 }

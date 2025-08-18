@@ -1,0 +1,14 @@
+@use "../vars";
+
+.infoPage {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.infoMessage {
+  display: flex;
+  align-items: center;
+  color: var(--colorInfo);
+}

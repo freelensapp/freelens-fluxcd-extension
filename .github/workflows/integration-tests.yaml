@@ -99,10 +99,10 @@ jobs:
           esac
 
       - name: Typecheck plugin
-        run: pnpm typecheck
+        run: pnpm type:check
 
       - name: Build plugin
-        run: pnpm build
+        run: pnpm build:production
 
       - name: Pack plugin
         run: pnpm pack

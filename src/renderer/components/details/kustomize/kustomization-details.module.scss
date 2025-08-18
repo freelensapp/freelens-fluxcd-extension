@@ -1,0 +1,59 @@
+@use "../../../vars";
+
+.details {
+  .title {
+    margin-top: vars.$margin * 2;
+    margin-bottom: vars.$margin;
+  }
+}
+
+.editor {
+  resize: none;
+  overflow: hidden;
+  border: 1px solid var(--borderFaintColor);
+  border-radius: 4px;
+}
+
+.substitution {
+  :global(.TableCell) {
+    &.key {
+      flex-grow: 0.7;
+    }
+
+    &.value {
+      flex-grow: 1.3;
+    }
+  }
+}
+
+.inventory {
+  :global(.TableCell) {
+    &.kind {
+      flex-grow: 0.5;
+    }
+
+    &.name {
+      flex-grow: 0.7;
+    }
+
+    &.namespace {
+      flex-grow: 0.5;
+    }
+  }
+}
+
+.healthChecks {
+  :global(.TableCell) {
+    &.kind {
+      flex-grow: 0.5;
+    }
+
+    &.name {
+      flex-grow: 0.7;
+    }
+
+    &.namespace {
+      flex-grow: 0.5;
+    }
+  }
+}

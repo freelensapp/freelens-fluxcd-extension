@@ -1,36 +1,44 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 
-// @ts-ignore
-import React from "react";
+import type { FluxCDKubeObjectSpecWithSuspend } from "../k8s/fluxcd/types";
 
 const {
   Component: { MenuItem, Icon },
 } = Renderer;
 
-interface FluxCustomSpec {
-  suspend: boolean;
+type FluxCDKubeObjectWithMetadata = Renderer.K8sApi.LensExtensionKubeObject<
+  Renderer.K8sApi.KubeObjectMetadata,
+  unknown,
+  unknown
+>;
+type FluxCDKubeObjectWithMetadataCtor = typeof Renderer.K8sApi.LensExtensionKubeObject<
+  Renderer.K8sApi.KubeObjectMetadata,
+  unknown,
+  unknown
+>;
+
+export interface FluxCDObjectReconcileMenuItemProps
+  extends Common.Types.KubeObjectMenuItemProps<Renderer.K8sApi.KubeObject<any, any, FluxCDKubeObjectSpecWithSuspend>> {
+  resource: FluxCDKubeObjectWithMetadataCtor;
 }
 
-export interface FluxcdObjectReconcileMenuItemProps
-  extends Common.Types.KubeObjectMenuItemProps<
-    Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata<any>, any, FluxCustomSpec | any>
-  > {
-  api: Renderer.K8sApi.KubeApi<
-    Renderer.K8sApi.KubeObject<Renderer.K8sApi.KubeObjectMetadata, any, FluxCustomSpec | any>
-  >;
-}
+export function FluxCDObjectReconcileMenuItem(props: FluxCDObjectReconcileMenuItemProps) {
+  const { object, toolbar, resource } = props;
+  if (!object) return <></>;
 
-export function FluxcdObjectReconcileMenuItem(props: FluxcdObjectReconcileMenuItemProps) {
-  const { object, toolbar, api } = props;
-  if (!object) return null;
+  const store = resource.getStore<FluxCDKubeObjectWithMetadata>();
+  if (!store) return <></>;
 
   const reconcile = async () => {
-    if (!object.metadata.annotations) {
-      object.metadata.annotations = {};
-    }
-
-    object.metadata.annotations["reconcile.fluxcd.io/requestedAt"] = new Date().toISOString();
-    await api.update({ name: object.metadata.name, namespace: object.metadata.namespace }, object);
+    await store.patch(
+      object,
+      {
+        metadata: {
+          annotations: { "reconcile.fluxcd.io/requestedAt": new Date().toISOString() },
+        },
+      },
+      "merge",
+    );
   };
 
   return (
