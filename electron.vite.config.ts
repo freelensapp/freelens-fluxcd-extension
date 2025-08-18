@@ -75,11 +75,6 @@ export default defineConfig({
       modules: {
         localsConvention: "camelCaseOnly",
       },
-      preprocessorOptions: {
-        scss: {
-          api: "modern",
-        },
-      },
     },
     plugins: [
       sassDts({
