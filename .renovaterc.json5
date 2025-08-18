@@ -48,6 +48,7 @@
     // non-major updates only
     {
       "matchDepNames": [
+        "@types/chart.js",
         "@types/react",
         "npm",
       ],
