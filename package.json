@@ -30,6 +30,7 @@
     "biome": "corepack pnpm dlx @biomejs/biome@2.2.0",
     "biome:check": "corepack pnpm biome check",
     "biome:fix": "corepack pnpm biome check --fix",
+    "biome:migrate": "corepack pnpm biome migrate --write",
     "prettier": "pnpm dlx prettier@3.6.2",
     "prettier:check": "pnpm prettier --check .",
     "prettier:fix": "pnpm prettier --write .",

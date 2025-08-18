@@ -1,21 +1,26 @@
-name: Automated npm audit
+name: Automated biome migrate
 
 on:
   issue_comment:
     types:
       - created
+  push:
+    branches:
+      - main
+    paths:
+      - biome.jsonc
+      - package.json
   schedule:
-    - cron: 16 7 * * *
+    - cron: 2 6 * * *
   workflow_dispatch: {}
 
 permissions:
   contents: write
-  id-token: write
   pull-requests: write
 
 jobs:
-  npm-audit:
-    name: npm audit
+  biome-migrate:
+    name: biome migrate
 
     strategy:
       fail-fast: false
@@ -29,14 +34,13 @@ jobs:
     timeout-minutes: 10
 
     if: >-
-      github.event_name != 'issue_comment' || (startsWith(github.event.issue.title, 'Automated npm audit') && contains(github.event.comment.body,
+      github.event_name != 'issue_comment' || (startsWith(github.event.issue.title, 'Automated biome migrate') && contains(github.event.comment.body,
       '/rerun'))
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
 
       - name: Setup node
@@ -68,13 +72,10 @@ jobs:
         if: steps.install-pnpm.outcome == 'failure'
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
 
-      - name: Run npm audit
+      - name: Run biome migrate
         run: |
           set -o pipefail
-          pnpm audit report 2>&1 | tee .github/report.log || true
-          pnpm audit fix 2>&1 | tee .github/fix.log || true
-          sed -e 's/\x1b\[[0-9;]*m//g' .github/report.log > .github/pr_body.log
-          sed -e 's/\x1b\[[0-9;]*m//g' .github/fix.log >> .github/pr_body.log
+          pnpm biome:migrate | tee .github/pr_body.log
 
       - name: Check for changes
         run: |
@@ -90,22 +91,24 @@ jobs:
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           default_author: github_actions
-          message: Automated npm audit
-          new_branch: automated/npm-audit
-          push: origin automated/npm-audit --set-upstream --force
+          message: Automated biome migrate [skip ci]
+          new_branch: automated/biome-migrate
+          fetch: false
+          push: origin automated/biome-migrate --set-upstream --force
 
       - name: Create pull request
         if: env.changes == 'true'
         run: |-
-          if [[ $(gh pr view automated/npm-audit --json state --jq .state || true) != "OPEN" ]]; then
+          if [[ $(gh pr view automated/biome-migrate --json state --jq .state || true) != "OPEN" ]]; then
             gh pr create \
-              --head automated/npm-audit \
-              --title "Automated npm audot" \
+              --head automated/biome-migrate \
+              --title "Automated biome migrate [skip ci]" \
               --body-file .github/pr_body.log \
-              --label automated
+              --label automated \
+              --label trunk
           else
-            gh pr edit automated/npm-audit \
-              --title "Automated npm audot" \
+            gh pr edit automated/biome-migrate \
+              --title "Automated biome migrate [skip ci]" \
               --body-file .github/pr_body.log
           fi
         env:
@@ -113,6 +116,6 @@ jobs:
 
       - name: Close pull request
         if: env.changes == 'false'
-        run: gh pr list --head automated/npm-audit --json number --jq '.[].number' | xargs -rn1 gh pr close --delete-branch
+        run: gh pr list --head automated/biome-migrate --json number --jq '.[].number' | xargs -rn1 gh pr close --delete-branch
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}

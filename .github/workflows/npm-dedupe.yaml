@@ -70,6 +70,7 @@ jobs:
 
       - name: Run pnpm dedupe
         run: |
+          set -o pipefail
           pnpm dedupe 2>&1 | tee .github/update.log || true
           sed -e 's/\x1b\[[0-9;]*m//g' .github/update.log > .github/pr_body.log
 
