@@ -48,12 +48,22 @@
     // non-major updates only
     {
       "matchDepNames": [
-        "@types/node",
         "@types/react",
         "npm",
       ],
       "matchUpdateTypes": [
         "major"
+      ],
+      "enabled": false
+    },
+    // patch updates only
+    {
+      "matchDepNames": [
+        "@types/node",
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
       ],
       "enabled": false
     }
