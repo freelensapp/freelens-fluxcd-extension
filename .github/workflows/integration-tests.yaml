@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Checkout plugin
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -112,7 +112,7 @@ jobs:
         run: echo "EXTENSION_PATH=$(find $(pwd) -name '*.tgz')" >> ${GITHUB_ENV}
 
       - name: Checkout app
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: freelensapp/freelens
           ref: v${{ env.freelens_version }}
