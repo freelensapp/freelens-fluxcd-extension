@@ -41,8 +41,9 @@ export function getConditionText(conditions?: Condition[]) {
   if (!conditions || !conditions.length) return "Unknown";
   const condition = getLastCondition(conditions);
   if ("suspend" in conditions && conditions.suspend) return "Suspended";
-  if (condition?.status === "True") return "Ready";
+  if (condition?.type === "Ready" && condition?.status === "True") return "Ready";
   if (condition?.status === "False") return "Not Ready";
+  if (condition?.type == "Stalled") return "Stalled";
   if (conditions) return "In Progress";
   return "Unknown";
 }
@@ -58,14 +59,14 @@ export function getStatusMessage(conditions?: Condition[]) {
 export function getConditionClass(conditions?: Condition[]) {
   const status = getConditionText(conditions);
   switch (status) {
-    case "Ready":
-      return "success";
-    case "Not Ready":
-      return "error";
-    case "Suspended":
-      return "info";
     case "In Progress":
       return "warning";
+    case "Not Ready":
+      return "error";
+    case "Ready":
+      return "success";
+    case "Suspended":
+      return "info";
     default:
       return "";
   }
