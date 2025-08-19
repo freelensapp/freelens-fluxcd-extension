@@ -15,25 +15,33 @@ import type {
   Snapshot,
 } from "../types";
 
+export interface Decryption {
+  provider: string;
+  secretRef: LocalObjectReference;
+}
+
+export interface KubeConfig {
+  secretRef: LocalObjectReference;
+}
+
+export interface SubstituteReference {
+  kind: string;
+  name: string;
+}
+
+export interface PostBuild {
+  substitute?: Record<string, string>;
+  substituteFrom?: SubstituteReference[];
+}
+
 export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   dependsOn?: NamespacedObjectReference[];
-  decryption?: {
-    provider: string;
-    secretRef: LocalObjectReference;
-  };
+  decryption?: Decryption;
   interval: string;
   retryInterval?: string;
-  kubeConfig?: {
-    secretRef: LocalObjectReference;
-  };
+  kubeConfig?: KubeConfig;
   path?: string;
-  postBuild?: {
-    substitute?: Record<string, string>;
-    substituteFrom?: {
-      kind: string;
-      name: string;
-    }[];
-  };
+  postBuild?: PostBuild;
   prune: boolean;
   healthChecks?: NamespacedObjectKindReference[];
   patches?: Patch[];

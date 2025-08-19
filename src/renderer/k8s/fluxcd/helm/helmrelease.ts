@@ -35,34 +35,145 @@ export interface HelmReleaseSnapshot {
   }[];
 }
 
+export interface HelmChartTemplateObjectMeta {
+  labels?: Record<string, string>;
+  annotations?: Record<string, string>;
+}
+
+export interface HelmChartTemplateVerification {
+  provider?: string;
+  secretRef?: LocalObjectReference;
+}
+
+export interface HelmChartTemplateSpec {
+  chart: string;
+  version?: string;
+  sourceRef: NamespacedObjectKindReference;
+  interval?: string;
+  reconcileStrategy?: string;
+  valuesFiles?: string[];
+  valuesFile?: string;
+  verify?: HelmChartTemplateVerification;
+}
+
+export interface HelmChartTemplate {
+  metadata: HelmChartTemplateObjectMeta;
+  spec: HelmChartTemplateSpec;
+}
+
+export interface SecretKeyReference {
+  name: string;
+  key?: string;
+}
+
+export interface KubeConfigReference {
+  configMapRef?: LocalObjectReference;
+  secretRef?: SecretKeyReference;
+}
+
+export interface IgnoreRule {
+  paths?: string[];
+  target?: Selector;
+}
+
+export interface DriftDetection {
+  mode?: string;
+  ignore?: IgnoreRule[];
+}
+
+export interface InstallRemediation {
+  retries?: number;
+  ignoreTestFailures?: boolean;
+  remediateLastFailure?: boolean;
+}
+
+export interface Install {
+  timeout?: string;
+  remediation?: InstallRemediation;
+  disableWait?: boolean;
+  disableWaitForJobs?: boolean;
+  disableHooks?: boolean;
+  disableOpenAPIValidation?: boolean;
+  replace?: boolean;
+  skipCRDs?: boolean;
+  crds?: "Skip" | "Create" | "CreateReplace";
+  createNamespace?: boolean;
+}
+
+export interface UpgradeRemediation {
+  retries?: number;
+  ignoreTestFailures?: boolean;
+  remediateLastFailure?: boolean;
+  strategy?: "rollback" | "uninstall";
+}
+
+export interface Upgrade {
+  timeout?: string;
+  remediation?: UpgradeRemediation;
+  disableWait?: boolean;
+  disableWaitForJobs?: boolean;
+  disableHooks?: boolean;
+  disableOpenAPIValidation?: boolean;
+  force?: boolean;
+  preserveValues?: boolean;
+  cleanupOnFail?: boolean;
+  crds?: "Skip" | "Create" | "CreateReplace";
+}
+
+export interface Filter {
+  name: string;
+  exclude?: boolean;
+}
+
+export interface Test {
+  enable?: boolean;
+  timeout?: string;
+  ignoreFailures?: boolean;
+  filters?: Filter[];
+}
+
+export interface Rollback {
+  timeout?: string;
+  disableWait?: boolean;
+  disableWaitForJobs?: boolean;
+  disableHooks?: boolean;
+  recreate?: boolean;
+  force?: boolean;
+  cleanupOnFail?: boolean;
+}
+
+export interface Uninstall {
+  timeout?: string;
+  disableHooks?: boolean;
+  keepHistory?: boolean;
+  disableWait?: boolean;
+  deletionPropagation?: "background" | "foreground" | "orphan";
+}
+
+export interface ValuesReference {
+  kind: string;
+  name: string;
+  valuesKey?: string;
+  targetPath?: string;
+  optional?: boolean;
+}
+
+export interface Kustomize {
+  patches?: Patch[];
+  patchesStrategicMerge?: string[];
+  patchesJson6902?: JSON6902Patch[];
+  images?: Image[];
+}
+
+export interface PostRenderer {
+  kustomize?: Kustomize;
+}
+
 export interface HelmReleaseSpec extends FluxCDKubeObjectSpecWithSuspend {
-  chart?: {
-    metadata?: {
-      labels?: Record<string, string>;
-      annotations?: Record<string, string>;
-    };
-    spec: {
-      chart: string;
-      version?: string;
-      sourceRef: NamespacedObjectKindReference;
-      interval?: string;
-      reconcileStrategy?: string;
-      valuesFiles?: string[];
-      valuesFile?: string;
-      verify?: {
-        provider?: string;
-        secretRef?: LocalObjectReference;
-      };
-    };
-  };
+  chart?: HelmChartTemplate;
   chartRef?: NamespacedObjectKindReference;
   interval: string;
-  kubeConfig?: {
-    secretRef: {
-      name: string;
-      key?: string;
-    };
-  };
+  kubeConfig?: KubeConfigReference;
   suspend?: boolean;
   releaseName?: string;
   targetNamespace?: string;
@@ -72,85 +183,15 @@ export interface HelmReleaseSpec extends FluxCDKubeObjectSpecWithSuspend {
   maxHistory?: number;
   serviceAccountName?: string;
   persistentClient?: boolean;
-  driftDetection?: {
-    mode?: string;
-    ignore?: {
-      paths?: string[];
-      target?: Selector;
-    }[];
-  };
-  install?: {
-    timeout?: string;
-    remediation?: {
-      retries?: number;
-      ignoreTestFailures?: boolean;
-      remediateLastFailure?: boolean;
-    };
-    disableWait?: boolean;
-    disableWaitForJobs?: boolean;
-    disableHooks?: boolean;
-    disableOpenAPIValidation?: boolean;
-    replace?: boolean;
-    skipCRDs?: boolean;
-    crds?: string;
-    createNamespace?: boolean;
-  };
-  upgrade?: {
-    timeout?: string;
-    remediation?: {
-      retries?: number;
-      ignoreTestFailures?: boolean;
-      remediateLastFailure?: boolean;
-      strategy?: string;
-    };
-    disableWait?: boolean;
-    disableWaitForJobs?: boolean;
-    disableHooks?: boolean;
-    disableOpenAPIValidation?: boolean;
-    force?: boolean;
-    preserveValues?: boolean;
-    cleanupOnFail?: boolean;
-    crds?: string;
-  };
-  test?: {
-    enable?: boolean;
-    timeout?: string;
-    ignoreFailures?: boolean;
-  };
-  rollback?: {
-    timeout?: string;
-    disableWait?: boolean;
-    disableWaitForJobs?: boolean;
-    disableHooks?: boolean;
-    recreate?: boolean;
-    force?: boolean;
-    cleanupOnFail?: boolean;
-  };
-  uninstall?: {
-    timeout?: string;
-    disableHooks?: boolean;
-    keepHistory?: boolean;
-    disableWait?: boolean;
-    deletionPropagation?: string;
-  };
-  valuesFrom?: {
-    kind: string;
-    name: string;
-    valuesKey?: string;
-    targetPath?: string;
-    optional?: boolean;
-  }[];
-  values?: {
-    [key: string]: any;
-  };
-  postRenderers?: {
-    kustomize?: {
-      patches?: Patch[];
-      patchesStrategicMerge?: string[];
-      patchesJson6902?: JSON6902Patch[];
-      images?: Image[];
-    };
-  }[];
+  driftDetection?: DriftDetection;
+  install?: Install;
+  upgrade?: Upgrade;
+  test?: Test;
+  rollback?: Rollback;
+  uninstall?: Uninstall;
+  valuesFrom?: ValuesReference[];
+  values?: Record<string, any>;
+  postRenderers?: PostRenderer[];
 }
 
 export interface HelmReleaseStatus extends FluxCDKubeObjectStatus {
