@@ -40,7 +40,7 @@
     "lint": "corepack pnpm lint:check",
     "lint:check": "corepack pnpm \"/^(biome|prettier):check$/\"",
     "lint:fix": "corepack pnpm \"/^(biome|prettier):fix$/\"",
-    "knip": "corepack pnpm dlx knip@5.62.0 --dependencies --no-gitignore",
+    "knip": "corepack pnpm dlx knip@5.63.1 --dependencies --no-gitignore",
     "knip:check": "corepack pnpm \"/^knip:(development|production)$/\"",
     "knip:development": "corepack pnpm knip",
     "knip:production": "corepack pnpm knip --production --strict",
