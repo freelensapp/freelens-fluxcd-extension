@@ -26,6 +26,8 @@ export interface HelmRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   timeout?: string;
   suspend?: boolean;
   accessFrom?: AccessFrom;
+  // source.toolkit.fluxcd.io/v1
+  type?: "helm" | "oci";
 }
 
 export interface HelmRepositoryStatus extends FluxCDKubeObjectStatus {
