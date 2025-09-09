@@ -39,13 +39,13 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup node
         uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
 
       - name: Get pnpm cache directory
         shell: bash
