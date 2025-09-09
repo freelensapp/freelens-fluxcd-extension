@@ -4,15 +4,25 @@ import stylesInline from "./pie-chart.module.scss?inline";
 
 import type React from "react";
 
-const getStats = (objects: Renderer.K8sApi.KubeObject<any, any, any>[]) => {
-  const suspended = objects.filter((k) => k.spec.suspend === true).length;
+import type { HelmRepository } from "../k8s/fluxcd/source/helmrepository";
+import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../k8s/fluxcd/types";
+
+const getStats = (
+  objects: Renderer.K8sApi.LensExtensionKubeObject<any, FluxCDKubeObjectStatus, FluxCDKubeObjectSpecWithSuspend>[],
+) => {
+  const suspended = objects.filter((o) => o.spec.suspend === true).length;
   const ready = objects.filter(
-    (k) => !k.spec.suspend && k.status?.conditions?.find((c: any) => c.type === "Ready").status === "True",
+    (o) =>
+      !o.spec.suspend &&
+      ((o.kind === "HelmRepository" && (o as HelmRepository).spec.type === "oci") ||
+        o.status?.conditions?.find((c) => c.type === "Ready")?.status === "True"),
   ).length;
   const notReady = objects.filter(
-    (k) => !k.spec.suspend && k.status?.conditions?.find((c: any) => c.type === "Ready").status === "False",
+    (o) => !o.spec.suspend && o.status?.conditions?.find((c) => c.type === "Ready")?.status === "False",
   ).length;
-  const unknown = objects.filter((k) => !k.status?.conditions).length;
+  const unknown = objects.filter(
+    (o) => (o.kind !== "HelmRepository" || (o as HelmRepository).spec.type !== "oci") && !o.status?.conditions,
+  ).length;
   const inProgress = objects.length - ready - notReady - suspended - unknown;
 
   return [ready, notReady, inProgress, suspended, unknown];
@@ -28,7 +38,11 @@ export interface PieChartProps<A extends Renderer.K8sApi.KubeObject> {
   crd: Renderer.K8sApi.CustomResourceDefinition;
 }
 
-export function PieChart(props: PieChartProps<Renderer.K8sApi.KubeObject>): React.ReactElement {
+export function PieChart(
+  props: PieChartProps<
+    Renderer.K8sApi.LensExtensionKubeObject<any, FluxCDKubeObjectStatus, FluxCDKubeObjectSpecWithSuspend>
+  >,
+): React.ReactElement {
   const { objects, title, crd } = props;
   const [ready, notReady, inProgress, suspended, unknown] = getStats(objects);
 
