@@ -12,7 +12,7 @@
 
 This extension integrates FluxCD support into
 [Freelens](https://github.com/freelensapp/freelens).
-[FluxCD](https://fluxcd.io/) v2.0.0 or higher is supported.
+[FluxCD](https://fluxcd.io/) v2.7.0 or higher is supported.
 
 Features include:
 
@@ -27,29 +27,29 @@ Features include:
 
 ## Requirements
 
-- Kubernetes >= 1.24
+- Kubernetes >= 1.32
 - Freelens >= 1.5.3
-- Flux >= v2.0.0
-- kustomize-controller >= v0.1.0
-- helm-controller >= v0.1.0
-- image-automation-controller >= v0.1.0
-- image-reflector-controller >= v0.1.0
-- notification-controller >= v0.1.0
-- source-controller >= v0.1.0
+- Flux >= v2.7.0
+- kustomize-controller >= v1.7.0
+- helm-controller >= v1.4.0
+- image-automation-controller >= v1.0.1
+- image-reflector-controller >= v1.0.1
+- notification-controller >= v1.7.0
+- source-controller >= v1.7.0
 
 ## API supported
 
-- [helm.toolkit.fluxcd.io/v2beta1](https://github.com/fluxcd/helm-controller/blob/v0.1.0/docs/spec/v2beta1/)
+- [helm.toolkit.fluxcd.io/v2](https://github.com/fluxcd/helm-controller/blob/v1.4.0/docs/api/v2/)
   (helm-controller)
-- [kustomize.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/kustomize-controller/blob/v0.1.0/docs/spec/v1beta1/)
+- [kustomize.toolkit.fluxcd.io/v1](https://github.com/fluxcd/kustomize-controller/blob/v1.7.0/docs/api/v1/)
   (kustomize-controller)
-- [image.toolkit.fluxcd.io/v1alpha1](https://github.com/fluxcd/image-automation-controller/blob/v0.1.0/docs/api/)
+- [image.toolkit.fluxcd.io/v1](https://github.com/fluxcd/image-automation-controller/blob/v1.0.1/docs/api/v1/)
   (image-automation-controller)
-- [image.toolkit.fluxcd.io/v1alpha1](https://github.com/fluxcd/image-reflector-controller/blob/v0.1.0/docs/api/)
+- [image.toolkit.fluxcd.io/v1](https://github.com/fluxcd/image-reflector-controller/blob/v1.0.1/docs/api/v1/)
   (image-reflector-controller)
-- [notification.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/notification-controller/blob/v0.1.0/docs/api/)
+- [notification.toolkit.fluxcd.io/v1](https://github.com/fluxcd/notification-controller/blob/v1.7.0/docs/api/v1/)
   (notification-controller)
-- [source.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/source-controller/blob/v0.1.0/docs/api/)
+- [source.toolkit.fluxcd.io/v1](https://github.com/fluxcd/source-controller/blob/v1.7.0/docs/api/v1/)
   (source-controller)
 
 ## Install

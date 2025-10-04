@@ -24,13 +24,13 @@ export class Alert extends Renderer.K8sApi.LensExtensionKubeObject<
 > {
   static readonly kind = "Alert";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta1/alerts";
+  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1/alerts";
 
   static readonly crd = {
     apiVersions: [
-      "notification.toolkit.fluxcd.io/v1beta1",
       "notification.toolkit.fluxcd.io/v1beta2",
       "notification.toolkit.fluxcd.io/v1beta3",
+      "notification.toolkit.fluxcd.io/v1"
     ],
     plural: "alerts",
     singular: "alert",
