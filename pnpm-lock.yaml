@@ -12,8 +12,8 @@ importers:
         specifier: ^7.28.0
         version: 7.28.0(@babel/core@7.28.3)
       '@electron-toolkit/tsconfig':
-        specifier: ^1.0.1
-        version: 1.0.1(@types/node@22.16.4)
+        specifier: ^2.0.0
+        version: 2.0.0(@types/node@22.16.4)
       '@freelensapp/extensions':
         specifier: ^1.5.3
         version: 1.5.3(@emotion/react@11.14.0(@types/react@17.0.88)(react@17.0.2))(@types/react@17.0.88)
@@ -230,8 +230,8 @@ packages:
   '@dabh/diagnostics@2.0.3':
     resolution: {integrity: sha512-hrlQOIi7hAfzsMqlGSFyVucrx38O+j6wiGOf//H2ecvIEqYN4ADBSS2iLMh5UFyDunCNniUIPk/q3riFv45xRA==}
 
-  '@electron-toolkit/tsconfig@1.0.1':
-    resolution: {integrity: sha512-M0Mol3odspvtCuheyujLNAW7bXq7KFNYVMRtpjFa4ZfES4MuklXBC7Nli/omvc+PRKlrklgAGx3l4VakjNo8jg==}
+  '@electron-toolkit/tsconfig@2.0.0':
+    resolution: {integrity: sha512-AdPsP770WhW7b260h13SHMdmjEEHJL6xFtgi3jwgdsSQbJOkJLeNnnpZW9qxTPCvmRI6vmdzWz5K3gibFS6SNg==}
     peerDependencies:
       '@types/node': '*'
 
@@ -3191,7 +3191,7 @@ snapshots:
       enabled: 2.0.0
       kuler: 2.0.0
 
-  '@electron-toolkit/tsconfig@1.0.1(@types/node@22.16.4)':
+  '@electron-toolkit/tsconfig@2.0.0(@types/node@22.16.4)':
     dependencies:
       '@types/node': 22.16.4
 
