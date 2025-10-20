@@ -220,10 +220,13 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
 > {
   static readonly kind = "HelmRelease";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/helm.toolkit.fluxcd.io/v2beta1/helmreleases";
+  static readonly apiBase = "/apis/helm.toolkit.fluxcd.io/v2/helmreleases";
 
   static readonly crd: FluxCDKubeObjectCRD = {
-    apiVersions: ["helm.toolkit.fluxcd.io/v2beta1", "helm.toolkit.fluxcd.io/v2beta2", "helm.toolkit.fluxcd.io/v2"],
+    apiVersions: [
+      "helm.toolkit.fluxcd.io/v2beta2",
+      "helm.toolkit.fluxcd.io/v2"
+    ],
     plural: "helmreleases",
     singular: "helmrelease",
     shortNames: ["hr"],

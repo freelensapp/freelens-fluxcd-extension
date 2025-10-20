@@ -42,11 +42,10 @@ export class HelmRepository extends Renderer.K8sApi.LensExtensionKubeObject<
 > {
   static readonly kind = "HelmRepository";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta1/helmrepositories";
+  static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1/helmrepositories";
 
   static readonly crd = {
     apiVersions: [
-      "source.toolkit.fluxcd.io/v1beta1",
       "source.toolkit.fluxcd.io/v1beta2",
       "source.toolkit.fluxcd.io/v1",
     ],
