@@ -64,7 +64,7 @@ export interface KustomizationStatus extends FluxCDKubeObjectStatus {
   inventory?: ResourceInventory;
 }
 
-export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<
+export class Kustomization_v1beta1 extends Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,
   KustomizationStatus,
   KustomizationSpec
@@ -74,22 +74,18 @@ export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<
   static readonly apiBase = "/apis/kustomize.toolkit.fluxcd.io/v1beta1/kustomizations";
 
   static readonly crd: FluxCDKubeObjectCRD = {
-    apiVersions: [
-      "kustomize.toolkit.fluxcd.io/v1beta1",
-      "kustomize.toolkit.fluxcd.io/v1beta2",
-      "kustomize.toolkit.fluxcd.io/v1",
-    ],
+    apiVersions: ["kustomize.toolkit.fluxcd.io/v1beta1"],
     plural: "kustomizations",
     singular: "kustomization",
     shortNames: ["ks"],
     title: "Kustomizations",
   };
 
-  static getLastAppliedRevision(object: Kustomization): string | undefined {
+  static getLastAppliedRevision(object: Kustomization_v1beta1): string | undefined {
     return object.status?.lastAppliedRevision?.replace(/^refs\/(heads|tags)\//, "");
   }
 
-  static getSourceRefText(object: Kustomization): string {
+  static getSourceRefText(object: Kustomization_v1beta1): string {
     return [
       object.spec.sourceRef.kind,
       ": ",
@@ -98,12 +94,12 @@ export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<
     ].join("");
   }
 
-  static getSourceRefUrl(object: Kustomization): string | undefined {
+  static getSourceRefUrl(object: Kustomization_v1beta1): string | undefined {
     const ref = object.spec.sourceRef;
     if (!ref) return;
     return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
   }
 }
 
-export class KustomizationApi extends Renderer.K8sApi.KubeApi<Kustomization> {}
-export class KustomizationStore extends Renderer.K8sApi.KubeObjectStore<Kustomization> {}
+export class KustomizationApi_v1beta1 extends Renderer.K8sApi.KubeApi<Kustomization_v1beta1> {}
+export class KustomizationStore_v1beta1 extends Renderer.K8sApi.KubeObjectStore<Kustomization_v1beta1> {}

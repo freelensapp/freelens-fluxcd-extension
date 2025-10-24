@@ -2,7 +2,7 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization";
+import { Kustomization_v1beta2, type KustomizationApi_v1beta2 } from "../../k8s/fluxcd/kustomize/kustomization_v1beta2";
 import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./kustomizations.module.scss";
 import stylesInline from "./kustomizations.module.scss?inline";
@@ -15,9 +15,9 @@ const {
   Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-const KubeObject = Kustomization;
-type KubeObject = Kustomization;
-type KubeObjectApi = KustomizationApi;
+const KubeObject = Kustomization_v1beta2;
+type KubeObject = Kustomization_v1beta2;
+type KubeObjectApi = KustomizationApi_v1beta2;
 
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
@@ -45,7 +45,7 @@ export interface KustomizationsPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const KustomizationsPage = observer((props: KustomizationsPageProps) =>
+export const KustomizationsPage_v1beta2 = observer((props: KustomizationsPageProps) =>
   withErrorPage(props, () => {
     const store = KubeObject.getStore<KubeObject>();
 
@@ -63,16 +63,16 @@ export const KustomizationsPage = observer((props: KustomizationsPageProps) =>
           renderTableContents={(object: KubeObject) => [
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip tooltip={Kustomization.getSourceRefText(object)}>
+            <WithTooltip tooltip={KubeObject.getSourceRefText(object)}>
               <MaybeLink
                 key="link"
-                to={getMaybeDetailsUrl(Kustomization.getSourceRefUrl(object))}
+                to={getMaybeDetailsUrl(KubeObject.getSourceRefUrl(object))}
                 onClick={stopPropagation}
               >
                 {object.spec.sourceRef.name}
               </MaybeLink>
             </WithTooltip>,
-            <WithTooltip>{Kustomization.getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
+            <WithTooltip>{KubeObject.getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
             <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
               className={getConditionClass(object.status?.conditions)}

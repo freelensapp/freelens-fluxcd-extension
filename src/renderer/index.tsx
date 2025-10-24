@@ -3,7 +3,9 @@ import { HelmReleaseDetails } from "./components/details/helm/helm-release-detai
 import { ImagePolicyDetails } from "./components/details/image/image-policy-details";
 import { ImageRepositoryDetails } from "./components/details/image/image-repository-details";
 import { ImageUpdateAutomationDetails } from "./components/details/image/image-update-automation-details";
-import { KustomizationDetails } from "./components/details/kustomize/kustomization-details";
+import { KustomizationDetails_v1 } from "./components/details/kustomize/kustomization-details_v1";
+import { KustomizationDetails_v1beta1 } from "./components/details/kustomize/kustomization-details_v1beta1";
+import { KustomizationDetails_v1beta2 } from "./components/details/kustomize/kustomization-details_v1beta2";
 import { AlertDetails } from "./components/details/notification/alert-details";
 import { ProviderDetails } from "./components/details/notification/provider-details";
 import { ReceiverDetails } from "./components/details/notification/receiver-details";
@@ -17,7 +19,9 @@ import { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
 import { ImagePolicy } from "./k8s/fluxcd/image/imagepolicy";
 import { ImageRepository } from "./k8s/fluxcd/image/imagerepository";
 import { ImageUpdateAutomation } from "./k8s/fluxcd/image/imageupdateautomation";
-import { Kustomization } from "./k8s/fluxcd/kustomize/kustomization";
+import { Kustomization_v1 } from "./k8s/fluxcd/kustomize/kustomization_v1";
+import { Kustomization_v1beta1 } from "./k8s/fluxcd/kustomize/kustomization_v1beta1";
+import { Kustomization_v1beta2 } from "./k8s/fluxcd/kustomize/kustomization_v1beta2";
 import { Alert } from "./k8s/fluxcd/notification/alert";
 import { Provider } from "./k8s/fluxcd/notification/provider";
 import { Receiver } from "./k8s/fluxcd/notification/receiver";
@@ -38,7 +42,9 @@ import { HelmReleasesPage } from "./pages/helm/helmreleases";
 import { ImagePoliciesPage } from "./pages/image/imagepolicies";
 import { ImageRepositoriesPage } from "./pages/image/imagerepositories";
 import { ImageUpdateAutomationsPage } from "./pages/image/imageupdateautomations";
-import { KustomizationsPage } from "./pages/kustomize/kustomizations";
+import { KustomizationsPage_v1 } from "./pages/kustomize/kustomizations_v1";
+import { KustomizationsPage_v1beta1 } from "./pages/kustomize/kustomizations_v1beta1";
+import { KustomizationsPage_v1beta2 } from "./pages/kustomize/kustomizations_v1beta2";
 import { AlertsPage } from "./pages/notifications/alerts";
 import { ProvidersPage } from "./pages/notifications/providers";
 import { ReceiversPage } from "./pages/notifications/receivers";
@@ -120,9 +126,21 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      id: Kustomization.crd.plural,
+      id: Kustomization_v1beta1.crd.plural,
       components: {
-        Page: () => <KustomizationsPage extension={this} />,
+        Page: () => <KustomizationsPage_v1beta1 extension={this} />,
+      },
+    },
+    {
+      id: Kustomization_v1beta2.crd.plural,
+      components: {
+        Page: () => <KustomizationsPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: Kustomization_v1.crd.plural,
+      components: {
+        Page: () => <KustomizationsPage_v1 extension={this} />,
       },
     },
     {
@@ -164,15 +182,29 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "kustomize",
       parentId: "fluxcd",
-      target: { pageId: Kustomization.crd.plural },
+      target: { pageId: Kustomization_v1beta1.crd.plural },
       title: "Kustomize",
       components: {},
     },
     {
-      id: Kustomization.crd.plural,
+      id: Kustomization_v1beta1.crd.plural,
       parentId: "kustomize",
-      target: { pageId: Kustomization.crd.plural },
-      title: Kustomization.crd.title,
+      target: { pageId: Kustomization_v1beta1.crd.plural },
+      title: Kustomization_v1beta1.crd.title,
+      components: {},
+    },
+    {
+      id: Kustomization_v1beta2.crd.plural,
+      parentId: "kustomize",
+      target: { pageId: Kustomization_v1beta2.crd.plural },
+      title: Kustomization_v1beta2.crd.title,
+      components: {},
+    },
+    {
+      id: Kustomization_v1.crd.plural,
+      parentId: "kustomize",
+      target: { pageId: Kustomization_v1.crd.plural },
+      title: Kustomization_v1.crd.title,
       components: {},
     },
     {
@@ -371,12 +403,32 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: Kustomization.kind,
-      apiVersions: Kustomization.crd.apiVersions,
+      kind: Kustomization_v1beta1.kind,
+      apiVersions: Kustomization_v1beta1.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Kustomization>) => (
-          <KustomizationDetails {...props} />
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Kustomization_v1beta1>) => (
+          <KustomizationDetails_v1beta1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Kustomization_v1beta2.kind,
+      apiVersions: Kustomization_v1beta2.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Kustomization_v1beta2>) => (
+          <KustomizationDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Kustomization_v1.kind,
+      apiVersions: Kustomization_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Kustomization_v1>) => (
+          <KustomizationDetails_v1 {...props} />
         ),
       },
     },
@@ -563,20 +615,56 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: Kustomization.kind,
-      apiVersions: Kustomization.crd.apiVersions,
+      kind: Kustomization_v1beta1.kind,
+      apiVersions: Kustomization_v1beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Kustomization} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={Kustomization_v1beta1} />
         ),
       },
     },
     {
-      kind: Kustomization.kind,
-      apiVersions: Kustomization.crd.apiVersions,
+      kind: Kustomization_v1beta1.kind,
+      apiVersions: Kustomization_v1beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Kustomization} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Kustomization_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: Kustomization_v1beta2.kind,
+      apiVersions: Kustomization_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Kustomization_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: Kustomization_v1beta2.kind,
+      apiVersions: Kustomization_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Kustomization_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: Kustomization_v1.kind,
+      apiVersions: Kustomization_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Kustomization_v1} />
+        ),
+      },
+    },
+    {
+      kind: Kustomization_v1.kind,
+      apiVersions: Kustomization_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Kustomization_v1} />
         ),
       },
     },

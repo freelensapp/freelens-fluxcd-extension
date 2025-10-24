@@ -7,7 +7,9 @@ import { HelmRelease } from "../k8s/fluxcd/helm/helmrelease";
 import { ImagePolicy } from "../k8s/fluxcd/image/imagepolicy";
 import { ImageRepository } from "../k8s/fluxcd/image/imagerepository";
 import { ImageUpdateAutomation } from "../k8s/fluxcd/image/imageupdateautomation";
-import { Kustomization } from "../k8s/fluxcd/kustomize/kustomization";
+import { Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization_v1";
+import { Kustomization_v1beta1 } from "../k8s/fluxcd/kustomize/kustomization_v1beta1";
+import { Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/kustomization_v1beta2";
 import { Alert } from "../k8s/fluxcd/notification/alert";
 import { Provider } from "../k8s/fluxcd/notification/provider";
 import { Receiver } from "../k8s/fluxcd/notification/receiver";
@@ -86,7 +88,9 @@ export const FluxCDOverviewPage = observer(() => {
       const namespaces = namespaceStore.items.map((ns) => ns.getName());
 
       for (const object of [
-        Kustomization,
+        Kustomization_v1beta1,
+        Kustomization_v1beta2,
+        Kustomization_v1,
         HelmRelease,
         GitRepository,
         HelmChart,
@@ -135,7 +139,9 @@ export const FluxCDOverviewPage = observer(() => {
 
           <div className={styles.overviewStatuses}>
             <div className={styles.statuses}>
-              {getChart(Kustomization.crd.title, Kustomization)}
+              {getChart(Kustomization_v1beta1.crd.title, Kustomization_v1beta1)}
+              {getChart(Kustomization_v1beta2.crd.title, Kustomization_v1beta2)}
+              {getChart(Kustomization_v1.crd.title, Kustomization_v1)}
               {getChart(HelmRelease.crd.title, HelmRelease)}
               {getChart(GitRepository.crd.title, GitRepository)}
               {getChart(HelmRepository.crd.title, HelmRepository)}
