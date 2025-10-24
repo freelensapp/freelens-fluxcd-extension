@@ -2,7 +2,7 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease";
+import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease_v2beta1";
 import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./helmreleases.module.scss";
 import stylesInline from "./helmreleases.module.scss?inline";
@@ -23,8 +23,8 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   source: (object: KubeObject) => KubeObject.getSourceRefName(object),
-  chartVersion: (object: KubeObject) => HelmRelease.getChartVersion(object),
-  appVersion: (object: KubeObject) => HelmRelease.getAppVersion(object),
+  chartVersion: (object: KubeObject) => KubeObject.getChartVersion(object),
+  appVersion: (object: KubeObject) => KubeObject.getAppVersion(object),
   resumed: (object: KubeObject) => String(!object.spec.suspend),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
@@ -66,13 +66,13 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
             return [
               <WithTooltip>{object.getName()}</WithTooltip>,
               <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-              <WithTooltip tooltip={HelmRelease.getSourceRefText(object)}>
-                <MaybeLink to={getMaybeDetailsUrl(HelmRelease.getSourceRefUrl(object))} onClick={stopPropagation}>
-                  {HelmRelease.getSourceRefName(object)}
+              <WithTooltip tooltip={KubeObject.getSourceRefText(object)}>
+                <MaybeLink to={getMaybeDetailsUrl(KubeObject.getSourceRefUrl(object))} onClick={stopPropagation}>
+                  {KubeObject.getSourceRefName(object)}
                 </MaybeLink>
               </WithTooltip>,
-              <WithTooltip>{HelmRelease.getChartVersion(object) ?? "N/A"}</WithTooltip>,
-              <WithTooltip>{HelmRelease.getAppVersion(object) ?? "N/A"}</WithTooltip>,
+              <WithTooltip>{KubeObject.getChartVersion(object) ?? "N/A"}</WithTooltip>,
+              <WithTooltip>{KubeObject.getAppVersion(object) ?? "N/A"}</WithTooltip>,
               <BadgeBoolean value={!object.spec.suspend} />,
               <Badge
                 key="name"

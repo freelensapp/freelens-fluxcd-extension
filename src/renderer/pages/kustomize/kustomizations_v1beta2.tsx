@@ -2,7 +2,7 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { Kustomization_v1beta2, type KustomizationApi_v1beta2 } from "../../k8s/fluxcd/kustomize/kustomization_v1beta2";
+import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization_v1beta2";
 import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./kustomizations.module.scss";
 import stylesInline from "./kustomizations.module.scss?inline";
@@ -15,9 +15,9 @@ const {
   Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-const KubeObject = Kustomization_v1beta2;
-type KubeObject = Kustomization_v1beta2;
-type KubeObjectApi = KustomizationApi_v1beta2;
+const KubeObject = Kustomization;
+type KubeObject = Kustomization;
+type KubeObjectApi = KustomizationApi;
 
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),

@@ -4,10 +4,7 @@ import { Base64 } from "js-base64";
 import yaml from "js-yaml";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
-import {
-  Kustomization_v1beta2,
-  type KustomizationStore_v1beta2,
-} from "../../../k8s/fluxcd/kustomize/kustomization_v1beta2";
+import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization_v1beta2";
 import { NamespacedObjectKindReference, type ResourceRef } from "../../../k8s/fluxcd/types";
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
@@ -70,11 +67,11 @@ const referenceSortByDefault: { sortBy: keyof typeof referenceSortable; orderBy:
   orderBy: "asc",
 };
 
-export const KustomizationDetails_v1beta2: React.FC<Renderer.Component.KubeObjectDetailsProps<Kustomization_v1beta2>> =
+export const KustomizationDetails_v1beta2: React.FC<Renderer.Component.KubeObjectDetailsProps<Kustomization>> =
   observer((props) => {
     const { object } = props;
     const namespace = object.getNs();
-    const store = Kustomization_v1beta2.getStore() as KustomizationStore_v1beta2;
+    const store = Kustomization.getStore() as KustomizationStore;
 
     const [substituteFromYaml, setSubstituteFromYaml] = useState<Record<string, string>>({});
 
@@ -110,7 +107,7 @@ export const KustomizationDetails_v1beta2: React.FC<Renderer.Component.KubeObjec
       };
     }, [object, namespace]);
 
-    const sourceRefUrl = Kustomization_v1beta2.getSourceRefUrl(object);
+    const sourceRefUrl = Kustomization.getSourceRefUrl(object);
     const substituteYaml =
       object.spec.postBuild?.substitute &&
       yaml.dump(object.spec.postBuild?.substitute, defaultYamlDumpOptions).trimEnd();
@@ -131,7 +128,7 @@ export const KustomizationDetails_v1beta2: React.FC<Renderer.Component.KubeObjec
           </DrawerItem>
           <DrawerItem name="Source">
             <MaybeLink key="link" to={getMaybeDetailsUrl(sourceRefUrl)} onClick={stopPropagation}>
-              {Kustomization_v1beta2.getSourceRefText(object)}
+              {Kustomization.getSourceRefText(object)}
             </MaybeLink>
           </DrawerItem>
           <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>

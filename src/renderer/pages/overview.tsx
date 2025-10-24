@@ -3,13 +3,15 @@ import { observer } from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { InfoPage } from "../components/info-page";
 import { PieChart } from "../components/pie-chart";
-import { HelmRelease } from "../k8s/fluxcd/helm/helmrelease";
+import { HelmRelease as HelmRelease_v2 } from "../k8s/fluxcd/helm/helmrelease_v2";
+import { HelmRelease as HelmRelease_v2beta1 } from "../k8s/fluxcd/helm/helmrelease_v2beta1";
+import { HelmRelease as HelmRelease_v2beta2 } from "../k8s/fluxcd/helm/helmrelease_v2beta2";
 import { ImagePolicy } from "../k8s/fluxcd/image/imagepolicy";
 import { ImageRepository } from "../k8s/fluxcd/image/imagerepository";
 import { ImageUpdateAutomation } from "../k8s/fluxcd/image/imageupdateautomation";
-import { Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization_v1";
-import { Kustomization_v1beta1 } from "../k8s/fluxcd/kustomize/kustomization_v1beta1";
-import { Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/kustomization_v1beta2";
+import { Kustomization as Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization_v1";
+import { Kustomization as Kustomization_v1beta1 } from "../k8s/fluxcd/kustomize/kustomization_v1beta1";
+import { Kustomization as Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/kustomization_v1beta2";
 import { Alert } from "../k8s/fluxcd/notification/alert";
 import { Provider } from "../k8s/fluxcd/notification/provider";
 import { Receiver } from "../k8s/fluxcd/notification/receiver";
@@ -91,7 +93,9 @@ export const FluxCDOverviewPage = observer(() => {
         Kustomization_v1beta1,
         Kustomization_v1beta2,
         Kustomization_v1,
-        HelmRelease,
+        HelmRelease_v2beta1,
+        HelmRelease_v2beta2,
+        HelmRelease_v2,
         GitRepository,
         HelmChart,
         HelmRepository,
@@ -142,7 +146,9 @@ export const FluxCDOverviewPage = observer(() => {
               {getChart(Kustomization_v1beta1.crd.title, Kustomization_v1beta1)}
               {getChart(Kustomization_v1beta2.crd.title, Kustomization_v1beta2)}
               {getChart(Kustomization_v1.crd.title, Kustomization_v1)}
-              {getChart(HelmRelease.crd.title, HelmRelease)}
+              {getChart(HelmRelease_v2.crd.title, HelmRelease_v2)}
+              {getChart(HelmRelease_v2beta1.crd.title, HelmRelease_v2beta1)}
+              {getChart(HelmRelease_v2beta2.crd.title, HelmRelease_v2beta2)}
               {getChart(GitRepository.crd.title, GitRepository)}
               {getChart(HelmRepository.crd.title, HelmRepository)}
               {getChart(HelmChart.crd.title, HelmChart)}

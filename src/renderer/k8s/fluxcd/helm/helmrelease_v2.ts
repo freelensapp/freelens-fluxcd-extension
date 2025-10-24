@@ -220,10 +220,10 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
 > {
   static readonly kind = "HelmRelease";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/helm.toolkit.fluxcd.io/v2beta1/helmreleases";
+  static readonly apiBase = "/apis/helm.toolkit.fluxcd.io/v2/helmreleases";
 
   static readonly crd: FluxCDKubeObjectCRD = {
-    apiVersions: ["helm.toolkit.fluxcd.io/v2beta1", "helm.toolkit.fluxcd.io/v2beta2", "helm.toolkit.fluxcd.io/v2"],
+    apiVersions: ["helm.toolkit.fluxcd.io/v2"],
     plural: "helmreleases",
     singular: "helmrelease",
     shortNames: ["hr"],
@@ -238,20 +238,20 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
     return object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version;
   }
 
-  static getChartRefNamespace(object: HelmRelease) {
+  static getChartRefNamespace(object: HelmRelease): string {
     return object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace ?? object.getNs()!;
   }
 
-  static getHelmChartName(object: HelmRelease) {
+  static getHelmChartName(object: HelmRelease): string {
     const ns = HelmRelease.getChartRefNamespace(object);
     return `${ns}-${object.metadata.name}`;
   }
 
-  static getHelmReleaseUrl(object: HelmRelease, namespace: string) {
+  static getHelmReleaseUrl(object: HelmRelease, namespace: string): string {
     return `/helm/releases/${object.spec.storageNamespace ?? namespace}/${HelmRelease.getReleaseNameShortened(object)}`;
   }
 
-  static getReleaseName(object: HelmRelease) {
+  static getReleaseName(object: HelmRelease): string {
     if (object.spec.releaseName !== undefined) {
       return object.spec.releaseName;
     }
@@ -261,7 +261,7 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
     return object.metadata.name;
   }
 
-  static getReleaseNameShortened(object: HelmRelease) {
+  static getReleaseNameShortened(object: HelmRelease): string {
     const name = HelmRelease.getReleaseName(object);
     if (name.length > 53) {
       const hash = crypto.createHash("sha256").update(name).digest("hex").slice(0, 12);

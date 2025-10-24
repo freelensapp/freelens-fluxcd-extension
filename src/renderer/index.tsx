@@ -1,5 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-import { HelmReleaseDetails } from "./components/details/helm/helm-release-details";
+import { HelmReleaseDetails as HelmReleaseDetails_v2 } from "./components/details/helm/helm-release-details_v2";
+import { HelmReleaseDetails as HelmReleaseDetails_v2beta1 } from "./components/details/helm/helm-release-details_v2beta1";
+import { HelmReleaseDetails as HelmReleaseDetails_v2beta2 } from "./components/details/helm/helm-release-details_v2beta2";
 import { ImagePolicyDetails } from "./components/details/image/image-policy-details";
 import { ImageRepositoryDetails } from "./components/details/image/image-repository-details";
 import { ImageUpdateAutomationDetails } from "./components/details/image/image-update-automation-details";
@@ -15,13 +17,15 @@ import { HelmChartDetails } from "./components/details/source/helm-chart-details
 import { HelmRepositoryDetails } from "./components/details/source/helm-repository-details";
 import { OCIRepositoryDetails } from "./components/details/source/oci-repository-details";
 import svgIcon from "./icons/fluxcd.svg?raw";
-import { HelmRelease } from "./k8s/fluxcd/helm/helmrelease";
+import { HelmRelease as HelmRelease_v2 } from "./k8s/fluxcd/helm/helmrelease_v2";
+import { HelmRelease as HelmRelease_v2beta1 } from "./k8s/fluxcd/helm/helmrelease_v2beta1";
+import { HelmRelease as HelmRelease_v2beta2 } from "./k8s/fluxcd/helm/helmrelease_v2beta2";
 import { ImagePolicy } from "./k8s/fluxcd/image/imagepolicy";
 import { ImageRepository } from "./k8s/fluxcd/image/imagerepository";
 import { ImageUpdateAutomation } from "./k8s/fluxcd/image/imageupdateautomation";
-import { Kustomization_v1 } from "./k8s/fluxcd/kustomize/kustomization_v1";
-import { Kustomization_v1beta1 } from "./k8s/fluxcd/kustomize/kustomization_v1beta1";
-import { Kustomization_v1beta2 } from "./k8s/fluxcd/kustomize/kustomization_v1beta2";
+import { Kustomization as Kustomization_v1 } from "./k8s/fluxcd/kustomize/kustomization_v1";
+import { Kustomization as Kustomization_v1beta1 } from "./k8s/fluxcd/kustomize/kustomization_v1beta1";
+import { Kustomization as Kustomization_v1beta2 } from "./k8s/fluxcd/kustomize/kustomization_v1beta2";
 import { Alert } from "./k8s/fluxcd/notification/alert";
 import { Provider } from "./k8s/fluxcd/notification/provider";
 import { Receiver } from "./k8s/fluxcd/notification/receiver";
@@ -38,7 +42,9 @@ import {
   FluxCDObjectSuspendResumeMenuItem,
   type FluxCDObjectSuspendResumeMenuItemProps,
 } from "./menus/fluxcd-object-suspend-resume-menu-item";
-import { HelmReleasesPage } from "./pages/helm/helmreleases";
+import { HelmReleasesPage as HelmReleasesPage_v2 } from "./pages/helm/helmreleases_v2";
+import { HelmReleasesPage as HelmReleasesPage_v2beta1 } from "./pages/helm/helmreleases_v2beta1";
+import { HelmReleasesPage as HelmReleasesPage_v2beta2 } from "./pages/helm/helmreleases_v2beta2";
 import { ImagePoliciesPage } from "./pages/image/imagepolicies";
 import { ImageRepositoriesPage } from "./pages/image/imagerepositories";
 import { ImageUpdateAutomationsPage } from "./pages/image/imageupdateautomations";
@@ -96,9 +102,21 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      id: HelmRelease.crd.plural,
+      id: HelmRelease_v2beta1.crd.plural,
       components: {
-        Page: () => <HelmReleasesPage extension={this} />,
+        Page: () => <HelmReleasesPage_v2beta1 extension={this} />,
+      },
+    },
+    {
+      id: HelmRelease_v2beta2.crd.plural,
+      components: {
+        Page: () => <HelmReleasesPage_v2beta2 extension={this} />,
+      },
+    },
+    {
+      id: HelmRelease_v2.crd.plural,
+      components: {
+        Page: () => <HelmReleasesPage_v2 extension={this} />,
       },
     },
     {
@@ -210,15 +228,29 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "helm",
       parentId: "fluxcd",
-      target: { pageId: HelmRelease.crd.plural },
+      target: { pageId: HelmRelease_v2beta1.crd.plural },
       title: "Helm",
       components: {},
     },
     {
-      id: HelmRelease.crd.plural,
+      id: HelmRelease_v2beta1.crd.plural,
       parentId: "helm",
-      target: { pageId: HelmRelease.crd.plural },
-      title: HelmRelease.crd.title,
+      target: { pageId: HelmRelease_v2beta1.crd.plural },
+      title: HelmRelease_v2beta1.crd.title,
+      components: {},
+    },
+    {
+      id: HelmRelease_v2beta2.crd.plural,
+      parentId: "helm",
+      target: { pageId: HelmRelease_v2beta2.crd.plural },
+      title: HelmRelease_v2beta2.crd.title,
+      components: {},
+    },
+    {
+      id: HelmRelease_v2.crd.plural,
+      parentId: "helm",
+      target: { pageId: HelmRelease_v2.crd.plural },
+      title: HelmRelease_v2.crd.title,
       components: {},
     },
     {
@@ -357,11 +389,33 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: HelmRelease.kind,
-      apiVersions: HelmRelease.crd.apiVersions,
+      kind: HelmRelease_v2beta1.kind,
+      apiVersions: HelmRelease_v2beta1.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRelease>) => <HelmReleaseDetails {...props} />,
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRelease_v2beta1>) => (
+          <HelmReleaseDetails_v2beta1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: HelmRelease_v2beta2.kind,
+      apiVersions: HelmRelease_v2beta2.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRelease_v2beta2>) => (
+          <HelmReleaseDetails_v2beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: HelmRelease_v2.kind,
+      apiVersions: HelmRelease_v2.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRelease_v2>) => (
+          <HelmReleaseDetails_v2 {...props} />
+        ),
       },
     },
     {
@@ -534,20 +588,56 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: HelmRelease.kind,
-      apiVersions: HelmRelease.crd.apiVersions,
+      kind: HelmRelease_v2beta1.kind,
+      apiVersions: HelmRelease_v2beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRelease} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRelease_v2beta1} />
         ),
       },
     },
     {
-      kind: HelmRelease.kind,
-      apiVersions: HelmRelease.crd.apiVersions,
+      kind: HelmRelease_v2beta1.kind,
+      apiVersions: HelmRelease_v2beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRelease} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRelease_v2beta1} />
+        ),
+      },
+    },
+    {
+      kind: HelmRelease_v2beta2.kind,
+      apiVersions: HelmRelease_v2beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRelease_v2beta2} />
+        ),
+      },
+    },
+    {
+      kind: HelmRelease_v2beta2.kind,
+      apiVersions: HelmRelease_v2beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRelease_v2beta2} />
+        ),
+      },
+    },
+    {
+      kind: HelmRelease_v2.kind,
+      apiVersions: HelmRelease_v2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRelease_v2} />
+        ),
+      },
+    },
+    {
+      kind: HelmRelease_v2.kind,
+      apiVersions: HelmRelease_v2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRelease_v2} />
         ),
       },
     },

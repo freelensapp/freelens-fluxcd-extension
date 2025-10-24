@@ -64,7 +64,7 @@ export interface KustomizationStatus extends FluxCDKubeObjectStatus {
   inventory?: ResourceInventory;
 }
 
-export class Kustomization_v1beta2 extends Renderer.K8sApi.LensExtensionKubeObject<
+export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,
   KustomizationStatus,
   KustomizationSpec
@@ -81,11 +81,11 @@ export class Kustomization_v1beta2 extends Renderer.K8sApi.LensExtensionKubeObje
     title: "Kustomizations",
   };
 
-  static getLastAppliedRevision(object: Kustomization_v1beta2): string | undefined {
+  static getLastAppliedRevision(object: Kustomization): string | undefined {
     return object.status?.lastAppliedRevision?.replace(/^refs\/(heads|tags)\//, "");
   }
 
-  static getSourceRefText(object: Kustomization_v1beta2): string {
+  static getSourceRefText(object: Kustomization): string {
     return [
       object.spec.sourceRef.kind,
       ": ",
@@ -94,12 +94,12 @@ export class Kustomization_v1beta2 extends Renderer.K8sApi.LensExtensionKubeObje
     ].join("");
   }
 
-  static getSourceRefUrl(object: Kustomization_v1beta2): string | undefined {
+  static getSourceRefUrl(object: Kustomization): string | undefined {
     const ref = object.spec.sourceRef;
     if (!ref) return;
     return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
   }
 }
 
-export class KustomizationApi_v1beta2 extends Renderer.K8sApi.KubeApi<Kustomization_v1beta2> {}
-export class KustomizationStore_v1beta2 extends Renderer.K8sApi.KubeObjectStore<Kustomization_v1beta2> {}
+export class KustomizationApi extends Renderer.K8sApi.KubeApi<Kustomization> {}
+export class KustomizationStore extends Renderer.K8sApi.KubeObjectStore<Kustomization> {}
