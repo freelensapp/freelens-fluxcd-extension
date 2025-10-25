@@ -2,23 +2,33 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { ImagePolicy, type ImagePolicyApi } from "../../k8s/fluxcd/image/imagepolicy";
-import styles from "./imagepolicies.module.scss";
-import stylesInline from "./imagepolicies.module.scss?inline";
+import {
+  ImageUpdateAutomation,
+  type ImageUpdateAutomationApi,
+} from "../../k8s/fluxcd/image/imageupdateautomation-v1beta1";
+import styles from "./imageupdateautomations.module.scss";
+import stylesInline from "./imageupdateautomations.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
+  Component: {
+    Badge,
+    KubeObjectAge,
+    KubeObjectListLayout,
+    LocaleDate,
+    NamespaceSelectBadge,
+    ReactiveDuration,
+    WithTooltip,
+  },
 } = Renderer;
 
-const KubeObject = ImagePolicy;
-type KubeObject = ImagePolicy;
-type KubeObjectApi = ImagePolicyApi;
+const KubeObject = ImageUpdateAutomation;
+type KubeObject = ImageUpdateAutomation;
+type KubeObjectApi = ImageUpdateAutomationApi;
 
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
-  repository: (object: KubeObject) => object.spec.imageRepositoryRef.name,
-  latestTag: (object: KubeObject) => object.status?.latestImage?.split(":")[1],
+  lastRun: (object: KubeObject) => object.status?.lastAutomationRunTime,
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   status: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -27,18 +37,17 @@ const sortingCallbacks = {
 const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
-  { title: "Repository", sortBy: "repository", className: styles.repository },
-  { title: "Latest Tag", sortBy: "latestTag", className: styles.latestTag },
+  { title: "Last Run", sortBy: "lastRun", className: styles.lastRun },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
 ];
 
-export interface ImagePoliciesPageProps {
+export interface ImageUpdateAutomationsPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const ImagePoliciesPage = observer((props: ImagePoliciesPageProps) =>
+export const ImageUpdateAutomationsPage = observer((props: ImageUpdateAutomationsPageProps) =>
   withErrorPage(props, () => {
     const store = KubeObject.getStore<KubeObject>();
 
@@ -56,8 +65,13 @@ export const ImagePoliciesPage = observer((props: ImagePoliciesPageProps) =>
           renderTableContents={(object: KubeObject) => [
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip>{object.spec.imageRepositoryRef.name}</WithTooltip>,
-            <WithTooltip>{object.status?.latestImage?.split(":")[1]}</WithTooltip>,
+            <WithTooltip
+              tooltip={
+                object.status?.lastAutomationRunTime ? <LocaleDate date={object.status?.lastAutomationRunTime} /> : null
+              }
+            >
+              <ReactiveDuration timestamp={object.metadata.creationTimestamp} compact={false} />
+            </WithTooltip>,
             <Badge
               className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}

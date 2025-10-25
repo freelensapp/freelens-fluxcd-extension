@@ -73,7 +73,7 @@ export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObje
   static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1beta1/imageupdateautomations";
 
   static readonly crd = {
-    apiVersions: ["image.toolkit.fluxcd.io/v1beta1", "image.toolkit.fluxcd.io/v1beta2"],
+    apiVersions: ["image.toolkit.fluxcd.io/v1beta1"],
     plural: "imageupdateautomations",
     singular: "imageupdateautomation",
     shortNames: [],

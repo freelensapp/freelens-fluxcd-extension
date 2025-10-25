@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { ImageRepository, type ImageRepositoryApi } from "../../k8s/fluxcd/image/imagerepository";
+import { ImageRepository, type ImageRepositoryApi } from "../../k8s/fluxcd/image/imagerepository-v1beta1";
 import styles from "./imagerepositories.module.scss";
 import stylesInline from "./imagerepositories.module.scss?inline";
 

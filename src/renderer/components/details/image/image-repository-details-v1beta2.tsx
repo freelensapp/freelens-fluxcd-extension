@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository";
+import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository-v1beta2";
 import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { LinkToSecret } from "../../link-to-secret";
 import { LinkToServiceAccount } from "../../link-to-service-account";

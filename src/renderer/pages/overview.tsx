@@ -6,9 +6,12 @@ import { PieChart } from "../components/pie-chart";
 import { HelmRelease as HelmRelease_v2 } from "../k8s/fluxcd/helm/helmrelease-v2";
 import { HelmRelease as HelmRelease_v2beta1 } from "../k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "../k8s/fluxcd/helm/helmrelease-v2beta2";
-import { ImagePolicy } from "../k8s/fluxcd/image/imagepolicy";
-import { ImageRepository } from "../k8s/fluxcd/image/imagerepository";
-import { ImageUpdateAutomation } from "../k8s/fluxcd/image/imageupdateautomation";
+import { ImagePolicy as ImagePolicy_v1beta1 } from "../k8s/fluxcd/image/imagepolicy-v1beta1";
+import { ImagePolicy as ImagePolicy_v1beta2 } from "../k8s/fluxcd/image/imagepolicy-v1beta2";
+import { ImageRepository as ImageRepository_v2beta1 } from "../k8s/fluxcd/image/imagerepository-v1beta1";
+import { ImageRepository as ImageRepository_v2beta2 } from "../k8s/fluxcd/image/imagerepository-v1beta2";
+import { ImageUpdateAutomation as ImageUpdateAutomation_v2beta1 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta1";
+import { ImageUpdateAutomation as ImageUpdateAutomation_v2beta2 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta2";
 import { Kustomization as Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization-v1";
 import { Kustomization as Kustomization_v1beta1 } from "../k8s/fluxcd/kustomize/kustomization-v1beta1";
 import { Kustomization as Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/kustomization-v1beta2";
@@ -119,9 +122,12 @@ export const FluxCDOverviewPage = observer(() => {
         Bucket_v1,
         OCIRepository_v1beta2,
         OCIRepository_v1,
-        ImageUpdateAutomation,
-        ImageRepository,
-        ImagePolicy,
+        ImageUpdateAutomation_v2beta1,
+        ImageUpdateAutomation_v2beta2,
+        ImageRepository_v2beta1,
+        ImageRepository_v2beta2,
+        ImagePolicy_v1beta1,
+        ImagePolicy_v1beta2,
         Alert,
         Provider,
         Receiver,
@@ -181,9 +187,9 @@ export const FluxCDOverviewPage = observer(() => {
               {getChart(Bucket_v1.crd.title, Bucket_v1)}
               {getChart(OCIRepository_v1beta2.crd.title, OCIRepository_v1beta2)}
               {getChart(OCIRepository_v1.crd.title, OCIRepository_v1)}
-              {getChart(ImageRepository.crd.title, ImageRepository)}
-              {getChart(ImagePolicy.crd.title, ImagePolicy)}
-              {getChart(ImageUpdateAutomation.crd.title, ImageUpdateAutomation)}
+              {getChart(ImageRepository_v2beta1.crd.title, ImageRepository_v2beta1)}
+              {getChart(ImagePolicy_v1beta1.crd.title, ImagePolicy_v1beta1)}
+              {getChart(ImageUpdateAutomation_v2beta1.crd.title, ImageUpdateAutomation_v2beta1)}
               {getChart(Alert.crd.title, Alert)}
               {getChart(Provider.crd.title, Provider)}
               {getChart(Receiver.crd.title, Receiver)}

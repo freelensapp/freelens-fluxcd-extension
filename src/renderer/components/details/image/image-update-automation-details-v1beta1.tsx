@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { ImageUpdateAutomation } from "../../../k8s/fluxcd/image/imageupdateautomation";
+import { ImageUpdateAutomation } from "../../../k8s/fluxcd/image/imageupdateautomation-v1beta1";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1";
 import { getHeight } from "../../../utils";
 import { LinkToObject } from "../../link-to-object";
