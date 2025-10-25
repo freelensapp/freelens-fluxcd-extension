@@ -6,10 +6,13 @@ import { PieChart } from "../components/pie-chart";
 import { HelmRelease as HelmRelease_v2 } from "../k8s/fluxcd/helm/helmrelease-v2";
 import { HelmRelease as HelmRelease_v2beta1 } from "../k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "../k8s/fluxcd/helm/helmrelease-v2beta2";
+import { ImagePolicy as ImagePolicy_v1 } from "../k8s/fluxcd/image/imagepolicy-v1";
 import { ImagePolicy as ImagePolicy_v1beta1 } from "../k8s/fluxcd/image/imagepolicy-v1beta1";
 import { ImagePolicy as ImagePolicy_v1beta2 } from "../k8s/fluxcd/image/imagepolicy-v1beta2";
+import { ImageRepository as ImageRepository_v2 } from "../k8s/fluxcd/image/imagerepository-v1";
 import { ImageRepository as ImageRepository_v2beta1 } from "../k8s/fluxcd/image/imagerepository-v1beta1";
 import { ImageRepository as ImageRepository_v2beta2 } from "../k8s/fluxcd/image/imagerepository-v1beta2";
+import { ImageUpdateAutomation as ImageUpdateAutomation_v2 } from "../k8s/fluxcd/image/imageupdateautomation-v1";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v2beta1 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta1";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v2beta2 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta2";
 import { Kustomization as Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization-v1";
@@ -131,10 +134,13 @@ export const FluxCDOverviewPage = observer(() => {
         OCIRepository_v1,
         ImageUpdateAutomation_v2beta1,
         ImageUpdateAutomation_v2beta2,
+        ImageUpdateAutomation_v2,
         ImageRepository_v2beta1,
         ImageRepository_v2beta2,
+        ImageRepository_v2,
         ImagePolicy_v1beta1,
         ImagePolicy_v1beta2,
+        ImagePolicy_v1,
         Alert_v1beta1,
         Alert_v1beta2,
         Alert_v1beta3,

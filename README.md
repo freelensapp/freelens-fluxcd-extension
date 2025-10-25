@@ -29,7 +29,7 @@ Features include:
 
 - Kubernetes >= 1.24
 - Freelens >= 1.6.0
-- Flux >= v2.0.0, <= 2.6.x
+- Flux >= v2.0.0, <= 2.7.x
 - kustomize-controller >= v0.1.0
 - helm-controller >= v0.1.0
 - image-automation-controller >= v0.14.0
@@ -55,11 +55,13 @@ Features include:
   (image-automation-controller)
 - [image.toolkit.fluxcd.io/v1beta2](https://github.com/fluxcd/image-automation-controller/blob/main/docs/spec/v1beta2/imageupdateautomations.md)
   (image-automation-controller)
-- [image.toolkit.fluxcd.io/v1](https://github.com/fluxcd/image-automation-controller/tree/main/docs/spec/v1)
+- [image.toolkit.fluxcd.io/v1](https://github.com/fluxcd/image-automation-controller/tree/v1.0.2/docs/spec/v1)
   (image-automation-controller)
 - [image.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/image-reflector-controller/blob/v0.11.0/docs/api/image-reflector.md)
   (image-reflector-controller)
 - [image.toolkit.fluxcd.io/v1beta2](https://github.com/fluxcd/image-reflector-controller/blob/v0.35.2/docs/api/v1beta2/image-reflector.md)
+  (image-reflector-controller)
+- [image.toolkit.fluxcd.io/v1](https://github.com/fluxcd/image-reflector-controller/blob/v1.0.2/docs/api/v1/image-reflector.md)
   (image-reflector-controller)
 - [notification.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/notification-controller/blob/v0.1.0/docs/api/notification.md)
   (notification-controller)
