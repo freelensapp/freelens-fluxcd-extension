@@ -7,8 +7,6 @@ import type { AccessFrom, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatu
 export interface ScanResult {
   tagCount: number;
   scanTime?: string;
-  // v1beta2
-  latestTags: string[];
 }
 
 export interface ImageRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {

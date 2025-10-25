@@ -10,7 +10,7 @@ import styles from "./image-update-automation-details.module.scss";
 import stylesInline from "./image-update-automation-details.module.scss?inline";
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, MonacoEditor },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, MonacoEditor },
 } = Renderer;
 
 export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation>> =
@@ -79,27 +79,6 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
               <DrawerTitle>Update Strategy</DrawerTitle>
               <DrawerItem name="Strategy">{object.spec.update.strategy}</DrawerItem>
               <DrawerItem name="Path">{object.spec.update.path}</DrawerItem>
-            </>
-          )}
-
-          {object?.status?.observedPolicies && (
-            <>
-              <DrawerTitle>Observed Policies</DrawerTitle>
-              {Object.entries(object.status.observedPolicies ?? {}).map(([key, value]) => (
-                <>
-                  <div key={key}>
-                    <div className={styles.title}>
-                      <Icon small material="list" />
-                      <span>{key}</span>
-                    </div>
-                    <DrawerItem name="Name">{value.name}</DrawerItem>
-                    <DrawerItem name="Tag">{value.tag}</DrawerItem>
-                    <DrawerItem name="Digest" hidden={!value.digest}>
-                      {value.digest}
-                    </DrawerItem>
-                  </div>
-                </>
-              ))}
             </>
           )}
         </div>

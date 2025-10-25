@@ -51,11 +51,6 @@ export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetai
                 <DurationAbsoluteTimestamp timestamp={object.status.lastScanResult.scanTime} />
               </DrawerItem>
               <DrawerItem name="Tag Count">{object.status.lastScanResult.tagCount}</DrawerItem>
-              <DrawerItem name="Latest Tags" hidden={!object.status.lastScanResult.latestTags?.length}>
-                {object.status.lastScanResult.latestTags.map((tag) => (
-                  <DrawerItem name="">{tag}</DrawerItem>
-                ))}
-              </DrawerItem>
             </div>
           )}
         </div>

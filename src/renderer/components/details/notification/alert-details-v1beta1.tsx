@@ -5,7 +5,7 @@ import { Alert } from "../../../k8s/fluxcd/notification/alert-v1beta1";
 import { LinkToObject } from "../../link-to-object";
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, DrawerTitle },
+  Component: { Badge, BadgeBoolean, DrawerItem },
 } = Renderer;
 
 export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Alert>> = observer((props) => {
@@ -34,16 +34,6 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
       <DrawerItem name="Provider">
         <LinkToObject objectRef={object.spec.providerRef} object={object} />
       </DrawerItem>
-      {object.spec.eventMetadata && (
-        <>
-          <DrawerTitle>Event Metadata</DrawerTitle>
-          {Object.entries(object.spec.eventMetadata).map(([name, value], index) => (
-            <DrawerItem key={index} name={name}>
-              {value}
-            </DrawerItem>
-          ))}
-        </>
-      )}
     </div>
   );
 });

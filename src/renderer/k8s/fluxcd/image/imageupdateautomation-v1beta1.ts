@@ -59,8 +59,6 @@ export interface ImageUpdateAutomationStatus extends FluxCDKubeObjectStatus {
   lastAutomationRunTime?: string;
   lastPushCommit?: string;
   lastPushTime?: string;
-  // v1beta2
-  observedPolicies?: Record<string, ImageRef>;
 }
 
 export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObject<

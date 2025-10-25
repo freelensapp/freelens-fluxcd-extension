@@ -28,8 +28,8 @@ Features include:
 ## Requirements
 
 - Kubernetes >= 1.24
-- Freelens >= 1.5.3
-- Flux >= v2.0.0
+- Freelens >= 1.6.0
+- Flux >= v2.0.0, <= 2.6.x
 - kustomize-controller >= v0.1.0
 - helm-controller >= v0.1.0
 - image-automation-controller >= v0.1.0
