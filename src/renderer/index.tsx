@@ -2,10 +2,13 @@ import { Renderer } from "@freelensapp/extensions";
 import { HelmReleaseDetails as HelmReleaseDetails_v2 } from "./components/details/helm/helm-release-details-v2";
 import { HelmReleaseDetails as HelmReleaseDetails_v2beta1 } from "./components/details/helm/helm-release-details-v2beta1";
 import { HelmReleaseDetails as HelmReleaseDetails_v2beta2 } from "./components/details/helm/helm-release-details-v2beta2";
+import { ImagePolicyDetails as ImagePolicyDetails_v1 } from "./components/details/image/image-policy-details-v1";
 import { ImagePolicyDetails as ImagePolicyDetails_v1beta1 } from "./components/details/image/image-policy-details-v1beta1";
 import { ImagePolicyDetails as ImagePolicyDetails_v1beta2 } from "./components/details/image/image-policy-details-v1beta2";
+import { ImageRepositoryDetails as ImageRepositoryDetails_v1 } from "./components/details/image/image-repository-details-v1";
 import { ImageRepositoryDetails as ImageRepositoryDetails_v1beta1 } from "./components/details/image/image-repository-details-v1beta1";
 import { ImageRepositoryDetails as ImageRepositoryDetails_v1beta2 } from "./components/details/image/image-repository-details-v1beta2";
+import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1 } from "./components/details/image/image-update-automation-details-v1";
 import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1beta1 } from "./components/details/image/image-update-automation-details-v1beta1";
 import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1beta2 } from "./components/details/image/image-update-automation-details-v1beta2";
 import { KustomizationDetails_v1 } from "./components/details/kustomize/kustomization-details-v1";
@@ -39,10 +42,13 @@ import svgIcon from "./icons/fluxcd.svg?raw";
 import { HelmRelease as HelmRelease_v2 } from "./k8s/fluxcd/helm/helmrelease-v2";
 import { HelmRelease as HelmRelease_v2beta1 } from "./k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "./k8s/fluxcd/helm/helmrelease-v2beta2";
+import { ImagePolicy as ImagePolicy_v1 } from "./k8s/fluxcd/image/imagepolicy-v1";
 import { ImagePolicy as ImagePolicy_v1beta1 } from "./k8s/fluxcd/image/imagepolicy-v1beta1";
 import { ImagePolicy as ImagePolicy_v1beta2 } from "./k8s/fluxcd/image/imagepolicy-v1beta2";
+import { ImageRepository as ImageRepository_v1 } from "./k8s/fluxcd/image/imagerepository-v1";
 import { ImageRepository as ImageRepository_v1beta1 } from "./k8s/fluxcd/image/imagerepository-v1beta1";
 import { ImageRepository as ImageRepository_v1beta2 } from "./k8s/fluxcd/image/imagerepository-v1beta2";
+import { ImageUpdateAutomation as ImageUpdateAutomation_v1 } from "./k8s/fluxcd/image/imageupdateautomation-v1";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta1 } from "./k8s/fluxcd/image/imageupdateautomation-v1beta1";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta2 } from "./k8s/fluxcd/image/imageupdateautomation-v1beta2";
 import { Kustomization as Kustomization_v1 } from "./k8s/fluxcd/kustomize/kustomization-v1";
@@ -83,10 +89,13 @@ import {
 import { HelmReleasesPage as HelmReleasesPage_v2 } from "./pages/helm/helmreleases-v2";
 import { HelmReleasesPage as HelmReleasesPage_v2beta1 } from "./pages/helm/helmreleases-v2beta1";
 import { HelmReleasesPage as HelmReleasesPage_v2beta2 } from "./pages/helm/helmreleases-v2beta2";
+import { ImagePoliciesPage as ImagePoliciesPage_v1 } from "./pages/image/imagepolicies-v1";
 import { ImagePoliciesPage as ImagePoliciesPage_v1beta1 } from "./pages/image/imagepolicies-v1beta1";
 import { ImagePoliciesPage as ImagePoliciesPage_v1beta2 } from "./pages/image/imagepolicies-v1beta2";
+import { ImageRepositoriesPage as ImageRepositoriesPage_v1 } from "./pages/image/imagerepositories-v1";
 import { ImageRepositoriesPage as ImageRepositoriesPage_v1beta1 } from "./pages/image/imagerepositories-v1beta1";
 import { ImageRepositoriesPage as ImageRepositoriesPage_v1beta2 } from "./pages/image/imagerepositories-v1beta2";
+import { ImageUpdateAutomationsPage as ImageUpdateAutomationsPage_v1 } from "./pages/image/imageupdateautomations-v1";
 import { ImageUpdateAutomationsPage as ImageUpdateAutomationsPage_v1beta1 } from "./pages/image/imageupdateautomations-v1beta1";
 import { ImageUpdateAutomationsPage as ImageUpdateAutomationsPage_v1beta2 } from "./pages/image/imageupdateautomations-v1beta2";
 import { KustomizationsPage_v1 } from "./pages/kustomize/kustomizations-v1";
@@ -255,6 +264,12 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      id: "imagepolicy",
+      components: {
+        Page: () => <ImagePoliciesPage_v1 extension={this} />,
+      },
+    },
+    {
       id: "imagerepository",
       components: {
         Page: () => <ImageRepositoriesPage_v1beta1 extension={this} />,
@@ -267,6 +282,12 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      id: "imagerepository",
+      components: {
+        Page: () => <ImageRepositoriesPage_v1 extension={this} />,
+      },
+    },
+    {
       id: "imageupdateautomation",
       components: {
         Page: () => <ImageUpdateAutomationsPage_v1beta1 extension={this} />,
@@ -276,6 +297,12 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "imageupdateautomation",
       components: {
         Page: () => <ImageUpdateAutomationsPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: "imageupdateautomation",
+      components: {
+        Page: () => <ImageUpdateAutomationsPage_v1 extension={this} />,
       },
     },
     {
@@ -502,6 +529,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {},
     },
     {
+      id: "imagerepository",
+      parentId: "image",
+      target: { pageId: "imagerepository" },
+      title: ImageRepository_v1beta2.crd.title,
+      components: {},
+    },
+    {
       id: "imagepolicy",
       parentId: "image",
       target: { pageId: "imagepolicy" },
@@ -516,6 +550,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {},
     },
     {
+      id: "imagepolicy",
+      parentId: "image",
+      target: { pageId: "imagepolicy" },
+      title: ImagePolicy_v1.crd.title,
+      components: {},
+    },
+    {
       id: "imageupdateautomation",
       parentId: "image",
       target: { pageId: "imageupdateautomation" },
@@ -527,6 +568,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       parentId: "image",
       target: { pageId: "imageupdateautomation" },
       title: ImageUpdateAutomation_v1beta2.crd.title,
+      components: {},
+    },
+    {
+      id: "imageupdateautomation",
+      parentId: "image",
+      target: { pageId: "imageupdateautomation" },
+      title: ImageUpdateAutomation_v1.crd.title,
       components: {},
     },
     {
@@ -816,6 +864,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ImagePolicy_v1.kind,
+      apiVersions: ImagePolicy_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImagePolicy_v1>) => (
+          <ImagePolicyDetails_v1 {...props} />
+        ),
+      },
+    },
+    {
       kind: ImageRepository_v1beta1.kind,
       apiVersions: ImageRepository_v1beta1.crd.apiVersions,
       priority: 10,
@@ -836,6 +894,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ImageRepository_v1.kind,
+      apiVersions: ImageRepository_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageRepository_v1>) => (
+          <ImageRepositoryDetails_v1 {...props} />
+        ),
+      },
+    },
+    {
       kind: ImageUpdateAutomation_v1beta1.kind,
       apiVersions: ImageUpdateAutomation_v1beta1.crd.apiVersions,
       priority: 10,
@@ -852,6 +920,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation_v1beta2>) => (
           <ImageUpdateAutomationDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: ImageUpdateAutomation_v1.kind,
+      apiVersions: ImageUpdateAutomation_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation_v1>) => (
+          <ImageUpdateAutomationDetails_v1 {...props} />
         ),
       },
     },
@@ -1283,6 +1361,15 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ImagePolicy_v1.kind,
+      apiVersions: ImagePolicy_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ImagePolicy_v1} />
+        ),
+      },
+    },
+    {
       kind: ImageRepository_v1beta1.kind,
       apiVersions: ImageRepository_v1beta1.crd.apiVersions,
       components: {
@@ -1319,6 +1406,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ImageRepository_v1.kind,
+      apiVersions: ImageRepository_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ImageRepository_v1} />
+        ),
+      },
+    },
+    {
+      kind: ImageRepository_v1.kind,
+      apiVersions: ImageRepository_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageRepository_v1} />
+        ),
+      },
+    },
+    {
       kind: ImageUpdateAutomation_v1beta1.kind,
       apiVersions: ImageUpdateAutomation_v1beta1.crd.apiVersions,
       components: {
@@ -1351,6 +1456,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
           <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: ImageUpdateAutomation_v1.kind,
+      apiVersions: ImageUpdateAutomation_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ImageUpdateAutomation_v1} />
+        ),
+      },
+    },
+    {
+      kind: ImageUpdateAutomation_v1.kind,
+      apiVersions: ImageUpdateAutomation_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1} />
         ),
       },
     },
