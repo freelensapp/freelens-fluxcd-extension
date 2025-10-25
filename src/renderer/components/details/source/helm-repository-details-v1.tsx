@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { HelmRepository } from "../../../k8s/fluxcd/source/helmrepository";
+import { HelmRepository } from "../../../k8s/fluxcd/source/helmrepository-v1";
 import { LinkToSecret } from "../../link-to-secret";
 import { StatusArtifact } from "../../status-artifact";
 

@@ -1,32 +1,25 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { HelmChart, type HelmChartApi } from "../../k8s/fluxcd/source/helmchart";
-import { getRefUrl } from "../../k8s/fluxcd/utils";
-import { getMaybeDetailsUrl } from "../../utils";
-import styles from "./helmcharts.module.scss";
-import stylesInline from "./helmcharts.module.scss?inline";
+import { GitRepository, type GitRepositoryApi } from "../../k8s/fluxcd/source/gitrepository-v1";
+import styles from "./gitrepositories.module.scss";
+import stylesInline from "./gitrepositories.module.scss?inline";
 
 const {
-  Util: { stopPropagation },
-} = Common;
-
-const {
-  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-const KubeObject = HelmChart;
-type KubeObject = HelmChart;
-type KubeObjectApi = HelmChartApi;
+const KubeObject = GitRepository;
+type KubeObject = GitRepository;
+type KubeObjectApi = GitRepositoryApi;
 
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
-  chart: (object: KubeObject) => object.spec.chart,
-  version: (object: KubeObject) => object.spec.version,
-  sourceKind: (object: KubeObject) => object.spec.sourceRef.kind,
-  sourceName: (object: KubeObject) => object.spec.sourceRef.name,
+  url: (object: KubeObject) => object.spec.url,
+  ref: (object: KubeObject) => GitRepository.getGitRef(object.spec.ref),
+  revision: (object: KubeObject) => GitRepository.getGitRevision(object),
   resumed: (object: KubeObject) => String(!object.spec.suspend),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   status: (object: KubeObject) => getConditionText(object.status?.conditions),
@@ -36,21 +29,20 @@ const sortingCallbacks = {
 const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
-  { title: "Chart", sortBy: "chart", className: styles.chart },
-  { title: "Version", sortBy: "version", className: styles.version },
-  { title: "Source Kind", sortBy: "sourceKind", className: styles.sourceKind },
-  { title: "Source Name", sortBy: "sourceName", className: styles.sourceName },
+  { title: "URL", sortBy: "url", className: styles.url },
+  { title: "Target Ref", sortBy: "ref", className: styles.ref },
+  { title: "Revision", sortBy: "revision", className: styles.revision },
   { title: "Resumed", sortBy: "resumed", className: styles.resumed },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
 ];
 
-export interface HelmChartsPageProps {
+export interface GitRepositoriesPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const HelmChartsPage = observer((props: HelmChartsPageProps) =>
+export const GitRepositoriesPage = observer((props: GitRepositoriesPageProps) =>
   withErrorPage(props, () => {
     const store = KubeObject.getStore<KubeObject>();
 
@@ -68,14 +60,9 @@ export const HelmChartsPage = observer((props: HelmChartsPageProps) =>
           renderTableContents={(object: KubeObject) => [
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip>{object.spec.chart}</WithTooltip>,
-            <WithTooltip>{object.spec.version ?? "N/A"}</WithTooltip>,
-            <WithTooltip>{object.spec.sourceRef.kind}</WithTooltip>,
-            <WithTooltip>
-              <MaybeLink to={getMaybeDetailsUrl(getRefUrl(object.spec.sourceRef, object))} onClick={stopPropagation}>
-                {object.spec.sourceRef?.name}
-              </MaybeLink>
-            </WithTooltip>,
+            <WithTooltip>{object.spec.url}</WithTooltip>,
+            <WithTooltip>{GitRepository.getGitRef(object.spec.ref) || "N/A"}</WithTooltip>,
+            <WithTooltip>{GitRepository.getGitRevision(object) || "N/A"}</WithTooltip>,
             <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
               className={getConditionClass(object.status?.conditions)}

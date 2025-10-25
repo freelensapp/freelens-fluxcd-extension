@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { HelmChart } from "../../../k8s/fluxcd/source/helmchart";
+import { HelmChart } from "../../../k8s/fluxcd/source/helmchart-v1beta1";
 import { LinkToObject } from "../../link-to-object";
 import { StatusArtifact } from "../../status-artifact";
 

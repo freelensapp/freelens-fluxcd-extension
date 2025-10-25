@@ -11,11 +11,20 @@ import { KustomizationDetails_v1beta2 } from "./components/details/kustomize/kus
 import { AlertDetails } from "./components/details/notification/alert-details";
 import { ProviderDetails } from "./components/details/notification/provider-details";
 import { ReceiverDetails } from "./components/details/notification/receiver-details";
-import { BucketDetails } from "./components/details/source/bucket-details";
-import { GitRepositoryDetails } from "./components/details/source/git-repository-details";
-import { HelmChartDetails } from "./components/details/source/helm-chart-details";
-import { HelmRepositoryDetails } from "./components/details/source/helm-repository-details";
-import { OCIRepositoryDetails } from "./components/details/source/oci-repository-details";
+import { BucketDetails as BucketDetails_v1 } from "./components/details/source/bucket-details-v1";
+import { BucketDetails as BucketDetails_v1beta1 } from "./components/details/source/bucket-details-v1beta1";
+import { BucketDetails as BucketDetails_v1beta2 } from "./components/details/source/bucket-details-v1beta2";
+import { GitRepositoryDetails as GitRepositoryDetails_v1 } from "./components/details/source/git-repository-details-v1";
+import { GitRepositoryDetails as GitRepositoryDetails_v1beta1 } from "./components/details/source/git-repository-details-v1beta1";
+import { GitRepositoryDetails as GitRepositoryDetails_v1beta2 } from "./components/details/source/git-repository-details-v1beta2";
+import { HelmChartDetails as HelmChartDetails_v1 } from "./components/details/source/helm-chart-details-v1";
+import { HelmChartDetails as HelmChartDetails_v1beta1 } from "./components/details/source/helm-chart-details-v1beta1";
+import { HelmChartDetails as HelmChartDetails_v1beta2 } from "./components/details/source/helm-chart-details-v1beta2";
+import { HelmRepositoryDetails as HelmRepositoryDetails_v1 } from "./components/details/source/helm-repository-details-v1";
+import { HelmRepositoryDetails as HelmRepositoryDetails_v1beta1 } from "./components/details/source/helm-repository-details-v1beta1";
+import { HelmRepositoryDetails as HelmRepositoryDetails_v1beta2 } from "./components/details/source/helm-repository-details-v1beta2";
+import { OCIRepositoryDetails as OCIRepositoryDetails_v1 } from "./components/details/source/oci-repository-details-v1";
+import { OCIRepositoryDetails as OCIRepositoryDetails_v1beta2 } from "./components/details/source/oci-repository-details-v1beta2";
 import svgIcon from "./icons/fluxcd.svg?raw";
 import { HelmRelease as HelmRelease_v2 } from "./k8s/fluxcd/helm/helmrelease-v2";
 import { HelmRelease as HelmRelease_v2beta1 } from "./k8s/fluxcd/helm/helmrelease-v2beta1";
@@ -29,11 +38,20 @@ import { Kustomization as Kustomization_v1beta2 } from "./k8s/fluxcd/kustomize/k
 import { Alert } from "./k8s/fluxcd/notification/alert";
 import { Provider } from "./k8s/fluxcd/notification/provider";
 import { Receiver } from "./k8s/fluxcd/notification/receiver";
-import { Bucket } from "./k8s/fluxcd/source/bucket";
-import { GitRepository } from "./k8s/fluxcd/source/gitrepository";
-import { HelmChart } from "./k8s/fluxcd/source/helmchart";
-import { HelmRepository } from "./k8s/fluxcd/source/helmrepository";
-import { OCIRepository } from "./k8s/fluxcd/source/ocirepository";
+import { Bucket as Bucket_v1 } from "./k8s/fluxcd/source/bucket-v1";
+import { Bucket as Bucket_v1beta1 } from "./k8s/fluxcd/source/bucket-v1beta1";
+import { Bucket as Bucket_v1beta2 } from "./k8s/fluxcd/source/bucket-v1beta2";
+import { GitRepository as GitRepository_v1 } from "./k8s/fluxcd/source/gitrepository-v1";
+import { GitRepository as GitRepository_v1beta1 } from "./k8s/fluxcd/source/gitrepository-v1beta1";
+import { GitRepository as GitRepository_v1beta2 } from "./k8s/fluxcd/source/gitrepository-v1beta2";
+import { HelmChart as HelmChart_v1 } from "./k8s/fluxcd/source/helmchart-v1";
+import { HelmChart as HelmChart_v1beta1 } from "./k8s/fluxcd/source/helmchart-v1beta1";
+import { HelmChart as HelmChart_v1beta2 } from "./k8s/fluxcd/source/helmchart-v1beta2";
+import { HelmRepository as HelmRepository_v1 } from "./k8s/fluxcd/source/helmrepository-v1";
+import { HelmRepository as HelmRepository_v1beta1 } from "./k8s/fluxcd/source/helmrepository-v1beta1";
+import { HelmRepository as HelmRepository_v1beta2 } from "./k8s/fluxcd/source/helmrepository-v1beta2";
+import { OCIRepository as OCIRepository_v1 } from "./k8s/fluxcd/source/ocirepository-v1";
+import { OCIRepository as OCIRepository_v1beta2 } from "./k8s/fluxcd/source/ocirepository-v1beta2";
 import {
   FluxCDObjectReconcileMenuItem,
   type FluxCDObjectReconcileMenuItemProps,
@@ -55,11 +73,20 @@ import { AlertsPage } from "./pages/notifications/alerts";
 import { ProvidersPage } from "./pages/notifications/providers";
 import { ReceiversPage } from "./pages/notifications/receivers";
 import { FluxCDOverviewPage } from "./pages/overview";
-import { BucketsPage } from "./pages/source/buckets";
-import { GitRepositoriesPage } from "./pages/source/gitrepositories";
-import { HelmChartsPage } from "./pages/source/helmcharts";
-import { HelmRepositoriesPage } from "./pages/source/helmrepositories";
-import { OCIRepositoriesPage } from "./pages/source/ocirepositories";
+import { BucketsPage as BucketsPage_v1 } from "./pages/source/buckets-v1";
+import { BucketsPage as BucketsPage_v1beta1 } from "./pages/source/buckets-v1beta1";
+import { BucketsPage as BucketsPage_v1beta2 } from "./pages/source/buckets-v1beta2";
+import { GitRepositoriesPage as GitRepositoriesPage_v1 } from "./pages/source/gitrepositories-v1";
+import { GitRepositoriesPage as GitRepositoriesPage_v1beta1 } from "./pages/source/gitrepositories-v1beta1";
+import { GitRepositoriesPage as GitRepositoriesPage_v1beta2 } from "./pages/source/gitrepositories-v1beta2";
+import { HelmChartsPage as HelmChartsPage_v1 } from "./pages/source/helmcharts-v1";
+import { HelmChartsPage as HelmChartsPage_v1beta1 } from "./pages/source/helmcharts-v1beta1";
+import { HelmChartsPage as HelmChartsPage_v1beta2 } from "./pages/source/helmcharts-v1beta2";
+import { HelmRepositoriesPage as HelmRepositoriesPage_v1 } from "./pages/source/helmrepositories-v1";
+import { HelmRepositoriesPage as HelmRepositoriesPage_v1beta1 } from "./pages/source/helmrepositories-v1beta1";
+import { HelmRepositoriesPage as HelmRepositoriesPage_v1beta2 } from "./pages/source/helmrepositories-v1beta2";
+import { OCIRepositoriesPage as OCIRepositoriesPage_v1 } from "./pages/source/ocirepositories-v1";
+import { OCIRepositoriesPage as OCIRepositoriesPage_v1beta2 } from "./pages/source/ocirepositories-v1beta2";
 
 const {
   Component: { Icon },
@@ -86,19 +113,55 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "bucket",
       components: {
-        Page: () => <BucketsPage extension={this} />,
+        Page: () => <BucketsPage_v1beta1 extension={this} />,
+      },
+    },
+    {
+      id: "bucket",
+      components: {
+        Page: () => <BucketsPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: "bucket",
+      components: {
+        Page: () => <BucketsPage_v1 extension={this} />,
       },
     },
     {
       id: "gitrepository",
       components: {
-        Page: () => <GitRepositoriesPage extension={this} />,
+        Page: () => <GitRepositoriesPage_v1beta1 extension={this} />,
+      },
+    },
+    {
+      id: "gitrepository",
+      components: {
+        Page: () => <GitRepositoriesPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: "gitrepository",
+      components: {
+        Page: () => <GitRepositoriesPage_v1 extension={this} />,
       },
     },
     {
       id: "helmchart",
       components: {
-        Page: () => <HelmChartsPage extension={this} />,
+        Page: () => <HelmChartsPage_v1beta1 extension={this} />,
+      },
+    },
+    {
+      id: "helmchart",
+      components: {
+        Page: () => <HelmChartsPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: "helmchart",
+      components: {
+        Page: () => <HelmChartsPage_v1 extension={this} />,
       },
     },
     {
@@ -122,7 +185,19 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "helmrepository",
       components: {
-        Page: () => <HelmRepositoriesPage extension={this} />,
+        Page: () => <HelmRepositoriesPage_v1beta1 extension={this} />,
+      },
+    },
+    {
+      id: "helmrepository",
+      components: {
+        Page: () => <HelmRepositoriesPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: "helmrepository",
+      components: {
+        Page: () => <HelmRepositoriesPage_v1 extension={this} />,
       },
     },
     {
@@ -164,7 +239,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "ocirepository",
       components: {
-        Page: () => <OCIRepositoriesPage extension={this} />,
+        Page: () => <OCIRepositoriesPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: "ocirepository",
+      components: {
+        Page: () => <OCIRepositoriesPage_v1 extension={this} />,
       },
     },
     {
@@ -264,35 +345,49 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "gitrepository",
       parentId: "source",
       target: { pageId: "gitrepository" },
-      title: GitRepository.crd.title,
+      title: GitRepository_v1beta1.crd.title,
+      components: {},
+    },
+    {
+      id: "gitrepository",
+      parentId: "source",
+      target: { pageId: "gitrepository" },
+      title: GitRepository_v1beta2.crd.title,
+      components: {},
+    },
+    {
+      id: "gitrepository",
+      parentId: "source",
+      target: { pageId: "gitrepository" },
+      title: GitRepository_v1.crd.title,
       components: {},
     },
     {
       id: "helmrepository",
       parentId: "source",
       target: { pageId: "helmrepository" },
-      title: HelmRepository.crd.title,
+      title: HelmRepository_v1.crd.title,
       components: {},
     },
     {
       id: "helmchart",
       parentId: "source",
       target: { pageId: "helmchart" },
-      title: HelmChart.crd.title,
+      title: HelmChart_v1.crd.title,
       components: {},
     },
     {
       id: "bucket",
       parentId: "source",
       target: { pageId: "bucket" },
-      title: Bucket.crd.title,
+      title: Bucket_v1.crd.title,
       components: {},
     },
     {
       id: "ocirepository",
       parentId: "source",
       target: { pageId: "ocirepository" },
-      title: OCIRepository.crd.title,
+      title: OCIRepository_v1.crd.title,
       components: {},
     },
     {
@@ -363,29 +458,99 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: Bucket.kind,
-      apiVersions: Bucket.crd.apiVersions,
+      kind: Bucket_v1beta1.kind,
+      apiVersions: Bucket_v1beta1.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket>) => <BucketDetails {...props} />,
-      },
-    },
-    {
-      kind: GitRepository.kind,
-      apiVersions: GitRepository.crd.apiVersions,
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository>) => (
-          <GitRepositoryDetails {...props} />
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket_v1beta1>) => (
+          <BucketDetails_v1beta1 {...props} />
         ),
       },
     },
     {
-      kind: HelmChart.kind,
-      apiVersions: HelmChart.crd.apiVersions,
+      kind: Bucket_v1beta2.kind,
+      apiVersions: Bucket_v1beta2.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart>) => <HelmChartDetails {...props} />,
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket_v1beta2>) => (
+          <BucketDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Bucket_v1.kind,
+      apiVersions: Bucket_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket_v1>) => <BucketDetails_v1 {...props} />,
+      },
+    },
+    {
+      kind: GitRepository_v1beta1.kind,
+      apiVersions: GitRepository_v1beta1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository_v1beta1>) => (
+          <GitRepositoryDetails_v1beta1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository_v1beta2.kind,
+      apiVersions: GitRepository_v1beta2.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository_v1beta2>) => (
+          <GitRepositoryDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository_v1.kind,
+      apiVersions: GitRepository_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository_v1>) => (
+          <GitRepositoryDetails_v1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository_v1.kind,
+      apiVersions: GitRepository_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository_v1>) => (
+          <GitRepositoryDetails_v1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart_v1beta1.kind,
+      apiVersions: HelmChart_v1beta1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart_v1beta1>) => (
+          <HelmChartDetails_v1beta1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart_v1beta2.kind,
+      apiVersions: HelmChart_v1beta2.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart_v1beta2>) => (
+          <HelmChartDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart_v1.kind,
+      apiVersions: HelmChart_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart_v1>) => <HelmChartDetails_v1 {...props} />,
       },
     },
     {
@@ -419,12 +584,32 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: HelmRepository.kind,
-      apiVersions: HelmRepository.crd.apiVersions,
+      kind: HelmRepository_v1beta1.kind,
+      apiVersions: HelmRepository_v1beta1.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository>) => (
-          <HelmRepositoryDetails {...props} />
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository_v1beta1>) => (
+          <HelmRepositoryDetails_v1beta1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: HelmRepository_v1beta2.kind,
+      apiVersions: HelmRepository_v1beta2.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository_v1beta2>) => (
+          <HelmRepositoryDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: HelmRepository_v1.kind,
+      apiVersions: HelmRepository_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository_v1>) => (
+          <HelmRepositoryDetails_v1 {...props} />
         ),
       },
     },
@@ -487,12 +672,22 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: OCIRepository.kind,
-      apiVersions: OCIRepository.crd.apiVersions,
+      kind: OCIRepository_v1beta2.kind,
+      apiVersions: OCIRepository_v1beta2.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<OCIRepository>) => (
-          <OCIRepositoryDetails {...props} />
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<OCIRepository_v1beta2>) => (
+          <OCIRepositoryDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: OCIRepository_v1.kind,
+      apiVersions: OCIRepository_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<OCIRepository_v1>) => (
+          <OCIRepositoryDetails_v1 {...props} />
         ),
       },
     },
@@ -534,56 +729,164 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: Bucket.kind,
-      apiVersions: Bucket.crd.apiVersions,
+      kind: Bucket_v1beta1.kind,
+      apiVersions: Bucket_v1beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Bucket} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={Bucket_v1beta1} />
         ),
       },
     },
     {
-      kind: Bucket.kind,
-      apiVersions: Bucket.crd.apiVersions,
+      kind: Bucket_v1beta1.kind,
+      apiVersions: Bucket_v1beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Bucket} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Bucket_v1beta1} />
         ),
       },
     },
     {
-      kind: GitRepository.kind,
-      apiVersions: GitRepository.crd.apiVersions,
+      kind: Bucket_v1beta2.kind,
+      apiVersions: Bucket_v1beta2.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={GitRepository} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={Bucket_v1beta2} />
         ),
       },
     },
     {
-      kind: GitRepository.kind,
-      apiVersions: GitRepository.crd.apiVersions,
+      kind: Bucket_v1beta2.kind,
+      apiVersions: Bucket_v1beta2.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={GitRepository} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Bucket_v1beta2} />
         ),
       },
     },
     {
-      kind: HelmChart.kind,
-      apiVersions: HelmChart.crd.apiVersions,
+      kind: Bucket_v1.kind,
+      apiVersions: Bucket_v1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmChart} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={Bucket_v1} />
         ),
       },
     },
     {
-      kind: HelmChart.kind,
-      apiVersions: HelmChart.crd.apiVersions,
+      kind: Bucket_v1.kind,
+      apiVersions: Bucket_v1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmChart} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Bucket_v1} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository_v1beta1.kind,
+      apiVersions: GitRepository_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={GitRepository_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository_v1beta1.kind,
+      apiVersions: GitRepository_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={GitRepository_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository_v1beta2.kind,
+      apiVersions: GitRepository_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={GitRepository_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository_v1beta2.kind,
+      apiVersions: GitRepository_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={GitRepository_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository_v1.kind,
+      apiVersions: GitRepository_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={GitRepository_v1} />
+        ),
+      },
+    },
+    {
+      kind: GitRepository_v1.kind,
+      apiVersions: GitRepository_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={GitRepository_v1} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart_v1beta1.kind,
+      apiVersions: HelmChart_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmChart_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart_v1beta1.kind,
+      apiVersions: HelmChart_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmChart_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart_v1beta2.kind,
+      apiVersions: HelmChart_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmChart_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart_v1beta2.kind,
+      apiVersions: HelmChart_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmChart_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart_v1.kind,
+      apiVersions: HelmChart_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmChart_v1} />
+        ),
+      },
+    },
+    {
+      kind: HelmChart_v1.kind,
+      apiVersions: HelmChart_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmChart_v1} />
         ),
       },
     },
@@ -642,20 +945,20 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: HelmRepository.kind,
-      apiVersions: HelmRepository.crd.apiVersions,
+      kind: HelmRepository_v1.kind,
+      apiVersions: HelmRepository_v1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRepository} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRepository_v1} />
         ),
       },
     },
     {
-      kind: HelmRepository.kind,
-      apiVersions: HelmRepository.crd.apiVersions,
+      kind: HelmRepository_v1.kind,
+      apiVersions: HelmRepository_v1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRepository} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRepository_v1} />
         ),
       },
     },
@@ -759,20 +1062,38 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: OCIRepository.kind,
-      apiVersions: OCIRepository.crd.apiVersions,
+      kind: OCIRepository_v1beta2.kind,
+      apiVersions: OCIRepository_v1beta2.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={OCIRepository} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={OCIRepository_v1beta2} />
         ),
       },
     },
     {
-      kind: OCIRepository.kind,
-      apiVersions: OCIRepository.crd.apiVersions,
+      kind: OCIRepository_v1beta2.kind,
+      apiVersions: OCIRepository_v1beta2.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={OCIRepository} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={OCIRepository_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: OCIRepository_v1.kind,
+      apiVersions: OCIRepository_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={OCIRepository_v1} />
+        ),
+      },
+    },
+    {
+      kind: OCIRepository_v1.kind,
+      apiVersions: OCIRepository_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={OCIRepository_v1} />
         ),
       },
     },

@@ -2,25 +2,26 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { OCIRepository, type OCIRepositoryApi } from "../../k8s/fluxcd/source/ocirepository";
-import styles from "./ocirepositories.module.scss";
-import stylesInline from "./ocirepositories.module.scss?inline";
+import { HelmRepository, type HelmRepositoryApi } from "../../k8s/fluxcd/source/helmrepository-v1";
+import styles from "./helmrepositories.module.scss";
+import stylesInline from "./helmrepositories.module.scss?inline";
 
 const {
   Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-const KubeObject = OCIRepository;
-type KubeObject = OCIRepository;
-type KubeObjectApi = OCIRepositoryApi;
+const KubeObject = HelmRepository;
+type KubeObject = HelmRepository;
+type KubeObjectApi = HelmRepositoryApi;
 
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   url: (object: KubeObject) => object.spec.url,
   resumed: (object: KubeObject) => String(!object.spec.suspend),
-  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
-  status: (object: KubeObject) => getConditionText(object.status?.conditions),
+  condition: (object: KubeObject) =>
+    object.spec.type == "oci" ? "Ready" : getConditionText(object.status?.conditions),
+  status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -34,11 +35,11 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Age", sortBy: "age", className: styles.age },
 ];
 
-export interface OCIRepositoriesPageProps {
+export interface HelmRepositoriesPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const OCIRepositoriesPage = observer((props: OCIRepositoriesPageProps) =>
+export const HelmRepositoriesPage = observer((props: HelmRepositoriesPageProps) =>
   withErrorPage(props, () => {
     const store = KubeObject.getStore<KubeObject>();
 
@@ -59,8 +60,8 @@ export const OCIRepositoriesPage = observer((props: OCIRepositoriesPageProps) =>
             <WithTooltip>{object.spec.url}</WithTooltip>,
             <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
-              className={getConditionClass(object.status?.conditions)}
-              label={getConditionText(object.status?.conditions)}
+              className={object.spec.type == "oci" ? "success" : getConditionClass(object.status?.conditions)}
+              label={object.spec.type == "oci" ? "Ready" : getConditionText(object.status?.conditions)}
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,

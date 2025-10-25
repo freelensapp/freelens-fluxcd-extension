@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { OCIRepository } from "../../../k8s/fluxcd/source/ocirepository";
+import { OCIRepository } from "../../../k8s/fluxcd/source/ocirepository-v1beta2";
 import { LinkToSecret } from "../../link-to-secret";
 import { LinkToServiceAccount } from "../../link-to-service-account";
 import { StatusArtifact } from "../../status-artifact";

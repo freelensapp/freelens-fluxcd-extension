@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 
 import type { LocalObjectReference } from "@freelensapp/kube-object";
 
-import type { GitRepositoryRef } from "../source/gitrepository";
+import type { GitRepositoryRef } from "../source/gitrepository-v1";
 import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus, NamespacedObjectKindReference } from "../types";
 
 export interface GitCheckoutSpec {

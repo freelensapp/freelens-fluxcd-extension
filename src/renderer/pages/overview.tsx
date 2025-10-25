@@ -15,11 +15,20 @@ import { Kustomization as Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/
 import { Alert } from "../k8s/fluxcd/notification/alert";
 import { Provider } from "../k8s/fluxcd/notification/provider";
 import { Receiver } from "../k8s/fluxcd/notification/receiver";
-import { Bucket } from "../k8s/fluxcd/source/bucket";
-import { GitRepository } from "../k8s/fluxcd/source/gitrepository";
-import { HelmChart } from "../k8s/fluxcd/source/helmchart";
-import { HelmRepository } from "../k8s/fluxcd/source/helmrepository";
-import { OCIRepository } from "../k8s/fluxcd/source/ocirepository";
+import { Bucket as Bucket_v1 } from "../k8s/fluxcd/source/bucket-v1";
+import { Bucket as Bucket_v1beta1 } from "../k8s/fluxcd/source/bucket-v1beta1";
+import { Bucket as Bucket_v1beta2 } from "../k8s/fluxcd/source/bucket-v1beta2";
+import { GitRepository as GitRepository_v1 } from "../k8s/fluxcd/source/gitrepository-v1";
+import { GitRepository as GitRepository_v1beta1 } from "../k8s/fluxcd/source/gitrepository-v1beta1";
+import { GitRepository as GitRepository_v1beta2 } from "../k8s/fluxcd/source/gitrepository-v1beta2";
+import { HelmChart as HelmChart_v1 } from "../k8s/fluxcd/source/helmchart-v1";
+import { HelmChart as HelmChart_v1beta1 } from "../k8s/fluxcd/source/helmchart-v1beta1";
+import { HelmChart as HelmChart_v1beta2 } from "../k8s/fluxcd/source/helmchart-v1beta2";
+import { HelmRepository as HelmRepository_v1 } from "../k8s/fluxcd/source/helmrepository-v1";
+import { HelmRepository as HelmRepository_v1beta1 } from "../k8s/fluxcd/source/helmrepository-v1beta1";
+import { HelmRepository as HelmRepository_v1beta2 } from "../k8s/fluxcd/source/helmrepository-v1beta2";
+import { OCIRepository as OCIRepository_v1 } from "../k8s/fluxcd/source/ocirepository-v1";
+import { OCIRepository as OCIRepository_v1beta2 } from "../k8s/fluxcd/source/ocirepository-v1beta2";
 import styles from "./overview.module.scss";
 import stylesInline from "./overview.module.scss?inline";
 
@@ -96,11 +105,20 @@ export const FluxCDOverviewPage = observer(() => {
         HelmRelease_v2beta1,
         HelmRelease_v2beta2,
         HelmRelease_v2,
-        GitRepository,
-        HelmChart,
-        HelmRepository,
-        Bucket,
-        OCIRepository,
+        GitRepository_v1beta1,
+        GitRepository_v1beta2,
+        GitRepository_v1,
+        HelmChart_v1beta1,
+        HelmChart_v1beta2,
+        HelmChart_v1,
+        HelmRepository_v1beta1,
+        HelmRepository_v1beta2,
+        HelmRepository_v1,
+        Bucket_v1beta1,
+        Bucket_v1beta2,
+        Bucket_v1,
+        OCIRepository_v1beta2,
+        OCIRepository_v1,
         ImageUpdateAutomation,
         ImageRepository,
         ImagePolicy,
@@ -146,14 +164,23 @@ export const FluxCDOverviewPage = observer(() => {
               {getChart(Kustomization_v1beta1.crd.title, Kustomization_v1beta1)}
               {getChart(Kustomization_v1beta2.crd.title, Kustomization_v1beta2)}
               {getChart(Kustomization_v1.crd.title, Kustomization_v1)}
-              {getChart(HelmRelease_v2.crd.title, HelmRelease_v2)}
               {getChart(HelmRelease_v2beta1.crd.title, HelmRelease_v2beta1)}
               {getChart(HelmRelease_v2beta2.crd.title, HelmRelease_v2beta2)}
-              {getChart(GitRepository.crd.title, GitRepository)}
-              {getChart(HelmRepository.crd.title, HelmRepository)}
-              {getChart(HelmChart.crd.title, HelmChart)}
-              {getChart(Bucket.crd.title, Bucket)}
-              {getChart(OCIRepository.crd.title, OCIRepository)}
+              {getChart(HelmRelease_v2.crd.title, HelmRelease_v2)}
+              {getChart(GitRepository_v1beta1.crd.title, GitRepository_v1beta1)}
+              {getChart(GitRepository_v1beta2.crd.title, GitRepository_v1beta2)}
+              {getChart(GitRepository_v1.crd.title, GitRepository_v1)}
+              {getChart(HelmRepository_v1beta1.crd.title, HelmRepository_v1beta1)}
+              {getChart(HelmRepository_v1beta2.crd.title, HelmRepository_v1beta2)}
+              {getChart(HelmRepository_v1.crd.title, HelmRepository_v1)}
+              {getChart(HelmChart_v1beta1.crd.title, HelmChart_v1beta1)}
+              {getChart(HelmChart_v1beta2.crd.title, HelmChart_v1beta2)}
+              {getChart(HelmChart_v1.crd.title, HelmChart_v1)}
+              {getChart(Bucket_v1beta1.crd.title, Bucket_v1beta1)}
+              {getChart(Bucket_v1beta2.crd.title, Bucket_v1beta2)}
+              {getChart(Bucket_v1.crd.title, Bucket_v1)}
+              {getChart(OCIRepository_v1beta2.crd.title, OCIRepository_v1beta2)}
+              {getChart(OCIRepository_v1.crd.title, OCIRepository_v1)}
               {getChart(ImageRepository.crd.title, ImageRepository)}
               {getChart(ImagePolicy.crd.title, ImagePolicy)}
               {getChart(ImageUpdateAutomation.crd.title, ImageUpdateAutomation)}

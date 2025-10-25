@@ -61,7 +61,7 @@ export class OCIRepository extends Renderer.K8sApi.LensExtensionKubeObject<
   static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta2/ocirepositories";
 
   static readonly crd = {
-    apiVersions: ["source.toolkit.fluxcd.io/v1beta2", "source.toolkit.fluxcd.io/v1"],
+    apiVersions: ["source.toolkit.fluxcd.io/v1beta2"],
     plural: "ocirepositories",
     singular: "ocirepository",
     shortNames: ["ocirepo"],

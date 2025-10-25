@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository";
+import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1beta1";
 import { getHeight } from "../../../utils";
 import { LinkToObject } from "../../link-to-object";
 import { LinkToSecret } from "../../link-to-secret";

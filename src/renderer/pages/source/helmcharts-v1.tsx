@@ -1,45 +1,56 @@
-import { Renderer } from "@freelensapp/extensions";
+import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { HelmRepository, type HelmRepositoryApi } from "../../k8s/fluxcd/source/helmrepository";
-import styles from "./helmrepositories.module.scss";
-import stylesInline from "./helmrepositories.module.scss?inline";
+import { HelmChart, type HelmChartApi } from "../../k8s/fluxcd/source/helmchart-v1";
+import { getRefUrl } from "../../k8s/fluxcd/utils";
+import { getMaybeDetailsUrl } from "../../utils";
+import styles from "./helmcharts.module.scss";
+import stylesInline from "./helmcharts.module.scss?inline";
 
 const {
-  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
+  Util: { stopPropagation },
+} = Common;
+
+const {
+  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-const KubeObject = HelmRepository;
-type KubeObject = HelmRepository;
-type KubeObjectApi = HelmRepositoryApi;
+const KubeObject = HelmChart;
+type KubeObject = HelmChart;
+type KubeObjectApi = HelmChartApi;
 
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
-  url: (object: KubeObject) => object.spec.url,
+  chart: (object: KubeObject) => object.spec.chart,
+  version: (object: KubeObject) => object.spec.version,
+  sourceKind: (object: KubeObject) => object.spec.sourceRef.kind,
+  sourceName: (object: KubeObject) => object.spec.sourceRef.name,
   resumed: (object: KubeObject) => String(!object.spec.suspend),
-  condition: (object: KubeObject) =>
-    object.spec.type == "oci" ? "Ready" : getConditionText(object.status?.conditions),
-  status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
+  status: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
 const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
-  { title: "URL", sortBy: "url", className: styles.url },
+  { title: "Chart", sortBy: "chart", className: styles.chart },
+  { title: "Version", sortBy: "version", className: styles.version },
+  { title: "Source Kind", sortBy: "sourceKind", className: styles.sourceKind },
+  { title: "Source Name", sortBy: "sourceName", className: styles.sourceName },
   { title: "Resumed", sortBy: "resumed", className: styles.resumed },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
 ];
 
-export interface HelmRepositoriesPageProps {
+export interface HelmChartsPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const HelmRepositoriesPage = observer((props: HelmRepositoriesPageProps) =>
+export const HelmChartsPage = observer((props: HelmChartsPageProps) =>
   withErrorPage(props, () => {
     const store = KubeObject.getStore<KubeObject>();
 
@@ -57,11 +68,18 @@ export const HelmRepositoriesPage = observer((props: HelmRepositoriesPageProps) 
           renderTableContents={(object: KubeObject) => [
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip>{object.spec.url}</WithTooltip>,
+            <WithTooltip>{object.spec.chart}</WithTooltip>,
+            <WithTooltip>{object.spec.version ?? "N/A"}</WithTooltip>,
+            <WithTooltip>{object.spec.sourceRef.kind}</WithTooltip>,
+            <WithTooltip>
+              <MaybeLink to={getMaybeDetailsUrl(getRefUrl(object.spec.sourceRef, object))} onClick={stopPropagation}>
+                {object.spec.sourceRef?.name}
+              </MaybeLink>
+            </WithTooltip>,
             <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
-              className={object.spec.type == "oci" ? "success" : getConditionClass(object.status?.conditions)}
-              label={object.spec.type == "oci" ? "Ready" : getConditionText(object.status?.conditions)}
+              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(object.status?.conditions)}
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
