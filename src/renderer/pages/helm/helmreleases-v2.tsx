@@ -2,7 +2,7 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease_v2beta1";
+import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease-v2";
 import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./helmreleases.module.scss";
 import stylesInline from "./helmreleases.module.scss?inline";

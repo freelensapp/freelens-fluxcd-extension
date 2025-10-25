@@ -2,7 +2,7 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization_v1";
+import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization-v1";
 import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./kustomizations.module.scss";
 import stylesInline from "./kustomizations.module.scss?inline";

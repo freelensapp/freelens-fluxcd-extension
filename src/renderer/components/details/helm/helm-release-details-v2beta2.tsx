@@ -4,7 +4,7 @@ import { Base64 } from "js-base64";
 import yaml from "js-yaml";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
-import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease_v2beta1";
+import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease-v2beta2";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { LinkToNamespace } from "../../link-to-namespace";

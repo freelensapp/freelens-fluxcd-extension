@@ -4,7 +4,7 @@ import { Base64 } from "js-base64";
 import yaml from "js-yaml";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
-import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization_v1beta1";
+import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization-v1";
 import { NamespacedObjectKindReference, type ResourceRef } from "../../../k8s/fluxcd/types";
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
@@ -67,8 +67,8 @@ const referenceSortByDefault: { sortBy: keyof typeof referenceSortable; orderBy:
   orderBy: "asc",
 };
 
-export const KustomizationDetails_v1beta1: React.FC<Renderer.Component.KubeObjectDetailsProps<Kustomization>> =
-  observer((props) => {
+export const KustomizationDetails_v1: React.FC<Renderer.Component.KubeObjectDetailsProps<Kustomization>> = observer(
+  (props) => {
     const { object } = props;
     const namespace = object.getNs();
     const store = Kustomization.getStore() as KustomizationStore;
@@ -558,4 +558,5 @@ export const KustomizationDetails_v1beta1: React.FC<Renderer.Component.KubeObjec
         </div>
       </>
     );
-  });
+  },
+);
