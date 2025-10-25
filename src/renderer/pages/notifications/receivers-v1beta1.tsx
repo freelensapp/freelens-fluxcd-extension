@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
-import { Receiver, type ReceiverApi } from "../../k8s/fluxcd/notification/receiver";
+import { Receiver, type ReceiverApi } from "../../k8s/fluxcd/notification/receiver-v1beta1";
 import styles from "./receivers.module.scss";
 import stylesInline from "./receivers.module.scss?inline";
 

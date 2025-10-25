@@ -1,37 +1,37 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
-import { Alert, type AlertApi } from "../../k8s/fluxcd/notification/alert";
-import styles from "./alerts.module.scss";
-import stylesInline from "./alerts.module.scss?inline";
+import { Receiver, type ReceiverApi } from "../../k8s/fluxcd/notification/receiver-v1";
+import styles from "./receivers.module.scss";
+import stylesInline from "./receivers.module.scss?inline";
 
 const {
   Component: { KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
-const KubeObject = Alert;
-type KubeObject = Alert;
-type KubeObjectApi = AlertApi;
+const KubeObject = Receiver;
+type KubeObject = Receiver;
+type KubeObjectApi = ReceiverApi;
 
 const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
-  severity: (object: KubeObject) => object.spec.eventSeverity ?? "info",
+  type: (object: KubeObject) => object.spec.type,
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
 const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks; className?: string }[] = [
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
-  { title: "Severity", sortBy: "severity", className: styles.severity },
+  { title: "Type", sortBy: "type", className: styles.type },
   { title: "Age", sortBy: "age", className: styles.age },
 ];
 
-export interface AlertsPageProps {
+export interface ReceiversPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const AlertsPage = observer((props: AlertsPageProps) =>
+export const ReceiversPage = observer((props: ReceiversPageProps) =>
   withErrorPage(props, () => {
     const store = KubeObject.getStore<KubeObject>();
 
@@ -49,7 +49,7 @@ export const AlertsPage = observer((props: AlertsPageProps) =>
           renderTableContents={(object: KubeObject) => [
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip>{object.spec.eventSeverity ?? "info"}</WithTooltip>,
+            <WithTooltip>{object.spec.type}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
           ]}
         />

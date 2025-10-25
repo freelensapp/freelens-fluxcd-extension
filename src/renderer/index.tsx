@@ -11,9 +11,16 @@ import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1beta2 } 
 import { KustomizationDetails_v1 } from "./components/details/kustomize/kustomization-details-v1";
 import { KustomizationDetails_v1beta1 } from "./components/details/kustomize/kustomization-details-v1beta1";
 import { KustomizationDetails_v1beta2 } from "./components/details/kustomize/kustomization-details-v1beta2";
-import { AlertDetails } from "./components/details/notification/alert-details";
-import { ProviderDetails } from "./components/details/notification/provider-details";
-import { ReceiverDetails } from "./components/details/notification/receiver-details";
+import { AlertDetails as AlertDetails_v1beta1 } from "./components/details/notification/alert-details-v1beta1";
+import { AlertDetails as AlertDetails_v1beta2 } from "./components/details/notification/alert-details-v1beta2";
+import { AlertDetails as AlertDetails_v1beta3 } from "./components/details/notification/alert-details-v1beta3";
+import { ProviderDetails as ProviderDetails_v1beta1 } from "./components/details/notification/provider-details-v1beta1";
+import { ProviderDetails as ProviderDetails_v1beta2 } from "./components/details/notification/provider-details-v1beta2";
+import { ProviderDetails as ProviderDetails_v1beta3 } from "./components/details/notification/provider-details-v1beta3";
+import { ReceiverDetails as ReceiverDetails_v1 } from "./components/details/notification/receiver-details-v1";
+import { ReceiverDetails as ReceiverDetails_v1beta1 } from "./components/details/notification/receiver-details-v1beta1";
+import { ReceiverDetails as ReceiverDetails_v1beta2 } from "./components/details/notification/receiver-details-v1beta2";
+import { ReceiverDetails as ReceiverDetails_v1beta3 } from "./components/details/notification/receiver-details-v1beta3";
 import { BucketDetails as BucketDetails_v1 } from "./components/details/source/bucket-details-v1";
 import { BucketDetails as BucketDetails_v1beta1 } from "./components/details/source/bucket-details-v1beta1";
 import { BucketDetails as BucketDetails_v1beta2 } from "./components/details/source/bucket-details-v1beta2";
@@ -41,9 +48,16 @@ import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta2 } from "./k8s/fl
 import { Kustomization as Kustomization_v1 } from "./k8s/fluxcd/kustomize/kustomization-v1";
 import { Kustomization as Kustomization_v1beta1 } from "./k8s/fluxcd/kustomize/kustomization-v1beta1";
 import { Kustomization as Kustomization_v1beta2 } from "./k8s/fluxcd/kustomize/kustomization-v1beta2";
-import { Alert } from "./k8s/fluxcd/notification/alert";
-import { Provider } from "./k8s/fluxcd/notification/provider";
-import { Receiver } from "./k8s/fluxcd/notification/receiver";
+import { Alert as Alert_v1beta1 } from "./k8s/fluxcd/notification/alert-v1beta1";
+import { Alert as Alert_v1beta2 } from "./k8s/fluxcd/notification/alert-v1beta2";
+import { Alert as Alert_v1beta3 } from "./k8s/fluxcd/notification/alert-v1beta3";
+import { Provider as Provider_v1beta1 } from "./k8s/fluxcd/notification/provider-v1beta1";
+import { Provider as Provider_v1beta2 } from "./k8s/fluxcd/notification/provider-v1beta2";
+import { Provider as Provider_v1beta3 } from "./k8s/fluxcd/notification/provider-v1beta3";
+import { Receiver as Receiver_v1 } from "./k8s/fluxcd/notification/receiver-v1";
+import { Receiver as Receiver_v1beta1 } from "./k8s/fluxcd/notification/receiver-v1beta1";
+import { Receiver as Receiver_v1beta2 } from "./k8s/fluxcd/notification/receiver-v1beta2";
+import { Receiver as Receiver_v1beta3 } from "./k8s/fluxcd/notification/receiver-v1beta3";
 import { Bucket as Bucket_v1 } from "./k8s/fluxcd/source/bucket-v1";
 import { Bucket as Bucket_v1beta1 } from "./k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "./k8s/fluxcd/source/bucket-v1beta2";
@@ -78,9 +92,16 @@ import { ImageUpdateAutomationsPage as ImageUpdateAutomationsPage_v1beta2 } from
 import { KustomizationsPage_v1 } from "./pages/kustomize/kustomizations-v1";
 import { KustomizationsPage_v1beta1 } from "./pages/kustomize/kustomizations-v1beta1";
 import { KustomizationsPage_v1beta2 } from "./pages/kustomize/kustomizations-v1beta2";
-import { AlertsPage } from "./pages/notifications/alerts";
-import { ProvidersPage } from "./pages/notifications/providers";
-import { ReceiversPage } from "./pages/notifications/receivers";
+import { AlertsPage as AlertsPage_v1beta1 } from "./pages/notifications/alerts-v1beta1";
+import { AlertsPage as AlertsPage_v1beta2 } from "./pages/notifications/alerts-v1beta2";
+import { AlertsPage as AlertsPage_v1beta3 } from "./pages/notifications/alerts-v1beta3";
+import { ProvidersPage as ProvidersPage_v1beta1 } from "./pages/notifications/providers-v1beta1";
+import { ProvidersPage as ProvidersPage_v1beta2 } from "./pages/notifications/providers-v1beta2";
+import { ProvidersPage as ProvidersPage_v1beta3 } from "./pages/notifications/providers-v1beta3";
+import { ReceiversPage as ReceiversPage_v1 } from "./pages/notifications/receivers-v1";
+import { ReceiversPage as ReceiversPage_v1beta1 } from "./pages/notifications/receivers-v1beta1";
+import { ReceiversPage as ReceiversPage_v1beta2 } from "./pages/notifications/receivers-v1beta2";
+import { ReceiversPage as ReceiversPage_v1beta3 } from "./pages/notifications/receivers-v1beta3";
 import { FluxCDOverviewPage } from "./pages/overview";
 import { BucketsPage as BucketsPage_v1 } from "./pages/source/buckets-v1";
 import { BucketsPage as BucketsPage_v1beta1 } from "./pages/source/buckets-v1beta1";
@@ -116,7 +137,19 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "alert",
       components: {
-        Page: () => <AlertsPage extension={this} />,
+        Page: () => <AlertsPage_v1beta1 extension={this} />,
+      },
+    },
+    {
+      id: "alert",
+      components: {
+        Page: () => <AlertsPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: "alert",
+      components: {
+        Page: () => <AlertsPage_v1beta3 extension={this} />,
       },
     },
     {
@@ -278,13 +311,43 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "provider",
       components: {
-        Page: () => <ProvidersPage extension={this} />,
+        Page: () => <ProvidersPage_v1beta1 extension={this} />,
+      },
+    },
+    {
+      id: "provider",
+      components: {
+        Page: () => <ProvidersPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: "provider",
+      components: {
+        Page: () => <ProvidersPage_v1beta3 extension={this} />,
       },
     },
     {
       id: "receiver",
       components: {
-        Page: () => <ReceiversPage extension={this} />,
+        Page: () => <ReceiversPage_v1beta1 extension={this} />,
+      },
+    },
+    {
+      id: "receiver",
+      components: {
+        Page: () => <ReceiversPage_v1beta2 extension={this} />,
+      },
+    },
+    {
+      id: "receiver",
+      components: {
+        Page: () => <ReceiversPage_v1beta3 extension={this} />,
+      },
+    },
+    {
+      id: "receiver",
+      components: {
+        Page: () => <ReceiversPage_v1 extension={this} />,
       },
     },
   ];
@@ -477,32 +540,103 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "alert",
       parentId: "notification",
       target: { pageId: "alert" },
-      title: Alert.crd.title,
+      title: Alert_v1beta1.crd.title,
+      components: {},
+    },
+    {
+      id: "alert",
+      parentId: "notification",
+      target: { pageId: "alert" },
+      title: Alert_v1beta2.crd.title,
+      components: {},
+    },
+    {
+      id: "alert",
+      parentId: "notification",
+      target: { pageId: "alert" },
+      title: Alert_v1beta3.crd.title,
       components: {},
     },
     {
       id: "provider",
       parentId: "notification",
       target: { pageId: "provider" },
-      title: Provider.crd.title,
+      title: Provider_v1beta1.crd.title,
+      components: {},
+    },
+    {
+      id: "provider",
+      parentId: "notification",
+      target: { pageId: "provider" },
+      title: Provider_v1beta2.crd.title,
+      components: {},
+    },
+    {
+      id: "provider",
+      parentId: "notification",
+      target: { pageId: "provider" },
+      title: Provider_v1beta3.crd.title,
       components: {},
     },
     {
       id: "receiver",
       parentId: "notification",
       target: { pageId: "receiver" },
-      title: Receiver.crd.title,
+      title: Receiver_v1beta1.crd.title,
+      components: {},
+    },
+    {
+      id: "receiver",
+      parentId: "notification",
+      target: { pageId: "receiver" },
+      title: Receiver_v1beta2.crd.title,
+      components: {},
+    },
+    {
+      id: "receiver",
+      parentId: "notification",
+      target: { pageId: "receiver" },
+      title: Receiver_v1beta3.crd.title,
+      components: {},
+    },
+    {
+      id: "receiver",
+      parentId: "notification",
+      target: { pageId: "receiver" },
+      title: Receiver_v1.crd.title,
       components: {},
     },
   ];
 
   kubeObjectDetailItems = [
     {
-      kind: Alert.kind,
-      apiVersions: Alert.crd.apiVersions,
+      kind: Alert_v1beta1.kind,
+      apiVersions: Alert_v1beta1.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert>) => <AlertDetails {...props} />,
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert_v1beta1>) => (
+          <AlertDetails_v1beta1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Alert_v1beta2.kind,
+      apiVersions: Alert_v1beta2.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert_v1beta2>) => (
+          <AlertDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Alert_v1beta3.kind,
+      apiVersions: Alert_v1beta3.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert_v1beta3>) => (
+          <AlertDetails_v1beta3 {...props} />
+        ),
       },
     },
     {
@@ -772,39 +906,127 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: Provider.kind,
-      apiVersions: Provider.crd.apiVersions,
+      kind: Provider_v1beta1.kind,
+      apiVersions: Provider_v1beta1.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider>) => <ProviderDetails {...props} />,
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider_v1beta1>) => (
+          <ProviderDetails_v1beta1 {...props} />
+        ),
       },
     },
     {
-      kind: Receiver.kind,
-      apiVersions: Receiver.crd.apiVersions,
+      kind: Provider_v1beta2.kind,
+      apiVersions: Provider_v1beta2.crd.apiVersions,
       priority: 10,
       components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver>) => <ReceiverDetails {...props} />,
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider_v1beta2>) => (
+          <ProviderDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Provider_v1beta3.kind,
+      apiVersions: Provider_v1beta3.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider_v1beta3>) => (
+          <ProviderDetails_v1beta3 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1beta1.kind,
+      apiVersions: Receiver_v1beta1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver_v1beta1>) => (
+          <ReceiverDetails_v1beta1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1beta2.kind,
+      apiVersions: Receiver_v1beta2.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver_v1beta2>) => (
+          <ReceiverDetails_v1beta2 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1beta3.kind,
+      apiVersions: Receiver_v1beta3.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver_v1beta3>) => (
+          <ReceiverDetails_v1beta3 {...props} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1.kind,
+      apiVersions: Receiver_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver_v1>) => <ReceiverDetails_v1 {...props} />,
       },
     },
   ];
 
   kubeObjectMenuItems = [
     {
-      kind: Alert.kind,
-      apiVersions: Alert.crd.apiVersions,
+      kind: Alert_v1beta1.kind,
+      apiVersions: Alert_v1beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Alert} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={Alert_v1beta1} />
         ),
       },
     },
     {
-      kind: Alert.kind,
-      apiVersions: Alert.crd.apiVersions,
+      kind: Alert_v1beta1.kind,
+      apiVersions: Alert_v1beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Alert} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Alert_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: Alert_v1beta2.kind,
+      apiVersions: Alert_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Alert_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: Alert_v1beta2.kind,
+      apiVersions: Alert_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Alert_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: Alert_v1beta3.kind,
+      apiVersions: Alert_v1beta3.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Alert_v1beta3} />
+        ),
+      },
+    },
+    {
+      kind: Alert_v1beta3.kind,
+      apiVersions: Alert_v1beta3.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Alert_v1beta3} />
         ),
       },
     },
@@ -1223,38 +1445,128 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: Provider.kind,
-      apiVersions: Provider.crd.apiVersions,
+      kind: Provider_v1beta1.kind,
+      apiVersions: Provider_v1beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Provider} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={Provider_v1beta1} />
         ),
       },
     },
     {
-      kind: Provider.kind,
-      apiVersions: Provider.crd.apiVersions,
+      kind: Provider_v1beta1.kind,
+      apiVersions: Provider_v1beta1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Provider} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Provider_v1beta1} />
         ),
       },
     },
     {
-      kind: Receiver.kind,
-      apiVersions: Receiver.crd.apiVersions,
+      kind: Provider_v1beta2.kind,
+      apiVersions: Provider_v1beta2.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver} />
+          <FluxCDObjectReconcileMenuItem {...props} resource={Provider_v1beta2} />
         ),
       },
     },
     {
-      kind: Receiver.kind,
-      apiVersions: Receiver.crd.apiVersions,
+      kind: Provider_v1beta2.kind,
+      apiVersions: Provider_v1beta2.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver} />
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Provider_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: Provider_v1beta3.kind,
+      apiVersions: Provider_v1beta3.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Provider_v1beta3} />
+        ),
+      },
+    },
+    {
+      kind: Provider_v1beta3.kind,
+      apiVersions: Provider_v1beta3.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Provider_v1beta3} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1beta1.kind,
+      apiVersions: Receiver_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1beta1.kind,
+      apiVersions: Receiver_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1beta2.kind,
+      apiVersions: Receiver_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1beta2.kind,
+      apiVersions: Receiver_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver_v1beta2} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1beta3.kind,
+      apiVersions: Receiver_v1beta3.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver_v1beta3} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1beta3.kind,
+      apiVersions: Receiver_v1beta3.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver_v1beta3} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1.kind,
+      apiVersions: Receiver_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver_v1} />
+        ),
+      },
+    },
+    {
+      kind: Receiver_v1.kind,
+      apiVersions: Receiver_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver_v1} />
         ),
       },
     },

@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
-import { Provider, type ProviderApi } from "../../k8s/fluxcd/notification/provider";
+import { Provider, type ProviderApi } from "../../k8s/fluxcd/notification/provider-v1beta2";
 import styles from "./providers.module.scss";
 import stylesInline from "./providers.module.scss?inline";
 

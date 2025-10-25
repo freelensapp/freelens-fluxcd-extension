@@ -49,11 +49,7 @@ export class Provider extends Renderer.K8sApi.LensExtensionKubeObject<
   static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta1/providers";
 
   static readonly crd = {
-    apiVersions: [
-      "notification.toolkit.fluxcd.io/v1beta1",
-      "notification.toolkit.fluxcd.io/v1beta2",
-      "notification.toolkit.fluxcd.io/v1beta3",
-    ],
+    apiVersions: ["notification.toolkit.fluxcd.io/v1beta1"],
     plural: "providers",
     singular: "provider",
     shortNames: [],

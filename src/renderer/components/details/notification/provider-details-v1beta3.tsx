@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { Provider } from "../../../k8s/fluxcd/notification/provider";
+import { Provider } from "../../../k8s/fluxcd/notification/provider-v1beta3";
 import { LinkToSecret } from "../../link-to-secret";
 
 const {

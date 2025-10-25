@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
-import { Receiver } from "../../../k8s/fluxcd/notification/receiver";
+import { Receiver } from "../../../k8s/fluxcd/notification/receiver-v1beta2";
 import { createEnumFromKeys } from "../../../utils";
 import { LinkToNamespace } from "../../link-to-namespace";
 import { LinkToObject } from "../../link-to-object";

@@ -34,15 +34,10 @@ export class Receiver extends Renderer.K8sApi.LensExtensionKubeObject<
 > {
   static readonly kind = "Receiver";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta1/receivers";
+  static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta2/receivers";
 
   static readonly crd = {
-    apiVersions: [
-      "notification.toolkit.fluxcd.io/v1beta1",
-      "notification.toolkit.fluxcd.io/v1beta2",
-      "notification.toolkit.fluxcd.io/v1beta3",
-      "notification.toolkit.fluxcd.io/v1",
-    ],
+    apiVersions: ["notification.toolkit.fluxcd.io/v1beta2"],
     plural: "receivers",
     singular: "receiver",
     shortNames: [],

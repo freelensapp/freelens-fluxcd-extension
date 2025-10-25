@@ -15,9 +15,16 @@ import { ImageUpdateAutomation as ImageUpdateAutomation_v2beta2 } from "../k8s/f
 import { Kustomization as Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization-v1";
 import { Kustomization as Kustomization_v1beta1 } from "../k8s/fluxcd/kustomize/kustomization-v1beta1";
 import { Kustomization as Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/kustomization-v1beta2";
-import { Alert } from "../k8s/fluxcd/notification/alert";
-import { Provider } from "../k8s/fluxcd/notification/provider";
-import { Receiver } from "../k8s/fluxcd/notification/receiver";
+import { Alert as Alert_v1beta1 } from "../k8s/fluxcd/notification/alert-v1beta1";
+import { Alert as Alert_v1beta2 } from "../k8s/fluxcd/notification/alert-v1beta2";
+import { Alert as Alert_v1beta3 } from "../k8s/fluxcd/notification/alert-v1beta3";
+import { Provider as Provider_v1beta1 } from "../k8s/fluxcd/notification/provider-v1beta1";
+import { Provider as Provider_v1beta2 } from "../k8s/fluxcd/notification/provider-v1beta2";
+import { Provider as Provider_v1beta3 } from "../k8s/fluxcd/notification/provider-v1beta3";
+import { Receiver as Receiver_v1 } from "../k8s/fluxcd/notification/receiver-v1";
+import { Receiver as Receiver_v1beta1 } from "../k8s/fluxcd/notification/receiver-v1beta1";
+import { Receiver as Receiver_v1beta2 } from "../k8s/fluxcd/notification/receiver-v1beta2";
+import { Receiver as Receiver_v1beta3 } from "../k8s/fluxcd/notification/receiver-v1beta3";
 import { Bucket as Bucket_v1 } from "../k8s/fluxcd/source/bucket-v1";
 import { Bucket as Bucket_v1beta1 } from "../k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "../k8s/fluxcd/source/bucket-v1beta2";
@@ -128,9 +135,16 @@ export const FluxCDOverviewPage = observer(() => {
         ImageRepository_v2beta2,
         ImagePolicy_v1beta1,
         ImagePolicy_v1beta2,
-        Alert,
-        Provider,
-        Receiver,
+        Alert_v1beta1,
+        Alert_v1beta2,
+        Alert_v1beta3,
+        Provider_v1beta1,
+        Provider_v1beta2,
+        Provider_v1beta3,
+        Receiver_v1beta1,
+        Receiver_v1beta2,
+        Receiver_v1beta3,
+        Receiver_v1,
       ]) {
         try {
           const store = object.getStore();
@@ -190,9 +204,9 @@ export const FluxCDOverviewPage = observer(() => {
               {getChart(ImageRepository_v2beta1.crd.title, ImageRepository_v2beta1)}
               {getChart(ImagePolicy_v1beta1.crd.title, ImagePolicy_v1beta1)}
               {getChart(ImageUpdateAutomation_v2beta1.crd.title, ImageUpdateAutomation_v2beta1)}
-              {getChart(Alert.crd.title, Alert)}
-              {getChart(Provider.crd.title, Provider)}
-              {getChart(Receiver.crd.title, Receiver)}
+              {getChart(Alert_v1beta1.crd.title, Alert_v1beta1)}
+              {getChart(Provider_v1beta1.crd.title, Provider_v1beta1)}
+              {getChart(Receiver_v1beta1.crd.title, Receiver_v1beta1)}
             </div>
           </div>
 
