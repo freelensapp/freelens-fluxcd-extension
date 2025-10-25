@@ -3,19 +3,42 @@ import { observer } from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { InfoPage } from "../components/info-page";
 import { PieChart } from "../components/pie-chart";
-import { HelmRelease } from "../k8s/fluxcd/helm/helmrelease";
-import { ImagePolicy } from "../k8s/fluxcd/image/imagepolicy";
-import { ImageRepository } from "../k8s/fluxcd/image/imagerepository";
-import { ImageUpdateAutomation } from "../k8s/fluxcd/image/imageupdateautomation";
-import { Kustomization } from "../k8s/fluxcd/kustomize/kustomization";
-import { Alert } from "../k8s/fluxcd/notification/alert";
-import { Provider } from "../k8s/fluxcd/notification/provider";
-import { Receiver } from "../k8s/fluxcd/notification/receiver";
-import { Bucket } from "../k8s/fluxcd/source/bucket";
-import { GitRepository } from "../k8s/fluxcd/source/gitrepository";
-import { HelmChart } from "../k8s/fluxcd/source/helmchart";
-import { HelmRepository } from "../k8s/fluxcd/source/helmrepository";
-import { OCIRepository } from "../k8s/fluxcd/source/ocirepository";
+import { HelmRelease as HelmRelease_v2 } from "../k8s/fluxcd/helm/helmrelease-v2";
+import { HelmRelease as HelmRelease_v2beta1 } from "../k8s/fluxcd/helm/helmrelease-v2beta1";
+import { HelmRelease as HelmRelease_v2beta2 } from "../k8s/fluxcd/helm/helmrelease-v2beta2";
+import { ImagePolicy as ImagePolicy_v1beta1 } from "../k8s/fluxcd/image/imagepolicy-v1beta1";
+import { ImagePolicy as ImagePolicy_v1beta2 } from "../k8s/fluxcd/image/imagepolicy-v1beta2";
+import { ImageRepository as ImageRepository_v2beta1 } from "../k8s/fluxcd/image/imagerepository-v1beta1";
+import { ImageRepository as ImageRepository_v2beta2 } from "../k8s/fluxcd/image/imagerepository-v1beta2";
+import { ImageUpdateAutomation as ImageUpdateAutomation_v2beta1 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta1";
+import { ImageUpdateAutomation as ImageUpdateAutomation_v2beta2 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta2";
+import { Kustomization as Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization-v1";
+import { Kustomization as Kustomization_v1beta1 } from "../k8s/fluxcd/kustomize/kustomization-v1beta1";
+import { Kustomization as Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/kustomization-v1beta2";
+import { Alert as Alert_v1beta1 } from "../k8s/fluxcd/notification/alert-v1beta1";
+import { Alert as Alert_v1beta2 } from "../k8s/fluxcd/notification/alert-v1beta2";
+import { Alert as Alert_v1beta3 } from "../k8s/fluxcd/notification/alert-v1beta3";
+import { Provider as Provider_v1beta1 } from "../k8s/fluxcd/notification/provider-v1beta1";
+import { Provider as Provider_v1beta2 } from "../k8s/fluxcd/notification/provider-v1beta2";
+import { Provider as Provider_v1beta3 } from "../k8s/fluxcd/notification/provider-v1beta3";
+import { Receiver as Receiver_v1 } from "../k8s/fluxcd/notification/receiver-v1";
+import { Receiver as Receiver_v1beta1 } from "../k8s/fluxcd/notification/receiver-v1beta1";
+import { Receiver as Receiver_v1beta2 } from "../k8s/fluxcd/notification/receiver-v1beta2";
+import { Receiver as Receiver_v1beta3 } from "../k8s/fluxcd/notification/receiver-v1beta3";
+import { Bucket as Bucket_v1 } from "../k8s/fluxcd/source/bucket-v1";
+import { Bucket as Bucket_v1beta1 } from "../k8s/fluxcd/source/bucket-v1beta1";
+import { Bucket as Bucket_v1beta2 } from "../k8s/fluxcd/source/bucket-v1beta2";
+import { GitRepository as GitRepository_v1 } from "../k8s/fluxcd/source/gitrepository-v1";
+import { GitRepository as GitRepository_v1beta1 } from "../k8s/fluxcd/source/gitrepository-v1beta1";
+import { GitRepository as GitRepository_v1beta2 } from "../k8s/fluxcd/source/gitrepository-v1beta2";
+import { HelmChart as HelmChart_v1 } from "../k8s/fluxcd/source/helmchart-v1";
+import { HelmChart as HelmChart_v1beta1 } from "../k8s/fluxcd/source/helmchart-v1beta1";
+import { HelmChart as HelmChart_v1beta2 } from "../k8s/fluxcd/source/helmchart-v1beta2";
+import { HelmRepository as HelmRepository_v1 } from "../k8s/fluxcd/source/helmrepository-v1";
+import { HelmRepository as HelmRepository_v1beta1 } from "../k8s/fluxcd/source/helmrepository-v1beta1";
+import { HelmRepository as HelmRepository_v1beta2 } from "../k8s/fluxcd/source/helmrepository-v1beta2";
+import { OCIRepository as OCIRepository_v1 } from "../k8s/fluxcd/source/ocirepository-v1";
+import { OCIRepository as OCIRepository_v1beta2 } from "../k8s/fluxcd/source/ocirepository-v1beta2";
 import styles from "./overview.module.scss";
 import stylesInline from "./overview.module.scss?inline";
 
@@ -86,19 +109,42 @@ export const FluxCDOverviewPage = observer(() => {
       const namespaces = namespaceStore.items.map((ns) => ns.getName());
 
       for (const object of [
-        Kustomization,
-        HelmRelease,
-        GitRepository,
-        HelmChart,
-        HelmRepository,
-        Bucket,
-        OCIRepository,
-        ImageUpdateAutomation,
-        ImageRepository,
-        ImagePolicy,
-        Alert,
-        Provider,
-        Receiver,
+        Kustomization_v1beta1,
+        Kustomization_v1beta2,
+        Kustomization_v1,
+        HelmRelease_v2beta1,
+        HelmRelease_v2beta2,
+        HelmRelease_v2,
+        GitRepository_v1beta1,
+        GitRepository_v1beta2,
+        GitRepository_v1,
+        HelmChart_v1beta1,
+        HelmChart_v1beta2,
+        HelmChart_v1,
+        HelmRepository_v1beta1,
+        HelmRepository_v1beta2,
+        HelmRepository_v1,
+        Bucket_v1beta1,
+        Bucket_v1beta2,
+        Bucket_v1,
+        OCIRepository_v1beta2,
+        OCIRepository_v1,
+        ImageUpdateAutomation_v2beta1,
+        ImageUpdateAutomation_v2beta2,
+        ImageRepository_v2beta1,
+        ImageRepository_v2beta2,
+        ImagePolicy_v1beta1,
+        ImagePolicy_v1beta2,
+        Alert_v1beta1,
+        Alert_v1beta2,
+        Alert_v1beta3,
+        Provider_v1beta1,
+        Provider_v1beta2,
+        Provider_v1beta3,
+        Receiver_v1beta1,
+        Receiver_v1beta2,
+        Receiver_v1beta3,
+        Receiver_v1,
       ]) {
         try {
           const store = object.getStore();
@@ -135,19 +181,32 @@ export const FluxCDOverviewPage = observer(() => {
 
           <div className={styles.overviewStatuses}>
             <div className={styles.statuses}>
-              {getChart(Kustomization.crd.title, Kustomization)}
-              {getChart(HelmRelease.crd.title, HelmRelease)}
-              {getChart(GitRepository.crd.title, GitRepository)}
-              {getChart(HelmRepository.crd.title, HelmRepository)}
-              {getChart(HelmChart.crd.title, HelmChart)}
-              {getChart(Bucket.crd.title, Bucket)}
-              {getChart(OCIRepository.crd.title, OCIRepository)}
-              {getChart(ImageRepository.crd.title, ImageRepository)}
-              {getChart(ImagePolicy.crd.title, ImagePolicy)}
-              {getChart(ImageUpdateAutomation.crd.title, ImageUpdateAutomation)}
-              {getChart(Alert.crd.title, Alert)}
-              {getChart(Provider.crd.title, Provider)}
-              {getChart(Receiver.crd.title, Receiver)}
+              {getChart(Kustomization_v1beta1.crd.title, Kustomization_v1beta1)}
+              {getChart(Kustomization_v1beta2.crd.title, Kustomization_v1beta2)}
+              {getChart(Kustomization_v1.crd.title, Kustomization_v1)}
+              {getChart(HelmRelease_v2beta1.crd.title, HelmRelease_v2beta1)}
+              {getChart(HelmRelease_v2beta2.crd.title, HelmRelease_v2beta2)}
+              {getChart(HelmRelease_v2.crd.title, HelmRelease_v2)}
+              {getChart(GitRepository_v1beta1.crd.title, GitRepository_v1beta1)}
+              {getChart(GitRepository_v1beta2.crd.title, GitRepository_v1beta2)}
+              {getChart(GitRepository_v1.crd.title, GitRepository_v1)}
+              {getChart(HelmRepository_v1beta1.crd.title, HelmRepository_v1beta1)}
+              {getChart(HelmRepository_v1beta2.crd.title, HelmRepository_v1beta2)}
+              {getChart(HelmRepository_v1.crd.title, HelmRepository_v1)}
+              {getChart(HelmChart_v1beta1.crd.title, HelmChart_v1beta1)}
+              {getChart(HelmChart_v1beta2.crd.title, HelmChart_v1beta2)}
+              {getChart(HelmChart_v1.crd.title, HelmChart_v1)}
+              {getChart(Bucket_v1beta1.crd.title, Bucket_v1beta1)}
+              {getChart(Bucket_v1beta2.crd.title, Bucket_v1beta2)}
+              {getChart(Bucket_v1.crd.title, Bucket_v1)}
+              {getChart(OCIRepository_v1beta2.crd.title, OCIRepository_v1beta2)}
+              {getChart(OCIRepository_v1.crd.title, OCIRepository_v1)}
+              {getChart(ImageRepository_v2beta1.crd.title, ImageRepository_v2beta1)}
+              {getChart(ImagePolicy_v1beta1.crd.title, ImagePolicy_v1beta1)}
+              {getChart(ImageUpdateAutomation_v2beta1.crd.title, ImageUpdateAutomation_v2beta1)}
+              {getChart(Alert_v1beta1.crd.title, Alert_v1beta1)}
+              {getChart(Provider_v1beta1.crd.title, Provider_v1beta1)}
+              {getChart(Receiver_v1beta1.crd.title, Receiver_v1beta1)}
             </div>
           </div>
 

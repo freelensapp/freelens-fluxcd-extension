@@ -28,12 +28,12 @@ Features include:
 ## Requirements
 
 - Kubernetes >= 1.24
-- Freelens >= 1.5.3
-- Flux >= v2.0.0
+- Freelens >= 1.6.0
+- Flux >= v2.0.0, <= 2.6.x
 - kustomize-controller >= v0.1.0
 - helm-controller >= v0.1.0
-- image-automation-controller >= v0.1.0
-- image-reflector-controller >= v0.1.0
+- image-automation-controller >= v0.14.0
+- image-reflector-controller >= v0.11.0
 - notification-controller >= v0.1.0
 - source-controller >= v0.1.0
 
@@ -41,15 +41,39 @@ Features include:
 
 - [helm.toolkit.fluxcd.io/v2beta1](https://github.com/fluxcd/helm-controller/blob/v0.1.0/docs/spec/v2beta1/)
   (helm-controller)
+- [helm.toolkit.fluxcd.io/v2beta2](https://github.com/fluxcd/helm-controller/tree/v1.4.2/docs/spec/v2beta2)
+  (helm-controller)
+- [helm.toolkit.fluxcd.io/v2](https://github.com/fluxcd/helm-controller/tree/v1.4.2/docs/spec/v2)
+  (helm-controller)
 - [kustomize.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/kustomize-controller/blob/v0.1.0/docs/spec/v1beta1/)
   (kustomize-controller)
-- [image.toolkit.fluxcd.io/v1alpha1](https://github.com/fluxcd/image-automation-controller/blob/v0.1.0/docs/api/)
+- [kustomize.toolkit.fluxcd.io/v1beta2](https://github.com/fluxcd/kustomize-controller/tree/v1.7.1/docs/spec/v1beta2)
+  (kustomize-controller)
+- [kustomize.toolkit.fluxcd.io/v1](https://github.com/fluxcd/kustomize-controller/tree/v1.7.1/docs/spec/v1)
+  (kustomize-controller)
+- [image.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/image-automation-controller/blob/main/docs/spec/v1beta1/imageupdateautomations.md)
   (image-automation-controller)
-- [image.toolkit.fluxcd.io/v1alpha1](https://github.com/fluxcd/image-reflector-controller/blob/v0.1.0/docs/api/)
+- [image.toolkit.fluxcd.io/v1beta2](https://github.com/fluxcd/image-automation-controller/blob/main/docs/spec/v1beta2/imageupdateautomations.md)
+  (image-automation-controller)
+- [image.toolkit.fluxcd.io/v1](https://github.com/fluxcd/image-automation-controller/tree/main/docs/spec/v1)
+  (image-automation-controller)
+- [image.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/image-reflector-controller/blob/v0.11.0/docs/api/image-reflector.md)
   (image-reflector-controller)
-- [notification.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/notification-controller/blob/v0.1.0/docs/api/)
+- [image.toolkit.fluxcd.io/v1beta2](https://github.com/fluxcd/image-reflector-controller/blob/v0.35.2/docs/api/v1beta2/image-reflector.md)
+  (image-reflector-controller)
+- [notification.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/notification-controller/blob/v0.1.0/docs/api/notification.md)
   (notification-controller)
-- [source.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/source-controller/blob/v0.1.0/docs/api/)
+- [notification.toolkit.fluxcd.io/v1beta2](https://github.com/fluxcd/notification-controller/blob/v1.7.3/docs/api/v1beta2/notification.md)
+  (notification-controller)
+- [notification.toolkit.fluxcd.io/v1beta3](https://github.com/fluxcd/notification-controller/blob/v1.7.3/docs/api/v1beta3/notification.md)
+  (notification-controller)
+- [notification.toolkit.fluxcd.io/v1](https://github.com/fluxcd/notification-controller/blob/v1.7.3/docs/api/v1/notification.md)
+  (notification-controller)
+- [source.toolkit.fluxcd.io/v1beta1](https://github.com/fluxcd/source-controller/blob/v0.1.0/docs/api/source.md)
+  (source-controller)
+- [source.toolkit.fluxcd.io/v1beta2](https://github.com/fluxcd/source-controller/blob/v1.7.2/docs/api/v1beta2/source.md)
+  (source-controller)
+- [source.toolkit.fluxcd.io/v1](https://github.com/fluxcd/source-controller/blob/v1.7.2/docs/api/v1/source.md)
   (source-controller)
 
 ## Install

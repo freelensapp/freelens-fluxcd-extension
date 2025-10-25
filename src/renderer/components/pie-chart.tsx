@@ -4,7 +4,7 @@ import stylesInline from "./pie-chart.module.scss?inline";
 
 import type React from "react";
 
-import type { HelmRepository } from "../k8s/fluxcd/source/helmrepository";
+import type { HelmRepository } from "../k8s/fluxcd/source/helmrepository-v1";
 import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../k8s/fluxcd/types";
 
 const getStats = (
