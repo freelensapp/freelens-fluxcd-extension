@@ -65,7 +65,7 @@ lint:
     - markdownlint@0.45.0
     - prettier@3.6.2! # datasource=npm depName=prettier
     - svgo@4.0.0
-    - yamlfmt@0.18.0
+    - yamlfmt@0.20.0
     - yamllint@1.37.1
   disabled:
     - checkov
