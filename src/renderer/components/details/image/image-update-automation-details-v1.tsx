@@ -87,7 +87,7 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
               <DrawerTitle>Observed Policies</DrawerTitle>
               {Object.entries(object.status.observedPolicies ?? {}).map(([key, value]) => (
                 <>
-                  <div key={key}>
+                  <div>
                     <div className={styles.title}>
                       <Icon small material="list" />
                       <span>{key}</span>

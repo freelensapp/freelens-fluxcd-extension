@@ -42,8 +42,8 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
         </DrawerItem>
         <DrawerItem name="Type">{object.spec.type}</DrawerItem>
         <DrawerItem name="Events">
-          {object.spec.events?.map((event, index: number) => (
-            <DrawerItem key={index} name="">
+          {object.spec.events?.map((event) => (
+            <DrawerItem key={event} name="">
               {event}
             </DrawerItem>
           ))}

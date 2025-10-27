@@ -25,7 +25,7 @@ export const StatusArtifact: React.FC<StatusArtifactProps> = observer((props) =>
       <style>{stylesInline}</style>
       <div className={styles.artifact}>
         <DrawerTitle>Artifact</DrawerTitle>
-        <div key={`${artifact.path}:${artifact.url}`}>
+        <div key={`${artifact.path}-${artifact.url}`}>
           <DrawerItem name="Path">{artifact.path}</DrawerItem>
           <DrawerItem name="URL">{artifact.url}</DrawerItem>
           <DrawerItem name="Revision" hidden={!artifact.revision}>

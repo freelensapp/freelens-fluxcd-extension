@@ -5,7 +5,7 @@ import { Alert } from "../../../k8s/fluxcd/notification/alert-v1beta3";
 import { LinkToObject } from "../../link-to-object";
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, DrawerTitle },
+  Component: { Badge, BadgeBoolean, DrawerItem, DrawerItemLabels },
 } = Renderer;
 
 export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Alert>> = observer((props) => {
@@ -18,10 +18,10 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
       </DrawerItem>
       <DrawerItem name="Event Severity">{object.spec.eventSeverity}</DrawerItem>
       <DrawerItem name="Event Sources">
-        {object.spec.eventSources?.map((eventSource, index: number) => {
+        {object.spec.eventSources?.map((eventSource) => {
           const badge = <Badge label={`${eventSource.kind}:${eventSource.name}`} />;
           return (
-            <DrawerItem key={index} name="">
+            <DrawerItem key={`${eventSource.kind}:${eventSource.name}`} name="">
               {eventSource.name === "*" ? (
                 badge
               ) : (
@@ -34,16 +34,11 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
       <DrawerItem name="Provider">
         <LinkToObject objectRef={object.spec.providerRef} object={object} />
       </DrawerItem>
-      {object.spec.eventMetadata && (
-        <>
-          <DrawerTitle>Event Metadata</DrawerTitle>
-          {Object.entries(object.spec.eventMetadata).map(([name, value], index) => (
-            <DrawerItem key={index} name={name}>
-              {value}
-            </DrawerItem>
-          ))}
-        </>
-      )}
+      <DrawerItemLabels
+        name="Event Metadata"
+        labels={object.spec.eventMetadata ?? {}}
+        hidden={!object.spec.eventMetadata}
+      />
     </div>
   );
 });

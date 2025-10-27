@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import crypto from "crypto";
 import { observer } from "mobx-react";
 import { getHeight } from "../utils";
 import styles from "./spec-patches.module.scss";
@@ -24,9 +25,9 @@ export const SpecPatches: React.FC<SpecPatchesProps> = observer((props) => {
       <style>{stylesInline}</style>
       <div className={styles.patches}>
         <DrawerTitle>Patches</DrawerTitle>
-        {patches.map((patch, index) => {
+        {patches.map((patch) => {
           if (!patch) return null;
-          const key = `patch-${index + 1}`;
+          const key = crypto.createHash("sha256").update(JSON.stringify(patch)).digest("hex").substring(0, 16);
 
           return (
             <div key={key}>
@@ -57,7 +58,6 @@ export const SpecPatches: React.FC<SpecPatchesProps> = observer((props) => {
               <div className="DrawerItem">Patch</div>
               <MonacoEditor
                 readOnly
-                id={`patch-${key}`}
                 className={styles.editor}
                 style={{
                   minHeight: getHeight(patch.patch),

@@ -178,7 +178,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                 const valuesYamlValue = valuesFromYaml[`${namespace}/${name}/${valuesKey}`] ?? "";
 
                 return (
-                  <div key={name}>
+                  <div key={`${api}-${name}`}>
                     <div className={styles.title}>
                       <Icon small material="list" />
                     </div>
@@ -248,10 +248,10 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           {images && (
             <div>
               <DrawerTitle>Images</DrawerTitle>
-              {images.map((image, idx) => {
+              {images.map((image) => {
                 if (!image) return null;
                 return (
-                  <div key={image.name ?? idx}>
+                  <div key={image.name}>
                     <div className={styles.title}>
                       <Icon small material="list" />
                     </div>
@@ -294,7 +294,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                   </TableCell>
                 </TableHead>
                 {object.status?.history?.map((snapshot) => (
-                  <TableRow key={snapshot.version} sortItem={snapshot} nowrap>
+                  <TableRow key={`${snapshot.digest}-${snapshot.configDigest}`} sortItem={snapshot} nowrap>
                     <TableCell className={styles.version}>{snapshot.version}</TableCell>
                     <TableCell>{snapshot.lastDeployed}</TableCell>
                     <TableCell>

@@ -14,6 +14,7 @@ import { LinkToSecret } from "../../link-to-secret";
 import { LinkToServiceAccount } from "../../link-to-service-account";
 import { MaybeLink } from "../../maybe-link";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
+import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import { StatusInventory } from "../../status-inventory";
 import styles from "./kustomization-details.module.scss";
@@ -176,77 +177,13 @@ export const KustomizationDetails_v1beta2: React.FC<Renderer.Component.KubeObjec
             </div>
           )}
 
-          {object.spec.patches && (
-            <div>
-              <DrawerTitle>Patches</DrawerTitle>
-              {object.spec.patches.map((patch) => {
-                const key = crypto
-                  .createHash("sha256")
-                  .update(
-                    [
-                      patch.patch,
-                      patch.target?.kind,
-                      patch.target?.name,
-                      patch.target?.namespace,
-                      patch.target?.labelSelector,
-                      patch.target?.annotationSelector,
-                    ].join(""),
-                  )
-                  .digest("hex");
-
-                return (
-                  <div key={key}>
-                    <div className={styles.title}>
-                      <Icon small material="list" />
-                    </div>
-                    <DrawerItem name="Group" hidden={!patch.target?.group}>
-                      {patch.target?.group}
-                    </DrawerItem>
-                    <DrawerItem name="Version" hidden={!patch.target?.version}>
-                      {patch.target?.version}
-                    </DrawerItem>
-                    <DrawerItem name="Kind" hidden={!patch.target?.kind}>
-                      {patch.target?.kind}
-                    </DrawerItem>
-                    <DrawerItem name="Name" hidden={!patch.target?.name}>
-                      {patch.target?.name}
-                    </DrawerItem>
-                    <DrawerItem name="Namespace" hidden={!patch.target?.namespace}>
-                      {patch.target?.namespace}
-                    </DrawerItem>
-                    <DrawerItem name="Label Selector" hidden={!patch.target?.labelSelector}>
-                      {patch.target?.labelSelector}
-                    </DrawerItem>
-                    <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
-                      {patch.target?.annotationSelector}
-                    </DrawerItem>
-                    <div className="DrawerItem">Patch</div>
-                    <MonacoEditor
-                      readOnly
-                      id={`patch-${key}`}
-                      className={styles.editor}
-                      style={{
-                        minHeight: getHeight(patch.patch),
-                      }}
-                      value={patch.patch}
-                      setInitialHeight
-                      options={{
-                        scrollbar: {
-                          alwaysConsumeMouseWheel: false,
-                        },
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <SpecPatches patches={object.spec.patches} />
 
           {object.spec.patchesStrategicMerge && (
             <div>
               <DrawerTitle>Patches: Strategic Merge</DrawerTitle>
               {object.spec.patchesStrategicMerge.map((patch) => {
-                const key = crypto.createHash("sha256").update(patch).digest("hex");
+                const key = crypto.createHash("sha256").update(JSON.stringify(patch)).digest("hex").substring(0, 16);
 
                 return (
                   <div key={key}>
@@ -255,7 +192,6 @@ export const KustomizationDetails_v1beta2: React.FC<Renderer.Component.KubeObjec
                     </div>
                     <MonacoEditor
                       readOnly
-                      id={`patch-${key}`}
                       style={{
                         minHeight: getHeight(patch),
                         resize: "none",
@@ -282,19 +218,7 @@ export const KustomizationDetails_v1beta2: React.FC<Renderer.Component.KubeObjec
               <DrawerTitle>Patches: RFC 6902</DrawerTitle>
               {object.spec.patchesJson6902.map((patch) => {
                 const patchYaml = yaml.dump(patch.patch, defaultYamlDumpOptions);
-                const key = crypto
-                  .createHash("sha256")
-                  .update(
-                    [
-                      patchYaml,
-                      patch.target?.kind,
-                      patch.target?.name,
-                      patch.target?.namespace,
-                      patch.target?.labelSelector,
-                      patch.target?.annotationSelector,
-                    ].join(""),
-                  )
-                  .digest("hex");
+                const key = crypto.createHash("sha256").update(JSON.stringify(patch)).digest("hex").substring(0, 16);
 
                 return (
                   <div key={key}>
@@ -325,7 +249,6 @@ export const KustomizationDetails_v1beta2: React.FC<Renderer.Component.KubeObjec
                     <div className="DrawerItem">Patch</div>
                     <MonacoEditor
                       readOnly
-                      id={`patch-${key}`}
                       style={{
                         minHeight: getHeight(patchYaml),
                         resize: "none",

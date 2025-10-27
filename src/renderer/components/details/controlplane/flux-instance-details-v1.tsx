@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import crypto from "crypto";
 import { observer } from "mobx-react";
 import React from "react";
 import { createEnumFromKeys } from "../../../utils";
@@ -198,14 +199,21 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
                   </TableCell>
                   <TableCell className="digest">Digest</TableCell>
                 </TableHead>
-                {object.status.components.map((component) => (
-                  <TableRow key={`${component.name}-${component.tag}`} sortItem={component} nowrap>
-                    <TableCell className="name">{component.name}</TableCell>
-                    <TableCell className="repository">{component.repository}</TableCell>
-                    <TableCell className="tag">{component.tag}</TableCell>
-                    <TableCell className="digest">{component.digest || "-"}</TableCell>
-                  </TableRow>
-                ))}
+                {object.status.components.map((component) => {
+                  const key = crypto
+                    .createHash("sha256")
+                    .update(JSON.stringify(component))
+                    .digest("hex")
+                    .substring(0, 16);
+                  return (
+                    <TableRow key={key} sortItem={component} nowrap>
+                      <TableCell className="name">{component.name}</TableCell>
+                      <TableCell className="repository">{component.repository}</TableCell>
+                      <TableCell className="tag">{component.tag}</TableCell>
+                      <TableCell className="digest">{component.digest || "-"}</TableCell>
+                    </TableRow>
+                  );
+                })}
               </Table>
             </div>
           )}
@@ -215,8 +223,8 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
           {object.status?.history && object.status.history.length > 0 && (
             <div className={styles.history}>
               <DrawerTitle>History</DrawerTitle>
-              {object.status.history.map((snapshot, index) => (
-                <div key={`${snapshot.digest}-${index}`} className={styles.snapshot}>
+              {object.status.history.map((snapshot) => (
+                <div key={`${snapshot.digest}`} className={styles.snapshot}>
                   <div className="title flex gaps">
                     <Icon small material="history" />
                   </div>
