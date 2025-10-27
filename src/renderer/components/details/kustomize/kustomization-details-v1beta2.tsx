@@ -5,7 +5,7 @@ import yaml from "js-yaml";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization-v1beta2";
-import { NamespacedObjectKindReference, type ResourceRef } from "../../../k8s/fluxcd/types";
+import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { LinkToNamespace } from "../../link-to-namespace";
@@ -15,6 +15,7 @@ import { LinkToServiceAccount } from "../../link-to-service-account";
 import { MaybeLink } from "../../maybe-link";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
+import { StatusInventory } from "../../status-inventory";
 import styles from "./kustomization-details.module.scss";
 import stylesInline from "./kustomization-details.module.scss?inline";
 
@@ -38,21 +39,6 @@ const {
 const {
   Util: { stopPropagation },
 } = Common;
-
-function inventoryResourceRefToObjectRef(resource: ResourceRef): NamespacedObjectKindReference | undefined {
-  try {
-    const [namespace, name, group, kind] = resource.id.split("_");
-    const { v } = resource;
-    return {
-      apiVersion: `${group}/${v}`,
-      kind,
-      name,
-      namespace,
-    };
-  } catch (error) {
-    return;
-  }
-}
 
 const referenceSortable = {
   kind: (reference: NamespacedObjectKindReference) => reference.kind,
@@ -511,50 +497,7 @@ export const KustomizationDetails_v1beta2: React.FC<Renderer.Component.KubeObjec
             </div>
           )}
 
-          {object.status?.inventory?.entries && (
-            <div className={styles.inventory}>
-              <DrawerTitle>Inventory</DrawerTitle>
-              <Table
-                selectable
-                tableId="inventory"
-                scrollable={false}
-                sortable={referenceSortable}
-                sortByDefault={referenceSortByDefault}
-                sortSyncWithUrl={false}
-              >
-                <TableHead flat sticky={false}>
-                  <TableCell className={styles.kind} sortBy={referenceSortByNames.kind}>
-                    Kind
-                  </TableCell>
-                  <TableCell className={styles.name} sortBy={referenceSortByNames.name}>
-                    Name
-                  </TableCell>
-                  <TableCell className={styles.namespace} sortBy={referenceSortByNames.namespace}>
-                    Namespace
-                  </TableCell>
-                </TableHead>
-                {object.status.inventory?.entries.map((inventoryResourceRef) => {
-                  const objectRef = inventoryResourceRefToObjectRef(inventoryResourceRef);
-                  if (!objectRef) return null;
-                  return (
-                    <TableRow key={inventoryResourceRef.id} sortItem={objectRef} nowrap>
-                      <TableCell className={styles.kind}>
-                        <WithTooltip tooltip={<ObjectRefTooltip objectRef={objectRef} />}>{objectRef.kind}</WithTooltip>
-                      </TableCell>
-                      <TableCell className={styles.name}>
-                        <MaybeLink to={getMaybeDetailsUrl(getRefUrl(objectRef, object))} onClick={stopPropagation}>
-                          <WithTooltip>{objectRef.name}</WithTooltip>
-                        </MaybeLink>
-                      </TableCell>
-                      <TableCell className={styles.namespace}>
-                        <LinkToNamespace namespace={objectRef.namespace ?? namespace} />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </Table>
-            </div>
-          )}
+          <StatusInventory inventory={object.status?.inventory} object={object} />
         </div>
       </>
     );
