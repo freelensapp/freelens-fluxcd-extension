@@ -19,7 +19,7 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   revision: (object: KubeObject) => object.status?.lastAttemptedRevision,
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
-  status: (object: KubeObject) => getConditionText(object.status?.conditions),
+  status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -56,8 +56,8 @@ export const FluxInstancesPage = observer((props: FluxInstancesPageProps) =>
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
             <WithTooltip>{object.status?.lastAttemptedRevision || "N/A"}</WithTooltip>,
             <Badge
-              className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}
+              className={getConditionClass(object.status?.conditions)}
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,

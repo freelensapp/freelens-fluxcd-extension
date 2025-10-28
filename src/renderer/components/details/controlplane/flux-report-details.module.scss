@@ -1,0 +1,34 @@
+@use "../../../vars";
+
+.details {
+  .title {
+    margin-top: vars.$margin * 2;
+    margin-bottom: vars.$margin;
+  }
+
+  :global(.TableCell) {
+    &.apiVersion {
+      flex-grow: 1;
+    }
+
+    &.kind {
+      flex-grow: 0.8;
+    }
+
+    &.running {
+      flex-grow: 0.5;
+    }
+
+    &.failing {
+      flex-grow: 0.5;
+    }
+
+    &.suspended {
+      flex-grow: 0.5;
+    }
+
+    &.totalSize {
+      flex-grow: 0.7;
+    }
+  }
+}

@@ -71,3 +71,8 @@ export function getConditionClass(conditions?: Condition[]) {
       return "";
   }
 }
+
+export function getLastUpdated(conditions?: Condition[]) {
+  if (!conditions || !conditions.length) return;
+  return getLastCondition(conditions)?.lastTransitionTime;
+}
