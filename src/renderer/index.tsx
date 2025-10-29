@@ -1,4 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
+import { FluxInstanceDetails as FluxInstanceDetails_v1 } from "./components/details/controlplane/flux-instance-details-v1";
+import { FluxReportDetails as FluxReportDetails_v1 } from "./components/details/controlplane/flux-report-details-v1";
 import { HelmReleaseDetails as HelmReleaseDetails_v2 } from "./components/details/helm/helm-release-details-v2";
 import { HelmReleaseDetails as HelmReleaseDetails_v2beta1 } from "./components/details/helm/helm-release-details-v2beta1";
 import { HelmReleaseDetails as HelmReleaseDetails_v2beta2 } from "./components/details/helm/helm-release-details-v2beta2";
@@ -39,6 +41,8 @@ import { HelmRepositoryDetails as HelmRepositoryDetails_v1beta2 } from "./compon
 import { OCIRepositoryDetails as OCIRepositoryDetails_v1 } from "./components/details/source/oci-repository-details-v1";
 import { OCIRepositoryDetails as OCIRepositoryDetails_v1beta2 } from "./components/details/source/oci-repository-details-v1beta2";
 import svgIcon from "./icons/fluxcd.svg?raw";
+import { FluxInstance as FluxInstance_v1 } from "./k8s/fluxcd/controlplane/fluxinstance-v1";
+import { FluxReport as FluxReport_v1 } from "./k8s/fluxcd/controlplane/fluxreport-v1";
 import { HelmRelease as HelmRelease_v2 } from "./k8s/fluxcd/helm/helmrelease-v2";
 import { HelmRelease as HelmRelease_v2beta1 } from "./k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "./k8s/fluxcd/helm/helmrelease-v2beta2";
@@ -86,6 +90,8 @@ import {
   FluxCDObjectSuspendResumeMenuItem,
   type FluxCDObjectSuspendResumeMenuItemProps,
 } from "./menus/fluxcd-object-suspend-resume-menu-item";
+import { FluxInstancesPage as FluxInstancesPage_v1 } from "./pages/controlplane/fluxinstances-v1";
+import { FluxReportsPage as FluxReportsPage_v1 } from "./pages/controlplane/fluxreports-v1";
 import { HelmReleasesPage as HelmReleasesPage_v2 } from "./pages/helm/helmreleases-v2";
 import { HelmReleasesPage as HelmReleasesPage_v2beta1 } from "./pages/helm/helmreleases-v2beta1";
 import { HelmReleasesPage as HelmReleasesPage_v2beta2 } from "./pages/helm/helmreleases-v2beta2";
@@ -177,6 +183,18 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "bucket",
       components: {
         Page: () => <BucketsPage_v1 extension={this} />,
+      },
+    },
+    {
+      id: "fluxinstance",
+      components: {
+        Page: () => <FluxInstancesPage_v1 extension={this} />,
+      },
+    },
+    {
+      id: "fluxreport",
+      components: {
+        Page: () => <FluxReportsPage_v1 extension={this} />,
       },
     },
     {
@@ -393,6 +411,27 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       parentId: "fluxcd",
       target: { pageId: "dashboard" },
       title: "Overview",
+      components: {},
+    },
+    {
+      id: "controlplane",
+      parentId: "fluxcd",
+      target: { pageId: "fluxinstance" },
+      title: "Operator",
+      components: {},
+    },
+    {
+      id: "fluxinstance",
+      parentId: "controlplane",
+      target: { pageId: "fluxinstance" },
+      title: FluxInstance_v1.crd.title,
+      components: {},
+    },
+    {
+      id: "fluxreport",
+      parentId: "controlplane",
+      target: { pageId: "fluxreport" },
+      title: FluxReport_v1.crd.title,
       components: {},
     },
     {
@@ -713,6 +752,26 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       priority: 10,
       components: {
         Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket_v1>) => <BucketDetails_v1 {...props} />,
+      },
+    },
+    {
+      kind: FluxInstance_v1.kind,
+      apiVersions: FluxInstance_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<FluxInstance_v1>) => (
+          <FluxInstanceDetails_v1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: FluxReport_v1.kind,
+      apiVersions: FluxReport_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<FluxReport_v1>) => (
+          <FluxReportDetails_v1 {...props} />
+        ),
       },
     },
     {

@@ -1,5 +1,4 @@
 import { Common, Renderer } from "@freelensapp/extensions";
-import crypto from "crypto";
 import { Base64 } from "js-base64";
 import yaml from "js-yaml";
 import { observer } from "mobx-react";
@@ -11,8 +10,11 @@ import { LinkToNamespace } from "../../link-to-namespace";
 import { LinkToObject } from "../../link-to-object";
 import { LinkToServiceAccount } from "../../link-to-service-account";
 import { MaybeLink } from "../../maybe-link";
+import { SpecPatches } from "../../spec-patches";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
+
+import type { Patch } from "../../../k8s/core/types";
 
 const {
   Util: { stopPropagation },
@@ -96,7 +98,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
       ?.map((a) => a?.kustomize)
       ?.filter((a) => a?.patches)
       ?.map((a) => a?.patches)
-      ?.flat();
+      ?.flat() as Patch[] | undefined;
 
     return (
       <>
@@ -176,7 +178,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                 const valuesYamlValue = valuesFromYaml[`${namespace}/${name}/${valuesKey}`] ?? "";
 
                 return (
-                  <div key={name}>
+                  <div key={`${api}-${name}`}>
                     <div className={styles.title}>
                       <Icon small material="list" />
                     </div>
@@ -201,7 +203,6 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                     </DrawerItem>
                     <MonacoEditor
                       readOnly
-                      id={`valuesFrom-${namespace}-${name}-${valuesKey}`}
                       className={styles.editor}
                       style={{
                         minHeight: getHeight(valuesYamlValue),
@@ -225,7 +226,6 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
               <DrawerTitle>Values</DrawerTitle>
               <MonacoEditor
                 readOnly
-                id="values"
                 className={styles.editor}
                 style={{
                   minHeight: getHeight(valuesYaml),
@@ -241,80 +241,15 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             </div>
           )}
 
-          {patches && (
-            <div>
-              <DrawerTitle>Patches</DrawerTitle>
-              {patches.map((patch) => {
-                if (!patch) return null;
-                const key = crypto
-                  .createHash("sha256")
-                  .update(
-                    [
-                      patch.patch,
-                      patch.target?.kind,
-                      patch.target?.name,
-                      patch.target?.namespace,
-                      patch.target?.labelSelector,
-                      patch.target?.annotationSelector,
-                    ].join(""),
-                  )
-                  .digest("hex");
-
-                return (
-                  <div key={key}>
-                    <div className={styles.title}>
-                      <Icon small material="list" />
-                    </div>
-                    <DrawerItem name="Group" hidden={!patch.target?.group}>
-                      {patch.target?.group}
-                    </DrawerItem>
-                    <DrawerItem name="Version" hidden={!patch.target?.version}>
-                      {patch.target?.version}
-                    </DrawerItem>
-                    <DrawerItem name="Kind" hidden={!patch.target?.kind}>
-                      {patch.target?.kind}
-                    </DrawerItem>
-                    <DrawerItem name="Name" hidden={!patch.target?.name}>
-                      {patch.target?.name}
-                    </DrawerItem>
-                    <DrawerItem name="Namespace" hidden={!patch.target?.namespace}>
-                      {patch.target?.namespace}
-                    </DrawerItem>
-                    <DrawerItem name="Label Selector" hidden={!patch.target?.labelSelector}>
-                      {patch.target?.labelSelector}
-                    </DrawerItem>
-                    <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
-                      {patch.target?.annotationSelector}
-                    </DrawerItem>
-                    <div className="DrawerItem">Patch</div>
-                    <MonacoEditor
-                      readOnly
-                      id={`patch-${key}`}
-                      className={styles.editor}
-                      style={{
-                        minHeight: getHeight(patch.patch),
-                      }}
-                      value={patch.patch}
-                      setInitialHeight
-                      options={{
-                        scrollbar: {
-                          alwaysConsumeMouseWheel: false,
-                        },
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <SpecPatches patches={patches} />
 
           {images && (
             <div>
               <DrawerTitle>Images</DrawerTitle>
-              {images.map((image, idx) => {
+              {images.map((image) => {
                 if (!image) return null;
                 return (
-                  <div key={image.name ?? idx}>
+                  <div key={image.name}>
                     <div className={styles.title}>
                       <Icon small material="list" />
                     </div>
@@ -357,7 +292,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                   </TableCell>
                 </TableHead>
                 {object.status?.history?.map((snapshot) => (
-                  <TableRow key={snapshot.version} sortItem={snapshot} nowrap>
+                  <TableRow key={`${snapshot.digest}-${snapshot.configDigest}`} sortItem={snapshot} nowrap>
                     <TableCell className={styles.version}>{snapshot.version}</TableCell>
                     <TableCell>{snapshot.lastDeployed}</TableCell>
                     <TableCell>

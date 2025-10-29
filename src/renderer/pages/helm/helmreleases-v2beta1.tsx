@@ -75,7 +75,6 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
               <WithTooltip>{KubeObject.getAppVersion(object) ?? "N/A"}</WithTooltip>,
               <BadgeBoolean value={!object.spec.suspend} />,
               <Badge
-                key="name"
                 label={getConditionText(object.status?.conditions)}
                 className={getConditionClass(object.status?.conditions)}
               />,

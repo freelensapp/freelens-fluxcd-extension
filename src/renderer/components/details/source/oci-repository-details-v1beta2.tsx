@@ -75,7 +75,7 @@ export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
             <DrawerItem name="OIDC Identity">
               {object.spec.verify.matchOIDCIdentity?.length &&
                 object.spec.verify.matchOIDCIdentity.map((match) => (
-                  <div>
+                  <div key={`${match.issuer}-${match.subject}`}>
                     <DrawerTitle>Match</DrawerTitle>
                     <DrawerItem name="Issuer">{match.issuer}</DrawerItem>
                     <DrawerItem name="Subject">{match.subject}</DrawerItem>

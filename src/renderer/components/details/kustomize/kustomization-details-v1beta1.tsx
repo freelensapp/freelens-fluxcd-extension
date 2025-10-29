@@ -5,7 +5,7 @@ import yaml from "js-yaml";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization-v1beta1";
-import { NamespacedObjectKindReference, type ResourceRef } from "../../../k8s/fluxcd/types";
+import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { LinkToNamespace } from "../../link-to-namespace";
@@ -14,7 +14,9 @@ import { LinkToSecret } from "../../link-to-secret";
 import { LinkToServiceAccount } from "../../link-to-service-account";
 import { MaybeLink } from "../../maybe-link";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
+import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
+import { StatusInventory } from "../../status-inventory";
 import styles from "./kustomization-details.module.scss";
 import stylesInline from "./kustomization-details.module.scss?inline";
 
@@ -38,21 +40,6 @@ const {
 const {
   Util: { stopPropagation },
 } = Common;
-
-function inventoryResourceRefToObjectRef(resource: ResourceRef): NamespacedObjectKindReference | undefined {
-  try {
-    const [namespace, name, group, kind] = resource.id.split("_");
-    const { v } = resource;
-    return {
-      apiVersion: `${group}/${v}`,
-      kind,
-      name,
-      namespace,
-    };
-  } catch (error) {
-    return;
-  }
-}
 
 const referenceSortable = {
   kind: (reference: NamespacedObjectKindReference) => reference.kind,
@@ -190,77 +177,13 @@ export const KustomizationDetails_v1beta1: React.FC<Renderer.Component.KubeObjec
             </div>
           )}
 
-          {object.spec.patches && (
-            <div>
-              <DrawerTitle>Patches</DrawerTitle>
-              {object.spec.patches.map((patch) => {
-                const key = crypto
-                  .createHash("sha256")
-                  .update(
-                    [
-                      patch.patch,
-                      patch.target?.kind,
-                      patch.target?.name,
-                      patch.target?.namespace,
-                      patch.target?.labelSelector,
-                      patch.target?.annotationSelector,
-                    ].join(""),
-                  )
-                  .digest("hex");
-
-                return (
-                  <div key={key}>
-                    <div className={styles.title}>
-                      <Icon small material="list" />
-                    </div>
-                    <DrawerItem name="Group" hidden={!patch.target?.group}>
-                      {patch.target?.group}
-                    </DrawerItem>
-                    <DrawerItem name="Version" hidden={!patch.target?.version}>
-                      {patch.target?.version}
-                    </DrawerItem>
-                    <DrawerItem name="Kind" hidden={!patch.target?.kind}>
-                      {patch.target?.kind}
-                    </DrawerItem>
-                    <DrawerItem name="Name" hidden={!patch.target?.name}>
-                      {patch.target?.name}
-                    </DrawerItem>
-                    <DrawerItem name="Namespace" hidden={!patch.target?.namespace}>
-                      {patch.target?.namespace}
-                    </DrawerItem>
-                    <DrawerItem name="Label Selector" hidden={!patch.target?.labelSelector}>
-                      {patch.target?.labelSelector}
-                    </DrawerItem>
-                    <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
-                      {patch.target?.annotationSelector}
-                    </DrawerItem>
-                    <div className="DrawerItem">Patch</div>
-                    <MonacoEditor
-                      readOnly
-                      id={`patch-${key}`}
-                      className={styles.editor}
-                      style={{
-                        minHeight: getHeight(patch.patch),
-                      }}
-                      value={patch.patch}
-                      setInitialHeight
-                      options={{
-                        scrollbar: {
-                          alwaysConsumeMouseWheel: false,
-                        },
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <SpecPatches patches={object.spec.patches} />
 
           {object.spec.patchesStrategicMerge && (
             <div>
               <DrawerTitle>Patches: Strategic Merge</DrawerTitle>
               {object.spec.patchesStrategicMerge.map((patch) => {
-                const key = crypto.createHash("sha256").update(patch).digest("hex");
+                const key = crypto.createHash("sha256").update(JSON.stringify(patch)).digest("hex").substring(0, 16);
 
                 return (
                   <div key={key}>
@@ -269,7 +192,6 @@ export const KustomizationDetails_v1beta1: React.FC<Renderer.Component.KubeObjec
                     </div>
                     <MonacoEditor
                       readOnly
-                      id={`patch-${key}`}
                       style={{
                         minHeight: getHeight(patch),
                         resize: "none",
@@ -296,19 +218,7 @@ export const KustomizationDetails_v1beta1: React.FC<Renderer.Component.KubeObjec
               <DrawerTitle>Patches: RFC 6902</DrawerTitle>
               {object.spec.patchesJson6902.map((patch) => {
                 const patchYaml = yaml.dump(patch.patch, defaultYamlDumpOptions);
-                const key = crypto
-                  .createHash("sha256")
-                  .update(
-                    [
-                      patchYaml,
-                      patch.target?.kind,
-                      patch.target?.name,
-                      patch.target?.namespace,
-                      patch.target?.labelSelector,
-                      patch.target?.annotationSelector,
-                    ].join(""),
-                  )
-                  .digest("hex");
+                const key = crypto.createHash("sha256").update(JSON.stringify(patch)).digest("hex").substring(0, 16);
 
                 return (
                   <div key={key}>
@@ -339,7 +249,6 @@ export const KustomizationDetails_v1beta1: React.FC<Renderer.Component.KubeObjec
                     <div className="DrawerItem">Patch</div>
                     <MonacoEditor
                       readOnly
-                      id={`patch-${key}`}
                       style={{
                         minHeight: getHeight(patchYaml),
                         resize: "none",
@@ -511,50 +420,7 @@ export const KustomizationDetails_v1beta1: React.FC<Renderer.Component.KubeObjec
             </div>
           )}
 
-          {object.status?.inventory?.entries && (
-            <div className={styles.inventory}>
-              <DrawerTitle>Inventory</DrawerTitle>
-              <Table
-                selectable
-                tableId="inventory"
-                scrollable={false}
-                sortable={referenceSortable}
-                sortByDefault={referenceSortByDefault}
-                sortSyncWithUrl={false}
-              >
-                <TableHead flat sticky={false}>
-                  <TableCell className={styles.kind} sortBy={referenceSortByNames.kind}>
-                    Kind
-                  </TableCell>
-                  <TableCell className={styles.name} sortBy={referenceSortByNames.name}>
-                    Name
-                  </TableCell>
-                  <TableCell className={styles.namespace} sortBy={referenceSortByNames.namespace}>
-                    Namespace
-                  </TableCell>
-                </TableHead>
-                {object.status.inventory?.entries.map((inventoryResourceRef) => {
-                  const objectRef = inventoryResourceRefToObjectRef(inventoryResourceRef);
-                  if (!objectRef) return null;
-                  return (
-                    <TableRow key={inventoryResourceRef.id} sortItem={objectRef} nowrap>
-                      <TableCell className={styles.kind}>
-                        <WithTooltip tooltip={<ObjectRefTooltip objectRef={objectRef} />}>{objectRef.kind}</WithTooltip>
-                      </TableCell>
-                      <TableCell className={styles.name}>
-                        <MaybeLink to={getMaybeDetailsUrl(getRefUrl(objectRef, object))} onClick={stopPropagation}>
-                          <WithTooltip>{objectRef.name}</WithTooltip>
-                        </MaybeLink>
-                      </TableCell>
-                      <TableCell className={styles.namespace}>
-                        <LinkToNamespace namespace={objectRef.namespace ?? namespace} />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </Table>
-            </div>
-          )}
+          <StatusInventory inventory={object.status?.inventory} object={object} />
         </div>
       </>
     );
