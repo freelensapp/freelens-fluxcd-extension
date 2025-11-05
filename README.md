@@ -30,6 +30,7 @@ Features include:
 - Kubernetes >= 1.24
 - Freelens >= 1.6.0
 - Flux >= v2.0.0, <= 2.7.x
+- flux-operator >= v0.6.0
 - kustomize-controller >= v0.1.0
 - helm-controller >= v0.1.0
 - image-automation-controller >= v0.14.0
@@ -39,6 +40,7 @@ Features include:
 
 ## API supported
 
+- [fluxcd.controlplane.io/v1](https://github.com/controlplaneio-fluxcd/flux-operator/blob/v0.33.0/docs/api/v1/)
 - [helm.toolkit.fluxcd.io/v2beta1](https://github.com/fluxcd/helm-controller/blob/v0.1.0/docs/spec/v2beta1/)
   (helm-controller)
 - [helm.toolkit.fluxcd.io/v2beta2](https://github.com/fluxcd/helm-controller/tree/v1.4.2/docs/spec/v2beta2)
