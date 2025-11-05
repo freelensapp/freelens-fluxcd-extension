@@ -25,6 +25,16 @@ Features include:
 ### Dashboard
 ![./docs/images/dashboard.png](./docs/images/dashboard.png)
 
+## Install
+
+To install or upgrade: open Freelens and go to Extensions (`ctrl`+`shift`+`E`
+or `cmd`+`shift`+`E`), and install `@freelensapp/fluxcd-extension`.
+
+or:
+
+Use a following URL in the browser:
+[freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension](freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension)
+
 ## Requirements
 
 - Kubernetes >= 1.24
@@ -79,16 +89,6 @@ Features include:
   (source-controller)
 - [source.toolkit.fluxcd.io/v1](https://github.com/fluxcd/source-controller/blob/v1.7.2/docs/api/v1/source.md)
   (source-controller)
-
-## Install
-
-To install or upgrade: open Freelens and go to Extensions (`ctrl`+`shift`+`E`
-or `cmd`+`shift`+`E`), and install `@freelensapp/fluxcd-extension`.
-
-or:
-
-Use a following URL in the browser:
-[freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension](freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension)
 
 ## Build from the source
 
