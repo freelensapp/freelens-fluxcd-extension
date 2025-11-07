@@ -12,7 +12,15 @@ import styles from "./fluxreports.module.scss";
 import stylesInline from "./fluxreports.module.scss?inline";
 
 const {
-  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, ReactiveDuration, WithTooltip },
+  Component: {
+    Badge,
+    BadgeBoolean,
+    KubeObjectAge,
+    KubeObjectListLayout,
+    NamespaceSelectBadge,
+    ReactiveDuration,
+    WithTooltip,
+  },
 } = Renderer;
 
 const KubeObject = FluxReport;
@@ -29,6 +37,8 @@ const sortingCallbacks = {
     object.spec.reconcilers?.map((r) => r.stats?.running || 0).reduce((a, b) => a + b, 0) ?? 0,
   suspended: (object: KubeObject) =>
     object.spec.reconcilers?.map((r) => r.stats?.suspended || 0).reduce((a, b) => a + b, 0) ?? 0,
+  enabled: (object: KubeObject) =>
+    String((object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   lastUpdated: (object: KubeObject) => getLastUpdated(object.status?.conditions),
   status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
@@ -42,6 +52,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Failing", sortBy: "failing", className: styles.failing },
   { title: "Running", sortBy: "running", className: styles.running },
   { title: "Suspended", sortBy: "suspended", className: styles.suspended },
+  { title: "Enabled", sortBy: "enabled", className: styles.enabled },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Last Updated", sortBy: "lastUpdated", className: styles.lastUpdated },
   { title: "Status", sortBy: "status", className: styles.status },
@@ -80,6 +91,9 @@ export const FluxReportsPage = observer((props: FluxReportsPageProps) =>
             <WithTooltip>
               {object.spec.reconcilers?.map((r) => r.stats?.suspended || 0).reduce((a, b) => a + b, 0) ?? "N/A"}
             </WithTooltip>,
+            <BadgeBoolean
+              value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}
+            />,
             <Badge
               label={getConditionText(object.status?.conditions)}
               className={getConditionClass(object.status?.conditions)}

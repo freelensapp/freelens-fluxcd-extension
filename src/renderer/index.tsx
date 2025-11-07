@@ -43,6 +43,8 @@ import { OCIRepositoryDetails as OCIRepositoryDetails_v1beta2 } from "./componen
 import svgIcon from "./icons/fluxcd.svg?raw";
 import { FluxInstance as FluxInstance_v1 } from "./k8s/fluxcd/controlplane/fluxinstance-v1";
 import { FluxReport as FluxReport_v1 } from "./k8s/fluxcd/controlplane/fluxreport-v1";
+import { ResourceSet as ResourceSet_v1 } from "./k8s/fluxcd/controlplane/resourceset-v1";
+import { ResourceSetInputProvider as ResourceSetInputProvider_v1 } from "./k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
 import { HelmRelease as HelmRelease_v2 } from "./k8s/fluxcd/helm/helmrelease-v2";
 import { HelmRelease as HelmRelease_v2beta1 } from "./k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "./k8s/fluxcd/helm/helmrelease-v2beta2";
@@ -92,6 +94,8 @@ import {
 } from "./menus/fluxcd-object-suspend-resume-menu-item";
 import { FluxInstancesPage as FluxInstancesPage_v1 } from "./pages/controlplane/fluxinstances-v1";
 import { FluxReportsPage as FluxReportsPage_v1 } from "./pages/controlplane/fluxreports-v1";
+import { ResourceSetInputProvidersPage as ResourceSetInputProvidersPage_v1 } from "./pages/controlplane/resourcesetinputproviders-v1";
+import { ResourceSetsPage as ResourceSetsPage_v1 } from "./pages/controlplane/resourcesets-v1";
 import { HelmReleasesPage as HelmReleasesPage_v2 } from "./pages/helm/helmreleases-v2";
 import { HelmReleasesPage as HelmReleasesPage_v2beta1 } from "./pages/helm/helmreleases-v2beta1";
 import { HelmReleasesPage as HelmReleasesPage_v2beta2 } from "./pages/helm/helmreleases-v2beta2";
@@ -395,6 +399,18 @@ export default class FluxCDExtension extends Renderer.LensExtension {
         Page: () => <ReceiversPage_v1 extension={this} />,
       },
     },
+    {
+      id: "resourceset",
+      components: {
+        Page: () => <ResourceSetsPage_v1 extension={this} />,
+      },
+    },
+    {
+      id: "resourcesetinputprovider",
+      components: {
+        Page: () => <ResourceSetInputProvidersPage_v1 extension={this} />,
+      },
+    },
   ];
 
   clusterPageMenus = [
@@ -432,6 +448,20 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       parentId: "controlplane",
       target: { pageId: "fluxreport" },
       title: FluxReport_v1.crd.title,
+      components: {},
+    },
+    {
+      id: "resourceset",
+      parentId: "controlplane",
+      target: { pageId: "resourceset" },
+      title: ResourceSet_v1.crd.title,
+      components: {},
+    },
+    {
+      id: "resourcesetinputprovider",
+      parentId: "controlplane",
+      target: { pageId: "resourcesetinputprovider" },
+      title: ResourceSetInputProvider_v1.crd.title,
       components: {},
     },
     {
@@ -1222,6 +1252,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: FluxInstance_v1.kind,
+      apiVersions: FluxInstance_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={FluxInstance_v1} />
+        ),
+      },
+    },
+    {
+      kind: FluxReport_v1.kind,
+      apiVersions: FluxReport_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={FluxReport_v1} />
+        ),
+      },
+    },
+    {
       kind: GitRepository_v1beta1.kind,
       apiVersions: GitRepository_v1beta1.crd.apiVersions,
       components: {
@@ -1749,6 +1797,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
           <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver_v1} />
+        ),
+      },
+    },
+    {
+      kind: ResourceSet_v1.kind,
+      apiVersions: ResourceSet_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ResourceSet_v1} />
+        ),
+      },
+    },
+    {
+      kind: ResourceSetInputProvider_v1.kind,
+      apiVersions: ResourceSetInputProvider_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ResourceSetInputProvider_v1} />
         ),
       },
     },
