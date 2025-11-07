@@ -17,12 +17,12 @@ type FluxCDKubeObjectWithSuspendCtor = typeof Renderer.K8sApi.LensExtensionKubeO
   FluxCDKubeObjectSpecWithSuspend
 >;
 
-export interface FluxCDObjectSuspendResumeMenuItemProps
+export interface FluxCDObjectSpecSuspendResumeMenuItemProps
   extends Renderer.Component.KubeObjectMenuProps<FluxCDKubeObjectWithSuspend> {
   resource: FluxCDKubeObjectWithSuspendCtor;
 }
 
-export function FluxCDObjectSuspendResumeMenuItem(props: FluxCDObjectSuspendResumeMenuItemProps) {
+export function FluxCDObjectSpecSuspendResumeMenuItem(props: FluxCDObjectSpecSuspendResumeMenuItemProps) {
   const { object, toolbar, resource } = props;
   if (!object) return <></>;
 
@@ -53,19 +53,19 @@ export function FluxCDObjectSuspendResumeMenuItem(props: FluxCDObjectSuspendResu
     );
   };
 
-  if (object.spec.suspend === true) {
+  if (object.spec.suspend) {
     return (
       <MenuItem onClick={resume}>
         <Icon material="play_circle_outline" interactive={toolbar} title="Resume" />
         <span className="title">Resume</span>
       </MenuItem>
     );
+  } else {
+    return (
+      <MenuItem onClick={suspend}>
+        <Icon material="pause_circle_filled" interactive={toolbar} title="Suspend" />
+        <span className="title">Suspend</span>
+      </MenuItem>
+    );
   }
-
-  return (
-    <MenuItem onClick={suspend}>
-      <Icon material="pause_circle_filled" interactive={toolbar} title="Suspend" />
-      <span className="title">Suspend</span>
-    </MenuItem>
-  );
 }

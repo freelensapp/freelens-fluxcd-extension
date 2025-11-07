@@ -84,14 +84,15 @@ import { HelmRepository as HelmRepository_v1beta1 } from "./k8s/fluxcd/source/he
 import { HelmRepository as HelmRepository_v1beta2 } from "./k8s/fluxcd/source/helmrepository-v1beta2";
 import { OCIRepository as OCIRepository_v1 } from "./k8s/fluxcd/source/ocirepository-v1";
 import { OCIRepository as OCIRepository_v1beta2 } from "./k8s/fluxcd/source/ocirepository-v1beta2";
+import { FluxCDObjectAnnotationSuspendResumeMenuItem } from "./menus/fluxcd-object-annotation-suspend-resume-menu-item";
 import {
   FluxCDObjectReconcileMenuItem,
   type FluxCDObjectReconcileMenuItemProps,
 } from "./menus/fluxcd-object-reconcile-menu-item";
 import {
-  FluxCDObjectSuspendResumeMenuItem,
-  type FluxCDObjectSuspendResumeMenuItemProps,
-} from "./menus/fluxcd-object-suspend-resume-menu-item";
+  FluxCDObjectSpecSuspendResumeMenuItem,
+  type FluxCDObjectSpecSuspendResumeMenuItemProps,
+} from "./menus/fluxcd-object-spec-suspend-resume-menu-item";
 import { FluxInstancesPage as FluxInstancesPage_v1 } from "./pages/controlplane/fluxinstances-v1";
 import { FluxReportsPage as FluxReportsPage_v1 } from "./pages/controlplane/fluxreports-v1";
 import { ResourceSetInputProvidersPage as ResourceSetInputProvidersPage_v1 } from "./pages/controlplane/resourcesetinputproviders-v1";
@@ -1156,8 +1157,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Alert_v1beta1.kind,
       apiVersions: Alert_v1beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Alert_v1beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Alert_v1beta1} />
         ),
       },
     },
@@ -1174,8 +1175,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Alert_v1beta2.kind,
       apiVersions: Alert_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Alert_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Alert_v1beta2} />
         ),
       },
     },
@@ -1192,8 +1193,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Alert_v1beta3.kind,
       apiVersions: Alert_v1beta3.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Alert_v1beta3} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Alert_v1beta3} />
         ),
       },
     },
@@ -1210,8 +1211,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Bucket_v1beta1.kind,
       apiVersions: Bucket_v1beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Bucket_v1beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Bucket_v1beta1} />
         ),
       },
     },
@@ -1228,8 +1229,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Bucket_v1beta2.kind,
       apiVersions: Bucket_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Bucket_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Bucket_v1beta2} />
         ),
       },
     },
@@ -1246,8 +1247,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Bucket_v1.kind,
       apiVersions: Bucket_v1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Bucket_v1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Bucket_v1} />
         ),
       },
     },
@@ -1261,11 +1262,29 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: FluxInstance_v1.kind,
+      apiVersions: FluxInstance_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={FluxInstance_v1} />
+        ),
+      },
+    },
+    {
       kind: FluxReport_v1.kind,
       apiVersions: FluxReport_v1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
           <FluxCDObjectReconcileMenuItem {...props} resource={FluxReport_v1} />
+        ),
+      },
+    },
+    {
+      kind: FluxReport_v1.kind,
+      apiVersions: FluxReport_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={FluxReport_v1} />
         ),
       },
     },
@@ -1282,8 +1301,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: GitRepository_v1beta1.kind,
       apiVersions: GitRepository_v1beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={GitRepository_v1beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={GitRepository_v1beta1} />
         ),
       },
     },
@@ -1300,8 +1319,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: GitRepository_v1beta2.kind,
       apiVersions: GitRepository_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={GitRepository_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={GitRepository_v1beta2} />
         ),
       },
     },
@@ -1318,8 +1337,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: GitRepository_v1.kind,
       apiVersions: GitRepository_v1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={GitRepository_v1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={GitRepository_v1} />
         ),
       },
     },
@@ -1336,8 +1355,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: HelmChart_v1beta1.kind,
       apiVersions: HelmChart_v1beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmChart_v1beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmChart_v1beta1} />
         ),
       },
     },
@@ -1354,8 +1373,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: HelmChart_v1beta2.kind,
       apiVersions: HelmChart_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmChart_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmChart_v1beta2} />
         ),
       },
     },
@@ -1372,8 +1391,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: HelmChart_v1.kind,
       apiVersions: HelmChart_v1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmChart_v1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmChart_v1} />
         ),
       },
     },
@@ -1390,8 +1409,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: HelmRelease_v2beta1.kind,
       apiVersions: HelmRelease_v2beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRelease_v2beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRelease_v2beta1} />
         ),
       },
     },
@@ -1408,8 +1427,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: HelmRelease_v2beta2.kind,
       apiVersions: HelmRelease_v2beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRelease_v2beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRelease_v2beta2} />
         ),
       },
     },
@@ -1426,8 +1445,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: HelmRelease_v2.kind,
       apiVersions: HelmRelease_v2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRelease_v2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRelease_v2} />
         ),
       },
     },
@@ -1444,8 +1463,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: HelmRepository_v1.kind,
       apiVersions: HelmRepository_v1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={HelmRepository_v1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRepository_v1} />
         ),
       },
     },
@@ -1489,8 +1508,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: ImageRepository_v1beta1.kind,
       apiVersions: ImageRepository_v1beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageRepository_v1beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageRepository_v1beta1} />
         ),
       },
     },
@@ -1507,8 +1526,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: ImageRepository_v1beta2.kind,
       apiVersions: ImageRepository_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageRepository_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageRepository_v1beta2} />
         ),
       },
     },
@@ -1525,8 +1544,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: ImageRepository_v1.kind,
       apiVersions: ImageRepository_v1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageRepository_v1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageRepository_v1} />
         ),
       },
     },
@@ -1543,8 +1562,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: ImageUpdateAutomation_v1beta1.kind,
       apiVersions: ImageUpdateAutomation_v1beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1beta1} />
         ),
       },
     },
@@ -1561,8 +1580,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: ImageUpdateAutomation_v1beta2.kind,
       apiVersions: ImageUpdateAutomation_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1beta2} />
         ),
       },
     },
@@ -1579,8 +1598,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: ImageUpdateAutomation_v1.kind,
       apiVersions: ImageUpdateAutomation_v1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1} />
         ),
       },
     },
@@ -1597,8 +1616,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Kustomization_v1beta1.kind,
       apiVersions: Kustomization_v1beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Kustomization_v1beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Kustomization_v1beta1} />
         ),
       },
     },
@@ -1615,8 +1634,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Kustomization_v1beta2.kind,
       apiVersions: Kustomization_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Kustomization_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Kustomization_v1beta2} />
         ),
       },
     },
@@ -1633,8 +1652,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Kustomization_v1.kind,
       apiVersions: Kustomization_v1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Kustomization_v1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Kustomization_v1} />
         ),
       },
     },
@@ -1651,8 +1670,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: OCIRepository_v1beta2.kind,
       apiVersions: OCIRepository_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={OCIRepository_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={OCIRepository_v1beta2} />
         ),
       },
     },
@@ -1669,8 +1688,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: OCIRepository_v1.kind,
       apiVersions: OCIRepository_v1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={OCIRepository_v1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={OCIRepository_v1} />
         ),
       },
     },
@@ -1687,8 +1706,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Provider_v1beta1.kind,
       apiVersions: Provider_v1beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Provider_v1beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Provider_v1beta1} />
         ),
       },
     },
@@ -1705,8 +1724,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Provider_v1beta2.kind,
       apiVersions: Provider_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Provider_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Provider_v1beta2} />
         ),
       },
     },
@@ -1723,8 +1742,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Provider_v1beta3.kind,
       apiVersions: Provider_v1beta3.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Provider_v1beta3} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Provider_v1beta3} />
         ),
       },
     },
@@ -1741,8 +1760,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Receiver_v1beta1.kind,
       apiVersions: Receiver_v1beta1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver_v1beta1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Receiver_v1beta1} />
         ),
       },
     },
@@ -1759,8 +1778,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Receiver_v1beta2.kind,
       apiVersions: Receiver_v1beta2.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver_v1beta2} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Receiver_v1beta2} />
         ),
       },
     },
@@ -1777,8 +1796,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Receiver_v1beta3.kind,
       apiVersions: Receiver_v1beta3.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver_v1beta3} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Receiver_v1beta3} />
         ),
       },
     },
@@ -1795,8 +1814,8 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       kind: Receiver_v1.kind,
       apiVersions: Receiver_v1.crd.apiVersions,
       components: {
-        MenuItem: (props: FluxCDObjectSuspendResumeMenuItemProps) => (
-          <FluxCDObjectSuspendResumeMenuItem {...props} resource={Receiver_v1} />
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Receiver_v1} />
         ),
       },
     },
@@ -1810,11 +1829,29 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ResourceSet_v1.kind,
+      apiVersions: ResourceSet_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={ResourceSet_v1} />
+        ),
+      },
+    },
+    {
       kind: ResourceSetInputProvider_v1.kind,
       apiVersions: ResourceSetInputProvider_v1.crd.apiVersions,
       components: {
         MenuItem: (props: FluxCDObjectReconcileMenuItemProps) => (
           <FluxCDObjectReconcileMenuItem {...props} resource={ResourceSetInputProvider_v1} />
+        ),
+      },
+    },
+    {
+      kind: ResourceSetInputProvider_v1.kind,
+      apiVersions: ResourceSetInputProvider_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: FluxCDObjectSpecSuspendResumeMenuItemProps) => (
+          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={ResourceSetInputProvider_v1} />
         ),
       },
     },
