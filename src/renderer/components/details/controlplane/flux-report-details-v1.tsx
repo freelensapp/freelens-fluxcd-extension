@@ -44,7 +44,7 @@ export const FluxReportDetails: React.FC<Renderer.Component.KubeObjectDetailsPro
           />
         </DrawerItem>
         <DrawerItem name="Reconciliation Interval">
-          {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileEvery"] ?? "5m"}
+          {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileEvery"] ?? "5m (default)"}
         </DrawerItem>
         <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
           <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />

@@ -49,13 +49,13 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
             />
           </DrawerItem>
           <DrawerItem name="Reconciliation Interval">
-            {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileEvery"] ?? "1h"}
+            {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileEvery"] ?? "1h (default)"}
           </DrawerItem>
           <DrawerItem name="Artifact Reconciliation Interval">
-            {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileArtifactEvery"] ?? "10m"}
+            {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileArtifactEvery"] ?? "10m (default)"}
           </DrawerItem>
           <DrawerItem name="Reconciliation Timeout">
-            {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileTimeout"] ?? "5m"}
+            {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileTimeout"] ?? "5m (default)"}
           </DrawerItem>
           <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
             <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
