@@ -191,7 +191,7 @@ jobs:
         run: cd ../freelens && pnpm --color=always build:resources
 
       - name: Build Electron app
-        run: cd ../freelens && pnpm --color=always build:app dir --${{ matrix.arch }}
+        run: cd ../freelens && pnpm --color=always build:app -- dir --${{ matrix.arch }}
 
       - name: Run integration tests
         id: integration-tests-linux
