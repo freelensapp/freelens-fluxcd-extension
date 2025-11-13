@@ -2,14 +2,20 @@ import { Renderer } from "@freelensapp/extensions";
 
 import type { Condition, LabelSelector } from "@freelensapp/kube-object";
 
+import type { History } from "../types";
+
 export interface CommonMetadata {
   annotations?: Record<string, string>;
   labels?: Record<string, string>;
 }
 
+export interface InputStrategySpec {
+  name?: "Flatten" | "Permute";
+}
+
 export interface InputProviderReference {
-  apiVersion?: string;
-  kind: string;
+  apiVersion?: "fluxcd.controlplane.io/v1";
+  kind: "ResourceSetInputProvider";
   name?: string;
   selector?: LabelSelector;
 }
@@ -34,20 +40,9 @@ export interface ResourceInventory {
   entries: ResourceRef[];
 }
 
-export interface Snapshot {
-  digest: string;
-  firstReconciled: string;
-  lastReconciled: string;
-  lastReconciledDuration: string;
-  lastReconciledStatus: string;
-  totalReconciliations: number;
-  metadata?: Record<string, string>;
-}
-
-export type History = Snapshot[];
-
 export interface ResourceSetSpec {
   commonMetadata?: CommonMetadata;
+  inputStrategy?: InputStrategySpec;
   inputs?: ResourceSetInput[];
   inputsFrom?: InputProviderReference[];
   resources?: any[];

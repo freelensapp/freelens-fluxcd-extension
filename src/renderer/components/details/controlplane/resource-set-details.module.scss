@@ -1,0 +1,16 @@
+@use "../../../vars";
+
+.title {
+  margin-top: vars.$margin * 2;
+  margin-bottom: vars.$margin;
+}
+
+.inputs {
+  .index {
+    min-width: 60px;
+  }
+
+  .content {
+    min-width: 300px;
+  }
+}

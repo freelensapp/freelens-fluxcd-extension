@@ -1,6 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
 import { FluxInstanceDetails as FluxInstanceDetails_v1 } from "./components/details/controlplane/flux-instance-details-v1";
 import { FluxReportDetails as FluxReportDetails_v1 } from "./components/details/controlplane/flux-report-details-v1";
+import { ResourceSetDetails as ResourceSetDetails_v1 } from "./components/details/controlplane/resource-set-details";
+import { ResourceSetInputProviderDetails as ResourceSetInputProviderDetails_v1 } from "./components/details/controlplane/resource-set-input-provider-details-v1";
 import { HelmReleaseDetails as HelmReleaseDetails_v2 } from "./components/details/helm/helm-release-details-v2";
 import { HelmReleaseDetails as HelmReleaseDetails_v2beta1 } from "./components/details/helm/helm-release-details-v2beta1";
 import { HelmReleaseDetails as HelmReleaseDetails_v2beta2 } from "./components/details/helm/helm-release-details-v2beta2";
@@ -13,9 +15,9 @@ import { ImageRepositoryDetails as ImageRepositoryDetails_v1beta2 } from "./comp
 import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1 } from "./components/details/image/image-update-automation-details-v1";
 import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1beta1 } from "./components/details/image/image-update-automation-details-v1beta1";
 import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1beta2 } from "./components/details/image/image-update-automation-details-v1beta2";
-import { KustomizationDetails_v1 } from "./components/details/kustomize/kustomization-details-v1";
-import { KustomizationDetails_v1beta1 } from "./components/details/kustomize/kustomization-details-v1beta1";
-import { KustomizationDetails_v1beta2 } from "./components/details/kustomize/kustomization-details-v1beta2";
+import { KustomizationDetails as KustomizationDetails_v1 } from "./components/details/kustomize/kustomization-details-v1";
+import { KustomizationDetails as KustomizationDetails_v1beta1 } from "./components/details/kustomize/kustomization-details-v1beta1";
+import { KustomizationDetails as KustomizationDetails_v1beta2 } from "./components/details/kustomize/kustomization-details-v1beta2";
 import { AlertDetails as AlertDetails_v1beta1 } from "./components/details/notification/alert-details-v1beta1";
 import { AlertDetails as AlertDetails_v1beta2 } from "./components/details/notification/alert-details-v1beta2";
 import { AlertDetails as AlertDetails_v1beta3 } from "./components/details/notification/alert-details-v1beta3";
@@ -1139,6 +1141,26 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       priority: 10,
       components: {
         Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver_v1>) => <ReceiverDetails_v1 {...props} />,
+      },
+    },
+    {
+      kind: ResourceSet_v1.kind,
+      apiVersions: ResourceSet_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ResourceSet_v1>) => (
+          <ResourceSetDetails_v1 {...props} />
+        ),
+      },
+    },
+    {
+      kind: ResourceSetInputProvider_v1.kind,
+      apiVersions: ResourceSetInputProvider_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ResourceSetInputProvider_v1>) => (
+          <ResourceSetInputProviderDetails_v1 {...props} />
+        ),
       },
     },
   ];

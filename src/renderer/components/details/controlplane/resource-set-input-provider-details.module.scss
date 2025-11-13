@@ -1,0 +1,31 @@
+@use "../../../vars";
+
+.title {
+  margin-top: vars.$margin * 2;
+  margin-bottom: vars.$margin;
+  font-weight: bold;
+}
+
+.schedules {
+  .cron {
+    min-width: 150px;
+  }
+
+  .timeZone {
+    min-width: 100px;
+  }
+
+  .window {
+    min-width: 80px;
+  }
+}
+
+.exportedInputs {
+  .index {
+    min-width: 60px;
+  }
+
+  .content {
+    min-width: 300px;
+  }
+}

@@ -1,10 +1,15 @@
 import { Renderer } from "@freelensapp/extensions";
+import crypto from "crypto";
 
 import type { DumpOptions } from "js-yaml";
 
 const {
   Navigation: { getDetailsUrl },
 } = Renderer;
+
+export function checksum(data: any): string {
+  return crypto.createHash("sha256").update(JSON.stringify(data)).digest("hex").substring(0, 16);
+}
 
 export function getMaybeDetailsUrl(url?: string): string {
   if (url) {

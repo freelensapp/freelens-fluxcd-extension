@@ -3,7 +3,7 @@ import { Renderer } from "@freelensapp/extensions";
 import type { Condition } from "@freelensapp/kube-object";
 
 import type { Patch } from "../../core/types";
-import type { ResourceInventory } from "../types";
+import type { History, ResourceInventory } from "../types";
 
 export interface Distribution {
   version: string;
@@ -73,16 +73,6 @@ export interface ComponentImage {
   digest?: string;
 }
 
-export interface Snapshot {
-  digest: string;
-  firstReconciled: string;
-  lastReconciled: string;
-  lastReconciledDuration: string;
-  lastReconciledStatus: string;
-  totalReconciliations: string;
-  metadata: Record<string, string>;
-}
-
 export interface FluxInstanceSpec {
   distribution: Distribution;
   components?: Component[];
@@ -108,7 +98,7 @@ export interface FluxInstanceStatus {
   lastArtifactRevision?: string;
   components?: ComponentImage[];
   inventory?: ResourceInventory;
-  history?: Snapshot[];
+  history?: History;
 }
 
 export class FluxInstance extends Renderer.K8sApi.LensExtensionKubeObject<

@@ -35,7 +35,21 @@ export interface LocalObjectReference {
 }
 
 export interface ResourceSetInputProviderSpec {
-  type: string;
+  type:
+    | "Static"
+    | "GitHubBranch"
+    | "GitHubTag"
+    | "GitHubPullRequest"
+    | "GitLabBranch"
+    | "GitLabTag"
+    | "GitLabMergeRequest"
+    | "AzureDevOpsBranch"
+    | "AzureDevOpsTag"
+    | "AzureDevOpsPullRequest"
+    | "OCIArtifactTag"
+    | "ACRArtifactTag"
+    | "ECRArtifactTag"
+    | "GARArtifactTag;";
   url?: string;
   serviceAccountName?: string;
   secretRef?: LocalObjectReference;
