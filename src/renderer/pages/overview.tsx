@@ -3,6 +3,8 @@ import { observer } from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { InfoPage } from "../components/info-page";
 import { PieChart } from "../components/pie-chart";
+import { ResourceSet as ResourceSet_v1 } from "../k8s/fluxcd/controlplane/resourceset-v1";
+import { ResourceSetInputProvider as ResourceSetInputProvider_v1 } from "../k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
 import { HelmRelease as HelmRelease_v2 } from "../k8s/fluxcd/helm/helmrelease-v2";
 import { HelmRelease as HelmRelease_v2beta1 } from "../k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "../k8s/fluxcd/helm/helmrelease-v2beta2";
@@ -151,6 +153,8 @@ export const FluxCDOverviewPage = observer(() => {
         Receiver_v1beta2,
         Receiver_v1beta3,
         Receiver_v1,
+        ResourceSet_v1,
+        ResourceSetInputProvider_v1,
       ]) {
         try {
           const store = object.getStore();
@@ -213,6 +217,8 @@ export const FluxCDOverviewPage = observer(() => {
               {getChart(Alert_v1beta1.crd.title, Alert_v1beta1)}
               {getChart(Provider_v1beta1.crd.title, Provider_v1beta1)}
               {getChart(Receiver_v1beta1.crd.title, Receiver_v1beta1)}
+              {getChart(ResourceSet_v1.crd.title, ResourceSet_v1)}
+              {getChart(ResourceSetInputProvider_v1.crd.title, ResourceSetInputProvider_v1)}
             </div>
           </div>
 

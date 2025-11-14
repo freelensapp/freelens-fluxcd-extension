@@ -54,7 +54,7 @@ const referenceSortByDefault: { sortBy: keyof typeof referenceSortable; orderBy:
   orderBy: "asc",
 };
 
-export const KustomizationDetails_v1: React.FC<Renderer.Component.KubeObjectDetailsProps<Kustomization>> = observer(
+export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Kustomization>> = observer(
   (props) => {
     const { object } = props;
     const namespace = object.getNs();

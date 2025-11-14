@@ -1,10 +1,8 @@
 @use "../../../vars";
 
-.details {
-  .title {
-    margin-top: vars.$margin * 2;
-    margin-bottom: vars.$margin;
-  }
+.title {
+  margin-top: vars.$margin * 2;
+  margin-bottom: vars.$margin;
 }
 
 .components {
@@ -24,23 +22,9 @@
   }
 }
 
-.history {
-  .snapshot {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-  }
-}
-
 .patch {
   margin-bottom: 1rem;
   padding: 0.5rem;
-}
-
-.editor {
-  resize: none;
-  overflow: hidden;
-  border: 1px solid var(--borderFaintColor);
-  border-radius: 4px;
 }
 
 .sync {

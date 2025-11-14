@@ -47,6 +47,18 @@ export interface JSON6902Patch {
   target: Selector;
 }
 
+export interface Snapshot {
+  digest: string;
+  firstReconciled: string;
+  lastReconciled: string;
+  lastReconciledDuration: string;
+  lastReconciledStatus: string;
+  totalReconciliations: number;
+  metadata?: Record<string, string>;
+}
+
+export type History = Snapshot[];
+
 export interface ResourceInventory {
   entries: ResourceRef[];
 }

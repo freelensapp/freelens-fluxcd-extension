@@ -1,5 +1,4 @@
 declare const classNames: {
-  readonly details: "details";
   readonly title: "title";
   readonly tableCell: "tableCell";
   readonly apiVersion: "apiVersion";
