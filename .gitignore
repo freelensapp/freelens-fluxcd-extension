@@ -16,6 +16,10 @@
 
 /dist/
 
+/freelens/
+
+.turbo
+
 /coverage/
 /node_modules/
 /out/
