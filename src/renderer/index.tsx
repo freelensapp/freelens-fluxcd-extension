@@ -95,6 +95,7 @@ import {
   FluxCDObjectSpecSuspendResumeMenuItem,
   type FluxCDObjectSpecSuspendResumeMenuItemProps,
 } from "./menus/fluxcd-object-spec-suspend-resume-menu-item";
+import { createAvailableVersionPage } from "./pages/available-version";
 import { FluxInstancesPage as FluxInstancesPage_v1 } from "./pages/controlplane/fluxinstances-v1";
 import { FluxReportsPage as FluxReportsPage_v1 } from "./pages/controlplane/fluxreports-v1";
 import { ResourceSetInputProvidersPage as ResourceSetInputProvidersPage_v1 } from "./pages/controlplane/resourcesetinputproviders-v1";
@@ -159,259 +160,183 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "alert",
       components: {
-        Page: () => <AlertsPage_v1beta1 extension={this} />,
-      },
-    },
-    {
-      id: "alert",
-      components: {
-        Page: () => <AlertsPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "alert",
-      components: {
-        Page: () => <AlertsPage_v1beta3 extension={this} />,
+        Page: createAvailableVersionPage("Alerts", [
+          { kubeObjectClass: Alert_v1beta3, PageComponent: AlertsPage_v1beta3, version: "v1beta3" },
+          { kubeObjectClass: Alert_v1beta2, PageComponent: AlertsPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: Alert_v1beta1, PageComponent: AlertsPage_v1beta1, version: "v1beta1" },
+        ]),
       },
     },
     {
       id: "bucket",
       components: {
-        Page: () => <BucketsPage_v1beta1 extension={this} />,
-      },
-    },
-    {
-      id: "bucket",
-      components: {
-        Page: () => <BucketsPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "bucket",
-      components: {
-        Page: () => <BucketsPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Buckets", [
+          { kubeObjectClass: Bucket_v1, PageComponent: BucketsPage_v1, version: "v1" },
+          { kubeObjectClass: Bucket_v1beta2, PageComponent: BucketsPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: Bucket_v1beta1, PageComponent: BucketsPage_v1beta1, version: "v1beta1" },
+        ]),
       },
     },
     {
       id: "fluxinstance",
       components: {
-        Page: () => <FluxInstancesPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Flux Instances", [
+          { kubeObjectClass: FluxInstance_v1, PageComponent: FluxInstancesPage_v1, version: "v1" },
+        ]),
       },
     },
     {
       id: "fluxreport",
       components: {
-        Page: () => <FluxReportsPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Flux Reports", [
+          { kubeObjectClass: FluxReport_v1, PageComponent: FluxReportsPage_v1, version: "v1" },
+        ]),
       },
     },
     {
       id: "gitrepository",
       components: {
-        Page: () => <GitRepositoriesPage_v1beta1 extension={this} />,
-      },
-    },
-    {
-      id: "gitrepository",
-      components: {
-        Page: () => <GitRepositoriesPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "gitrepository",
-      components: {
-        Page: () => <GitRepositoriesPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Git Repositories", [
+          { kubeObjectClass: GitRepository_v1, PageComponent: GitRepositoriesPage_v1, version: "v1" },
+          { kubeObjectClass: GitRepository_v1beta2, PageComponent: GitRepositoriesPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: GitRepository_v1beta1, PageComponent: GitRepositoriesPage_v1beta1, version: "v1beta1" },
+        ]),
       },
     },
     {
       id: "helmchart",
       components: {
-        Page: () => <HelmChartsPage_v1beta1 extension={this} />,
-      },
-    },
-    {
-      id: "helmchart",
-      components: {
-        Page: () => <HelmChartsPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "helmchart",
-      components: {
-        Page: () => <HelmChartsPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Helm Charts", [
+          { kubeObjectClass: HelmChart_v1, PageComponent: HelmChartsPage_v1, version: "v1" },
+          { kubeObjectClass: HelmChart_v1beta2, PageComponent: HelmChartsPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: HelmChart_v1beta1, PageComponent: HelmChartsPage_v1beta1, version: "v1beta1" },
+        ]),
       },
     },
     {
       id: "helmrelease",
       components: {
-        Page: () => <HelmReleasesPage_v2beta1 extension={this} />,
-      },
-    },
-    {
-      id: "helmrelease",
-      components: {
-        Page: () => <HelmReleasesPage_v2beta2 extension={this} />,
-      },
-    },
-    {
-      id: "helmrelease",
-      components: {
-        Page: () => <HelmReleasesPage_v2 extension={this} />,
+        Page: createAvailableVersionPage("Helm Releases", [
+          { kubeObjectClass: HelmRelease_v2, PageComponent: HelmReleasesPage_v2, version: "v2" },
+          { kubeObjectClass: HelmRelease_v2beta2, PageComponent: HelmReleasesPage_v2beta2, version: "v2beta2" },
+          { kubeObjectClass: HelmRelease_v2beta1, PageComponent: HelmReleasesPage_v2beta1, version: "v2beta1" },
+        ]),
       },
     },
     {
       id: "helmrepository",
       components: {
-        Page: () => <HelmRepositoriesPage_v1beta1 extension={this} />,
-      },
-    },
-    {
-      id: "helmrepository",
-      components: {
-        Page: () => <HelmRepositoriesPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "helmrepository",
-      components: {
-        Page: () => <HelmRepositoriesPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Helm Repositories", [
+          { kubeObjectClass: HelmRepository_v1, PageComponent: HelmRepositoriesPage_v1, version: "v1" },
+          { kubeObjectClass: HelmRepository_v1beta2, PageComponent: HelmRepositoriesPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: HelmRepository_v1beta1, PageComponent: HelmRepositoriesPage_v1beta1, version: "v1beta1" },
+        ]),
       },
     },
     {
       id: "imagepolicy",
       components: {
-        Page: () => <ImagePoliciesPage_v1beta1 extension={this} />,
-      },
-    },
-    {
-      id: "imagepolicy",
-      components: {
-        Page: () => <ImagePoliciesPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "imagepolicy",
-      components: {
-        Page: () => <ImagePoliciesPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Image Policies", [
+          { kubeObjectClass: ImagePolicy_v1, PageComponent: ImagePoliciesPage_v1, version: "v1" },
+          { kubeObjectClass: ImagePolicy_v1beta2, PageComponent: ImagePoliciesPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: ImagePolicy_v1beta1, PageComponent: ImagePoliciesPage_v1beta1, version: "v1beta1" },
+        ]),
       },
     },
     {
       id: "imagerepository",
       components: {
-        Page: () => <ImageRepositoriesPage_v1beta1 extension={this} />,
-      },
-    },
-    {
-      id: "imagerepository",
-      components: {
-        Page: () => <ImageRepositoriesPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "imagerepository",
-      components: {
-        Page: () => <ImageRepositoriesPage_v1 extension={this} />,
-      },
-    },
-    {
-      id: "imageupdateautomation",
-      components: {
-        Page: () => <ImageUpdateAutomationsPage_v1beta1 extension={this} />,
+        Page: createAvailableVersionPage("Image Repositories", [
+          { kubeObjectClass: ImageRepository_v1, PageComponent: ImageRepositoriesPage_v1, version: "v1" },
+          {
+            kubeObjectClass: ImageRepository_v1beta2,
+            PageComponent: ImageRepositoriesPage_v1beta2,
+            version: "v1beta2",
+          },
+          {
+            kubeObjectClass: ImageRepository_v1beta1,
+            PageComponent: ImageRepositoriesPage_v1beta1,
+            version: "v1beta1",
+          },
+        ]),
       },
     },
     {
       id: "imageupdateautomation",
       components: {
-        Page: () => <ImageUpdateAutomationsPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "imageupdateautomation",
-      components: {
-        Page: () => <ImageUpdateAutomationsPage_v1 extension={this} />,
-      },
-    },
-    {
-      id: "kustomization",
-      components: {
-        Page: () => <KustomizationsPage_v1beta1 extension={this} />,
-      },
-    },
-    {
-      id: "kustomization",
-      components: {
-        Page: () => <KustomizationsPage_v1beta2 extension={this} />,
+        Page: createAvailableVersionPage("Image Update Automations", [
+          { kubeObjectClass: ImageUpdateAutomation_v1, PageComponent: ImageUpdateAutomationsPage_v1, version: "v1" },
+          {
+            kubeObjectClass: ImageUpdateAutomation_v1beta2,
+            PageComponent: ImageUpdateAutomationsPage_v1beta2,
+            version: "v1beta2",
+          },
+          {
+            kubeObjectClass: ImageUpdateAutomation_v1beta1,
+            PageComponent: ImageUpdateAutomationsPage_v1beta1,
+            version: "v1beta1",
+          },
+        ]),
       },
     },
     {
       id: "kustomization",
       components: {
-        Page: () => <KustomizationsPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Kustomizations", [
+          { kubeObjectClass: Kustomization_v1, PageComponent: KustomizationsPage_v1, version: "v1" },
+          { kubeObjectClass: Kustomization_v1beta2, PageComponent: KustomizationsPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: Kustomization_v1beta1, PageComponent: KustomizationsPage_v1beta1, version: "v1beta1" },
+        ]),
       },
     },
     {
       id: "ocirepository",
       components: {
-        Page: () => <OCIRepositoriesPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "ocirepository",
-      components: {
-        Page: () => <OCIRepositoriesPage_v1 extension={this} />,
-      },
-    },
-    {
-      id: "provider",
-      components: {
-        Page: () => <ProvidersPage_v1beta1 extension={this} />,
+        Page: createAvailableVersionPage("OCI Repositories", [
+          { kubeObjectClass: OCIRepository_v1beta2, PageComponent: OCIRepositoriesPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: OCIRepository_v1, PageComponent: OCIRepositoriesPage_v1, version: "v1" },
+        ]),
       },
     },
     {
       id: "provider",
       components: {
-        Page: () => <ProvidersPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "provider",
-      components: {
-        Page: () => <ProvidersPage_v1beta3 extension={this} />,
-      },
-    },
-    {
-      id: "receiver",
-      components: {
-        Page: () => <ReceiversPage_v1beta1 extension={this} />,
+        Page: createAvailableVersionPage("Providers", [
+          { kubeObjectClass: Provider_v1beta3, PageComponent: ProvidersPage_v1beta3, version: "v1beta3" },
+          { kubeObjectClass: Provider_v1beta2, PageComponent: ProvidersPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: Provider_v1beta1, PageComponent: ProvidersPage_v1beta1, version: "v1beta1" },
+        ]),
       },
     },
     {
       id: "receiver",
       components: {
-        Page: () => <ReceiversPage_v1beta2 extension={this} />,
-      },
-    },
-    {
-      id: "receiver",
-      components: {
-        Page: () => <ReceiversPage_v1beta3 extension={this} />,
-      },
-    },
-    {
-      id: "receiver",
-      components: {
-        Page: () => <ReceiversPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Receivers", [
+          { kubeObjectClass: Receiver_v1, PageComponent: ReceiversPage_v1, version: "v1" },
+          { kubeObjectClass: Receiver_v1beta3, PageComponent: ReceiversPage_v1beta3, version: "v1beta3" },
+          { kubeObjectClass: Receiver_v1beta2, PageComponent: ReceiversPage_v1beta2, version: "v1beta2" },
+          { kubeObjectClass: Receiver_v1beta1, PageComponent: ReceiversPage_v1beta1, version: "v1beta1" },
+        ]),
       },
     },
     {
       id: "resourceset",
       components: {
-        Page: () => <ResourceSetsPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Resource Sets", [
+          { kubeObjectClass: ResourceSet_v1, PageComponent: ResourceSetsPage_v1, version: "v1" },
+        ]),
       },
     },
     {
       id: "resourcesetinputprovider",
       components: {
-        Page: () => <ResourceSetInputProvidersPage_v1 extension={this} />,
+        Page: createAvailableVersionPage("Resource Set Input Providers", [
+          {
+            kubeObjectClass: ResourceSetInputProvider_v1,
+            PageComponent: ResourceSetInputProvidersPage_v1,
+            version: "v1",
+          },
+        ]),
       },
     },
   ];
