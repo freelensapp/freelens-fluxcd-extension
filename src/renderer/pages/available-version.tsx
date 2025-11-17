@@ -93,8 +93,7 @@ export function createAvailableVersionPage<T extends AvailableVersionPageProps>(
               The <strong>{resourceName}</strong> CRDs are not installed in this cluster.
             </p>
             <p className={styles.unavailableDetails}>
-              Tried API versions:{" "}
-              <code>{triedVersions}</code>
+              Tried API versions: <code>{triedVersions}</code>
             </p>
           </div>
         </div>
