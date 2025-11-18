@@ -45,8 +45,8 @@ importers:
         specifier: ^3.7.8
         version: 3.7.8
       js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.0
+        specifier: ^4.1.1
+        version: 4.1.1
       mobx:
         specifier: 6.13.7
         version: 6.13.7
@@ -1845,8 +1845,8 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
-  js-yaml@4.1.0:
-    resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
+  js-yaml@4.1.1:
+    resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
     hasBin: true
 
   jsbn@1.1.0:
@@ -3506,7 +3506,7 @@ snapshots:
       http-proxy-node16: 1.0.6
       immer: 10.1.1
       joi: 18.0.0
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       lodash: 4.17.21
       marked: 15.0.12
       mobx: 6.13.7
@@ -3662,7 +3662,7 @@ snapshots:
       '@freelensapp/openid-client': 1.5.3
       hpagent: 1.2.0
       isomorphic-ws: 5.0.0(ws@8.18.3)
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       rfc4648: 1.5.4
       socks-proxy-agent: 8.0.5
       stream-buffers: 3.0.3
@@ -5117,7 +5117,7 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  js-yaml@4.1.0:
+  js-yaml@4.1.1:
     dependencies:
       argparse: 2.0.1
 
