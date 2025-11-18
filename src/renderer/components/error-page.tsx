@@ -26,6 +26,7 @@ export function ErrorPage({ error, extension, children }: ErrorPageProps) {
 
 /**
  * Wraps component in try/catch block and prints ErrorPage on error.
+ * Handles "API not registered" errors gracefully by returning null, allowing available-version pages to try alternative API versions.
  *
  * ```ts
  * export const Component = (props: ComponentProps) => withErrorPage(props, () => {
@@ -40,6 +41,13 @@ export function withErrorPage<P extends { extension: Renderer.LensExtension }>(
   try {
     return wrapped(props);
   } catch (error) {
+    const errorMessage = String(error);
+
+    if (errorMessage.includes("not registered") || errorMessage.includes("getStore")) {
+      Common.logger.debug(`[@freelensapp/fluxcd-extension]: API not available - ${error}`);
+      return null;
+    }
+
     return <ErrorPage error={error} extension={props.extension} />;
   }
 }
