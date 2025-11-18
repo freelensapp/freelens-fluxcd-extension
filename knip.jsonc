@@ -16,7 +16,7 @@
     "config": ["tsconfig.json"]
   },
   "vite": {
-    "config": ["electron.vite.config.ts"]
+    "config": ["electron.vite.config.js"]
   },
 
   "exclude": ["exports"]
