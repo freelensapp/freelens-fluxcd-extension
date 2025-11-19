@@ -38,6 +38,7 @@ jobs:
     timeout-minutes: 60
 
     env:
+      DO_NOT_TRACK: "1"
       ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
       ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
       ELECTRON_HEADERS_CACHE: ${{ github.workspace }}/.cache/electron-headers
