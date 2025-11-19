@@ -29,7 +29,7 @@ jobs:
             freelens_version: v1.6.0
           - os: ubuntu-22.04
             arch: x64
-            freelens_version: v1.6.1
+            freelens_version: v1.6.2
           - os: ubuntu-22.04
             arch: x64
             freelens_version: main
