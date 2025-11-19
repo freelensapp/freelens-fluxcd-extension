@@ -11,17 +11,9 @@ permissions:
 
 jobs:
   release:
-    name: release on ${{ matrix.os }}
+    name: release
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-22.04
-            arch: x64
-            ref: main
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     environment: publishing
 
     env:
@@ -34,14 +26,15 @@ jobs:
       - name: Check if package version matches
         run: test "${GITHUB_REF_NAME}" = "v$(jq -r .version package.json)"
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
       - name: Setup node
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
+          package-manager-cache: false
           registry-url: https://registry.npmjs.org
+
+      - name: Setup pnpm
+        run: corepack enable
 
       - name: Get pnpm cache directory
         shell: bash
@@ -51,23 +44,21 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.pnpm_cache_dir }}
-          key: ${{ matrix.os }}-${{ matrix.arch }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ubuntu-22.04-x64-node-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.arch }}-node-
+            ubuntu-22.04-x64-node-
 
       - name: Install pnpm dependencies
         id: install-pnpm
-        shell: bash
-        run: pnpm install --color=always --prefer-offline --frozen-lockfile
+        run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
         continue-on-error: true
 
       - name: Install pnpm dependencies (retry)
         if: steps.install-pnpm.outcome == 'failure'
-        shell: bash
-        run: pnpm install --color=always --prefer-offline --frozen-lockfile
+        run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
 
       - name: Build packages
-        run: pnpm --color=always --stream build:production
+        run: pnpm --color=always --stream build
 
       - name: Pack packages
         run: pnpm --color=always --stream pack

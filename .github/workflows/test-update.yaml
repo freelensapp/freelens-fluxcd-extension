@@ -1,4 +1,4 @@
-name: Check
+name: Test update
 
 on:
   push:
@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   knip:
-    name: check
+    name: test update
 
     runs-on: ubuntu-22.04
     timeout-minutes: 60
@@ -53,14 +53,14 @@ jobs:
         if: steps.install-pnpm.outcome == 'failure'
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
 
+      - name: Update pnpm dependencies
+        id: update-pnpm
+        run: timeout 300 pnpm update -D @freelensapp/extensions@latest --color=always
+        continue-on-error: true
+
+      - name: Update pnpm dependencies (retry)
+        if: steps.update-pnpm.outcome == 'failure'
+        run: timeout 300 pnpm update -D @freelensapp/extensions@latest --color=always
+
       - name: Build packages
-        run: pnpm --color=always --stream build:production
-
-      - name: Check types
-        run: pnpm --color=always --stream type:check
-
-      - name: Check linters
-        run: pnpm --color=always --stream lint:check
-
-      - name: Check Knip
-        run: pnpm --color=always --stream knip:check
+        run: pnpm --color=always --stream build
