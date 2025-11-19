@@ -18,23 +18,17 @@ env:
 
 jobs:
   test-integration:
-    name: "integration tests on ${{ matrix.os }} with Freelens ${{ matrix.freelens_version }}"
+    name: "integration tests with Freelens ${{ matrix.freelens_version }}"
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-22.04
-            arch: x64
-            freelens_version: v1.6.0
-          - os: ubuntu-22.04
-            arch: x64
-            freelens_version: v1.6.2
-          - os: ubuntu-22.04
-            arch: x64
-            freelens_version: main
+          - freelens_version: v1.6.0
+          - freelens_version: v1.6.2
+          - freelens_version: main
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     timeout-minutes: 60
 
     env:
@@ -107,17 +101,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.ELECTRON_CACHE }}
-          key: ${{ matrix.os }}-${{ matrix.arch }}-electron-${{ env.electron_version }}
+          key: ubuntu-22.04-x64-electron-${{ env.electron_version }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.arch }}-electron-
+            ubuntu-22.04-x64-electron-
 
       - name: Use Electron Builder cache
         uses: actions/cache@v4
         with:
           path: ${{ env.ELECTRON_BUILDER_CACHE }}
-          key: ${{ matrix.os }}-${{ matrix.arch }}-electron-builder-${{ env.electron_builder_version }}
+          key: ubuntu-22.04-x64-electron-builder-${{ env.electron_builder_version }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.arch }}-electron-builder-
+            ubuntu-22.04-x64-electron-builder-
 
       - name: Use Electron headers cache
         id: electron-headers
@@ -131,17 +125,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
-          key: ${{ matrix.os }}-${{ matrix.arch }}-playwright-${{ env.playwright_version }}
+          key: ubuntu-22.04-x64-playwright-${{ env.playwright_version }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.arch }}-playwright-
+            ubuntu-22.04-x64-playwright-
 
       - name: Use Turborepo cache
         uses: actions/cache@v4
         with:
           path: ${{ env.TURBOREPO_CACHE }}
-          key: ${{ matrix.os }}-${{ matrix.arch }}-turborepo-${{ hashFiles('freelens/**/package.json', 'freelens/**/pnpm-lock.yaml', 'freelens/turbo.json') }}
+          key: ubuntu-22.04-x64-turborepo-${{ hashFiles('freelens/**/package.json', 'freelens/**/pnpm-lock.yaml', 'freelens/turbo.json') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.arch }}-turborepo-
+            ubuntu-22.04-x64-turborepo-
 
       - name: Install pnpm dependencies for app
         id: install-pnpm-app
@@ -178,7 +172,7 @@ jobs:
         run: cd freelens && pnpm --color=always --stream build
 
       - name: Rebuild native packages for Electron
-        run: cd freelens && pnpm --color=always electron-rebuild -a ${{ matrix.arch }}
+        run: cd freelens && pnpm --color=always electron-rebuild -a x64
         env:
           npm_package_config_node_gyp_tarball: ${{ env.ELECTRON_HEADERS_CACHE }}/node-v${{ env.electron_version }}-headers.tar.gz
 
@@ -212,7 +206,7 @@ jobs:
         run: cd freelens && pnpm --color=always build:resources
 
       - name: Build Electron app
-        run: cd freelens && pnpm --color=always build:app dir --${{ matrix.arch }}
+        run: cd freelens && pnpm --color=always build:app dir --x64
 
       - name: Run integration tests
         id: integration-tests-linux

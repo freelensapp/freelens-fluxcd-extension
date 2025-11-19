@@ -19,14 +19,7 @@ jobs:
   npm-version:
     name: npm version
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-22.04
-            arch: x64
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     environment: automated
     timeout-minutes: 10
 
@@ -36,13 +29,14 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
       - name: Setup node
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
+          package-manager-cache: false
+
+      - name: Setup pnpm
+        run: corepack enable
 
       - name: Get pnpm cache directory
         shell: bash
@@ -52,9 +46,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.pnpm_cache_dir }}
-          key: ${{ matrix.os }}-${{ matrix.arch }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ubuntu-22.04-x64-node-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.arch }}-node-
+            ubuntu-22.04-x64-node-
 
       - name: Install pnpm dependencies
         id: install-pnpm
