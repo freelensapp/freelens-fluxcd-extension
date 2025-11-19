@@ -49,7 +49,10 @@ jobs:
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
 
       - name: Build packages
-        run: pnpm --color=always --stream build
+        run: pnpm --color=always --stream build:production
+
+      - name: Check types
+        run: pnpm --color=always --stream type:check
 
       - name: Check linters
         run: pnpm --color=always --stream lint:check
