@@ -1,4 +1,4 @@
-name: Knip
+name: Check
 
 on:
   push:
@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   knip:
-    name: knip on ${{ matrix.os }}
+    name: check on ${{ matrix.os }}
 
     strategy:
       fail-fast: false
@@ -31,28 +31,13 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        run: corepack enable
 
       - name: Setup node
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-
-      - name: Disable pre post scripts for pnpm
-        shell: bash
-        run: pnpm config set enablePrePostScripts false
-
-      - name: Get pnpm cache directory
-        shell: bash
-        run: echo "pnpm_cache_dir=$(pnpm store path)" >> ${GITHUB_ENV}
-
-      - name: Use pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.pnpm_cache_dir }}
-          key: ${{ matrix.os }}-${{ matrix.arch }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.arch }}-node-
+          cache: pnpm
 
       - name: Install pnpm dependencies
         id: install-pnpm
@@ -64,7 +49,10 @@ jobs:
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
 
       - name: Build packages
-        run: pnpm --color=always --stream build:production
+        run: pnpm --color=always --stream build
 
-      - name: Run Knip
+      - name: Check linters
+        run: pnpm --color=always --stream lint:check
+
+      - name: Check Knip
         run: pnpm --color=always --stream knip:check
