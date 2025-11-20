@@ -29,7 +29,7 @@ jobs:
     if: github.event_name != 'issue_comment' || (startsWith(github.event.issue.title, 'Automated biome migrate') && contains(github.event.comment.body, '/rerun'))
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.GH_TOKEN }}
 
