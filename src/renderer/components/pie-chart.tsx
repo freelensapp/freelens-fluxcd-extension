@@ -29,7 +29,7 @@ const getStats = (
 };
 
 const getPath = (crd: Renderer.K8sApi.CustomResourceDefinition) => {
-  return crd.spec.names.plural;
+  return crd.spec.names.singular;
 };
 
 export interface PieChartProps<A extends Renderer.K8sApi.KubeObject> {
