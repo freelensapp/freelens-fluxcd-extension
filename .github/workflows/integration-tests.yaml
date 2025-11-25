@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Checkout plugin
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         run: corepack enable
@@ -79,7 +79,7 @@ jobs:
 
       - name: Checkout app
         if: matrix.freelens_version != 'latest'
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: freelensapp/freelens
           ref: ${{ matrix.freelens_version }}
