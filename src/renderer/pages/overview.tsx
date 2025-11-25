@@ -82,15 +82,11 @@ export const FluxCDOverviewPage = observer(() => {
         const crd = getCrd(store);
         if (!crd) return <></>;
 
-        const namespaceStore = Renderer.K8sApi.namespaceStore;
+        const items = store.contextItems;
 
         return (
-          <div className={cssNames(styles.chartColumn, "column")} hidden={!store.getAllByNs([]).length}>
-            <PieChart
-              title={title}
-              objects={store.items.filter((item) => namespaceStore?.contextNamespaces.includes(item.getNs()!))}
-              crd={crd}
-            />
+          <div className={cssNames(styles.chartColumn, "column")} hidden={!items.length}>
+            <PieChart title={title} objects={items} crd={crd} />
           </div>
         );
       } catch (_) {
@@ -108,7 +104,7 @@ export const FluxCDOverviewPage = observer(() => {
       if (isMounted) setCrds(crds);
 
       const namespaceStore = Renderer.K8sApi.namespaceStore;
-      await namespaceStore.loadAll({ namespaces: [] });
+      await namespaceStore.loadAll({ namespaces: [], reqInit: { signal: abortController.current.signal } });
       watches.current.push(namespaceStore.subscribe());
 
       const namespaces = namespaceStore.items.map((ns) => ns.getName());
@@ -159,7 +155,7 @@ export const FluxCDOverviewPage = observer(() => {
         try {
           const store = object.getStore();
           if (!store) continue;
-          await store.loadAll({ namespaces });
+          await store.loadAll({ namespaces, reqInit: { signal: abortController.current.signal } });
           watches.current.push(store.subscribe());
         } catch (_) {
           continue;
