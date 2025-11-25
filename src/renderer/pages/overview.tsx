@@ -1,6 +1,7 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { FluxCDEvents } from "../components/fluxcd-events";
 import { InfoPage } from "../components/info-page";
 import { PieChart } from "../components/pie-chart";
 import { ResourceSet as ResourceSet_v1 } from "../k8s/fluxcd/controlplane/resourceset-v1";
@@ -48,19 +49,12 @@ import styles from "./overview.module.scss";
 import stylesInline from "./overview.module.scss?inline";
 
 const {
-  Component: { Events, NamespaceSelectFilter, TabLayout },
+  Component: { NamespaceSelectFilter, TabLayout },
 } = Renderer;
 
 const {
   Util: { cssNames },
 } = Common;
-
-function filterItems(items: Renderer.K8sApi.KubeEvent[]): Renderer.K8sApi.KubeEvent[] {
-  const events = items.filter((event) => {
-    return event?.involvedObject?.apiVersion?.includes(".toolkit.fluxcd.io/");
-  });
-  return events;
-}
 
 export const FluxCDOverviewPage = observer(() => {
   const [crds, setCrds] = useState<Renderer.K8sApi.CustomResourceDefinition[]>([]);
@@ -218,7 +212,7 @@ export const FluxCDOverviewPage = observer(() => {
             </div>
           </div>
 
-          <Events compact hideFilters filterItems={[filterItems]} compactLimit={1000} />
+          <FluxCDEvents compact compactLimit={20} />
         </div>
       </TabLayout>
     </>
