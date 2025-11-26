@@ -79,7 +79,7 @@
     "mobx-react": "7.6.0",
     "moment": "^2.30.1",
     "react": "17.0.2",
-    "sass": "^1.94.1",
+    "sass": "^1.94.2",
     "typescript": "5.9.3",
     "vite": "^7.2.4",
     "vite-plugin-external": "^6.2.2",
