@@ -1,6 +1,7 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { FluxCDEvents } from "../components/fluxcd-events";
 import { InfoPage } from "../components/info-page";
 import { PieChart } from "../components/pie-chart";
 import { ResourceSet as ResourceSet_v1 } from "../k8s/fluxcd/controlplane/resourceset-v1";
@@ -48,19 +49,12 @@ import styles from "./overview.module.scss";
 import stylesInline from "./overview.module.scss?inline";
 
 const {
-  Component: { Events, NamespaceSelectFilter, TabLayout },
+  Component: { NamespaceSelectFilter, TabLayout },
 } = Renderer;
 
 const {
   Util: { cssNames },
 } = Common;
-
-function filterItems(items: Renderer.K8sApi.KubeEvent[]): Renderer.K8sApi.KubeEvent[] {
-  const events = items.filter((event) => {
-    return event?.involvedObject?.apiVersion?.includes(".toolkit.fluxcd.io/");
-  });
-  return events;
-}
 
 export const FluxCDOverviewPage = observer(() => {
   const [crds, setCrds] = useState<Renderer.K8sApi.CustomResourceDefinition[]>([]);
@@ -82,15 +76,11 @@ export const FluxCDOverviewPage = observer(() => {
         const crd = getCrd(store);
         if (!crd) return <></>;
 
-        const namespaceStore = Renderer.K8sApi.namespaceStore;
+        const items = store.contextItems;
 
         return (
-          <div className={cssNames(styles.chartColumn, "column")} hidden={!store.getAllByNs([]).length}>
-            <PieChart
-              title={title}
-              objects={store.items.filter((item) => namespaceStore?.contextNamespaces.includes(item.getNs()!))}
-              crd={crd}
-            />
+          <div className={cssNames(styles.chartColumn, "column")} hidden={!items.length}>
+            <PieChart title={title} objects={items} crd={crd} />
           </div>
         );
       } catch (_) {
@@ -108,7 +98,7 @@ export const FluxCDOverviewPage = observer(() => {
       if (isMounted) setCrds(crds);
 
       const namespaceStore = Renderer.K8sApi.namespaceStore;
-      await namespaceStore.loadAll({ namespaces: [] });
+      await namespaceStore.loadAll({ namespaces: [], reqInit: { signal: abortController.current.signal } });
       watches.current.push(namespaceStore.subscribe());
 
       const namespaces = namespaceStore.items.map((ns) => ns.getName());
@@ -159,7 +149,7 @@ export const FluxCDOverviewPage = observer(() => {
         try {
           const store = object.getStore();
           if (!store) continue;
-          await store.loadAll({ namespaces });
+          await store.loadAll({ namespaces, reqInit: { signal: abortController.current.signal } });
           watches.current.push(store.subscribe());
         } catch (_) {
           continue;
@@ -222,7 +212,7 @@ export const FluxCDOverviewPage = observer(() => {
             </div>
           </div>
 
-          <Events compact hideFilters filterItems={[filterItems]} compactLimit={1000} />
+          <FluxCDEvents compact compactLimit={20} />
         </div>
       </TabLayout>
     </>
