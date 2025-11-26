@@ -212,7 +212,7 @@ export const FluxCDOverviewPage = observer(() => {
             </div>
           </div>
 
-          <FluxCDEvents compact compactLimit={20} />
+          <FluxCDEvents compact compactLimit={100} />
         </div>
       </TabLayout>
     </>
