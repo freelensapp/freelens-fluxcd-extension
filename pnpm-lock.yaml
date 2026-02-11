@@ -72,8 +72,8 @@ importers:
         specifier: ^6.2.2
         version: 6.2.2
       vite-plugin-sass-dts:
-        specifier: ^1.3.34
-        version: 1.3.34(postcss@8.5.6)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1))
+        specifier: ^1.3.35
+        version: 1.3.35(postcss@8.5.6)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1))
 
 packages:
 
@@ -3061,8 +3061,8 @@ packages:
     resolution: {integrity: sha512-OpdFlWgVfWyZgx9nym3LAQp4DciutbqwSKzbA1l2Bg7CNzlDd3jnHfv1uWTY4y5h2gRfgT60ZtOgF5+W95i+3A==}
     engines: {node: '>=14.18.0', vite: '>=3.1.0'}
 
-  vite-plugin-sass-dts@1.3.34:
-    resolution: {integrity: sha512-+m7SJX5Jm+50IxbutY4aptEjKpAfjY4okwNe05AHDodEYr8LZY3tsIFQ/rXG12WSytYWDnipJKb6xZrvqWGckA==}
+  vite-plugin-sass-dts@1.3.35:
+    resolution: {integrity: sha512-WWfOvgwu7ljBdmtt8VjSvsyzmXUhyITdXhDYzkTprXYOJ9Efbknf97lBPbKcF2sCVeK/JsH+djvJbkazDU5VGQ==}
     engines: {node: '>=20'}
     peerDependencies:
       postcss: ^8
@@ -6430,7 +6430,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-sass-dts@1.3.34(postcss@8.5.6)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1)):
+  vite-plugin-sass-dts@1.3.35(postcss@8.5.6)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1)):
     dependencies:
       postcss: 8.5.6
       postcss-js: 4.0.1(postcss@8.5.6)

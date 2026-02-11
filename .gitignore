@@ -11,8 +11,8 @@
 
 !custom.d.ts
 !env.d.ts
-!*.css.d.ts
-!*.scss.d.ts
+!*.d.css.ts
+!*.d.scss.ts
 
 /dist/
 
