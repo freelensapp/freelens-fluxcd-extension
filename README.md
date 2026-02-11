@@ -35,6 +35,21 @@ or:
 Use a following URL in the browser:
 [freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension](freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension)
 
+### Migrating from `@freelensapp/extension-fluxcd`
+
+The package was renamed from `@freelensapp/extension-fluxcd` to
+`@freelensapp/fluxcd-extension` starting with v4.0.0.
+
+If you have the old package installed, you will not receive updates and may
+encounter issues with newer Flux versions (e.g., Flux 2.7+ which removed
+v1beta1 APIs).
+
+To migrate:
+
+1. Open Freelens Extensions (`ctrl`+`shift`+`E` or `cmd`+`shift`+`E`)
+2. Uninstall `@freelensapp/extension-fluxcd` (the old package)
+3. Install `@freelensapp/fluxcd-extension` (the new package)
+
 ## Requirements
 
 - Kubernetes >= 1.24
