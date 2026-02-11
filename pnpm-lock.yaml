@@ -37,10 +37,10 @@ importers:
         version: 5.3.3
       '@vitejs/plugin-react':
         specifier: ^5.1.1
-        version: 5.1.1(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1))
+        version: 5.1.1(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1))
       electron-vite:
         specifier: ^5.0.0
-        version: 5.0.0(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1))
+        version: 5.0.0(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1))
       js-base64:
         specifier: ^3.7.8
         version: 3.7.8
@@ -60,20 +60,20 @@ importers:
         specifier: 17.0.2
         version: 17.0.2
       sass:
-        specifier: ^1.94.2
-        version: 1.94.2
+        specifier: ^1.97.3
+        version: 1.97.3
       typescript:
         specifier: 5.9.3
         version: 5.9.3
       vite:
         specifier: ^7.3.1
-        version: 7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1)
+        version: 7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1)
       vite-plugin-external:
         specifier: ^6.2.2
         version: 6.2.2
       vite-plugin-sass-dts:
         specifier: ^1.3.34
-        version: 1.3.34(postcss@8.5.6)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1))
+        version: 1.3.34(postcss@8.5.6)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1))
 
 packages:
 
@@ -2759,8 +2759,8 @@ packages:
     engines: {node: '>=16.0.0'}
     hasBin: true
 
-  sass@1.94.2:
-    resolution: {integrity: sha512-N+7WK20/wOr7CzA2snJcUSSNTCzeCGUTFY3OgeQP3mZ1aj9NMQ0mSTXwlrnd89j33zzQJGqIN52GIOmYrfq46A==}
+  sass@1.97.3:
+    resolution: {integrity: sha512-fDz1zJpd5GycprAbu4Q2PV/RprsRtKC/0z82z0JLgdytmcq0+ujJbJ/09bPGDxCLkKY3Np5cRAOcWiVkLXJURg==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -4622,7 +4622,7 @@ snapshots:
       '@types/node': 22.16.4
     optional: true
 
-  '@vitejs/plugin-react@5.1.1(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1))':
+  '@vitejs/plugin-react@5.1.1(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1))':
     dependencies:
       '@babel/core': 7.28.5
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.5)
@@ -4630,7 +4630,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.47
       '@types/babel__core': 7.20.5
       react-refresh: 0.18.0
-      vite: 7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1)
+      vite: 7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -4983,7 +4983,7 @@ snapshots:
 
   electron-to-chromium@1.5.152: {}
 
-  electron-vite@5.0.0(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1)):
+  electron-vite@5.0.0(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1)):
     dependencies:
       '@babel/core': 7.28.5
       '@babel/plugin-transform-arrow-functions': 7.27.1(@babel/core@7.28.5)
@@ -4991,7 +4991,7 @@ snapshots:
       esbuild: 0.25.12
       magic-string: 0.30.21
       picocolors: 1.1.1
-      vite: 7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1)
+      vite: 7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -6108,7 +6108,7 @@ snapshots:
       sass-embedded-win32-arm64: 1.89.2
       sass-embedded-win32-x64: 1.89.2
 
-  sass@1.94.2:
+  sass@1.97.3:
     dependencies:
       chokidar: 4.0.3
       immutable: 5.1.2
@@ -6357,7 +6357,7 @@ snapshots:
       postcss-modules-local-by-default: 4.2.0(postcss@8.5.6)
       postcss-modules-scope: 3.2.1(postcss@8.5.6)
       reserved-words: 0.1.2
-      sass: 1.94.2
+      sass: 1.97.3
       source-map-js: 1.2.1
       tsconfig-paths: 4.2.0
       typescript: 5.9.3
@@ -6430,15 +6430,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-sass-dts@1.3.34(postcss@8.5.6)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1)):
+  vite-plugin-sass-dts@1.3.34(postcss@8.5.6)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1)):
     dependencies:
       postcss: 8.5.6
       postcss-js: 4.0.1(postcss@8.5.6)
       prettier: 3.6.2
       sass-embedded: 1.89.2
-      vite: 7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1)
+      vite: 7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1)
 
-  vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.94.2)(stylus@0.62.0)(terser@5.39.1):
+  vite@7.3.1(@types/node@22.16.4)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.97.3)(stylus@0.62.0)(terser@5.39.1):
     dependencies:
       esbuild: 0.27.2
       fdir: 6.5.0(picomatch@4.0.3)
@@ -6450,7 +6450,7 @@ snapshots:
       '@types/node': 22.16.4
       fsevents: 2.3.3
       less: 4.3.0
-      sass: 1.94.2
+      sass: 1.97.3
       sass-embedded: 1.89.2
       stylus: 0.62.0
       terser: 5.39.1
