@@ -71,7 +71,7 @@
     "@types/node": "^22.16.4",
     "@types/react": "^17.0.91",
     "@types/react-router-dom": "^5.3.3",
-    "@vitejs/plugin-react": "^5.1.1",
+    "@vitejs/plugin-react": "^5.1.4",
     "electron-vite": "^5.0.0",
     "js-base64": "^3.7.8",
     "js-yaml": "^4.1.1",
