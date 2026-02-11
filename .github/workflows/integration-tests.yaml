@@ -25,6 +25,9 @@ jobs:
       matrix:
         include:
           - freelens_version: v1.6.2
+          - freelens_version: v1.7.0
+          - freelens_version: v1.8.0
+          - freelens_version: main
 
     runs-on: ubuntu-22.04
     timeout-minutes: 60
