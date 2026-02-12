@@ -18,8 +18,8 @@ importers:
         specifier: ^1.5.3
         version: 1.5.3(@emotion/react@11.14.0(@types/react@17.0.91)(react@17.0.2))(@types/react@17.0.91)
       '@freelensapp/kube-object':
-        specifier: ^1.6.2
-        version: 1.6.2
+        specifier: ^1.8.0
+        version: 1.8.0
       '@types/chart.js':
         specifier: ^2.9.41
         version: 2.9.41
@@ -652,8 +652,8 @@ packages:
   '@freelensapp/kube-api@1.5.3':
     resolution: {integrity: sha512-FgVYw666Lqpez1xg0Z3EKS7lj0UTdgF1XhZAjvHemTAB5SR3NfbHUfDEpaGSunoWlYrvNuvBZGhz3rmoTZkWZg==}
 
-  '@freelensapp/kube-object@1.6.2':
-    resolution: {integrity: sha512-bM99jqoZxv+GwgGWRx3ZwMqX1GBJM2U5knIC5ZyYs/N/triHU2OaqaR7ug0Wzm/ht4wX5howIxxuurZvMeC+8A==}
+  '@freelensapp/kube-object@1.8.0':
+    resolution: {integrity: sha512-wW9hpbbR8JBP5fqnycTYhkJM4klNDdmUGnjz6dvFOBQgw2cwwDBIqk20oA20t7zj22QRcH/c266Px6bUS6v3KA==}
 
   '@freelensapp/kubectl-versions@1.5.3':
     resolution: {integrity: sha512-KGrjg3XvbaNCnnk5Lh/v7eUK1aTwPrqefcR/FUJwWBlZDEWfATx9ckluf4NKct1jvGnB+lMhJuUzkOHLCZxrBg==}
@@ -721,8 +721,8 @@ packages:
   '@freelensapp/typescript@1.5.3':
     resolution: {integrity: sha512-behUDWzysawzfgbUKrRB1NlPWVgk2QDT0pgYAwitOcMY5Ynnr0QhXR3jXw7f1mvk+lYrxtMdwXIbKsdPgKYx6g==}
 
-  '@freelensapp/utilities@1.6.2':
-    resolution: {integrity: sha512-Po7N9V4dDSbwYo0gfNstgfFTc7NHBbTvA5JzVIh36jmQxFvK4ZOtguR4Yia9ZtFU23TR0R11Ehj0VEunbQFtDg==}
+  '@freelensapp/utilities@1.8.0':
+    resolution: {integrity: sha512-dLPzD59fV5V/ParZKbwQ+jUL8sKY5SOiDrS7S+Rduvb83X1TXwan5aZaq7hQWzVwky08MuQpz/K88zw01FcKtQ==}
 
   '@hapi/address@5.1.1':
     resolution: {integrity: sha512-A+po2d/dVoY7cYajycYI43ZbYMXukuopIsqCjh5QzsBCipDtdofHntljDlpccMjIfTy6UOkg+5KPriwYch2bXA==}
@@ -3629,7 +3629,7 @@ snapshots:
   '@freelensapp/animate@1.5.3(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))':
     dependencies:
       '@freelensapp/feature-core': 1.5.3(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-react': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -3668,7 +3668,7 @@ snapshots:
     dependencies:
       '@freelensapp/tooltip': 1.5.3
       '@freelensapp/typescript': 1.5.3
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       react: 17.0.2
     transitivePeerDependencies:
       - react-native
@@ -3685,7 +3685,7 @@ snapshots:
   '@freelensapp/cluster-sidebar@1.5.3(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
     dependencies:
       '@freelensapp/feature-core': 1.5.3(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-mobx': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)(mobx@6.13.7)
@@ -3709,7 +3709,7 @@ snapshots:
       '@freelensapp/json-api': 1.5.3
       '@freelensapp/kube-api': 1.5.3
       '@freelensapp/kube-api-specifics': 1.5.3(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/kube-object': 1.6.2
+      '@freelensapp/kube-object': 1.8.0
       '@freelensapp/kubectl-versions': 1.5.3
       '@freelensapp/kubernetes-client-node': 1.5.3(ws@8.18.3)
       '@freelensapp/legacy-extensions': 1.5.3(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
@@ -3730,7 +3730,7 @@ snapshots:
       '@freelensapp/spinner': 1.5.3
       '@freelensapp/startable-stoppable': 1.5.3
       '@freelensapp/tooltip': 1.5.3
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       '@hapi/call': 9.0.1
       '@hapi/subtext': 8.1.1
       '@mui/lab': 5.0.0-alpha.142(@emotion/react@11.14.0(@types/react@17.0.91)(react@17.0.2))(@mui/material@5.17.1(@emotion/react@11.14.0(@types/react@17.0.91)(react@17.0.2))(@types/react@17.0.91)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(@types/react@17.0.91)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -3864,7 +3864,7 @@ snapshots:
     dependencies:
       '@freelensapp/logger': 1.5.3
       '@freelensapp/tooltip': 1.5.3
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-react': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)(mobx-react@7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       lodash: 4.17.21
@@ -3880,7 +3880,7 @@ snapshots:
   '@freelensapp/json-api@1.5.3':
     dependencies:
       '@freelensapp/event-emitter': 1.5.3
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       lodash: 4.17.21
 
   '@freelensapp/kube-api-specifics@1.5.3(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)':
@@ -3897,8 +3897,8 @@ snapshots:
   '@freelensapp/kube-api@1.5.3':
     dependencies:
       '@freelensapp/json-api': 1.5.3
-      '@freelensapp/kube-object': 1.6.2
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/kube-object': 1.8.0
+      '@freelensapp/utilities': 1.8.0
       '@ogre-tools/fp': 17.11.1(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       byline: 5.0.0
@@ -3906,9 +3906,9 @@ snapshots:
       mobx: 6.13.7
       moment: 2.30.1
 
-  '@freelensapp/kube-object@1.6.2':
+  '@freelensapp/kube-object@1.8.0':
     dependencies:
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       auto-bind: 4.0.0
       lodash: 4.17.21
       moment: 2.30.1
@@ -3987,7 +3987,7 @@ snapshots:
       '@freelensapp/json-api': 1.5.3
       '@freelensapp/logger': 1.5.3
       '@freelensapp/react-application': 1.5.3(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       '@ogre-tools/fp': 17.11.1(lodash@4.17.21)
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
@@ -4007,7 +4007,7 @@ snapshots:
     dependencies:
       '@freelensapp/application': 1.5.3(lodash@4.17.21)
       '@freelensapp/feature-core': 1.5.3(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       '@ogre-tools/injectable': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21)
       '@ogre-tools/injectable-extension-for-auto-registration': 17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(@ogre-tools/injectable@17.11.1(@ogre-tools/fp@17.11.1(lodash@4.17.21))(lodash@4.17.21))(lodash@4.17.21)
     transitivePeerDependencies:
@@ -4043,7 +4043,7 @@ snapshots:
 
   '@freelensapp/resizing-anchor@1.5.3(react-dom@17.0.2(react@17.0.2))':
     dependencies:
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       lodash: 4.17.21
       mobx: 6.13.7
       mobx-react: 7.6.0(mobx@6.13.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -4067,19 +4067,19 @@ snapshots:
 
   '@freelensapp/run-many@1.5.3':
     dependencies:
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       uuid: 11.1.0
 
   '@freelensapp/spinner@1.5.3':
     dependencies:
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       react: 17.0.2
 
   '@freelensapp/startable-stoppable@1.5.3': {}
 
   '@freelensapp/tooltip@1.5.3':
     dependencies:
-      '@freelensapp/utilities': 1.6.2
+      '@freelensapp/utilities': 1.8.0
       auto-bind: 4.0.0
       lodash: 4.17.21
       mobx: 6.13.7
@@ -4097,7 +4097,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  '@freelensapp/utilities@1.6.2':
+  '@freelensapp/utilities@1.8.0':
     dependencies:
       '@astronautlabs/jsonpath': 1.1.2
       crypto-js: 4.2.0
