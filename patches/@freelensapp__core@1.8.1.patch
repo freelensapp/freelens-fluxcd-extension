@@ -1,0 +1,20 @@
+diff --git a/package.json b/package.json
+index e77923e8a8b79d64c03a3a82fd26ce1780cb82c3..43a52b361ec44c95e5d110e1aed24ad80ae3b6d3 100644
+--- a/package.json
++++ b/package.json
+@@ -19,7 +19,13 @@
+   "exports": {
+     "./package.json": "./package.json",
+-    "./main": "./static/build/library/main.js",
+-    "./renderer": "./static/build/library/renderer.js",
++    "./main": {
++      "types": "./static/build/library/src/main/library.d.ts",
++      "default": "./static/build/library/main.js"
++    },
++    "./renderer": {
++      "types": "./static/build/library/src/renderer/library.d.ts",
++      "default": "./static/build/library/renderer.js"
++    },
+     "./styles": "./static/build/library/renderer.css",
+     "./template.html": "./src/renderer/template.html",
+     "./vars.scss": "./src/renderer/components/vars.scss",
