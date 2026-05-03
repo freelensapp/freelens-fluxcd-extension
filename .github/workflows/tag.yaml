@@ -34,7 +34,7 @@ jobs:
       - name: Get version from package.json
         id: package-json
         run: |
-          echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+          echo "version=$(yq -r .version package.json)" >> $GITHUB_OUTPUT
 
       - name: Check if version is release
         id: check-version
@@ -47,7 +47,7 @@ jobs:
 
       - name: Create tag from the main branch
         if: steps.check-version.outputs.is_release == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const mainRef = await github.rest.git.getRef({
