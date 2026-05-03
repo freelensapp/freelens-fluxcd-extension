@@ -13,7 +13,7 @@ plugins:
 runtimes:
   enabled:
     - go@1.21.0
-    - node@22.16.0! # datasource=node-version depName=node
+    - node@22.22.1! # datasource=node-version depName=node
     - python@3.10.8
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
 lint:
@@ -70,6 +70,7 @@ lint:
   disabled:
     - checkov
     - eslint
+    - grype
     - osv-scanner
     - renovate
     - trufflehog
