@@ -63,7 +63,7 @@ jobs:
         run: |
           set -eo pipefail
           pnpm bump-version "$newversion" | tee .github/update.log
-          jq -r .version package.json > .github/version.log
+          yq -r .version package.json > .github/version.log
           sed -e 's/\x1b\[[0-9;]*m//g' .github/update.log > .github/pr_body.log
         env:
           newversion: ${{ github.event.inputs.newversion || 'prerelease' }}
@@ -87,7 +87,7 @@ jobs:
 
       - name: Commit and push to branch
         if: env.changes == 'true'
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           default_author: github_actions
