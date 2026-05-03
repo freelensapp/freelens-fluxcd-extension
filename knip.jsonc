@@ -9,7 +9,8 @@
     // used as vite plugin
     "@babel/plugin-proposal-decorators",
     // part of the extensions API
-    "@types/chart.js"
+    "@types/chart.js",
+    "react-router-dom"
   ],
 
   "typescript": {
