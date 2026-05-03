@@ -4,12 +4,13 @@
   "entry": ["out/{main,renderer}/index.js!", "src/main/index.ts", "src/renderer/index.tsx"],
   "project": ["*.{js,mjs,ts}", "out/**/*.js!", "src/**/*.{ts,tsx}"],
 
-  "ignoreBinaries": ["build:.*", "electron-rebuild"],
+  "ignoreBinaries": ["build:.*", "electron-rebuild", "yq"],
   "ignoreDependencies": [
     // used as vite plugin
     "@babel/plugin-proposal-decorators",
     // part of the extensions API
-    "@types/chart.js"
+    "@types/chart.js",
+    "react-router-dom"
   ],
 
   "typescript": {
