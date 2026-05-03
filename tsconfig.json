@@ -4,8 +4,12 @@
   "compilerOptions": {
     "composite": true,
     "esModuleInterop": true,
-    "moduleResolution": "node10",
+    "module": "node20",
+    "moduleResolution": "node16",
     "jsx": "react-jsx",
-    "types": ["vite/client", "electron-vite/node"]
+    "types": ["vite/client", "electron-vite/node"],
+    "paths": {
+      "@vitejs/plugin-react": ["./node_modules/@vitejs/plugin-react/dist/index.d.ts"]
+    }
   }
 }
