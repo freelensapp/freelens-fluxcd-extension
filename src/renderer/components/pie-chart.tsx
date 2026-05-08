@@ -54,7 +54,7 @@ export function PieChart(
         tooltipLabels: [
           (percent) => `Ready: ${percent}`,
           (percent) => `Not Ready: ${percent}`,
-          (percent) => `In pogress: ${percent}`,
+          (percent) => `In progress: ${percent}`,
           (percent) => `Suspended: ${percent}`,
           (percent) => `Unknown: ${percent}`,
         ],
