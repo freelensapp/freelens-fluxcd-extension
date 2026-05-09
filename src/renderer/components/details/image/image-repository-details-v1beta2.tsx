@@ -2,11 +2,10 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository-v1beta2";
-import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { SpecAccessFrom } from "../../spec-access-from";
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, LinkToSecret, LinkToServiceAccount },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, DurationAbsoluteTimestamp, LinkToSecret, LinkToServiceAccount },
 } = Renderer;
 
 export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImageRepository>> = observer(

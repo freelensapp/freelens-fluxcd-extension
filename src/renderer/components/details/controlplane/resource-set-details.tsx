@@ -2,7 +2,6 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { checksum } from "../../../utils";
-import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
 import { YamlDump } from "../../yaml-dump";
@@ -18,6 +17,7 @@ const {
     DrawerItem,
     DrawerItemLabels,
     DrawerTitle,
+    DurationAbsoluteTimestamp,
     Icon,
     LinkToNamespace,
     LinkToObject,

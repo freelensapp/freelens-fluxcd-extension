@@ -2,7 +2,6 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { checksum, createEnumFromKeys } from "../../../utils";
-import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { SpecPatches } from "../../spec-patches";
 import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
@@ -17,6 +16,7 @@ const {
     DrawerItem,
     DrawerItemLabels,
     DrawerTitle,
+    DurationAbsoluteTimestamp,
     LinkToSecret,
     LinkToServiceAccount,
     LinkToStorageClass,

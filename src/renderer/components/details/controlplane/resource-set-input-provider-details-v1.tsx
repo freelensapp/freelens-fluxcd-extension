@@ -2,7 +2,6 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { checksum, createEnumFromKeys } from "../../../utils";
-import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import { YamlDump } from "../../yaml-dump";
 import styles from "./resource-set-input-provider-details.module.scss";
 import stylesInline from "./resource-set-input-provider-details.module.scss?inline";
@@ -14,6 +13,7 @@ const {
     BadgeBoolean,
     DrawerItem,
     DrawerTitle,
+    DurationAbsoluteTimestamp,
     Icon,
     LinkToSecret,
     LinkToServiceAccount,
