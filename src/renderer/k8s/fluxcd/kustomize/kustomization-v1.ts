@@ -9,6 +9,7 @@ import type {
   FluxCDKubeObjectStatus,
   Image,
   JSON6902Patch,
+  KubeConfigReference,
   NamespacedObjectKindReference,
   NamespacedObjectReference,
   ResourceInventory,
@@ -17,10 +18,6 @@ import type {
 
 export interface Decryption {
   provider: string;
-  secretRef: LocalObjectReference;
-}
-
-export interface KubeConfig {
   secretRef: LocalObjectReference;
 }
 
@@ -39,7 +36,7 @@ export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   decryption?: Decryption;
   interval: string;
   retryInterval?: string;
-  kubeConfig?: KubeConfig;
+  kubeConfig?: KubeConfigReference;
   path?: string;
   postBuild?: PostBuild;
   prune: boolean;

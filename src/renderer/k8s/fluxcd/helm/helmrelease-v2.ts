@@ -6,6 +6,7 @@ import {
   type FluxCDKubeObjectStatus,
   Image,
   JSON6902Patch,
+  type KubeConfigReference,
   NamespacedObjectKindReference,
   NamespacedObjectReference,
 } from "../types";
@@ -59,16 +60,6 @@ export interface HelmChartTemplateSpec {
 export interface HelmChartTemplate {
   metadata: HelmChartTemplateObjectMeta;
   spec: HelmChartTemplateSpec;
-}
-
-export interface SecretKeyReference {
-  name: string;
-  key?: string;
-}
-
-export interface KubeConfigReference {
-  configMapRef?: LocalObjectReference;
-  secretRef?: SecretKeyReference;
 }
 
 export interface IgnoreRule {

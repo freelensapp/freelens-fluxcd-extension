@@ -30,6 +30,11 @@ export interface Artifact {
   size?: number;
 }
 
+export interface KubeConfigReference {
+  configMapRef?: LocalObjectReference;
+  secretRef?: SecretKeyReference;
+}
+
 export interface Image {
   name: string;
   newName?: string;
@@ -45,6 +50,11 @@ export interface JSON6902Patch {
     value?: any;
   }[];
   target: Selector;
+}
+
+export interface SecretKeyReference {
+  name: string;
+  key?: string;
 }
 
 export interface Snapshot {
