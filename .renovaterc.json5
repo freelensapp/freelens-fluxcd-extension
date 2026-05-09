@@ -27,8 +27,6 @@
     "node",
     // it must be the oldest possible version to get binary compatibility with older OSes
     "ubuntu",
-    // manual updates only
-    "@freelensapp/extensions",
     // must match version from Freelens
     "mobx",
     "mobx-react",
