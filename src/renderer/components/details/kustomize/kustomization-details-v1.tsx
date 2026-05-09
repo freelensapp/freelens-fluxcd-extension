@@ -8,10 +8,6 @@ import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kust
 import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
-import { LinkToNamespace } from "../../link-to-namespace";
-import { LinkToObject } from "../../link-to-object";
-import { LinkToSecret } from "../../link-to-secret";
-import { LinkToServiceAccount } from "../../link-to-service-account";
 import { MaybeLink } from "../../maybe-link";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import { SpecPatches } from "../../spec-patches";
@@ -27,6 +23,10 @@ const {
     DrawerItem,
     DrawerTitle,
     Icon,
+    LinkToNamespace,
+    LinkToObject,
+    LinkToServiceAccount,
+    LinkToSecret,
     MonacoEditor,
     Table,
     TableCell,

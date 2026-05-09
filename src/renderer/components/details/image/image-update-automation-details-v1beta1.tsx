@@ -4,13 +4,11 @@ import React from "react";
 import { ImageUpdateAutomation } from "../../../k8s/fluxcd/image/imageupdateautomation-v1beta1";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1";
 import { getHeight } from "../../../utils";
-import { LinkToObject } from "../../link-to-object";
-import { LinkToSecret } from "../../link-to-secret";
 import styles from "./image-update-automation-details.module.scss";
 import stylesInline from "./image-update-automation-details.module.scss?inline";
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, MonacoEditor },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, MonacoEditor, LinkToObject, LinkToSecret },
 } = Renderer;
 
 export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation>> =

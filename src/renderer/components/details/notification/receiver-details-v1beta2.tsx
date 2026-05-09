@@ -3,9 +3,6 @@ import { observer } from "mobx-react";
 import React from "react";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver-v1beta2";
 import { createEnumFromKeys } from "../../../utils";
-import { LinkToNamespace } from "../../link-to-namespace";
-import { LinkToObject } from "../../link-to-object";
-import { LinkToSecret } from "../../link-to-secret";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import styles from "./receiver-details.module.scss";
 import stylesInline from "./receiver-details.module.scss?inline";
@@ -13,7 +10,19 @@ import stylesInline from "./receiver-details.module.scss?inline";
 import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Table, TableCell, TableHead, TableRow, WithTooltip },
+  Component: {
+    BadgeBoolean,
+    DrawerItem,
+    DrawerTitle,
+    LinkToNamespace,
+    LinkToObject,
+    LinkToSecret,
+    Table,
+    TableCell,
+    TableHead,
+    TableRow,
+    WithTooltip,
+  },
 } = Renderer;
 
 const resourceSortable = {

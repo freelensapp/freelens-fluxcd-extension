@@ -2,11 +2,10 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { HelmRepository } from "../../../k8s/fluxcd/source/helmrepository-v1beta2";
-import { LinkToSecret } from "../../link-to-secret";
 import { StatusArtifact } from "../../status-artifact";
 
 const {
-  Component: { BadgeBoolean, DrawerItem },
+  Component: { BadgeBoolean, DrawerItem, LinkToSecret },
 } = Renderer;
 
 export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmRepository>> = observer(
