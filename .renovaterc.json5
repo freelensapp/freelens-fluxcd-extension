@@ -43,6 +43,13 @@
       "rangeStrategy": "widen",
       "semanticCommitScope": "peer-deps"
     },
+    // keep Freelens packages in a single update PR
+    {
+      "matchPackageNames": [
+        "@freelensapp/*"
+      ],
+      "groupName": "@freelensapp packages"
+    },
     // non-major updates only
     {
       "matchDepNames": [
