@@ -2,9 +2,6 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { checksum, createEnumFromKeys } from "../../../utils";
-import { DurationAbsoluteTimestamp } from "../../duration-absolute";
-import { LinkToSecret } from "../../link-to-secret";
-import { LinkToServiceAccount } from "../../link-to-service-account";
 import { YamlDump } from "../../yaml-dump";
 import styles from "./resource-set-input-provider-details.module.scss";
 import stylesInline from "./resource-set-input-provider-details.module.scss?inline";
@@ -12,7 +9,20 @@ import stylesInline from "./resource-set-input-provider-details.module.scss?inli
 import type { ResourceSetInputProvider, Schedule } from "../../../k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, Table, TableCell, TableHead, TableRow, WithTooltip },
+  Component: {
+    BadgeBoolean,
+    DrawerItem,
+    DrawerTitle,
+    DurationAbsoluteTimestamp,
+    Icon,
+    LinkToSecret,
+    LinkToServiceAccount,
+    Table,
+    TableCell,
+    TableHead,
+    TableRow,
+    WithTooltip,
+  },
 } = Renderer;
 
 const schedulesSortable = {

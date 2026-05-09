@@ -53,7 +53,7 @@ To migrate:
 ## Requirements
 
 - Kubernetes >= 1.24
-- Freelens >= 1.6.0
+- Freelens >= 1.6.2
 - Flux >= v2.0.0, <= 2.7.x
 - flux-operator >= v0.6.0
 - kustomize-controller >= v0.1.0

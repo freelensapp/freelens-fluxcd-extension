@@ -2,14 +2,24 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { checksum, createEnumFromKeys } from "../../../utils";
-import { DurationAbsoluteTimestamp } from "../../duration-absolute";
 import styles from "./flux-report-details.module.scss";
 import stylesInline from "./flux-report-details.module.scss?inline";
 
 import type { FluxReconcilerStatus, FluxReport } from "../../../k8s/fluxcd/controlplane/fluxreport-v1";
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, Table, TableCell, TableHead, TableRow, WithTooltip },
+  Component: {
+    BadgeBoolean,
+    DrawerItem,
+    DrawerTitle,
+    DurationAbsoluteTimestamp,
+    Icon,
+    Table,
+    TableCell,
+    TableHead,
+    TableRow,
+    WithTooltip,
+  },
 } = Renderer;
 
 const reconcilersSortable = {

@@ -2,10 +2,6 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { checksum, createEnumFromKeys } from "../../../utils";
-import { DurationAbsoluteTimestamp } from "../../duration-absolute";
-import { LinkToSecret } from "../../link-to-secret";
-import { LinkToServiceAccount } from "../../link-to-service-account";
-import { LinkToStorageClass } from "../../link-to-storage-class";
 import { SpecPatches } from "../../spec-patches";
 import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
@@ -15,7 +11,20 @@ import stylesInline from "./flux-instance-details.module.scss?inline";
 import type { FluxInstance } from "../../../k8s/fluxcd/controlplane/fluxinstance-v1";
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerItemLabels, DrawerTitle, Table, TableCell, TableHead, TableRow },
+  Component: {
+    BadgeBoolean,
+    DrawerItem,
+    DrawerItemLabels,
+    DrawerTitle,
+    DurationAbsoluteTimestamp,
+    LinkToSecret,
+    LinkToServiceAccount,
+    LinkToStorageClass,
+    Table,
+    TableCell,
+    TableHead,
+    TableRow,
+  },
 } = Renderer;
 
 const componentsSortable = {
@@ -152,7 +161,7 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
           <>
             <DrawerTitle>Storage</DrawerTitle>
             <DrawerItem name="Class">
-              <LinkToStorageClass storageClassName={object.spec.storage.class} />
+              <LinkToStorageClass name={object.spec.storage.class} />
             </DrawerItem>
             <DrawerItem name="Size">{object.spec.storage.size}</DrawerItem>
           </>

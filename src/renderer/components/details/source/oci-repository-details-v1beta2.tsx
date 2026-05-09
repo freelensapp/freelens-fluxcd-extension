@@ -2,12 +2,10 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { OCIRepository } from "../../../k8s/fluxcd/source/ocirepository-v1beta2";
-import { LinkToSecret } from "../../link-to-secret";
-import { LinkToServiceAccount } from "../../link-to-service-account";
 import { StatusArtifact } from "../../status-artifact";
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, LinkToSecret, LinkToServiceAccount },
 } = Renderer;
 
 export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<OCIRepository>> = observer(

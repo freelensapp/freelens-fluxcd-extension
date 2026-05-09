@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
-import { DurationAbsoluteTimestamp } from "./duration-absolute";
 import { HumanizeBytes } from "./humanizeBytes";
 import styles from "./status-artifact.module.scss";
 import stylesInline from "./status-artifact.module.scss?inline";
@@ -8,7 +7,7 @@ import stylesInline from "./status-artifact.module.scss?inline";
 import type { Artifact } from "../k8s/fluxcd/types";
 
 const {
-  Component: { DrawerTitle, DrawerItem },
+  Component: { DrawerTitle, DrawerItem, DurationAbsoluteTimestamp },
 } = Renderer;
 
 export interface StatusArtifactProps {

@@ -5,11 +5,6 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease-v2";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
-import { DurationAbsoluteTimestamp } from "../../duration-absolute";
-import { LinkToNamespace } from "../../link-to-namespace";
-import { LinkToObject } from "../../link-to-object";
-import { LinkToServiceAccount } from "../../link-to-service-account";
-import { MaybeLink } from "../../maybe-link";
 import { SpecPatches } from "../../spec-patches";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
@@ -25,7 +20,12 @@ const {
     BadgeBoolean,
     DrawerItem,
     DrawerTitle,
+    DurationAbsoluteTimestamp,
     Icon,
+    LinkToNamespace,
+    LinkToObject,
+    LinkToServiceAccount,
+    MaybeLink,
     MonacoEditor,
     Table,
     TableCell,

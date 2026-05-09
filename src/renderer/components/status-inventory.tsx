@@ -1,8 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import { createEnumFromKeys } from "../utils";
-import { LinkToNamespace } from "./link-to-namespace";
-import { LinkToObject } from "./link-to-object";
 import { ObjectRefTooltip } from "./object-ref-tooltip";
 import styles from "./status-inventory.module.scss";
 import stylesInline from "./status-inventory.module.scss?inline";
@@ -10,7 +8,7 @@ import stylesInline from "./status-inventory.module.scss?inline";
 import type { NamespacedObjectKindReference, ResourceInventory, ResourceRef } from "../k8s/fluxcd/types";
 
 const {
-  Component: { DrawerTitle, Table, TableHead, TableCell, TableRow, WithTooltip },
+  Component: { DrawerTitle, LinkToNamespace, LinkToObject, Table, TableHead, TableCell, TableRow, WithTooltip },
 } = Renderer;
 
 const referenceSortable = {
