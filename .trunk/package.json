@@ -64,7 +64,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.29.0",
     "@electron-toolkit/tsconfig": "^2.0.0",
-    "@freelensapp/extensions": "^1.8.0",
+    "@freelensapp/extensions": "^1.9.0",
     "@types/node": "~22.19.17",
     "@types/react": "^17.0.91",
     "@vitejs/plugin-react": "^6.0.1",
