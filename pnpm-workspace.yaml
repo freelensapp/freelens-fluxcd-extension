@@ -1,5 +1,8 @@
 onlyBuiltDependencies:
   - '@parcel/watcher'
+  - electron
   - esbuild
+  - node-pty
+  - playwright
 
 shellEmulator: true

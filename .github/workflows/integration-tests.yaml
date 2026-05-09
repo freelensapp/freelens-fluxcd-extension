@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - freelens_version: v1.8.1
+          - freelens_version: v1.9.0
           - freelens_version: main
 
     runs-on: ubuntu-22.04
@@ -136,6 +136,9 @@ jobs:
           key: ubuntu-22.04-x64-turborepo-${{ hashFiles('freelens/**/package.json', 'freelens/**/pnpm-lock.yaml', 'freelens/turbo.json') }}
           restore-keys: |
             ubuntu-22.04-x64-turborepo-
+
+      - name: Delete node packages from the previous build to avoid issues with pnpm
+        run: rm -rf pnpm-lock.yaml node_modules
 
       - name: Install pnpm dependencies for app
         id: install-pnpm-app
