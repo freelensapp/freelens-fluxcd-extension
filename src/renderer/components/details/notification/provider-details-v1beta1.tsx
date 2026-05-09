@@ -2,10 +2,9 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Provider } from "../../../k8s/fluxcd/notification/provider-v1beta1";
-import { LinkToSecret } from "../../link-to-secret";
 
 const {
-  Component: { BadgeBoolean, DrawerItem },
+  Component: { BadgeBoolean, DrawerItem, LinkToSecret },
 } = Renderer;
 
 export const ProviderDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Provider>> = observer((props) => {

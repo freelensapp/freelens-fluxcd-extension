@@ -2,11 +2,10 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { HelmChart } from "../../../k8s/fluxcd/source/helmchart-v1";
-import { LinkToObject } from "../../link-to-object";
 import { StatusArtifact } from "../../status-artifact";
 
 const {
-  Component: { BadgeBoolean, DrawerItem },
+  Component: { BadgeBoolean, DrawerItem, LinkToObject },
 } = Renderer;
 
 export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmChart>> = observer((props) => {

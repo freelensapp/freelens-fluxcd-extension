@@ -3,15 +3,13 @@ import { observer } from "mobx-react";
 import React from "react";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1beta2";
 import { getHeight } from "../../../utils";
-import { LinkToObject } from "../../link-to-object";
-import { LinkToSecret } from "../../link-to-secret";
 import { SpecAccessFrom } from "../../spec-access-from";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./git-repository-details.module.scss";
 import stylesInline from "./git-repository-details.module.scss?inline";
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, MonacoEditor },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, LinkToObject, LinkToSecret, MonacoEditor },
 } = Renderer;
 
 export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<GitRepository>> = observer(

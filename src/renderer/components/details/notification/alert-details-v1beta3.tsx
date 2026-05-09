@@ -2,10 +2,9 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Alert } from "../../../k8s/fluxcd/notification/alert-v1beta3";
-import { LinkToObject } from "../../link-to-object";
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, DrawerItemLabels },
+  Component: { Badge, BadgeBoolean, DrawerItem, DrawerItemLabels, LinkToObject },
 } = Renderer;
 
 export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Alert>> = observer((props) => {

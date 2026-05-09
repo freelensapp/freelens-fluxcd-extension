@@ -2,10 +2,9 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { ImagePolicy } from "../../../k8s/fluxcd/image/imagepolicy-v1beta1";
-import { LinkToObject } from "../../link-to-object";
 
 const {
-  Component: { DrawerItem },
+  Component: { DrawerItem, LinkToObject },
 } = Renderer;
 
 export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImagePolicy>> = observer(

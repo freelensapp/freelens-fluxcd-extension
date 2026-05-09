@@ -2,10 +2,6 @@ import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { checksum } from "../../../utils";
-import { DurationAbsoluteTimestamp } from "../../duration-absolute";
-import { LinkToNamespace } from "../../link-to-namespace";
-import { LinkToObject } from "../../link-to-object";
-import { LinkToServiceAccount } from "../../link-to-service-account";
 import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
 import { YamlDump } from "../../yaml-dump";
@@ -15,7 +11,18 @@ import stylesInline from "./resource-set-details.module.scss?inline";
 import type { ResourceSet } from "../../../k8s/fluxcd/controlplane/resourceset-v1";
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, DrawerItemLabels, DrawerTitle, Icon },
+  Component: {
+    Badge,
+    BadgeBoolean,
+    DrawerItem,
+    DrawerItemLabels,
+    DrawerTitle,
+    DurationAbsoluteTimestamp,
+    Icon,
+    LinkToNamespace,
+    LinkToObject,
+    LinkToServiceAccount,
+  },
 } = Renderer;
 
 export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ResourceSet>> = observer(
