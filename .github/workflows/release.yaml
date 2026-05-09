@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Check if package version matches
-        run: test "${GITHUB_REF_NAME}" = "v$(jq -r .version package.json)"
+        run: test "${GITHUB_REF_NAME}" = "v$(yq -r .version package.json)"
 
       - name: Setup node
         uses: actions/setup-node@v6
@@ -109,7 +109,7 @@ jobs:
           NPM_CONFIG_PROVENANCE: "true"
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           fail_on_unmatched_files: true
           files: |-

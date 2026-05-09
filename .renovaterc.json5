@@ -27,8 +27,6 @@
     "node",
     // it must be the oldest possible version to get binary compatibility with older OSes
     "ubuntu",
-    // manual updates only
-    "@freelensapp/extensions",
     // must match version from Freelens
     "mobx",
     "mobx-react",
@@ -44,6 +42,13 @@
       ],
       "rangeStrategy": "widen",
       "semanticCommitScope": "peer-deps"
+    },
+    // keep Freelens packages in a single update PR
+    {
+      "matchPackageNames": [
+        "@freelensapp/*"
+      ],
+      "groupName": "@freelensapp packages"
     },
     // non-major updates only
     {

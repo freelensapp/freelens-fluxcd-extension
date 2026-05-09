@@ -1,10 +1,10 @@
 {
-  "name": "@freelensapp/fluxcd-extension",
-  "version": "5.2.3-0",
-  "description": "Freelens extension for FluxCD",
+  "name": "@freelensapp/example-extension",
+  "version": "1.9.0-0",
+  "description": "Example of a Freelens extension",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/freelensapp/freelens-fluxcd-extension.git",
+    "url": "git+https://github.com/freelensapp/freelens-example-extension.git",
     "directory": "."
   },
   "main": "out/main/index.js",
@@ -14,7 +14,7 @@
   ],
   "engines": {
     "node": ">= 22.0.0",
-    "freelens": "^1.6.0"
+    "freelens": "^1.8.0"
   },
   "copyright": "© 2025 Freelens Authors",
   "license": "MIT",
@@ -65,19 +65,12 @@
     "@babel/plugin-proposal-decorators": "^7.29.0",
     "@electron-toolkit/tsconfig": "^2.0.0",
     "@freelensapp/extensions": "^1.9.0",
-    "@freelensapp/kube-object": "^1.9.0",
-    "@types/chart.js": "^2.9.41",
-    "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.16.4",
+    "@types/node": "~22.19.17",
     "@types/react": "^17.0.91",
-    "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^6.0.1",
     "electron-vite": "^5.0.0",
-    "js-base64": "^3.7.8",
-    "js-yaml": "^4.1.1",
     "mobx": "6.13.7",
     "mobx-react": "7.6.0",
-    "moment": "^2.30.1",
     "react": "17.0.2",
     "sass": "^1.99.0",
     "typescript": "5.9.3",
@@ -90,9 +83,7 @@
     "freelensapp",
     "lens",
     "openlens",
-    "freelens",
-    "flux",
-    "fluxcd"
+    "freelens"
   ],
   "packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800"
 }

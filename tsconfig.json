@@ -6,6 +6,9 @@
     "esModuleInterop": true,
     "moduleResolution": "node10",
     "jsx": "react-jsx",
-    "types": ["vite/client", "electron-vite/node"]
+    "types": ["vite/client", "electron-vite/node"],
+    "paths": {
+      "@vitejs/plugin-react": ["./node_modules/@vitejs/plugin-react/dist/index.d.ts"]
+    }
   }
 }

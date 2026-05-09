@@ -13,7 +13,7 @@ export default defineConfig({
         // Freelens 1.xx extensions are CommonJS modules
         formats: ["cjs"],
       },
-      rollupOptions: {
+      rolldownOptions: {
         output: {
           // silence warning about using `chunk.default` to access the default export
           exports: "named",
@@ -24,18 +24,13 @@ export default defineConfig({
       },
       sourcemap: true,
     },
+    oxc: {
+      decorator: {
+        legacy: true,
+        emitDecoratorMetadata: true,
+      },
+    },
     plugins: [
-      externalizeDepsPlugin({
-        // do not bundle modules provided by the host app
-        include: ["@freelensapp/extensions", "mobx"],
-      }),
-      pluginExternal({
-        // the modules are provided by the host app as a global variable
-        externals: {
-          "@freelensapp/extensions": "global.LensExtensions",
-          mobx: "global.Mobx",
-        },
-      }),
       react({
         babel: {
           plugins: [
@@ -46,6 +41,17 @@ export default defineConfig({
               },
             ],
           ],
+        },
+      }),
+      externalizeDepsPlugin({
+        // do not bundle modules provided by the host app
+        include: ["@freelensapp/extensions", "mobx"],
+      }),
+      pluginExternal({
+        // the modules are provided by the host app as a global variable
+        externals: {
+          "@freelensapp/extensions": "global.LensExtensions",
+          mobx: "global.Mobx",
         },
       }),
     ],
@@ -60,7 +66,7 @@ export default defineConfig({
         formats: ["cjs"],
       },
       outDir: "out/renderer",
-      rollupOptions: {
+      rolldownOptions: {
         output: {
           // silence warning about using `chunk.default` to access the default export
           exports: "named",
@@ -74,6 +80,12 @@ export default defineConfig({
     css: {
       modules: {
         localsConvention: "camelCaseOnly",
+      },
+    },
+    oxc: {
+      decorator: {
+        legacy: true,
+        emitDecoratorMetadata: true,
       },
     },
     plugins: [

@@ -3,7 +3,9 @@ import { computed, makeObservable, observable } from "mobx";
 import { observer } from "mobx-react";
 import moment from "moment";
 import React from "react";
-import { Link } from "react-router-dom";
+import * as ReactRouterDom from "react-router-dom";
+
+const { Link } = ReactRouterDom;
 
 const {
   Component: {
