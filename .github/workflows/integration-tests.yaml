@@ -88,6 +88,12 @@ jobs:
           ref: ${{ matrix.freelens_version }}
           path: freelens
 
+      - name: Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: freelens/.nvmrc
+          package-manager-cache: false
+
       - name: Get Electron version
         run: echo "electron_version=$(yq -r .importers.freelens.devDependencies.electron.version freelens/pnpm-lock.yaml | sed 's/(.*)//')" >> $GITHUB_ENV
 
