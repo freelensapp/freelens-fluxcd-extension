@@ -156,7 +156,7 @@ extensions.
 
 ## License
 
-Copyright (c) 2025 Freelens Authors.
+Copyright (c) 2025-2026 Freelens Authors.
 
 [MIT License](https://opensource.org/licenses/MIT)
 
