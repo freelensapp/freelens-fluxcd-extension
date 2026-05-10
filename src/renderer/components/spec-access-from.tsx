@@ -1,7 +1,9 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import styles from "./spec-access-from.module.scss";
 import stylesInline from "./spec-access-from.module.scss?inline";
+
+const { observer } = MobxReact;
 
 import type { AccessFrom } from "../k8s/fluxcd/types";
 

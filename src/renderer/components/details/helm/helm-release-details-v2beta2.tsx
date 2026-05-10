@@ -1,13 +1,15 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { Base64 } from "js-base64";
 import yaml from "js-yaml";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease-v2beta2";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
+
+const { observer } = MobxReact;
 
 import type { Patch } from "../../../k8s/core/types";
 

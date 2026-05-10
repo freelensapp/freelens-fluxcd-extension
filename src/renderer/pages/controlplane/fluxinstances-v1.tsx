@@ -1,10 +1,12 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { FluxInstance, type FluxInstanceApi } from "../../k8s/fluxcd/controlplane/fluxinstance-v1";
 import styles from "./fluxinstances.module.scss";
 import stylesInline from "./fluxinstances.module.scss?inline";
+
+const { observer } = MobxReact;
 
 const {
   Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },

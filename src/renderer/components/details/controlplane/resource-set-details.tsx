@@ -1,5 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { checksum } from "../../../utils";
 import { StatusHistory } from "../../status-history";
@@ -7,6 +7,8 @@ import { StatusInventory } from "../../status-inventory";
 import { YamlDump } from "../../yaml-dump";
 import styles from "./resource-set-details.module.scss";
 import stylesInline from "./resource-set-details.module.scss?inline";
+
+const { observer } = MobxReact;
 
 import type { ResourceSet } from "../../../k8s/fluxcd/controlplane/resourceset-v1";
 

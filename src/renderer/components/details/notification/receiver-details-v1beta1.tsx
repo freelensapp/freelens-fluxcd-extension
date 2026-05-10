@@ -1,11 +1,13 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver-v1beta1";
 import { createEnumFromKeys } from "../../../utils";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import styles from "./receiver-details.module.scss";
 import stylesInline from "./receiver-details.module.scss?inline";
+
+const { observer } = MobxReact;
 
 import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 

@@ -1,9 +1,11 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { checksum, createEnumFromKeys } from "../../../utils";
 import styles from "./flux-report-details.module.scss";
 import stylesInline from "./flux-report-details.module.scss?inline";
+
+const { observer } = MobxReact;
 
 import type { FluxReconcilerStatus, FluxReport } from "../../../k8s/fluxcd/controlplane/fluxreport-v1";
 

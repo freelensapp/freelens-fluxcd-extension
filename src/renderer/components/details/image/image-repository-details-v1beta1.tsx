@@ -1,8 +1,10 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository-v1beta1";
 import { SpecAccessFrom } from "../../spec-access-from";
+
+const { observer } = MobxReact;
 
 const {
   Component: { BadgeBoolean, DrawerItem, DrawerTitle, DurationAbsoluteTimestamp, LinkToSecret, LinkToServiceAccount },

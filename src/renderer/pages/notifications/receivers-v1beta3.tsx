@@ -1,9 +1,11 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { Receiver, type ReceiverApi } from "../../k8s/fluxcd/notification/receiver-v1beta3";
 import styles from "./receivers.module.scss";
 import stylesInline from "./receivers.module.scss?inline";
+
+const { observer } = MobxReact;
 
 const {
   Component: { KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },

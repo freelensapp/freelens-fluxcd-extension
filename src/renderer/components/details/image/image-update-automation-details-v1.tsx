@@ -1,11 +1,13 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { ImageUpdateAutomation } from "../../../k8s/fluxcd/image/imageupdateautomation-v1";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1";
 import { getHeight } from "../../../utils";
 import styles from "./image-update-automation-details.module.scss";
 import stylesInline from "./image-update-automation-details.module.scss?inline";
+
+const { observer } = MobxReact;
 
 const {
   Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, LinkToObject, LinkToSecret, MonacoEditor },

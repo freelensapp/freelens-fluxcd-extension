@@ -1,5 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { checksum, createEnumFromKeys } from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
@@ -7,6 +7,8 @@ import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
 import styles from "./flux-instance-details.module.scss";
 import stylesInline from "./flux-instance-details.module.scss?inline";
+
+const { observer } = MobxReact;
 
 import type { FluxInstance } from "../../../k8s/fluxcd/controlplane/fluxinstance-v1";
 

@@ -1,5 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1beta2";
 import { getHeight } from "../../../utils";
@@ -7,6 +7,8 @@ import { SpecAccessFrom } from "../../spec-access-from";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./git-repository-details.module.scss";
 import stylesInline from "./git-repository-details.module.scss?inline";
+
+const { observer } = MobxReact;
 
 const {
   Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, LinkToObject, LinkToSecret, MonacoEditor },

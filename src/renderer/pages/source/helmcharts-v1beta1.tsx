@@ -1,5 +1,5 @@
 import { Common, Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { HelmChart, type HelmChartApi } from "../../k8s/fluxcd/source/helmchart-v1beta1";
@@ -7,6 +7,8 @@ import { getRefUrl } from "../../k8s/fluxcd/utils";
 import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./helmcharts.module.scss";
 import stylesInline from "./helmcharts.module.scss?inline";
+
+const { observer } = MobxReact;
 
 const {
   Util: { stopPropagation },

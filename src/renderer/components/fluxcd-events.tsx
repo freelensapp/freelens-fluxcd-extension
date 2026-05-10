@@ -1,9 +1,11 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { computed, makeObservable, observable } from "mobx";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import moment from "moment";
 import React from "react";
 import * as ReactRouterDom from "react-router-dom";
+
+const { observer } = MobxReact;
 
 const { Link } = ReactRouterDom;
 
