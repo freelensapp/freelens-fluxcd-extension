@@ -1,7 +1,7 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { Base64 } from "js-base64";
 import yaml from "js-yaml";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease-v2";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
@@ -10,6 +10,8 @@ import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
 
 import type { Patch } from "../../../k8s/core/types";
+
+const { observer } = MobxReact;
 
 const {
   Util: { stopPropagation },

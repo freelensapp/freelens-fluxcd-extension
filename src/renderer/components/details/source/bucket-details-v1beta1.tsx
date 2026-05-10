@@ -1,8 +1,10 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { Bucket } from "../../../k8s/fluxcd/source/bucket-v1beta1";
 import { StatusArtifact } from "../../status-artifact";
+
+const { observer } = MobxReact;
 
 const {
   Component: { BadgeBoolean, DrawerItem, LinkToSecret },

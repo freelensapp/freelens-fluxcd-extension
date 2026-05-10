@@ -1,5 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import {
   getConditionClass,
@@ -10,6 +10,8 @@ import {
 import { FluxReport, type FluxReportApi } from "../../k8s/fluxcd/controlplane/fluxreport-v1";
 import styles from "./fluxreports.module.scss";
 import stylesInline from "./fluxreports.module.scss?inline";
+
+const { observer } = MobxReact;
 
 const {
   Component: {

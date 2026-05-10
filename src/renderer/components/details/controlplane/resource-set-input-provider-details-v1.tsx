@@ -1,5 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { checksum, createEnumFromKeys } from "../../../utils";
 import { YamlDump } from "../../yaml-dump";
@@ -7,6 +7,8 @@ import styles from "./resource-set-input-provider-details.module.scss";
 import stylesInline from "./resource-set-input-provider-details.module.scss?inline";
 
 import type { ResourceSetInputProvider, Schedule } from "../../../k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
+
+const { observer } = MobxReact;
 
 const {
   Component: {

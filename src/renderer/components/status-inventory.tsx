@@ -1,11 +1,13 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { createEnumFromKeys } from "../utils";
 import { ObjectRefTooltip } from "./object-ref-tooltip";
 import styles from "./status-inventory.module.scss";
 import stylesInline from "./status-inventory.module.scss?inline";
 
 import type { NamespacedObjectKindReference, ResourceInventory, ResourceRef } from "../k8s/fluxcd/types";
+
+const { observer } = MobxReact;
 
 const {
   Component: { DrawerTitle, LinkToNamespace, LinkToObject, Table, TableHead, TableCell, TableRow, WithTooltip },

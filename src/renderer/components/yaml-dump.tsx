@@ -1,9 +1,11 @@
 import { Renderer } from "@freelensapp/extensions";
 import yaml from "js-yaml";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { defaultYamlDumpOptions, getHeight } from "../utils";
 import styles from "./yaml-dump.module.scss";
 import stylesInline from "./yaml-dump.module.scss?inline";
+
+const { observer } = MobxReact;
 
 const {
   Component: { MonacoEditor },

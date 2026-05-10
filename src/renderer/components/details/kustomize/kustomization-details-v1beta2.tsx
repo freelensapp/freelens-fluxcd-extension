@@ -2,7 +2,7 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import crypto from "crypto";
 import { Base64 } from "js-base64";
 import yaml from "js-yaml";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization-v1beta2";
 import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
@@ -14,6 +14,8 @@ import { getConditionClass, getConditionText, getStatusMessage } from "../../sta
 import { StatusInventory } from "../../status-inventory";
 import styles from "./kustomization-details.module.scss";
 import stylesInline from "./kustomization-details.module.scss?inline";
+
+const { observer } = MobxReact;
 
 const {
   Component: {

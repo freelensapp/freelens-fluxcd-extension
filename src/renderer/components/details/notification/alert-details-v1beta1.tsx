@@ -1,7 +1,9 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import React from "react";
 import { Alert } from "../../../k8s/fluxcd/notification/alert-v1beta1";
+
+const { observer } = MobxReact;
 
 const {
   Component: { Badge, BadgeBoolean, DrawerItem, LinkToObject },

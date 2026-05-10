@@ -1,10 +1,12 @@
 import { Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { HumanizeBytes } from "./humanizeBytes";
 import styles from "./status-artifact.module.scss";
 import stylesInline from "./status-artifact.module.scss?inline";
 
 import type { Artifact } from "../k8s/fluxcd/types";
+
+const { observer } = MobxReact;
 
 const {
   Component: { DrawerTitle, DrawerItem, DurationAbsoluteTimestamp },

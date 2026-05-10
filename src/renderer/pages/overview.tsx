@@ -1,5 +1,5 @@
 import { Common, Renderer } from "@freelensapp/extensions";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FluxCDEvents } from "../components/fluxcd-events";
 import { InfoPage } from "../components/info-page";
@@ -47,6 +47,8 @@ import { OCIRepository as OCIRepository_v1 } from "../k8s/fluxcd/source/ocirepos
 import { OCIRepository as OCIRepository_v1beta2 } from "../k8s/fluxcd/source/ocirepository-v1beta2";
 import styles from "./overview.module.scss";
 import stylesInline from "./overview.module.scss?inline";
+
+const { observer } = MobxReact;
 
 const {
   Component: { NamespaceSelectFilter, TabLayout },
