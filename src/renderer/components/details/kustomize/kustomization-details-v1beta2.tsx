@@ -22,6 +22,7 @@ const {
     DrawerItem,
     DrawerTitle,
     Icon,
+    LinkToConfigMap,
     LinkToNamespace,
     LinkToObject,
     LinkToSecret,
@@ -99,6 +100,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
       object.spec.postBuild?.substitute &&
       yaml.dump(object.spec.postBuild?.substitute, defaultYamlDumpOptions).trimEnd();
 
+    const kubeConfigSecretName = object.spec.kubeConfig?.secretRef?.name;
+    const kubeConfigConfigMapName = object.spec.kubeConfig?.configMapRef?.name;
+
     return (
       <>
         <style>{stylesInline}</style>
@@ -133,8 +137,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
             <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
           </DrawerItem>
-          <DrawerItem name="Kube Config" hidden={!object.spec.kubeConfig?.secretRef.name}>
-            <LinkToSecret name={object.spec.kubeConfig?.secretRef.name} namespace={namespace} />
+          <DrawerItem name="Kube Config" hidden={!kubeConfigSecretName && !kubeConfigConfigMapName}>
+            {kubeConfigSecretName && <LinkToSecret name={kubeConfigSecretName} namespace={namespace} />}
+            {kubeConfigConfigMapName && <LinkToConfigMap name={kubeConfigConfigMapName} namespace={namespace} />}
           </DrawerItem>
           <DrawerItem name="Last Applied Revision">{object.status?.lastAppliedRevision}</DrawerItem>
 
