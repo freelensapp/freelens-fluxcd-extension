@@ -8,9 +8,9 @@ import { StatusInventory } from "../../status-inventory";
 import styles from "./flux-instance-details.module.scss";
 import stylesInline from "./flux-instance-details.module.scss?inline";
 
-const { observer } = MobxReact;
-
 import type { FluxInstance } from "../../../k8s/fluxcd/controlplane/fluxinstance-v1";
+
+const { observer } = MobxReact;
 
 const {
   Component: {

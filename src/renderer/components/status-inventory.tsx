@@ -5,9 +5,9 @@ import { ObjectRefTooltip } from "./object-ref-tooltip";
 import styles from "./status-inventory.module.scss";
 import stylesInline from "./status-inventory.module.scss?inline";
 
-const { observer } = MobxReact;
-
 import type { NamespacedObjectKindReference, ResourceInventory, ResourceRef } from "../k8s/fluxcd/types";
+
+const { observer } = MobxReact;
 
 const {
   Component: { DrawerTitle, LinkToNamespace, LinkToObject, Table, TableHead, TableCell, TableRow, WithTooltip },

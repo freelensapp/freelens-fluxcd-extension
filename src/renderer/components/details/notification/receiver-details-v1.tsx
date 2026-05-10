@@ -7,9 +7,9 @@ import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import styles from "./receiver-details.module.scss";
 import stylesInline from "./receiver-details.module.scss?inline";
 
-const { observer } = MobxReact;
-
 import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
+
+const { observer } = MobxReact;
 
 const {
   Component: {

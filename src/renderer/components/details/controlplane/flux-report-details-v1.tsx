@@ -5,9 +5,9 @@ import { checksum, createEnumFromKeys } from "../../../utils";
 import styles from "./flux-report-details.module.scss";
 import stylesInline from "./flux-report-details.module.scss?inline";
 
-const { observer } = MobxReact;
-
 import type { FluxReconcilerStatus, FluxReport } from "../../../k8s/fluxcd/controlplane/fluxreport-v1";
+
+const { observer } = MobxReact;
 
 const {
   Component: {

@@ -9,9 +9,9 @@ import { SpecPatches } from "../../spec-patches";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
 
-const { observer } = MobxReact;
-
 import type { Patch } from "../../../k8s/core/types";
+
+const { observer } = MobxReact;
 
 const {
   Util: { stopPropagation },

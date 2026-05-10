@@ -4,9 +4,9 @@ import { HumanizeBytes } from "./humanizeBytes";
 import styles from "./status-artifact.module.scss";
 import stylesInline from "./status-artifact.module.scss?inline";
 
-const { observer } = MobxReact;
-
 import type { Artifact } from "../k8s/fluxcd/types";
+
+const { observer } = MobxReact;
 
 const {
   Component: { DrawerTitle, DrawerItem, DurationAbsoluteTimestamp },

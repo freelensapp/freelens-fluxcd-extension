@@ -5,9 +5,9 @@ import styles from "./spec-patches.module.scss";
 import stylesInline from "./spec-patches.module.scss?inline";
 import { YamlDump } from "./yaml-dump";
 
-const { observer } = MobxReact;
-
 import type { Patch } from "../k8s/core/types";
+
+const { observer } = MobxReact;
 
 const {
   Component: { DrawerItem, DrawerTitle, Icon },

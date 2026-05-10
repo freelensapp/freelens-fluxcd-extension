@@ -4,9 +4,9 @@ import { checksum } from "../utils";
 import styles from "./status-history.module.scss";
 import stylesInline from "./status-history.module.scss?inline";
 
-const { observer } = MobxReact;
-
 import type { History } from "../k8s/fluxcd/types";
+
+const { observer } = MobxReact;
 
 const {
   Component: { DrawerItem, DrawerItemLabels, DrawerTitle, DurationAbsoluteTimestamp, Icon },

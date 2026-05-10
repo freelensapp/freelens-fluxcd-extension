@@ -3,9 +3,9 @@ import * as MobxReact from "mobx-react";
 import styles from "./spec-access-from.module.scss";
 import stylesInline from "./spec-access-from.module.scss?inline";
 
-const { observer } = MobxReact;
-
 import type { AccessFrom } from "../k8s/fluxcd/types";
+
+const { observer } = MobxReact;
 
 const {
   Component: { Badge, DrawerItem },
