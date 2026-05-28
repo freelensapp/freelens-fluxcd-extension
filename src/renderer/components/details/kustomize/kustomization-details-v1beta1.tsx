@@ -369,8 +369,10 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             <div>
               <DrawerTitle>Decryption</DrawerTitle>
               <DrawerItem name="Provider">{object.spec.decryption.provider}</DrawerItem>
-              <DrawerItem name="Secret Name">
-                <LinkToSecret name={object.spec.decryption.secretRef.name} namespace={namespace} />
+              <DrawerItem name="Secret Name" hidden={!object.spec.decryption.secretRef}>
+                {object.spec.decryption.secretRef && (
+                  <LinkToSecret name={object.spec.decryption.secretRef.name} namespace={namespace} />
+                )}
               </DrawerItem>
             </div>
           )}
