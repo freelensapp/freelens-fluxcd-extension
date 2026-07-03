@@ -39,8 +39,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1))
       js-base64:
-        specifier: ^3.7.8
-        version: 3.7.8
+        specifier: ^3.8.0
+        version: 3.8.0
       js-yaml:
         specifier: ^5.2.1
         version: 5.2.1
@@ -1916,8 +1916,8 @@ packages:
     resolution: {integrity: sha512-N5A3KTWQpPWT4ExxxPlUx7WmykGXRzhNidWhV41d6Abu9YfI2NyWCJuxdPnslJCPWtbRpSVOWSnSS6GakLM/Rg==}
     engines: {node: '>= 20'}
 
-  js-base64@3.7.8:
-    resolution: {integrity: sha512-hNngCeKxIUQiEUN3GPJOkz4wF/YvdUdbNL9hsBcMQTkKzboD7T/q3OYOuuPZLUE6dBxSGpwhk5mwuDud7JVAow==}
+  js-base64@3.8.0:
+    resolution: {integrity: sha512-65kvbemyZhj+ExQt1PEFyBEjL5vAHysu1lJdW1AwhhChkO8ZBPizYk/m9GVrpbS2Je1hF+UYZ+6KywqtZV8mHw==}
 
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
@@ -5089,7 +5089,7 @@ snapshots:
       '@hapi/topo': 6.0.2
       '@standard-schema/spec': 1.1.0
 
-  js-base64@3.7.8: {}
+  js-base64@3.8.0: {}
 
   js-tokens@10.0.0: {}
 
