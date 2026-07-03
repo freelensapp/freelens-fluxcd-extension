@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
-import { checksum, createEnumFromKeys } from "../../../utils";
+import { createEnumFromKeys, createHash } from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
 import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
@@ -221,7 +221,7 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
                 <TableCell className="digest">Digest</TableCell>
               </TableHead>
               {object.status.components.map((component) => {
-                const key = checksum(component);
+                const key = createHash(component);
                 return (
                   <TableRow key={key} sortItem={component} nowrap>
                     <TableCell className="name">{component.name}</TableCell>

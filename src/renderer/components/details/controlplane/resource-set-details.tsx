@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
-import { checksum } from "../../../utils";
+import { createHash } from "../../../utils";
 import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
 import { YamlDump } from "../../yaml-dump";
@@ -112,7 +112,7 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <div>
             <DrawerTitle>Inputs From</DrawerTitle>
             {object.spec.inputsFrom.map((inputsFrom) => (
-              <div key={checksum(inputsFrom)}>
+              <div key={createHash(inputsFrom)}>
                 <div className={styles.title}>
                   <Icon small material="list" />
                 </div>
@@ -129,7 +129,7 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                   <DrawerItemLabels name="Match Labels" labels={inputsFrom.selector?.matchLabels ?? {}} />
                   <DrawerItem name="Match Expressions" hidden={!inputsFrom.selector?.matchExpressions}>
                     {inputsFrom.selector?.matchExpressions?.map((expr) => (
-                      <div key={checksum(expr)}>
+                      <div key={createHash(expr)}>
                         <DrawerItem name="Key">{expr.key}</DrawerItem>
                         <DrawerItem name="Operator">{expr.operator}</DrawerItem>
                         <DrawerItem name="Values" hidden={!expr.values || expr.values.length === 0}>
@@ -150,7 +150,7 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <div className={styles.inputs}>
             <DrawerTitle>Inputs</DrawerTitle>
             {object.spec.inputs.map((input, index) => (
-              <div key={checksum(input)}>
+              <div key={createHash(input)}>
                 <div className={styles.title}>
                   <Icon small material="list" />
                   <span>{index + 1}</span>

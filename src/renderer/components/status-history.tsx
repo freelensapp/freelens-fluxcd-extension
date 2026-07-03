@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { checksum } from "../utils";
+import { createHash } from "../utils";
 import styles from "./status-history.module.scss";
 import stylesInline from "./status-history.module.scss?inline";
 
@@ -27,7 +27,7 @@ export const StatusHistory: React.FC<StatusHistoryProps> = observer((props) => {
       <div className={styles.history}>
         <DrawerTitle>History</DrawerTitle>
         {history.map((snapshot) => (
-          <div key={checksum(snapshot)}>
+          <div key={createHash(snapshot)}>
             <div className={styles.title}>
               <Icon small material="history" />
             </div>
