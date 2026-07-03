@@ -28,6 +28,10 @@ export interface HelmRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   accessFrom?: AccessFrom;
   // source.toolkit.fluxcd.io/v1
   type?: "helm" | "oci";
+  // Provider used for authentication, only taken into account when type is "oci", defaults to "generic".
+  // Upstream: fluxcd/source-controller api/v1/helmrepository_types.go, HelmRepositorySpec.Provider
+  // +kubebuilder:validation:Enum=generic;aws;azure;gcp
+  provider?: "generic" | "aws" | "azure" | "gcp";
 }
 
 export interface HelmRepositoryStatus extends FluxCDKubeObjectStatus {

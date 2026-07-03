@@ -21,6 +21,10 @@ export interface GitRepositoryInclude {
 export interface GitRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   url: string;
   secretRef?: LocalObjectReference;
+  // Provider used for authentication, defaults to "generic".
+  // Upstream: fluxcd/source-controller api/v1/gitrepository_types.go, GitRepositorySpec.Provider
+  // +kubebuilder:validation:Enum=generic;aws;azure;github
+  provider?: "generic" | "aws" | "azure" | "github";
   interval: string;
   timeout?: string;
   ref?: GitRepositoryRef;
