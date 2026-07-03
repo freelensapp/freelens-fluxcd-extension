@@ -42,7 +42,7 @@
     "lint": "pnpm lint:check",
     "lint:check": "pnpm \"/^(biome|prettier):check\\$/\"",
     "lint:fix": "pnpm \"/^(biome|prettier):fix\\$/\"",
-    "knip": "pnpm dlx knip@6.11.0 --dependencies --no-gitignore",
+    "knip": "pnpm dlx knip@6.24.0 --dependencies --no-gitignore",
     "knip:check": "pnpm \"/^knip:(development|production)\\$/\"",
     "knip:development": "pnpm knip",
     "knip:production": "pnpm knip --production --strict",
