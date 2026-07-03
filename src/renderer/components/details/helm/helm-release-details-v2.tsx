@@ -3,9 +3,10 @@ import { Base64 } from "js-base64";
 import { dump } from "js-yaml";
 import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
-import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease-v2";
+import { HelmRelease, HelmReleaseSnapshot, type HelmReleaseStore } from "../../../k8s/fluxcd/helm/helmrelease-v2";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
+import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
 
@@ -19,6 +20,7 @@ const {
 
 const {
   Component: {
+    Badge,
     BadgeBoolean,
     DrawerItem,
     DrawerTitle,
@@ -59,6 +61,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
     const [valuesFromYaml, setValuesFromYaml] = useState<Record<string, string | undefined>>({});
 
     const namespace = object.metadata.namespace ?? "default";
+    const store = HelmRelease.getStore() as HelmReleaseStore;
 
     useEffect(() => {
       let mounted = true;
@@ -169,6 +172,45 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
             {object.status?.conditions?.[0].message}
           </DrawerItem>
+
+          {object.spec.dependsOn && (
+            <div>
+              <DrawerTitle>Depends On</DrawerTitle>
+              {object.spec.dependsOn.map((dependency) => {
+                const reference = store.getByName(dependency.name, dependency.namespace ?? namespace);
+                return (
+                  <div className="dependency" key={dependency.name + (dependency.namespace ?? "")}>
+                    <div className={styles.title}>
+                      <Icon small material="list" />
+                    </div>
+
+                    <DrawerItem name="Name">
+                      <LinkToObject objectRef={dependency} object={object} />
+                    </DrawerItem>
+                    <DrawerItem name="Namespace">
+                      <LinkToNamespace namespace={dependency.namespace ?? namespace} />
+                    </DrawerItem>
+                    <DrawerItem name="Revision" hidden={!reference?.status?.lastAppliedRevision}>
+                      {reference?.status?.lastAppliedRevision}
+                    </DrawerItem>
+                    <DrawerItem name="Condition" hidden={!reference}>
+                      {reference ? (
+                        <Badge
+                          className={getConditionClass(reference.status?.conditions)}
+                          label={getConditionText(reference.status?.conditions)}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </DrawerItem>
+                    <DrawerItem name="Status" hidden={!reference}>
+                      {reference && getStatusMessage(reference.status?.conditions)}
+                    </DrawerItem>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {object.spec.valuesFrom && (
             <div>
