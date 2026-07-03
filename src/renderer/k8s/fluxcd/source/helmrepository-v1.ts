@@ -28,6 +28,7 @@ export interface HelmRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   accessFrom?: AccessFrom;
   // source.toolkit.fluxcd.io/v1
   type?: "helm" | "oci";
+  provider?: "generic" | "aws" | "azure" | "gcp";
 }
 
 export interface HelmRepositoryStatus extends FluxCDKubeObjectStatus {

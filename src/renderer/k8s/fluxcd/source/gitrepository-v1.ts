@@ -21,6 +21,7 @@ export interface GitRepositoryInclude {
 export interface GitRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   url: string;
   secretRef?: LocalObjectReference;
+  provider?: "generic" | "aws" | "azure" | "github";
   interval: string;
   timeout?: string;
   ref?: GitRepositoryRef;

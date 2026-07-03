@@ -37,6 +37,7 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
           <DrawerItem name="Revision" hidden={!gitRevision}>
             {gitRevision}
           </DrawerItem>
+          <DrawerItem name="Authentication Provider">{object.spec.provider ?? "generic"}</DrawerItem>
           <DrawerItem name="Git Credentials" hidden={!object.spec.secretRef}>
             <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
           </DrawerItem>

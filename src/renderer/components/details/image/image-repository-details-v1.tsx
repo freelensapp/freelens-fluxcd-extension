@@ -31,6 +31,7 @@ export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetai
               </DrawerItem>
             ))}
           </DrawerItem>
+          <DrawerItem name="Authentication Provider">{object.spec.provider ?? "generic"}</DrawerItem>
           <DrawerItem name="Image Registry Credentials" hidden={!object.spec.secretRef}>
             <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
           </DrawerItem>

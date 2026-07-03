@@ -22,6 +22,9 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
         </DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
         <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>
+        <DrawerItem name="Authentication Provider" hidden={object.spec.type !== "oci" && !object.spec.provider}>
+          {object.spec.provider ?? "generic"}
+        </DrawerItem>
         <DrawerItem name="Authentication Credentials" hidden={!object.spec.secretRef}>
           <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
         </DrawerItem>

@@ -15,6 +15,7 @@ export interface ImageRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   interval: string;
   timeout?: string;
   secretRef?: LocalObjectReference;
+  provider?: "generic" | "aws" | "azure" | "gcp";
   serviceAccountName?: string;
   certSecretRef?: LocalObjectReference;
   suspend?: boolean;
