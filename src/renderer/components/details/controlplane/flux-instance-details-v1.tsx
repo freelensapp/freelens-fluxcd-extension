@@ -109,6 +109,9 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
         <DrawerTitle>Distribution</DrawerTitle>
         <DrawerItem name="Version">{object.spec.distribution.version}</DrawerItem>
         <DrawerItem name="Registry">{object.spec.distribution.registry}</DrawerItem>
+        <DrawerItem name="Variant" hidden={!object.spec.distribution.variant}>
+          {object.spec.distribution.variant}
+        </DrawerItem>
         <DrawerItem name="Image Pull Secret" hidden={!object.spec.distribution.imagePullSecret}>
           <LinkToSecret name={object.spec.distribution.imagePullSecret} namespace={namespace} />
         </DrawerItem>

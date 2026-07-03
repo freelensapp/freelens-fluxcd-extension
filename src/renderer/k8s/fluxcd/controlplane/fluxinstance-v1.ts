@@ -8,6 +8,7 @@ import type { History, ResourceInventory } from "../types";
 export interface Distribution {
   version: string;
   registry: string;
+  variant?: "upstream-alpine" | "enterprise-alpine" | "enterprise-distroless" | "enterprise-distroless-fips";
   imagePullSecret?: string;
   artifact?: string;
   artifactPullSecret?: string;
