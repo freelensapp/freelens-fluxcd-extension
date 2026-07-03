@@ -66,7 +66,7 @@
     "@electron-toolkit/tsconfig": "^2.0.0",
     "@freelensapp/extensions": "^1.10.2",
     "@freelensapp/kube-object": "^1.10.2",
-    "@types/chart.js": "^2.9.41",
+    "@types/chart.js": "^4.0.1",
     "@types/node": "^22.16.4",
     "@types/react": "^17.0.93",
     "@types/react-router-dom": "^5.3.3",

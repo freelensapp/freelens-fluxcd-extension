@@ -21,8 +21,8 @@ importers:
         specifier: ^1.10.2
         version: 1.10.2
       '@types/chart.js':
-        specifier: ^2.9.41
-        version: 2.9.41
+        specifier: ^4.0.1
+        version: 4.0.1
       '@types/node':
         specifier: ^22.16.4
         version: 22.16.4
@@ -1222,8 +1222,9 @@ packages:
   '@tybys/wasm-util@0.10.3':
     resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
 
-  '@types/chart.js@2.9.41':
-    resolution: {integrity: sha512-3dvkDvueckY83UyUXtJMalYoH6faOLkWQoaTlJgB4Djde3oORmNP0Jw85HtzTuXyliUHcdp704s0mZFQKio/KQ==}
+  '@types/chart.js@4.0.1':
+    resolution: {integrity: sha512-OwXJ6Eg14eFpCsTG6sljiGnvVpit5R9rapG7nwDnQlljsdplVIOYVuCSwy07IduCtihrOwvOnbhXKLyp3nvPcw==}
+    deprecated: This is a stub types definition. chart.js provides its own type definitions, so you do not need this installed.
 
   '@types/history@4.7.11':
     resolution: {integrity: sha512-qjDJRrmvBMiTx+jyLxvLfJU7UznFuokDv4f3WRuriHKERccVpFU+8XMQUAbDzoiJCsmexxRExQeMwwCdamSKDA==}
@@ -4398,9 +4399,9 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@types/chart.js@2.9.41':
+  '@types/chart.js@4.0.1':
     dependencies:
-      moment: 2.30.1
+      chart.js: 2.9.4
 
   '@types/history@4.7.11': {}
 
