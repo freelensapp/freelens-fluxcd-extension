@@ -17,7 +17,7 @@ import type {
 
 export interface Decryption {
   provider: string;
-  secretRef: LocalObjectReference;
+  secretRef?: LocalObjectReference;
 }
 
 export interface KubeConfig {
