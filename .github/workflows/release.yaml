@@ -13,7 +13,7 @@ jobs:
   release:
     name: release
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04-arm
     environment: publishing
 
     env:
@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout plugin
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Check if package version matches
         run: test "${GITHUB_REF_NAME}" = "v$(yq -r .version package.json)"
@@ -44,12 +44,12 @@ jobs:
         run: echo "pnpm_cache_dir=$(pnpm store path)" >> ${GITHUB_ENV}
 
       - name: Use pnpm cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.pnpm_cache_dir }}
-          key: ubuntu-22.04-x64-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ubuntu-24.04-arm-node-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ubuntu-22.04-x64-node-
+            ubuntu-24.04-arm-node-
 
       - name: Install pnpm dependencies
         id: install-pnpm
@@ -61,6 +61,18 @@ jobs:
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
 
       - name: Build packages
+        id: build-packages
+        run: pnpm --color=always --stream build
+        continue-on-error: true
+
+      - name: Build packages (retry)
+        id: build-packages-2
+        if: steps.build-packages.outcome == 'failure'
+        run: pnpm --color=always --stream build
+        continue-on-error: true
+
+      - name: Build packages (retry 2)
+        if: steps.build-packages-2.outcome == 'failure'
         run: pnpm --color=always --stream build
 
       - name: Pack packages
@@ -73,11 +85,17 @@ jobs:
             *-*) dist_tag=next;;
             *) dist_tag=latest;;
           esac
-          pnpm --color=always publish -r \
-            --no-git-checks \
-            --tag ${dist_tag}
+          if [[ -n ${NPM_TOKEN:-} ]]; then
+            NODE_AUTH_TOKEN="${NPM_TOKEN}" pnpm --color=always publish -r \
+              --no-git-checks \
+              --tag ${dist_tag}
+          else
+            NPM_CONFIG_PROVENANCE=true pnpm --color=always publish -r \
+              --no-git-checks \
+              --tag ${dist_tag}
+          fi
         env:
-          NPM_CONFIG_PROVENANCE: "true"
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         continue-on-error: true
 
       - name: Publish npm packages (retry)
@@ -88,11 +106,17 @@ jobs:
             *-*) dist_tag=next;;
             *) dist_tag=latest;;
           esac
-          pnpm --color=always publish -r \
-            --no-git-checks \
-            --tag ${dist_tag}
+          if [[ -n ${NPM_TOKEN:-} ]]; then
+            NODE_AUTH_TOKEN="${NPM_TOKEN}" pnpm --color=always publish -r \
+              --no-git-checks \
+              --tag ${dist_tag}
+          else
+            NPM_CONFIG_PROVENANCE=true pnpm --color=always publish -r \
+              --no-git-checks \
+              --tag ${dist_tag}
+          fi
         env:
-          NPM_CONFIG_PROVENANCE: "true"
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         continue-on-error: true
 
       - name: Publish npm packages (retry 2)
@@ -102,11 +126,39 @@ jobs:
             *-*) dist_tag=next;;
             *) dist_tag=latest;;
           esac
-          pnpm --color=always publish -r \
-            --no-git-checks \
-            --tag ${dist_tag}
+          if [[ -n ${NPM_TOKEN:-} ]]; then
+            NODE_AUTH_TOKEN="${NPM_TOKEN}" pnpm --color=always publish -r \
+              --no-git-checks \
+              --tag ${dist_tag}
+          else
+            NPM_CONFIG_PROVENANCE=true pnpm --color=always publish -r \
+              --no-git-checks \
+              --tag ${dist_tag}
+          fi
         env:
-          NPM_CONFIG_PROVENANCE: "true"
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx-json
+          output-file: sbom.spdx.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          upload-release-assets: false
+
+      - name: Normalize SBOM filename
+        shell: bash
+        run: |
+          for f in *.tgz; do
+            mv sbom.spdx.json "${f%.tgz}-spdx.json"
+          done
+
+      - name: Make checksums
+        shell: bash
+        run: |
+          for f in *.tgz *-spdx.json; do
+            sha256sum "$f" | tee "$f.sha256"
+          done
 
       - name: Create release
         uses: softprops/action-gh-release@v3
@@ -114,3 +166,6 @@ jobs:
           fail_on_unmatched_files: true
           files: |-
             *.tgz
+            *.tgz.sha256
+            *-spdx.json
+            *-spdx.json.sha256

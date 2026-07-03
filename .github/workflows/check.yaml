@@ -16,12 +16,12 @@ jobs:
   knip:
     name: check
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup node
         uses: actions/setup-node@v6
@@ -37,12 +37,12 @@ jobs:
         run: echo "pnpm_cache_dir=$(pnpm store path)" >> ${GITHUB_ENV}
 
       - name: Use pnpm cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.pnpm_cache_dir }}
-          key: ubuntu-22.04-x64-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ubuntu-24.04-arm-node-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ubuntu-22.04-x64-node-
+            ubuntu-24.04-arm-node-
 
       - name: Install pnpm dependencies
         id: install-pnpm
@@ -54,6 +54,18 @@ jobs:
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
 
       - name: Build packages
+        id: build-packages
+        run: pnpm --color=always --stream build:production
+        continue-on-error: true
+
+      - name: Build packages (retry)
+        id: build-packages-2
+        if: steps.build-packages.outcome == 'failure'
+        run: pnpm --color=always --stream build:production
+        continue-on-error: true
+
+      - name: Build packages (retry 2)
+        if: steps.build-packages-2.outcome == 'failure'
         run: pnpm --color=always --stream build:production
 
       - name: Check types

@@ -35,6 +35,13 @@
     "react-router-dom",
   ],
   "packageRules": [
+    // group all @freelensapp/* updates into one PR
+    {
+      "matchPackageNames": [
+        "@freelensapp/**"
+      ],
+      "groupName": "freelensapp"
+    },
     // peerDependencies are widen
     {
       "matchDepTypes": [
@@ -43,17 +50,9 @@
       "rangeStrategy": "widen",
       "semanticCommitScope": "peer-deps"
     },
-    // keep Freelens packages in a single update PR
-    {
-      "matchPackageNames": [
-        "@freelensapp/*"
-      ],
-      "groupName": "@freelensapp packages"
-    },
     // non-major updates only
     {
       "matchDepNames": [
-        "@types/chart.js",
         "@types/react",
         "npm",
       ],
@@ -61,6 +60,14 @@
         "major"
       ],
       "enabled": false
+    },
+    // @testing-library/react v13+ drops React 17 support (requires react-dom/client
+    // from React 18+); this extension must stay on React 17 to match the Freelens host
+    {
+      "matchDepNames": [
+        "@testing-library/react",
+      ],
+      "allowedVersions": "<13"
     },
     // patch updates only
     {
@@ -72,6 +79,15 @@
         "minor"
       ],
       "enabled": false
+    },
+    // postupdate script
+    {
+      "matchDepNames": [
+        "@biomejs/biome",
+      ],
+      "postUpdateOptions": [
+        "runScripts"
+      ]
     }
   ],
   "customManagers": [
@@ -108,11 +124,11 @@
       "extractVersionTemplate": "^v?(?<version>.*)$",
       "managerFilePatterns": [
         "/^\\.github/workflows/.*\\.ya?ml$/",
-        "/^\\.trunk/trunk.yaml/",
+        "/^\\.trunk/trunk.yaml$/",
         "/^\\.tool-versions$/"
       ],
       "matchStrings": [
-        "(\\s+|.*?@)(?<currentValue>\\S+)\\s*#\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?(\\s+registryUrl=(?<registryUrl>\\S+))?\\s*\\n"
+        "(\\s+|.*?@)(?<currentValue>\\S+?)!?\\s*#\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?(\\s+registryUrl=(?<registryUrl>\\S+))?\\s*\\n"
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
     }

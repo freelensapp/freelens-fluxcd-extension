@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 env:
-  kind_version: 0.31.0 # datasource=github-releases depName=kubernetes-sigs/kind
-  kubernetes_version: 1.35.1 # datasource=docker depName=kindest/node
+  kind_version: 0.32.0 # datasource=github-releases depName=kubernetes-sigs/kind
+  kubernetes_version: 1.36.1 # datasource=docker depName=kindest/node
 
 jobs:
   test-integration:
@@ -24,10 +24,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - freelens_version: v1.9.0
-          - freelens_version: main
+          - freelens_version: v1.10.0
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
 
     env:
@@ -40,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout plugin
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup node
         uses: actions/setup-node@v6
@@ -55,7 +54,7 @@ jobs:
         run: echo "pnpm_cache_dir=$(pnpm store path)" >> ${GITHUB_ENV}
 
       - name: Use pnpm cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.pnpm_cache_dir }}
           key: node-freelens-${{ matrix.freelens_version }}-${{ hashFiles('pnpm-lock.yaml') }}
@@ -72,6 +71,18 @@ jobs:
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
 
       - name: Build plugin
+        id: build-plugin
+        run: pnpm build
+        continue-on-error: true
+
+      - name: Build plugin (retry)
+        id: build-plugin-2
+        if: steps.build-plugin.outcome == 'failure'
+        run: pnpm build
+        continue-on-error: true
+
+      - name: Build plugin (retry 2)
+        if: steps.build-plugin-2.outcome == 'failure'
         run: pnpm build
 
       - name: Pack plugin
@@ -82,7 +93,7 @@ jobs:
 
       - name: Checkout app
         if: matrix.freelens_version != 'latest'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: freelensapp/freelens
           ref: ${{ matrix.freelens_version }}
@@ -104,44 +115,60 @@ jobs:
         run: echo "playwright_version=$(yq -r .importers.freelens.devDependencies.playwright.version freelens/pnpm-lock.yaml | sed 's/(.*)//')" >> $GITHUB_ENV
 
       - name: Use Electron cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.ELECTRON_CACHE }}
-          key: ubuntu-22.04-x64-electron-${{ env.electron_version }}
+          key: ubuntu-24.04-arm-electron-${{ env.electron_version }}
           restore-keys: |
-            ubuntu-22.04-x64-electron-
+            ubuntu-24.04-arm-electron-
 
       - name: Use Electron Builder cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.ELECTRON_BUILDER_CACHE }}
-          key: ubuntu-22.04-x64-electron-builder-${{ env.electron_builder_version }}
+          key: ubuntu-24.04-arm-electron-builder-${{ env.electron_builder_version }}
           restore-keys: |
-            ubuntu-22.04-x64-electron-builder-
+            ubuntu-24.04-arm-electron-builder-
 
       - name: Use Electron headers cache
         id: electron-headers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.ELECTRON_HEADERS_CACHE }}
           key: electron-headers-${{ env.electron_version }}
 
       - name: Use Playwright cache
         id: playwright-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
-          key: ubuntu-22.04-x64-playwright-${{ env.playwright_version }}
+          key: ubuntu-24.04-arm-playwright-${{ env.playwright_version }}
           restore-keys: |
-            ubuntu-22.04-x64-playwright-
+            ubuntu-24.04-arm-playwright-
 
       - name: Use Turborepo cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.TURBOREPO_CACHE }}
-          key: ubuntu-22.04-x64-turborepo-${{ hashFiles('freelens/**/package.json', 'freelens/**/pnpm-lock.yaml', 'freelens/turbo.json') }}
+          key: ubuntu-24.04-arm-turborepo-${{ hashFiles('freelens/**/package.json', 'freelens/**/pnpm-lock.yaml', 'freelens/turbo.json') }}
           restore-keys: |
-            ubuntu-22.04-x64-turborepo-
+            ubuntu-24.04-arm-turborepo-
+
+      # The packaged Electron app does not depend on the extension under test
+      # (the extension .tgz is installed at runtime by the integration tests),
+      # so the build output is deterministic for a given Freelens version and
+      # Electron/electron-builder version. Restore it to skip the expensive app
+      # build, native rebuild, prod node_modules deploy and electron-builder run
+      # on a cache hit. The cache key is exact (no restore-keys) so a partial
+      # match never produces a stale or incomplete dist directory. The matching
+      # save step runs only after a successful build, so a failed build never
+      # poisons the cache with an incomplete dist.
+      - name: Restore Electron build cache
+        id: electron-build-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: freelens/freelens/dist
+          key: ubuntu-24.04-arm-electron-dist-${{ matrix.freelens_version }}-${{ env.electron_version }}-${{ env.electron_builder_version }}
 
       - name: Delete node packages from the previous build to avoid issues with pnpm
         run: rm -rf pnpm-lock.yaml node_modules
@@ -165,7 +192,7 @@ jobs:
         run: pnpm config set enablePrePostScripts false
 
       - name: Install Electron headers
-        if: steps.electron-headers.outputs.cache-hit != 'true'
+        if: steps.electron-build-cache.outputs.cache-hit != 'true' && steps.electron-headers.outputs.cache-hit != 'true'
         run: |
           set -eo pipefail
           mkdir -p $ELECTRON_HEADERS_CACHE
@@ -174,14 +201,15 @@ jobs:
       - name: Install Playwright with dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         working-directory: freelens
-        run: pnpx playwright install --with-deps
+        run: pnpx playwright install --with-deps chromium
 
       - name: Install Playwright's dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         working-directory: freelens
-        run: pnpx playwright install-deps
+        run: pnpx playwright install-deps chromium
 
       - name: Build app
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
         working-directory: freelens
         run: pnpm --color=always --stream build
 
@@ -201,35 +229,39 @@ jobs:
 
       - name: Build extra resources
         id: build-resources
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
         working-directory: freelens
         run: pnpm --color=always build:resources
         continue-on-error: true
 
       - name: Build extra resources (retry)
         id: build-resources-2
-        if: steps.build-resources.outcome == 'failure'
+        if: steps.electron-build-cache.outputs.cache-hit != 'true' && steps.build-resources.outcome == 'failure'
         working-directory: freelens
         run: pnpm --color=always build:resources
         continue-on-error: true
 
       - name: Build extra resources (retry 2)
-        if: steps.build-resources-2.outcome == 'failure'
+        if: steps.electron-build-cache.outputs.cache-hit != 'true' && steps.build-resources-2.outcome == 'failure'
         working-directory: freelens
         run: pnpm --color=always build:resources
 
       - name: Rebuild native packages for Electron
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
         working-directory: freelens
-        run: pnpm --color=always electron-rebuild -a x64
+        run: pnpm --color=always electron-rebuild -a arm64
         env:
           npm_package_config_node_gyp_tarball: ${{ env.ELECTRON_HEADERS_CACHE }}/node-v${{ env.electron_version }}-headers.tar.gz
 
       - name: Get electron-builder path
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
         working-directory: freelens/freelens
         run: |
           EB_PATH=$(node -e "console.log(require.resolve('electron-builder/cli'))")
           echo "ELECTRON_BUILDER_PATH=$EB_PATH" >> $GITHUB_ENV
 
       - name: Deploy production node_modules
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
         working-directory: freelens
         run: |
           pnpm deploy --legacy --prod --filter=freelens freelens/node_modules_prod
@@ -237,24 +269,36 @@ jobs:
           mv freelens/node_modules_prod freelens/node_modules
 
       - name: Build Electron app
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
         working-directory: freelens/freelens
-        run: node "$ELECTRON_BUILDER_PATH" --publish never --linux dir --x64
+        run: node "$ELECTRON_BUILDER_PATH" --publish never --linux dir --arm64
         env:
           DEBUG: electron-builder,electron-builder:*
           npm_config_user_agent: pnpm
 
+      # Save only after a successful build (this step is not reached if the
+      # electron-builder run above failed), so the cache never holds a partial
+      # dist directory.
+      - name: Save Electron build cache
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: freelens/freelens/dist
+          key: ${{ steps.electron-build-cache.outputs.cache-primary-key }}
+
       - name: Restore dev node_modules
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
         working-directory: freelens
         run: |
-          mv freelens/node_modules freelens/node_modules_prod
+          rm -rf freelens/node_modules
           mv freelens/node_modules_dev freelens/node_modules
 
       - name: Run integration tests
         id: integration-tests-linux
         working-directory: freelens
         run: |
-          sudo chown root:root freelens/dist/linux-unpacked/chrome-sandbox
-          sudo chmod 4755 freelens/dist/linux-unpacked/chrome-sandbox
+          sudo chown root:root freelens/dist/linux*-unpacked/chrome-sandbox
+          sudo chmod 4755 freelens/dist/linux*-unpacked/chrome-sandbox
           timeout 600 xvfb-run -a pnpm --color=always test:integration
         env:
           DEBUG: pw:browser
@@ -264,8 +308,8 @@ jobs:
         if: steps.integration-tests-linux.outcome == 'failure'
         working-directory: freelens
         run: |
-          sudo chown root:root freelens/dist/linux-unpacked/chrome-sandbox
-          sudo chmod 4755 freelens/dist/linux-unpacked/chrome-sandbox
+          sudo chown root:root freelens/dist/linux*-unpacked/chrome-sandbox
+          sudo chmod 4755 freelens/dist/linux*-unpacked/chrome-sandbox
           timeout 600 xvfb-run -a pnpm --color=always test:integration
         env:
           DEBUG: pw:browser

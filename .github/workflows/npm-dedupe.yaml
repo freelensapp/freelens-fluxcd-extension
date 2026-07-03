@@ -17,7 +17,7 @@ jobs:
   npm-dedupe:
     name: npm dedupe
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04-arm
     environment: automated
     timeout-minutes: 10
 
@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
@@ -44,12 +44,12 @@ jobs:
         run: echo "pnpm_cache_dir=$(pnpm store path)" >> ${GITHUB_ENV}
 
       - name: Use pnpm cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.pnpm_cache_dir }}
-          key: ubuntu-22.04-x64-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ubuntu-24.04-arm-node-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ubuntu-22.04-x64-node-
+            ubuntu-24.04-arm-node-
 
       - name: Install pnpm dependencies
         id: install-pnpm
