@@ -46,6 +46,7 @@
     "knip:check": "pnpm \"/^knip:(development|production)\\$/\"",
     "knip:development": "pnpm knip",
     "knip:production": "pnpm knip --production --strict",
+    "test:unit": "vitest run",
     "type:check": "tsc --noEmit -p tsconfig.json --composite false",
     "prebuild": "pnpm type:check",
     "build": "electron-vite build",
@@ -81,7 +82,8 @@
     "sass": "^1.101.0",
     "typescript": "5.9.3",
     "vite": "^8.1.3",
-    "vite-plugin-sass-dts": "^1.3.37"
+    "vite-plugin-sass-dts": "^1.3.37",
+    "vitest": "^4.1.9"
   },
   "keywords": [
     "extension",
