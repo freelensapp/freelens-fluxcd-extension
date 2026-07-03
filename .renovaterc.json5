@@ -69,6 +69,15 @@
       ],
       "allowedVersions": "<13"
     },
+    // @types/chart.js must stay on v2 to match the chart.js v2 bundled in the
+    // Freelens host; v3+ are deprecated stub types that do not describe the v2
+    // PieChart API used via @freelensapp/extensions
+    {
+      "matchDepNames": [
+        "@types/chart.js",
+      ],
+      "allowedVersions": "<3"
+    },
     // patch updates only
     {
       "matchDepNames": [
