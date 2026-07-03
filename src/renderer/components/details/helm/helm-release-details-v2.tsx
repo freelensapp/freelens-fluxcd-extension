@@ -11,6 +11,7 @@ import styles from "./helm-release-details.module.scss";
 import stylesInline from "./helm-release-details.module.scss?inline";
 
 import type { Patch } from "../../../k8s/core/types";
+import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 
 const { observer } = MobxReact;
 
@@ -178,6 +179,11 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
               <DrawerTitle>Depends On</DrawerTitle>
               {object.spec.dependsOn.map((dependency) => {
                 const reference = store.getByName(dependency.name, dependency.namespace ?? namespace);
+                const dependencyRef: NamespacedObjectKindReference = {
+                  ...dependency,
+                  kind: HelmRelease.kind,
+                  apiVersion: HelmRelease.crd.apiVersions[0],
+                };
                 return (
                   <div className="dependency" key={dependency.name + (dependency.namespace ?? "")}>
                     <div className={styles.title}>
@@ -185,7 +191,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                     </div>
 
                     <DrawerItem name="Name">
-                      <LinkToObject objectRef={dependency} object={object} />
+                      <LinkToObject objectRef={dependencyRef} object={object} />
                     </DrawerItem>
                     <DrawerItem name="Namespace">
                       <LinkToNamespace namespace={dependency.namespace ?? namespace} />
