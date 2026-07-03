@@ -62,7 +62,6 @@ lint:
     - biome@2.1.1! # datasource=npm depName=@biomejs/biome
     - git-diff-check
     - markdownlint@0.48.0
-    - oxipng@10.1.1
     - prettier@3.6.2! # datasource=npm depName=prettier
     - svgo@4.0.1
     - taplo@0.10.0
@@ -73,6 +72,7 @@ lint:
     - eslint
     - grype
     - osv-scanner
+    - oxipng
     - renovate
     - trufflehog
 actions:
