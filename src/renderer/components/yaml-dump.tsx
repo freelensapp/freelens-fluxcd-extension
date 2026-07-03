@@ -1,5 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-import yaml from "js-yaml";
+import { dump } from "js-yaml";
 import * as MobxReact from "mobx-react";
 import { defaultYamlDumpOptions, getHeight } from "../utils";
 import styles from "./yaml-dump.module.scss";
@@ -12,7 +12,7 @@ const {
 } = Renderer;
 
 export function yamlDump(data: any): string {
-  return yaml.dump(data, defaultYamlDumpOptions).replace(/[\r\n]+$/, "");
+  return dump(data, defaultYamlDumpOptions).replace(/[\r\n]+$/, "");
 }
 
 export interface YamlDumpProps {
@@ -22,7 +22,7 @@ export interface YamlDumpProps {
 export const YamlDump: React.FC<YamlDumpProps> = observer((props) => {
   const { data } = props;
 
-  const dataDump = yaml.dump(data, defaultYamlDumpOptions).replace(/[\r\n]+$/, "");
+  const dataDump = dump(data, defaultYamlDumpOptions).replace(/[\r\n]+$/, "");
 
   return (
     <>

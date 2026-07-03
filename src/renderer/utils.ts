@@ -30,10 +30,9 @@ export function getHeight(data?: string): number {
 }
 
 export const defaultYamlDumpOptions: DumpOptions = {
-  noArrayIndent: true,
-  noCompatMode: true,
+  seqNoIndent: true,
   noRefs: true,
-  quotingType: '"',
+  quoteStyle: "double",
   sortKeys: true,
 };
 

@@ -1,6 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { Base64 } from "js-base64";
-import yaml from "js-yaml";
+import { dump } from "js-yaml";
 import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease-v2beta1";
@@ -86,7 +86,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
       };
     }, [object]);
 
-    const valuesYaml = yaml.dump(object.spec.values, defaultYamlDumpOptions);
+    const valuesYaml = dump(object.spec.values, defaultYamlDumpOptions);
 
     const images = object.spec.postRenderers
       ?.filter((a) => a?.kustomize)
