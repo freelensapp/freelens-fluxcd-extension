@@ -15,9 +15,6 @@ export interface ImageRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   interval: string;
   timeout?: string;
   secretRef?: LocalObjectReference;
-  // Provider used for authentication, defaults to "generic".
-  // Upstream: fluxcd/image-reflector-controller api/v1/imagerepository_types.go, ImageRepositorySpec.Provider
-  // +kubebuilder:validation:Enum=generic;aws;azure;gcp
   provider?: "generic" | "aws" | "azure" | "gcp";
   serviceAccountName?: string;
   certSecretRef?: LocalObjectReference;
