@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 
 import type { LocalObjectReference } from "@freelensapp/kube-object";
 
-import type { AccessFrom, Artifact, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
+import type { Artifact, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
 
 export interface GitRepositoryRef {
   branch?: string;
@@ -28,14 +28,11 @@ export interface GitRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   verify?: { mode?: string; secretRef?: LocalObjectReference };
   ignore?: string;
   suspend?: boolean;
-  gitImplementation?: "go-git" | "libgit2";
   recurseSubmodules?: boolean;
   include?: GitRepositoryInclude[];
-  accessFrom?: AccessFrom;
 }
 
 export interface GitRepositoryStatus extends FluxCDKubeObjectStatus {
-  url?: string;
   artifact?: Artifact;
   includedArtifacts?: Artifact[];
 }

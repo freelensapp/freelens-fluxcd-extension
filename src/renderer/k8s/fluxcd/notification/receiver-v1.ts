@@ -23,9 +23,7 @@ export interface ReceiverSpec extends FluxCDKubeObjectSpecWithSuspend {
   suspend?: boolean;
 }
 
-export interface ReceiverStatus extends FluxCDKubeObjectStatus {
-  url?: string;
-}
+export interface ReceiverStatus extends FluxCDKubeObjectStatus {}
 
 export class Receiver extends Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,

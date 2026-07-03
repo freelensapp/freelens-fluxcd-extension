@@ -46,7 +46,6 @@ export interface OCIRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
 export interface OCIRepositoryStatus extends FluxCDKubeObjectStatus {
   url?: string;
   artifact?: Artifact;
-  contentConfigChecksum?: string;
   observedIgnore?: string;
   observedLayerSelector?: OCILayerSelector;
 }

@@ -20,7 +20,6 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   repository: (object: KubeObject) => object.spec.imageRepositoryRef.name,
-  latestTag: (object: KubeObject) => object.status?.latestImage?.split(":")[1],
   condition: (object: KubeObject) => getConditionText(object.status?.conditions),
   status: (object: KubeObject) => getConditionText(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -30,7 +29,6 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
   { title: "Repository", sortBy: "repository", className: styles.repository },
-  { title: "Latest Tag", sortBy: "latestTag", className: styles.latestTag },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -59,7 +57,6 @@ export const ImagePoliciesPage = observer((props: ImagePoliciesPageProps) =>
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
             <WithTooltip>{object.spec.imageRepositoryRef.name}</WithTooltip>,
-            <WithTooltip>{object.status?.latestImage?.split(":")[1]}</WithTooltip>,
             <Badge
               className={getConditionClass(object.status?.conditions)}
               label={getConditionText(object.status?.conditions)}

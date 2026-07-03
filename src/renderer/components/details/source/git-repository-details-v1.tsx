@@ -3,7 +3,6 @@ import * as MobxReact from "mobx-react";
 import React from "react";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1";
 import { getHeight } from "../../../utils";
-import { SpecAccessFrom } from "../../spec-access-from";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./git-repository-details.module.scss";
 import stylesInline from "./git-repository-details.module.scss?inline";
@@ -63,11 +62,7 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
               }}
             />
           </DrawerItem>
-          <DrawerItem name="Git Implementation">{object.spec.gitImplementation ?? "go-git"}</DrawerItem>
-          <DrawerItem
-            name="Recurse Submodules"
-            hidden={object.spec.gitImplementation && object.spec.gitImplementation !== "go-git"}
-          >
+          <DrawerItem name="Recurse Submodules">
             <BadgeBoolean value={object.spec.recurseSubmodules ?? false} />
           </DrawerItem>
 
@@ -91,8 +86,6 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
               })}
             </div>
           )}
-
-          <SpecAccessFrom accessFrom={object.spec.accessFrom} />
 
           <StatusArtifact artifact={object.status?.artifact} />
         </div>

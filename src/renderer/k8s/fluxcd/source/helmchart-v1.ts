@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { AccessFrom, Artifact, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
+import type { Artifact, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
 
 export interface LocalHelmChartSourceReference {
   apiVersion?: string;
@@ -15,9 +15,7 @@ export interface HelmChartSpec extends FluxCDKubeObjectSpecWithSuspend {
   interval: string;
   reconcileStrategy?: "ChartVersion" | "Revision";
   valuesFiles?: string[];
-  valuesFile?: string;
   suspend?: boolean;
-  accessFrom?: AccessFrom;
 }
 
 export interface HelmChartStatus extends FluxCDKubeObjectStatus {
