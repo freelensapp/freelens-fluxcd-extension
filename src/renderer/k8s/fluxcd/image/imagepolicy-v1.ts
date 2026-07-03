@@ -31,9 +31,7 @@ export interface ImagePolicySpec {
   filterTags?: TagFilter;
 }
 
-export interface ImagePolicyStatus extends FluxCDKubeObjectStatus {
-  latestImage?: string;
-}
+export interface ImagePolicyStatus extends FluxCDKubeObjectStatus {}
 
 export class ImagePolicy extends Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,
