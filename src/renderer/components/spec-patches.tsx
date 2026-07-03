@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { checksum } from "../utils";
+import { createHash } from "../utils";
 import styles from "./spec-patches.module.scss";
 import stylesInline from "./spec-patches.module.scss?inline";
 import { YamlDump } from "./yaml-dump";
@@ -30,7 +30,7 @@ export const SpecPatches: React.FC<SpecPatchesProps> = observer((props) => {
         if (!patch) return null;
 
         return (
-          <div key={checksum(patch)}>
+          <div key={createHash(patch)}>
             <div className={styles.title}>
               <Icon small material="list" /> {index + 1}
             </div>

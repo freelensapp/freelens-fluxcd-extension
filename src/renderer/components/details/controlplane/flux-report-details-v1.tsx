@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
-import { checksum, createEnumFromKeys } from "../../../utils";
+import { createEnumFromKeys, createHash } from "../../../utils";
 import styles from "./flux-report-details.module.scss";
 import stylesInline from "./flux-report-details.module.scss?inline";
 
@@ -94,7 +94,7 @@ export const FluxReportDetails: React.FC<Renderer.Component.KubeObjectDetailsPro
         <>
           <DrawerTitle>Components</DrawerTitle>
           {object.spec.components.map((component) => {
-            const key = checksum(component);
+            const key = createHash(component);
             return (
               <div key={key}>
                 <div className={styles.title}>
@@ -140,7 +140,7 @@ export const FluxReportDetails: React.FC<Renderer.Component.KubeObjectDetailsPro
               <TableCell className="totalSize">Total Size</TableCell>
             </TableHead>
             {object.spec.reconcilers.map((reconciler) => {
-              const key = checksum(reconciler);
+              const key = createHash(reconciler);
               return (
                 <TableRow key={key} sortItem={reconciler} nowrap>
                   <TableCell className="kind">

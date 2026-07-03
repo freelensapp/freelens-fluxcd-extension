@@ -1,7 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
-import { checksum, createEnumFromKeys } from "../../../utils";
+import { createEnumFromKeys, createHash } from "../../../utils";
 import { YamlDump } from "../../yaml-dump";
 import styles from "./resource-set-input-provider-details.module.scss";
 import stylesInline from "./resource-set-input-provider-details.module.scss?inline";
@@ -185,7 +185,7 @@ export const ResourceSetInputProviderDetails: React.FC<
         <div className={styles.exportedInputs}>
           <DrawerTitle>Exported Inputs</DrawerTitle>
           {object.status.exportedInputs.map((input, index) => (
-            <div key={checksum(input)}>
+            <div key={createHash(input)}>
               <div className={styles.title}>
                 <Icon small material="list" />
                 <span>{index + 1}</span>
