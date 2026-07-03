@@ -8,12 +8,10 @@ import type {
   FluxCDKubeObjectSpecWithSuspend,
   FluxCDKubeObjectStatus,
   Image,
-  JSON6902Patch,
   KubeConfigReference,
   NamespacedObjectKindReference,
   NamespacedObjectReference,
   ResourceInventory,
-  Snapshot,
 } from "../types";
 
 export interface Decryption {
@@ -42,22 +40,18 @@ export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   prune: boolean;
   healthChecks?: NamespacedObjectKindReference[];
   patches?: Patch[];
-  patchesStrategicMerge?: string[];
-  patchesJson6902: JSON6902Patch[];
   images: Image[];
   serviceAccountName?: string;
   sourceRef: NamespacedObjectKindReference;
   suspend?: boolean;
   targetNamespace?: string;
   timeout?: string;
-  validation?: "client" | "server" | "none";
   force?: boolean;
 }
 
 export interface KustomizationStatus extends FluxCDKubeObjectStatus {
   lastAppliedRevision?: string;
   lastAttemptedRevision?: string;
-  snapshot: Snapshot;
   inventory?: ResourceInventory;
 }
 

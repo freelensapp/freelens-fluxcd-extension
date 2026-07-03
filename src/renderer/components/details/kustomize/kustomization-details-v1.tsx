@@ -1,5 +1,4 @@
 import { Common, Renderer } from "@freelensapp/extensions";
-import crypto from "crypto";
 import { Base64 } from "js-base64";
 import { dump } from "js-yaml";
 import * as MobxReact from "mobx-react";
@@ -184,97 +183,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           )}
 
           <SpecPatches patches={object.spec.patches} />
-
-          {object.spec.patchesStrategicMerge && (
-            <div>
-              <DrawerTitle>Patches: Strategic Merge</DrawerTitle>
-              {object.spec.patchesStrategicMerge.map((patch) => {
-                const key = crypto.createHash("sha256").update(JSON.stringify(patch)).digest("hex").substring(0, 16);
-
-                return (
-                  <div key={key}>
-                    <div className={styles.title}>
-                      <Icon small material="list" />
-                    </div>
-                    <MonacoEditor
-                      readOnly
-                      style={{
-                        minHeight: getHeight(patch),
-                        resize: "none",
-                        overflow: "hidden",
-                        border: "1px solid var(--borderFaintColor)",
-                        borderRadius: "4px",
-                      }}
-                      value={patch}
-                      setInitialHeight
-                      options={{
-                        scrollbar: {
-                          alwaysConsumeMouseWheel: false,
-                        },
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {object.spec.patchesJson6902 && (
-            <div>
-              <DrawerTitle>Patches: RFC 6902</DrawerTitle>
-              {object.spec.patchesJson6902.map((patch) => {
-                const patchYaml = dump(patch.patch, defaultYamlDumpOptions);
-                const key = crypto.createHash("sha256").update(JSON.stringify(patch)).digest("hex").substring(0, 16);
-
-                return (
-                  <div key={key}>
-                    <div className={styles.title}>
-                      <Icon small material="list" />
-                    </div>
-                    <DrawerItem name="Group" hidden={!patch.target?.group}>
-                      {patch.target?.group}
-                    </DrawerItem>
-                    <DrawerItem name="Version" hidden={!patch.target?.version}>
-                      {patch.target?.version}
-                    </DrawerItem>
-                    <DrawerItem name="Kind" hidden={!patch.target?.kind}>
-                      {patch.target?.kind}
-                    </DrawerItem>
-                    <DrawerItem name="Name" hidden={!patch.target?.name}>
-                      {patch.target?.name}
-                    </DrawerItem>
-                    <DrawerItem name="Namespace" hidden={!patch.target?.namespace}>
-                      {patch.target?.namespace}
-                    </DrawerItem>
-                    <DrawerItem name="Label Selector" hidden={!patch.target?.labelSelector}>
-                      {patch.target?.labelSelector}
-                    </DrawerItem>
-                    <DrawerItem name="Annotation Selector" hidden={!patch.target?.annotationSelector}>
-                      {patch.target?.annotationSelector}
-                    </DrawerItem>
-                    <div className="DrawerItem">Patch</div>
-                    <MonacoEditor
-                      readOnly
-                      style={{
-                        minHeight: getHeight(patchYaml),
-                        resize: "none",
-                        overflow: "hidden",
-                        border: "1px solid var(--borderFaintColor)",
-                        borderRadius: "4px",
-                      }}
-                      value={patchYaml}
-                      setInitialHeight
-                      options={{
-                        scrollbar: {
-                          alwaysConsumeMouseWheel: false,
-                        },
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          )}
 
           {object.spec.images && (
             <div>
