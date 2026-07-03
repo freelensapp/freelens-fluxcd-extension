@@ -23,9 +23,6 @@ importers:
       '@types/chart.js':
         specifier: ^2.9.41
         version: 2.9.41
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
       '@types/node':
         specifier: ^22.16.4
         version: 22.16.4
@@ -1190,9 +1187,6 @@ packages:
 
   '@types/hoist-non-react-statics@3.3.6':
     resolution: {integrity: sha512-lPByRJUer/iN/xa4qpyL0qmL11DqNW81iU/IG1S3uvRUq4oKagz8VCxZjiWkumgt66YT3vOdDgZ0o32sGKtCEw==}
-
-  '@types/js-yaml@4.0.9':
-    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
 
   '@types/node@22.16.4':
     resolution: {integrity: sha512-PYRhNtZdm2wH/NT2k/oAJ6/f2VD2N2Dag0lGlx2vWgMSJXGNmlce5MiTQzoWAiIJtso30mjnfQCOKVH+kAQC/g==}
@@ -4322,8 +4316,6 @@ snapshots:
     dependencies:
       '@types/react': 17.0.91
       hoist-non-react-statics: 3.3.2
-
-  '@types/js-yaml@4.0.9': {}
 
   '@types/node@22.16.4':
     dependencies:

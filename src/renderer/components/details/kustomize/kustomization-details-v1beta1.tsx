@@ -1,7 +1,7 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import crypto from "crypto";
 import { Base64 } from "js-base64";
-import yaml from "js-yaml";
+import { dump } from "js-yaml";
 import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization-v1beta1";
@@ -86,7 +86,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             }
           }
 
-          substituteFromYamlResult[`${namespace}/${name}`] = yaml.dump(variablesFrom, defaultYamlDumpOptions).trimEnd();
+          substituteFromYamlResult[`${namespace}/${name}`] = dump(variablesFrom, defaultYamlDumpOptions).trimEnd();
         }
 
         if (mounted) setSubstituteFromYaml(substituteFromYamlResult);
@@ -98,8 +98,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
 
     const sourceRefUrl = Kustomization.getSourceRefUrl(object);
     const substituteYaml =
-      object.spec.postBuild?.substitute &&
-      yaml.dump(object.spec.postBuild?.substitute, defaultYamlDumpOptions).trimEnd();
+      object.spec.postBuild?.substitute && dump(object.spec.postBuild?.substitute, defaultYamlDumpOptions).trimEnd();
 
     return (
       <>
@@ -219,7 +218,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             <div>
               <DrawerTitle>Patches: RFC 6902</DrawerTitle>
               {object.spec.patchesJson6902.map((patch) => {
-                const patchYaml = yaml.dump(patch.patch, defaultYamlDumpOptions);
+                const patchYaml = dump(patch.patch, defaultYamlDumpOptions);
                 const key = crypto.createHash("sha256").update(JSON.stringify(patch)).digest("hex").substring(0, 16);
 
                 return (

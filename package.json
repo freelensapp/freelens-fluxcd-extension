@@ -67,7 +67,6 @@
     "@freelensapp/extensions": "^1.10.2",
     "@freelensapp/kube-object": "^1.10.2",
     "@types/chart.js": "^2.9.41",
-    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.16.4",
     "@types/react": "^17.0.91",
     "@types/react-router-dom": "^5.3.3",
