@@ -81,6 +81,12 @@ describe("getConditionText", () => {
   test("returns In Progress for a non-terminal, non-Ready condition", () => {
     expect(getConditionText([condition({ type: "Reconciling", status: "Unknown" })])).toBe("In Progress");
   });
+
+  test("returns Ready when Ready/True even if a newer condition is False (drift detection)", () => {
+    const ready = condition({ type: "Ready", status: "True", lastTransitionTime: "2024-01-01T00:00:00Z" });
+    const drift = condition({ type: "Released", status: "False", lastTransitionTime: "2024-01-02T00:00:00Z" });
+    expect(getConditionText([ready, drift])).toBe("Ready");
+  });
 });
 
 describe("getStatusMessage", () => {
