@@ -41,6 +41,15 @@ export function getConditionText(conditions?: Condition[]) {
   if (!conditions || !conditions.length) return "Unknown";
   if ("suspend" in conditions && conditions.suspend) return "Suspended";
 
+  // A resource that is actively reconciling is not (yet) in its desired state.
+  // Flux sets a Reconciling condition (status True) while a reconcile is in
+  // progress, even when the Ready condition still reflects the previous
+  // success. Report it as Not Ready regardless of what the heuristic below
+  // would otherwise conclude.
+  if (conditions.some((condition) => condition.type === "Reconciling" && condition.status === "True")) {
+    return "Not Ready";
+  }
+
   // The Ready condition is the canonical overall status for FluxCD resources
   // (kstatus / flux CLI). Prefer it over the newest condition; otherwise an
   // unrelated newer condition (e.g. from drift detection) with status False
