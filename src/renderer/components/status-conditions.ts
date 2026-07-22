@@ -39,13 +39,25 @@ export function getLastCondition(conditions: Condition[]): Condition | undefined
 
 export function getConditionText(conditions?: Condition[]) {
   if (!conditions || !conditions.length) return "Unknown";
-  const condition = getLastCondition(conditions);
   if ("suspend" in conditions && conditions.suspend) return "Suspended";
-  if (condition?.type === "Ready" && condition?.status === "True") return "Ready";
+
+  // The Ready condition is the canonical overall status for FluxCD resources
+  // (kstatus / flux CLI). Prefer it over the newest condition; otherwise an
+  // unrelated newer condition (e.g. from drift detection) with status False
+  // would incorrectly mark a Ready resource as Not Ready.
+  const readyCondition = conditions.find((condition) => condition.type === "Ready");
+  if (readyCondition) {
+    if (readyCondition.status === "True") return "Ready";
+    if (conditions.some((condition) => condition.type === "Stalled" && condition.status === "True")) return "Stalled";
+    if (readyCondition.status === "False") return "Not Ready";
+    return "In Progress";
+  }
+
+  // No Ready condition yet: fall back to the newest-condition heuristic.
+  const condition = getLastCondition(conditions);
   if (condition?.status === "False") return "Not Ready";
-  if (condition?.type == "Stalled") return "Stalled";
-  if (conditions) return "In Progress";
-  return "Unknown";
+  if (condition?.type === "Stalled") return "Stalled";
+  return "In Progress";
 }
 
 export function getStatusMessage(conditions?: Condition[]) {
