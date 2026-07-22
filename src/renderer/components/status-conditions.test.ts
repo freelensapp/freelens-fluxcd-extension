@@ -87,6 +87,12 @@ describe("getConditionText", () => {
     const drift = condition({ type: "Released", status: "False", lastTransitionTime: "2024-01-02T00:00:00Z" });
     expect(getConditionText([ready, drift])).toBe("Ready");
   });
+
+  test("returns In Progress when a reconcile is in progress even if Ready/True", () => {
+    const ready = condition({ type: "Ready", status: "True", lastTransitionTime: "2024-01-01T00:00:00Z" });
+    const reconciling = condition({ type: "Reconciling", status: "True", lastTransitionTime: "2024-01-02T00:00:00Z" });
+    expect(getConditionText([ready, reconciling])).toBe("In Progress");
+  });
 });
 
 describe("getStatusMessage", () => {
