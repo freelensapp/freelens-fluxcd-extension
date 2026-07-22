@@ -88,10 +88,10 @@ describe("getConditionText", () => {
     expect(getConditionText([ready, drift])).toBe("Ready");
   });
 
-  test("returns Not Ready when a reconcile is in progress even if Ready/True", () => {
+  test("returns In Progress when a reconcile is in progress even if Ready/True", () => {
     const ready = condition({ type: "Ready", status: "True", lastTransitionTime: "2024-01-01T00:00:00Z" });
     const reconciling = condition({ type: "Reconciling", status: "True", lastTransitionTime: "2024-01-02T00:00:00Z" });
-    expect(getConditionText([ready, reconciling])).toBe("Not Ready");
+    expect(getConditionText([ready, reconciling])).toBe("In Progress");
   });
 });
 
