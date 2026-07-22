@@ -44,10 +44,10 @@ export function getConditionText(conditions?: Condition[]) {
   // A resource that is actively reconciling is not (yet) in its desired state.
   // Flux sets a Reconciling condition (status True) while a reconcile is in
   // progress, even when the Ready condition still reflects the previous
-  // success. Report it as Not Ready regardless of what the heuristic below
+  // success. Report it as In Progress regardless of what the heuristic below
   // would otherwise conclude.
   if (conditions.some((condition) => condition.type === "Reconciling" && condition.status === "True")) {
-    return "Not Ready";
+    return "In Progress";
   }
 
   // The Ready condition is the canonical overall status for FluxCD resources
