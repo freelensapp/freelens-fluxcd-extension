@@ -34,10 +34,10 @@ importers:
         version: 5.3.3
       '@vitejs/plugin-react':
         specifier: ^6.0.3
-        version: 6.0.3(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1))
+        version: 6.0.3(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1))
       electron-vite:
         specifier: ^5.0.0
-        version: 5.0.0(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1))
+        version: 5.0.0(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1))
       js-base64:
         specifier: ^3.8.0
         version: 3.8.0
@@ -57,20 +57,20 @@ importers:
         specifier: 17.0.2
         version: 17.0.2
       sass:
-        specifier: ^1.101.0
-        version: 1.101.0
+        specifier: ^1.101.7
+        version: 1.101.7
       typescript:
         specifier: 5.9.3
         version: 5.9.3
       vite:
         specifier: ^8.1.3
-        version: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1)
+        version: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1)
       vite-plugin-sass-dts:
         specifier: ^1.3.37
-        version: 1.3.37(postcss@8.5.16)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1))
+        version: 1.3.37(postcss@8.5.16)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1))
       vitest:
         specifier: ^4.1.9
-        version: 4.1.9(@types/node@22.16.4)(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1))
+        version: 4.1.9(@types/node@22.16.4)(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1))
 
 packages:
 
@@ -2705,8 +2705,8 @@ packages:
     engines: {node: '>=16.0.0'}
     hasBin: true
 
-  sass@1.101.0:
-    resolution: {integrity: sha512-OL3GoQyoUdDt843DpVmDO6y2k1sc5IhUDSpu8XucEI+35neq5QivZ1iuegnpraEVTJXlQGK1gl27zKcTLEPbQw==}
+  sass@1.101.7:
+    resolution: {integrity: sha512-cDeUYU0dhwKVbpYg/ppsjyuoddxYhWlJOkRoI7+/iZsaSp7iowWDfm+tL2HcUafedWBDvbf/+hx0QRgKG4JSHA==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -4591,10 +4591,10 @@ snapshots:
   '@types/trusted-types@2.0.7':
     optional: true
 
-  '@vitejs/plugin-react@6.0.3(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1))':
+  '@vitejs/plugin-react@6.0.3(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1)
+      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1)
 
   '@vitest/expect@4.1.9':
     dependencies:
@@ -4605,13 +4605,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.9(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1))':
+  '@vitest/mocker@4.1.9(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1))':
     dependencies:
       '@vitest/spy': 4.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1)
+      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1)
 
   '@vitest/pretty-format@4.1.9':
     dependencies:
@@ -4930,7 +4930,7 @@ snapshots:
 
   electron-to-chromium@1.5.152: {}
 
-  electron-vite@5.0.0(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1)):
+  electron-vite@5.0.0(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1)):
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-transform-arrow-functions': 7.27.1(@babel/core@7.29.0)
@@ -4938,7 +4938,7 @@ snapshots:
       esbuild: 0.25.12
       magic-string: 0.30.21
       picocolors: 1.1.1
-      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1)
+      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -5970,7 +5970,7 @@ snapshots:
       sass-embedded-win32-arm64: 1.89.2
       sass-embedded-win32-x64: 1.89.2
 
-  sass@1.101.0:
+  sass@1.101.7:
     dependencies:
       chokidar: 5.0.0
       immutable: 5.1.5
@@ -6255,15 +6255,15 @@ snapshots:
 
   varint@6.0.0: {}
 
-  vite-plugin-sass-dts@1.3.37(postcss@8.5.16)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1)):
+  vite-plugin-sass-dts@1.3.37(postcss@8.5.16)(prettier@3.6.2)(sass-embedded@1.89.2)(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1)):
     dependencies:
       postcss: 8.5.16
       postcss-js: 4.0.1(postcss@8.5.16)
       prettier: 3.6.2
       sass-embedded: 1.89.2
-      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1)
+      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1)
 
-  vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1):
+  vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -6275,15 +6275,15 @@ snapshots:
       esbuild: 0.27.2
       fsevents: 2.3.3
       less: 4.3.0
-      sass: 1.101.0
+      sass: 1.101.7
       sass-embedded: 1.89.2
       stylus: 0.62.0
       terser: 5.39.1
 
-  vitest@4.1.9(@types/node@22.16.4)(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1)):
+  vitest@4.1.9(@types/node@22.16.4)(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1)):
     dependencies:
       '@vitest/expect': 4.1.9
-      '@vitest/mocker': 4.1.9(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1))
+      '@vitest/mocker': 4.1.9(vite@8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1))
       '@vitest/pretty-format': 4.1.9
       '@vitest/runner': 4.1.9
       '@vitest/snapshot': 4.1.9
@@ -6300,7 +6300,7 @@ snapshots:
       tinyexec: 1.2.4
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.0)(stylus@0.62.0)(terser@5.39.1)
+      vite: 8.1.3(@types/node@22.16.4)(esbuild@0.27.2)(less@4.3.0)(sass-embedded@1.89.2)(sass@1.101.7)(stylus@0.62.0)(terser@5.39.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.16.4
