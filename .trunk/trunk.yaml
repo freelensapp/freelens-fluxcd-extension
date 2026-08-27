@@ -7,7 +7,7 @@ cli:
 plugins:
   sources:
     - id: trunk
-      ref: v1.10.2
+      ref: v1.11.0
       uri: https://github.com/trunk-io/plugins
 # Many linters and tools depend on runtimes - configure them here. (https://docs.trunk.io/runtimes)
 runtimes:
@@ -58,6 +58,7 @@ lint:
       files:
         - sass
   enabled:
+    - oxlint@1.80.0
     - actionlint@1.7.12
     - biome@2.5.2! # datasource=npm depName=@biomejs/biome
     - git-diff-check
@@ -82,3 +83,6 @@ actions:
     - trunk-check-pre-push
     - trunk-fmt-pre-commit
     - trunk-upgrade-available
+tools:
+  enabled:
+    - oxfmt@0.65.0
