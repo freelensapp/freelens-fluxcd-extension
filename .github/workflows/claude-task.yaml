@@ -23,9 +23,12 @@ on:
         description: Anthropic model to run
         required: true
         type: choice
-        default: claude-opus-4-8
+        default: claude-opus-5-5
         options:
+          - claude-opus-5-5
+          - claude-opus-5
           - claude-opus-4-8
+          - claude-sonnet-5
           - claude-sonnet-4-6
           - claude-haiku-4-5-20251001
       runs-on:
@@ -61,22 +64,24 @@ jobs:
       actions: read
 
     steps:
+      # persist-credentials is off because the action configures git
+      # authentication with its own token, and the checkout token would
+      # otherwise sit in .git/config for every step, install scripts included.
       - name: Checkout
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          persist-credentials: false
 
+      # The upstream application source, for tasks that need to inspect it.
+      # It comes from the main branch of freelensapp/freelens.
       - name: Checkout freelensapp/freelens
         uses: actions/checkout@v7
         with:
           repository: freelensapp/freelens
           ref: main
           path: tmp/freelens
-
-      - name: Add upstream remote
-        if: github.event.pull_request.head.repo.full_name != github.repository
-        run: |
-          git remote add upstream ${{ github.server_url }}/${{ github.repository }}.git
+          persist-credentials: false
 
       - name: Setup node
         uses: actions/setup-node@v7
@@ -91,23 +96,25 @@ jobs:
       - name: Get pnpm cache directory
         working-directory: tmp/freelens
         shell: bash
-        run: echo "pnpm_cache_dir=$(pnpm store path)" >> ${GITHUB_ENV}
+        run: |
+          pnpm_cache_dir="$(pnpm store path)"
+          echo "pnpm_cache_dir=${pnpm_cache_dir}" | tee -a "${GITHUB_ENV}"
 
       - name: Use pnpm cache
         uses: actions/cache@v6
         with:
           path: ${{ env.pnpm_cache_dir }}
-          key: ${{ runner.os }}-${{ runner.arch }}-node-${{ hashFiles('tmp/freelens/pnpm-lock.yaml') }}
+          key: ${{ env.RUNS_ON }}-node-${{ hashFiles('tmp/freelens/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-node-
+            ${{ env.RUNS_ON }}-node-
 
       - name: Use Turborepo cache
         uses: actions/cache@v6
         with:
           path: ${{ env.TURBOREPO_CACHE }}
-          key: ${{ runner.os }}-${{ runner.arch }}-turborepo-${{ hashFiles('tmp/freelens/package.json', 'tmp/freelens/freelens/package.json', 'tmp/freelens/packages/**/package.json', 'tmp/freelens/pnpm-lock.yaml','tmp/freelens/turbo.json') }}
+          key: ${{ env.RUNS_ON }}-turborepo-${{ hashFiles('tmp/freelens/package.json', 'tmp/freelens/freelens/package.json', 'tmp/freelens/packages/**/package.json', 'tmp/freelens/pnpm-lock.yaml','tmp/freelens/turbo.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-turborepo-
+            ${{ env.RUNS_ON }}-turborepo-
 
       - name: Install pnpm dependencies
         id: install-pnpm
@@ -118,13 +125,24 @@ jobs:
       - name: Install pnpm dependencies (retry)
         if: steps.install-pnpm.outcome == 'failure'
         working-directory: tmp/freelens
+        # Best-effort: never fail the job on a broken install of the upstream
+        # checkout — most tasks in this repository do not need it at all.
         run: pnpm install --color=always --prefer-offline --frozen-lockfile
+        continue-on-error: true
+
+      # Puts the trunk CLI and its managed tools on PATH so Claude can run
+      # `trunk check` directly instead of paying for a `pnpm dlx` launcher
+      # download plus a cold tool fetch inside the session. Never fails the
+      # job.
+      - name: Install trunk
+        uses: trunk-io/trunk-action/install@v2.0.0
+        continue-on-error: true
 
       - name: Prepare prompt
         id: prompt
         shell: bash
         run: |
-          PROMPT=$(echo "$INPUT_PROMPT" | jq -r '.')
+          PROMPT=$(printf '%s' "$INPUT_PROMPT" | jq -r '.')
           if [[ "$CREATE_PR" == "true" ]]; then
             PROMPT="${PROMPT}
 
@@ -132,9 +150,14 @@ jobs:
           changes, commit, push to origin, and open a pull request. Follow the
           rules in AGENTS.md (no Conventional Commits prefixes, no emoji)."
           fi
-          echo "text<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$PROMPT" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          # A random delimiter, so that a line of the prompt cannot close the
+          # block early and write further outputs.
+          DELIMITER="EOF_$(openssl rand -hex 16)"
+          {
+            echo "text<<$DELIMITER"
+            printf '%s\n' "$PROMPT"
+            echo "$DELIMITER"
+          } >> "$GITHUB_OUTPUT"
         env:
           INPUT_PROMPT: ${{ toJSON(github.event.inputs.prompt) }}
           CREATE_PR: ${{ github.event.inputs.create-pr }}
@@ -143,28 +166,46 @@ jobs:
         id: parse-model
         shell: bash
         run: |
-          DEFAULT_MODEL="claude-opus-4-8"
+          # The model chosen in the form, unless the prompt overrides it with
+          # a [model:...] marker.
+          DEFAULT_MODEL="${MODEL_INPUT:-claude-opus-5-5}"
           TEXT="${PROMPT_INPUT}"
 
-          MODEL_ALIAS=$(echo "$TEXT" \
+          MODEL_ALIAS=$(printf '%s\n' "$TEXT" \
             | grep -oP '\[model:[^\]]+\]' \
             | head -1 \
             | sed 's/\[model://;s/\]//' || true)
 
           MODEL_ALIAS="${MODEL_ALIAS:-}"
           case "$MODEL_ALIAS" in
-            fable|fable-5|claude-fable-5)               MODEL_ID="claude-fable-5" ;;
-            opus|opus-4|opus-4.8|claude-opus-4-8)       MODEL_ID="claude-opus-4-8" ;;
-            sonnet|sonnet-4|sonnet-4.6|claude-sonnet-4-6) MODEL_ID="claude-sonnet-4-6" ;;
+            fable|fable-5.1|claude-fable-5-1)           MODEL_ID="claude-fable-5-1" ;;
+            fable-5|claude-fable-5)                     MODEL_ID="claude-fable-5" ;;
+            opus|opus-5.5|claude-opus-5-5)              MODEL_ID="claude-opus-5-5" ;;
+            opus-5|claude-opus-5)                       MODEL_ID="claude-opus-5" ;;
+            opus-4|opus-4.8|claude-opus-4-8)            MODEL_ID="claude-opus-4-8" ;;
+            sonnet|sonnet-5|claude-sonnet-5)            MODEL_ID="claude-sonnet-5" ;;
+            sonnet-4|sonnet-4.6|claude-sonnet-4-6)      MODEL_ID="claude-sonnet-4-6" ;;
             haiku|haiku-4|haiku-4.5)                    MODEL_ID="claude-haiku-4-5-20251001" ;;
             "")                                          MODEL_ID="$DEFAULT_MODEL" ;;
-            *)                                           MODEL_ID="$MODEL_ALIAS" ;;
+            *)
+              # A full model ID outside the alias list passes only when it
+              # cannot carry quotes, spaces or anything else that would
+              # split into extra arguments inside claude_args.
+              if [[ "$MODEL_ALIAS" =~ ^claude-[a-z0-9.-]+(\[1m\])?$ ]]; then
+                MODEL_ID="$MODEL_ALIAS"
+              else
+                echo "Ignoring invalid model: '$MODEL_ALIAS'"
+                MODEL_ALIAS=""
+                MODEL_ID="$DEFAULT_MODEL"
+              fi
+              ;;
           esac
 
           echo "Resolved model: '${MODEL_ALIAS:-<none>}' -> $MODEL_ID"
           echo "model=$MODEL_ID" >> "$GITHUB_OUTPUT"
         env:
           PROMPT_INPUT: ${{ github.event.inputs.prompt || '' }}
+          MODEL_INPUT: ${{ github.event.inputs.model || '' }}
 
       - name: Use the latest AGENTS.md
         shell: bash
@@ -178,8 +219,8 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: ${{ steps.prompt.outputs.text }}
           claude_args: |-
-            --model ${{ steps.parse-model.outputs.model }}
-            --fallback-model claude-sonnet-4-6
+            --model "${{ steps.parse-model.outputs.model }}"
+            --fallback-model claude-opus-5
             --max-turns 100
-            --allowedTools "Read" "Write" "Edit" "Glob" "Grep" "Task" "WebSearch" "WebFetch" "BashOutput" "KillShell" "Bash(pnpm:*)" "Bash(npx:*)" "Bash(node:*)" "Bash(git:*)" "Bash(gh:*)" "Bash(yq:*)" "Bash(jq:*)" "Bash(grep:*)" "Bash(rg:*)" "Bash(sed:*)" "Bash(awk:*)" "Bash(cut:*)" "Bash(tr:*)" "Bash(sort:*)" "Bash(uniq:*)" "Bash(cat:*)" "Bash(head:*)" "Bash(tail:*)" "Bash(wc:*)" "Bash(find:*)" "Bash(xargs:*)" "Bash(ls:*)" "Bash(tree:*)" "Bash(mkdir:*)" "Bash(touch:*)" "Bash(cp:*)" "Bash(mv:*)" "Bash(rm:*)" "Bash(tee:*)" "Bash(echo:*)"
+            --allowedTools "Read" "Write" "Edit" "Glob" "Grep" "Task" "WebSearch" "WebFetch" "BashOutput" "KillShell" "Bash(trunk:*)" "Bash(bash:*)" "Bash(pnpm:*)" "Bash(npx:*)" "Bash(node:*)" "Bash(git:*)" "Bash(gh:*)" "Bash(yq:*)" "Bash(jq:*)" "Bash(grep:*)" "Bash(rg:*)" "Bash(sed:*)" "Bash(awk:*)" "Bash(cut:*)" "Bash(tr:*)" "Bash(sort:*)" "Bash(uniq:*)" "Bash(cat:*)" "Bash(head:*)" "Bash(tail:*)" "Bash(wc:*)" "Bash(find:*)" "Bash(xargs:*)" "Bash(ls:*)" "Bash(tree:*)" "Bash(mkdir:*)" "Bash(touch:*)" "Bash(cp:*)" "Bash(mv:*)" "Bash(rm:*)" "Bash(tee:*)" "Bash(echo:*)"
             --append-system-prompt-file /tmp/AGENTS.md
