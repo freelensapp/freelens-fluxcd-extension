@@ -60,12 +60,12 @@
       "description": [
         "Libraries that Freelens also has take the version of its default catalog in pnpm-workspace.yaml on main: the extension compiles and tests against the versions the host runs.",
         "Every dependency except the ones excluded with ! here: a dependency added to package.json is in the Freelens catalog unless it is added to that list. One that is in neither fails its lookup on the Dependency Dashboard.",
-        "js-base64 and moment are bundled libraries that Freelens does not have, so they are updated from the npm registry as usual.",
+        "js-base64 is a bundled library that Freelens does not have, so it is updated from the npm registry as usual.",
         "The custom datasource has no release dates, so minimumReleaseAge is off; Freelens has the same pnpm policy and adopts only versions that already satisfy it."
       ],
       "matchManagers": ["npm"],
       "matchDepTypes": ["dependencies", "devDependencies"],
-      "matchPackageNames": ["!@freelensapp/**", "!js-base64", "!moment"],
+      "matchPackageNames": ["!@freelensapp/**", "!js-base64"],
       "overrideDatasource": "custom.freelens-catalog",
       "rangeStrategy": "replace",
       "minimumReleaseAge": "0 days",

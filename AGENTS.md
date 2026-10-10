@@ -26,7 +26,7 @@ versions from the same Freelens files on `main`, so an update arrives only once
 Freelens has adopted it, at that version, in one `Freelens dependencies` group
 PR together with the `@freelensapp/extensions` nightly. A dependency added to
 `package.json` follows the Freelens catalog unless the catalog rule excludes
-it; one that Freelens does not have (`js-base64`, `moment`) must be excluded
+it; one that Freelens does not have (`js-base64`) must be excluded
 there, or its lookup fails on the Dependency Dashboard. What Freelens does not
 define (GitHub Actions, the tool versions in the workflows, `shx`) Renovate
 updates as usual. pnpm is the exception: Renovate updates it from the npm
@@ -39,7 +39,7 @@ available". `@freelensapp/extensions` is pinned to one exact version. The librar
 host provides at runtime (`react`, `react-dom`, `mobx`, `mobx-react`) and their
 types are devDependencies only, for compiling and testing; `electron` is a
 devDependency for its types only. The libraries the extension bundles
-(`js-yaml`, `js-base64`, `moment`) are devDependencies too: the host installs
+(`js-yaml`, `js-base64`) are devDependencies too: the host installs
 no dependencies of an extension, so they reach it only inside the bundle.
 `mise.lock` pins a checksum and a URL per tool for every platform; after
 changing `mise.toml`, run `mise lock`, not only `mise install`.
@@ -193,6 +193,8 @@ through a local alias after the imports (`type LocalObjectReference = Renderer.K
   `grow`, ...): such a class name does nothing, so write the rule instead (`display: flex; flex-direction: column`).
 - React keys for list items without a natural key come from `Renderer.Util.createReactKey(item)`.
 - Renderer code has no Node: no `crypto`, `node:*` or other builtins. Use `Renderer.Util.sha256Hex` for SHA-256.
+- Dates use `Date` and the host's helpers (`Renderer.Util.isIso8601DateString`, `formatRelativeTime`,
+  `formatDuration`, ...), as in Freelens; there is no `moment`.
 - Links inside components use `Renderer.Component.MaybeLink` (`to`, `onClick`); there is no `react-router-dom`.
 - A Flux reference with a `kind` usually has no `apiVersion` (`spec.sourceRef`, `spec.chartRef`, `eventSources`,
   health checks), and the host's `lookupApiLink` then assumes `v1`, the core group. Such a reference goes through
@@ -315,7 +317,7 @@ and on a subpath of a host package that the host does not publish
 `invalid hook call`; a second mobx throws nothing, and the host simply never
 reacts to its observables.
 
-Everything else is bundled: `js-yaml`, `js-base64`, `moment`, and
+Everything else is bundled: `js-yaml`, `js-base64`, and
 `@freelensapp/extensions`, a shim of three lines that reads `Common`, `Main`
 and `Renderer` off the same global; it must not be mapped. `react-router-dom`
 is not part of the host; navigation goes through `Renderer.Navigation` and
@@ -552,8 +554,8 @@ Trunk.
 development pass over everything, and a `--production --strict` pass over the
 code that reaches the bundles, which are the entries marked with `!` in
 `knip.jsonc`. In the production pass only `dependencies` count. The
-host-provided modules and the bundled libraries (`js-base64`, `js-yaml`,
-`moment`) are devDependencies, and are ignored.
+host-provided modules and the bundled libraries (`js-base64`, `js-yaml`) are
+devDependencies, and are ignored.
 
 A file is unused when no entry reaches it: a leftover module, a barrel that
 nothing imports. The production pass starts from the `!` entries only, so it

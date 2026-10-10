@@ -42,6 +42,22 @@ describe("sortConditions", () => {
     expect(sortConditions([withoutTime, withTime])?.[0].type).toBe("Ready");
   });
 
+  test.each([
+    ["an invalid", "not a date"],
+    ["a non-ISO 8601", "Mon, 01 Jan 2024 00:00:00 GMT"],
+    ["an empty", ""],
+  ])("treats %s timestamp as epoch 0", (_, lastTransitionTime) => {
+    const withTime = condition({ type: "Initialized", lastTransitionTime: "2024-01-01T00:00:00Z" });
+    const withInvalidTime = condition({ type: "Ready", lastTransitionTime });
+    expect(sortConditions([withInvalidTime, withTime])?.map((c) => c.type)).toEqual(["Initialized", "Ready"]);
+  });
+
+  test("orders timestamps with an offset by their instant", () => {
+    const earlier = condition({ type: "Ready", lastTransitionTime: "2024-01-01T01:00:00+02:00" });
+    const later = condition({ type: "Initialized", lastTransitionTime: "2024-01-01T00:00:00Z" });
+    expect(sortConditions([earlier, later])?.map((c) => c.type)).toEqual(["Initialized", "Ready"]);
+  });
+
   test("honours a custom priority map on ties", () => {
     const time = "2024-01-01T00:00:00Z";
     const a = condition({ type: "A", lastTransitionTime: time });
