@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { FluxCDKubeObjectStatus, NamespacedObjectReference } from "../types";
+import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus, NamespacedObjectReference } from "../types";
 
 export interface SemVerPolicy {
   range: string;
@@ -25,10 +25,15 @@ export interface TagFilter {
   extract: string;
 }
 
-export interface ImagePolicySpec {
+export type ReflectionPolicy = "Always" | "IfNotPresent" | "Never";
+
+export interface ImagePolicySpec extends FluxCDKubeObjectSpecWithSuspend {
   imageRepositoryRef: NamespacedObjectReference;
   policy: ImagePolicyChoice;
   filterTags?: TagFilter;
+  digestReflectionPolicy?: ReflectionPolicy;
+  interval?: string;
+  suspend?: boolean;
 }
 
 export interface ImagePolicyStatus extends FluxCDKubeObjectStatus {
