@@ -4,7 +4,6 @@ import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { OCIRepository, type OCIRepositoryApi } from "../../k8s/fluxcd/source/ocirepository-v1";
 import styles from "./ocirepositories.module.scss";
-import stylesInline from "./ocirepositories.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -46,7 +45,6 @@ export const OCIRepositoriesPage = observer((props: OCIRepositoriesPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

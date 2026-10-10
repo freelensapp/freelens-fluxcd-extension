@@ -6,7 +6,6 @@ import { getHeight } from "../../../utils";
 import { SpecAccessFrom } from "../../spec-access-from";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./git-repository-details.module.scss";
-import stylesInline from "./git-repository-details.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -24,7 +23,6 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
 
     return (
       <>
-        <style>{stylesInline}</style>
         <div className={styles.details}>
           <DrawerItem name="Resumed">
             <BadgeBoolean value={!object.spec.suspend} />

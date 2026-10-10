@@ -12,7 +12,6 @@ import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import { StatusInventory } from "../../status-inventory";
 import styles from "./kustomization-details.module.scss";
-import stylesInline from "./kustomization-details.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -105,7 +104,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
 
     return (
       <>
-        <style>{stylesInline}</style>
         <div className={styles.details}>
           <DrawerItem name="Resumed">
             <BadgeBoolean value={!object.spec.suspend} />
@@ -381,7 +379,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           )}
 
           {object.spec.healthChecks && (
-            <div className="KustomizationHealthChecks flex column">
+            <div className={styles.healthChecks}>
               <DrawerTitle>Health Checks</DrawerTitle>
               <Table
                 selectable

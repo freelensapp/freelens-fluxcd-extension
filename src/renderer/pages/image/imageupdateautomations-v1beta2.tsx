@@ -7,7 +7,6 @@ import {
   type ImageUpdateAutomationApi,
 } from "../../k8s/fluxcd/image/imageupdateautomation-v1beta2";
 import styles from "./imageupdateautomations.module.scss";
-import stylesInline from "./imageupdateautomations.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -55,7 +54,6 @@ export const ImageUpdateAutomationsPage = observer((props: ImageUpdateAutomation
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

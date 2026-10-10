@@ -4,7 +4,6 @@ import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { GitRepository, type GitRepositoryApi } from "../../k8s/fluxcd/source/gitrepository-v1beta2";
 import styles from "./gitrepositories.module.scss";
-import stylesInline from "./gitrepositories.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -50,7 +49,6 @@ export const GitRepositoriesPage = observer((props: GitRepositoriesPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

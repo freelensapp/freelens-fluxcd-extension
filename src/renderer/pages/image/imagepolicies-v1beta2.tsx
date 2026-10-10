@@ -4,7 +4,6 @@ import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { ImagePolicy, type ImagePolicyApi } from "../../k8s/fluxcd/image/imagepolicy-v1beta2";
 import styles from "./imagepolicies.module.scss";
-import stylesInline from "./imagepolicies.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -46,7 +45,6 @@ export const ImagePoliciesPage = observer((props: ImagePoliciesPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

@@ -5,7 +5,6 @@ import { Receiver } from "../../../k8s/fluxcd/notification/receiver-v1beta1";
 import { createEnumFromKeys } from "../../../utils";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import styles from "./receiver-details.module.scss";
-import stylesInline from "./receiver-details.module.scss?inline";
 
 import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 
@@ -46,7 +45,6 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
 
   return (
     <>
-      <style>{stylesInline}</style>
       <div className={styles.details}>
         <DrawerItem name="Resumed">
           <BadgeBoolean value={!object.spec.suspend} />

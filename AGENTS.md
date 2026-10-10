@@ -176,8 +176,10 @@ through a local alias after the imports (`type LocalObjectReference = Renderer.K
 
 - Detail views and pages are grouped by FluxCD controller (source, kustomize, helm, image, notification, controlplane).
 - Shared spec/status widgets live in `src/renderer/components/` (e.g. `status-history`, `status-inventory`, `status-artifact`, `pie-chart`, `yaml-dump`).
-- Shared components import their CSS module for the class names only, with no `?inline` import and no `<style>` tag;
-  the rules reach the page through `renderer.css`.
+- Pages, details and shared components import their CSS module for the class names only, with no `?inline` import and
+  no `<style>` tag; the rules reach the page through `renderer.css`.
+- Layout comes from the component's own CSS module. The host has no flexbox utility classes (`flex`, `column`, `box`,
+  `grow`, ...): such a class name does nothing, so write the rule instead (`display: flex; flex-direction: column`).
 - React keys for list items without a natural key come from `Renderer.Util.createReactKey(item)`.
 - Renderer code has no Node: no `crypto`, `node:*` or other builtins. Use `Renderer.Util.sha256Hex` for SHA-256.
 - Links inside components use `Renderer.Component.MaybeLink` (`to`, `onClick`); there is no `react-router-dom`.

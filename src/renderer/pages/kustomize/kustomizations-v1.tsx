@@ -5,7 +5,6 @@ import { getConditionClass, getConditionText, getStatusMessage } from "../../com
 import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization-v1";
 import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./kustomizations.module.scss";
-import stylesInline from "./kustomizations.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -53,7 +52,6 @@ export const KustomizationsPage_v1 = observer((props: KustomizationsPageProps) =
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

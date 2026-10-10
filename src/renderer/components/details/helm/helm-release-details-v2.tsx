@@ -8,7 +8,6 @@ import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsU
 import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import styles from "./helm-release-details.module.scss";
-import stylesInline from "./helm-release-details.module.scss?inline";
 
 import type { Patch } from "../../../k8s/core/types";
 import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
@@ -108,7 +107,6 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
 
     return (
       <>
-        <style>{stylesInline}</style>
         <div className={styles.details}>
           <DrawerItem name="Release Name">
             <MaybeLink key="link" to={HelmRelease.getHelmReleaseUrl(object, namespace)} onClick={stopPropagation}>

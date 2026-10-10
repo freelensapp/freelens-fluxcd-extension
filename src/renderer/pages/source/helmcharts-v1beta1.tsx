@@ -6,7 +6,6 @@ import { HelmChart, type HelmChartApi } from "../../k8s/fluxcd/source/helmchart-
 import { getRefUrl } from "../../k8s/fluxcd/utils";
 import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./helmcharts.module.scss";
-import stylesInline from "./helmcharts.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -58,7 +57,6 @@ export const HelmChartsPage = observer((props: HelmChartsPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}
