@@ -29,7 +29,13 @@ with the `@freelensapp/extensions` nightly. A dependency added to
 it; one that Freelens does not have (`js-base64`, `moment`) must be excluded
 there, or its lookup fails on the Dependency Dashboard. What Freelens does not
 define (GitHub Actions, the tool versions in the workflows, `shx`) Renovate
-updates as usual. `@freelensapp/extensions` is pinned to one exact version. The libraries the
+updates as usual. pnpm is the exception: Renovate updates it from the npm
+registry, not to the version of Freelens's `packageManager`, but in the
+`Freelens` group PR, as it does for the mise of the workflows (`jdx/mise`).
+`packageManager` carries a Corepack hash (`+sha512.…`), and Renovate updates
+the hash only from the digest of the new version, which the registry has and a
+custom datasource does not; without it the update fails with "no valid digest
+available". `@freelensapp/extensions` is pinned to one exact version. The libraries the
 host provides at runtime (`react`, `react-dom`, `mobx`, `mobx-react`) and their
 types are devDependencies only, for compiling and testing; `electron` is a
 devDependency for its types only. The libraries the extension bundles

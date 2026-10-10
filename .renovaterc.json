@@ -70,13 +70,8 @@
       "groupName": "Freelens"
     },
     {
-      "description": "pnpm takes the version of packageManager in the root package.json of Freelens on main. The custom datasource has no release dates, so minimumReleaseAge is off.",
-      "matchManagers": ["npm"],
-      "matchDepTypes": ["packageManager"],
-      "matchDepNames": ["pnpm"],
-      "overrideDatasource": "custom.freelens-package-manager",
-      "rangeStrategy": "replace",
-      "minimumReleaseAge": "0 days",
+      "description": "pnpm and the mise of the workflows are updated from their own registries, not to the versions of Freelens, but in the Freelens group pull request, so that one pull request carries every toolchain update.",
+      "matchDepNames": ["pnpm", "jdx/mise"],
       "groupName": "Freelens"
     },
     {
@@ -156,14 +151,6 @@
       "defaultRegistryUrlTemplate": "https://raw.githubusercontent.com/freelensapp/freelens/main/pnpm-workspace.yaml",
       "format": "yaml",
       "transformTemplates": ["{\"releases\": [{\"version\": catalog.`{{{packageName}}}`}]}"]
-    },
-    "freelens-package-manager": {
-      "description": "The pnpm version of packageManager in the root package.json of Freelens on main, without the hash.",
-      "defaultRegistryUrlTemplate": "https://raw.githubusercontent.com/freelensapp/freelens/main/package.json",
-      "format": "json",
-      "transformTemplates": [
-        "{\"releases\": [{\"version\": $substringBefore($substringAfter(packageManager, \"{{{packageName}}}@\"), \"+\")}]}"
-      ]
     },
     "freelens-dlx": {
       "description": "The version of a tool that a script in the root package.json of Freelens on main runs with pnpm dlx: the text after `dlx <name>@` up to the next space or the end of the script.",
