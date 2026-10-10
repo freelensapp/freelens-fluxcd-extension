@@ -21,7 +21,9 @@ const sortingCallbacks = {
   url: (object: KubeObject) => object.spec.url,
   resumed: (object: KubeObject) => String(!object.spec.suspend),
   condition: (object: KubeObject) =>
-    object.spec.type == "oci" ? "Ready" : getConditionText(object.status?.conditions),
+    !object.spec.suspend && object.spec.type == "oci"
+      ? "Ready"
+      : getConditionText(object.status?.conditions, object.spec.suspend),
   status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
@@ -60,8 +62,16 @@ export const HelmRepositoriesPage = observer((props: HelmRepositoriesPageProps) 
             <WithTooltip>{object.spec.url}</WithTooltip>,
             <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
-              className={object.spec.type == "oci" ? "success" : getConditionClass(object.status?.conditions)}
-              label={object.spec.type == "oci" ? "Ready" : getConditionText(object.status?.conditions)}
+              className={
+                !object.spec.suspend && object.spec.type == "oci"
+                  ? "success"
+                  : getConditionClass(object.status?.conditions, object.spec.suspend)
+              }
+              label={
+                !object.spec.suspend && object.spec.type == "oci"
+                  ? "Ready"
+                  : getConditionText(object.status?.conditions, object.spec.suspend)
+              }
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,

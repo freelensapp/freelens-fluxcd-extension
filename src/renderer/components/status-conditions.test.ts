@@ -64,6 +64,28 @@ describe("sortConditions", () => {
     const b = condition({ type: "B", lastTransitionTime: time });
     expect(sortConditions([a, b], { A: 1, B: 2 })?.map((c) => c.type)).toEqual(["B", "A"]);
   });
+
+  test("returns a sorted copy and keeps the order of the input", () => {
+    const older = condition({ type: "Initialized", lastTransitionTime: "2024-01-01T00:00:00Z" });
+    const newer = condition({ type: "Ready", lastTransitionTime: "2024-01-02T00:00:00Z" });
+    const conditions = [older, newer];
+    const sorted = sortConditions(conditions);
+    expect(sorted?.map((c) => c.type)).toEqual(["Ready", "Initialized"]);
+    expect(sorted).not.toBe(conditions);
+    expect(conditions).toEqual([older, newer]);
+  });
+});
+
+describe("helpers reading the newest condition", () => {
+  test("keep the order of the conditions they get", () => {
+    const older = condition({ type: "Initialized", lastTransitionTime: "2024-01-01T00:00:00Z", message: "old" });
+    const newer = condition({ type: "Ready", lastTransitionTime: "2024-01-02T00:00:00Z", message: "new" });
+    const conditions = [older, newer];
+    getLastCondition(conditions);
+    getStatusMessage(conditions);
+    getLastUpdated(conditions);
+    expect(conditions).toEqual([older, newer]);
+  });
 });
 
 describe("getLastCondition", () => {
@@ -111,6 +133,27 @@ describe("getConditionText", () => {
     const reconciling = condition({ type: "Reconciling", status: "True", lastTransitionTime: "2024-01-02T00:00:00Z" });
     expect(getConditionText([ready, reconciling])).toBe("In Progress");
   });
+
+  test("returns Suspended for a suspended object without conditions", () => {
+    expect(getConditionText(undefined, true)).toBe("Suspended");
+    expect(getConditionText([], true)).toBe("Suspended");
+  });
+
+  test.each([
+    ["Ready", "True"],
+    ["Ready", "False"],
+    ["Reconciling", "True"],
+    ["Stalled", "True"],
+  ])("returns Suspended for a suspended object whatever its conditions (%s/%s)", (type, status) => {
+    expect(getConditionText([condition({ type, status } as Partial<Condition>)], true)).toBe("Suspended");
+  });
+
+  test("looks at the conditions of an object that is not suspended", () => {
+    const ready = [condition({ type: "Ready", status: "True" })];
+    expect(getConditionText(ready, false)).toBe("Ready");
+    expect(getConditionText(ready, undefined)).toBe("Ready");
+    expect(getConditionText([], false)).toBe("Unknown");
+  });
 });
 
 describe("getStatusMessage", () => {
@@ -133,6 +176,23 @@ describe("getConditionClass", () => {
     ["Unknown", "Reconciling", "warning"],
   ])("maps status %s / type %s to the %s class", (status, type, expected) => {
     expect(getConditionClass([condition({ type, status } as Partial<Condition>)])).toBe(expected);
+  });
+
+  test("maps Stalled to the error class", () => {
+    expect(getConditionClass([condition({ type: "Stalled", status: "True" })])).toBe("error");
+  });
+
+  test("maps Ready/False with Stalled/True to the error class", () => {
+    const ready = condition({ type: "Ready", status: "False" });
+    const stalled = condition({ type: "Stalled", status: "True" });
+    expect(getConditionText([ready, stalled])).toBe("Stalled");
+    expect(getConditionClass([ready, stalled])).toBe("error");
+  });
+
+  test("maps a suspended object to the info class whatever its conditions", () => {
+    expect(getConditionClass(undefined, true)).toBe("info");
+    expect(getConditionClass([condition({ type: "Ready", status: "False" })], true)).toBe("info");
+    expect(getConditionClass([condition({ type: "Ready", status: "True" })], false)).toBe("success");
   });
 
   test("returns an empty class for unknown status", () => {

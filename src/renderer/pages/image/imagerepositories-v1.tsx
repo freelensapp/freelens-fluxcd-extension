@@ -20,8 +20,8 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   image: (object: KubeObject) => object.spec.image,
   tags: (object: KubeObject) => object.status?.lastScanResult?.tagCount,
-  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
-  status: (object: KubeObject) => getConditionText(object.status?.conditions),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
+  status: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -59,8 +59,8 @@ export const ImageRepositoriesPage = observer((props: ImageRepositoriesPageProps
             <WithTooltip>{object.spec.image}</WithTooltip>,
             <WithTooltip>{object.status?.lastScanResult?.tagCount}</WithTooltip>,
             <Badge
-              className={getConditionClass(object.status?.conditions)}
-              label={getConditionText(object.status?.conditions)}
+              className={getConditionClass(object.status?.conditions, object.spec.suspend)}
+              label={getConditionText(object.status?.conditions, object.spec.suspend)}
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,

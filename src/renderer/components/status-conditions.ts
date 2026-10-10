@@ -26,12 +26,15 @@ const conditionTypePrioritiesDefault = {
 /**
  * Sort conditions (the newer first) using heuristic: first sorts fields by
  * date and if the date is the same then checks priority from the object.
+ * Returns a sorted copy: the array is `status.conditions` of an object from
+ * the host's store, which other views read in its own order.
  */
 export function sortConditions(
   conditions: Condition[],
   conditionTypePriorities: Record<string, number> = conditionTypePrioritiesDefault,
 ): Condition[] | undefined {
-  return conditions?.sort(
+  if (!conditions) return;
+  return [...conditions].sort(
     (a, b) =>
       timeToUnix(b.lastTransitionTime) - timeToUnix(a.lastTransitionTime) ||
       (conditionTypePriorities[b.type] ?? 0) - (conditionTypePriorities[a.type] ?? 0),
@@ -42,9 +45,14 @@ export function getLastCondition(conditions: Condition[]): Condition | undefined
   return (sortConditions(conditions) ?? [])[0];
 }
 
-export function getConditionText(conditions?: Condition[]) {
+/**
+ * Returns the overall status of an object. `suspend` is `spec.suspend` of
+ * the object: a suspended object is reported as Suspended whatever its
+ * conditions, as on the Overview chart.
+ */
+export function getConditionText(conditions?: Condition[], suspend?: boolean) {
+  if (suspend) return "Suspended";
   if (!conditions || !conditions.length) return "Unknown";
-  if ("suspend" in conditions && conditions.suspend) return "Suspended";
 
   // A resource that is actively reconciling is not (yet) in its desired state.
   // Flux sets a Reconciling condition (status True) while a reconcile is in
@@ -82,12 +90,13 @@ export function getStatusMessage(conditions?: Condition[]) {
 /**
  * Returns a CSS class name that is defined in the main application.
  */
-export function getConditionClass(conditions?: Condition[]) {
-  const status = getConditionText(conditions);
+export function getConditionClass(conditions?: Condition[], suspend?: boolean) {
+  const status = getConditionText(conditions, suspend);
   switch (status) {
     case "In Progress":
       return "warning";
     case "Not Ready":
+    case "Stalled":
       return "error";
     case "Ready":
       return "success";

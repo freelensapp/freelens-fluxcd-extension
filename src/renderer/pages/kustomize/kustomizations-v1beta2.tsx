@@ -26,8 +26,8 @@ const sortingCallbacks = {
   source: (object: KubeObject) => object.spec.sourceRef.name,
   revision: (object: KubeObject) => object.status?.lastAppliedRevision,
   resumed: (object: KubeObject) => String(!object.spec.suspend),
-  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
-  status: (object: KubeObject) => getConditionText(object.status?.conditions),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
+  status: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -75,8 +75,8 @@ export const KustomizationsPage_v1beta2 = observer((props: KustomizationsPagePro
             <WithTooltip>{KubeObject.getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
             <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
-              className={getConditionClass(object.status?.conditions)}
-              label={getConditionText(object.status?.conditions)}
+              className={getConditionClass(object.status?.conditions, object.spec.suspend)}
+              label={getConditionText(object.status?.conditions, object.spec.suspend)}
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
