@@ -64,6 +64,28 @@ describe("sortConditions", () => {
     const b = condition({ type: "B", lastTransitionTime: time });
     expect(sortConditions([a, b], { A: 1, B: 2 })?.map((c) => c.type)).toEqual(["B", "A"]);
   });
+
+  test("returns a sorted copy and keeps the order of the input", () => {
+    const older = condition({ type: "Initialized", lastTransitionTime: "2024-01-01T00:00:00Z" });
+    const newer = condition({ type: "Ready", lastTransitionTime: "2024-01-02T00:00:00Z" });
+    const conditions = [older, newer];
+    const sorted = sortConditions(conditions);
+    expect(sorted?.map((c) => c.type)).toEqual(["Ready", "Initialized"]);
+    expect(sorted).not.toBe(conditions);
+    expect(conditions).toEqual([older, newer]);
+  });
+});
+
+describe("helpers reading the newest condition", () => {
+  test("keep the order of the conditions they get", () => {
+    const older = condition({ type: "Initialized", lastTransitionTime: "2024-01-01T00:00:00Z", message: "old" });
+    const newer = condition({ type: "Ready", lastTransitionTime: "2024-01-02T00:00:00Z", message: "new" });
+    const conditions = [older, newer];
+    getLastCondition(conditions);
+    getStatusMessage(conditions);
+    getLastUpdated(conditions);
+    expect(conditions).toEqual([older, newer]);
+  });
 });
 
 describe("getLastCondition", () => {

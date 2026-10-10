@@ -26,12 +26,15 @@ const conditionTypePrioritiesDefault = {
 /**
  * Sort conditions (the newer first) using heuristic: first sorts fields by
  * date and if the date is the same then checks priority from the object.
+ * Returns a sorted copy: the array is `status.conditions` of an object from
+ * the host's store, which other views read in its own order.
  */
 export function sortConditions(
   conditions: Condition[],
   conditionTypePriorities: Record<string, number> = conditionTypePrioritiesDefault,
 ): Condition[] | undefined {
-  return conditions?.sort(
+  if (!conditions) return;
+  return [...conditions].sort(
     (a, b) =>
       timeToUnix(b.lastTransitionTime) - timeToUnix(a.lastTransitionTime) ||
       (conditionTypePriorities[b.type] ?? 0) - (conditionTypePriorities[a.type] ?? 0),
