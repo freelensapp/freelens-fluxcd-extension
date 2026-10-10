@@ -88,6 +88,7 @@ export function getConditionClass(conditions?: Condition[]) {
     case "In Progress":
       return "warning";
     case "Not Ready":
+    case "Stalled":
       return "error";
     case "Ready":
       return "success";

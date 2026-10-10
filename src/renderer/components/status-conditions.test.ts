@@ -135,6 +135,17 @@ describe("getConditionClass", () => {
     expect(getConditionClass([condition({ type, status } as Partial<Condition>)])).toBe(expected);
   });
 
+  test("maps Stalled to the error class", () => {
+    expect(getConditionClass([condition({ type: "Stalled", status: "True" })])).toBe("error");
+  });
+
+  test("maps Ready/False with Stalled/True to the error class", () => {
+    const ready = condition({ type: "Ready", status: "False" });
+    const stalled = condition({ type: "Stalled", status: "True" });
+    expect(getConditionText([ready, stalled])).toBe("Stalled");
+    expect(getConditionClass([ready, stalled])).toBe("error");
+  });
+
   test("returns an empty class for unknown status", () => {
     expect(getConditionClass()).toBe("");
     expect(getConditionClass([])).toBe("");
