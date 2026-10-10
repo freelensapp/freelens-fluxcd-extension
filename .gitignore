@@ -23,12 +23,14 @@
 
 /coverage/
 /node_modules/
-/out/
 
 # Scratch space of the CI agent, which checks out Freelens at tmp/freelens.
 /tmp/
 
 /.nyc_output/
+
+# Snapshots, screenshots and console logs written by the Playwright MCP server.
+/.playwright-mcp/
 
 *.DS_Store
 /.idea

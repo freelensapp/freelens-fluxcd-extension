@@ -21,7 +21,15 @@ Library and tool versions follow the Freelens stack exactly: the catalog in
 Freelens's `pnpm-workspace.yaml` for libraries, the root `package.json` scripts
 of Freelens for tools run with `pnpm dlx` (Biome, knip, Trunk launcher), and
 Freelens's `mise.toml` and `.nvmrc` for Node and the other mise tools.
-`@freelensapp/extensions` is pinned to one exact version. The libraries the
+Renovate keeps them there: custom datasources in `.renovaterc.json` read the
+versions from the same Freelens files on `main`, so an update arrives only once
+Freelens has adopted it, at that version, in one `Freelens` group PR together
+with the `@freelensapp/extensions` nightly. A dependency added to
+`package.json` follows the Freelens catalog unless the catalog rule excludes
+it; one that Freelens does not have (`js-base64`, `moment`) must be excluded
+there, or its lookup fails on the Dependency Dashboard. What Freelens does not
+define (GitHub Actions, the tool versions in the workflows, `shx`) Renovate
+updates as usual. `@freelensapp/extensions` is pinned to one exact version. The libraries the
 host provides at runtime (`react`, `react-dom`, `mobx`, `mobx-react`) and their
 types are devDependencies only, for compiling and testing; `electron` is a
 devDependency for its types only. The libraries the extension bundles
@@ -59,17 +67,17 @@ pnpm type:check:tooling        # Vite and Vitest configs, build plugins
 pnpm type:check:environments   # Environment tests
 
 # Linting & formatting
-pnpm biome:check          # TypeScript/TSX, JS, JSON, CSS/SCSS, HTML (biome)
+pnpm biome:check          # TypeScript/TSX, JS, JSON, CSS, HTML (biome)
 pnpm biome:fix            # Auto-fix the formats above
-pnpm prettier:check       # Markdown, YAML, and other formats not covered by biome
-pnpm prettier:fix         # Auto-fix Markdown, YAML, etc.
-pnpm trunk:check          # Aggregated linters (runs prettier, markdownlint, etc.)
+pnpm prettier:check       # SCSS and other formats not covered by biome
+pnpm prettier:fix         # Auto-fix SCSS, etc.
+pnpm trunk:check          # Markdown, YAML, TOML, SCSS, workflows, and Biome again (changed files)
 pnpm trunk:fix            # Auto-fix via trunk
 pnpm lint:check           # Runs biome:check and prettier:check
 pnpm lint:fix             # Runs biome:fix and prettier:fix
 
 # Dead-code / dependency checks
-pnpm knip:check           # Unused files, exports, and dependencies
+pnpm knip:check           # Unused files, unused and unlisted dependencies (knip)
 
 # Tests
 pnpm test:unit            # vitest
@@ -408,19 +416,94 @@ cluster does not serve; a test that needs a store spies on `getStore` of the
 class. The other host modules are not stubbed: `react`, `mobx` and
 `mobx-react` resolve to the devDependencies, the host's versions.
 
-Biome also rejects a Node builtin import in `src/renderer/` and `src/common/`
-(`correctness/noNodejsModules`, tests left out). It flags the import in the
-editor, before `pnpm type:check` does; it does not see Node globals such as
-`Buffer` or `process`, which only the type check catches.
-
 The root `tsconfig.json` checks the tooling files. It has `checkJs`, so the
 Vite config and the build plugins are type-checked too; give their function
 parameters JSDoc types.
 
+## Lint and CI
+
+### Biome
+
+`biome.jsonc` has the formatter, import groups and rules of Freelens. Two
+overrides are specific to how the extension is laid out:
+
+- `style/noRestrictedImports` keeps `vitest` out of the extension's code (see
+  "Tests and tooling").
+- `correctness/noNodejsModules` rejects a Node builtin import in
+  `src/renderer/` and `src/common/`, tests left out. It flags the import in the
+  editor, before `pnpm type:check` does; it does not see Node globals such as
+  `Buffer` or `process`, which only the type check catches.
+
+Every path in an override starts with `**/`. Trunk runs Biome from a sandbox
+outside the repository, with `--config-path` pointing back at `biome.jsonc`,
+and there a path anchored at the repository root matches no file, so the
+override silently does nothing. A plain `biome check` matches both forms, so
+only `trunk check` shows the difference.
+
+Biome does not read SCSS; Prettier formats it, through `pnpm prettier:fix` or
+Trunk.
+
+### Knip
+
+`pnpm knip:check` runs knip twice, for unused files and for dependencies: a
+development pass over everything, and a `--production --strict` pass over the
+code that reaches the bundles, which are the entries marked with `!` in
+`knip.jsonc`. In the production pass only `dependencies` count. The
+host-provided modules and the bundled libraries (`js-base64`, `js-yaml`,
+`moment`) are devDependencies, and are ignored.
+
+A file is unused when no entry reaches it: a leftover module, a barrel that
+nothing imports. The production pass starts from the `!` entries only, so it
+also reports a module that only tests import. The fix is to remove the file,
+not to ignore it. The check does not include unused exports and types: on this
+tree they are mostly the exported spec and status types of the models.
+
+`knip.jsonc` lists the entries knip cannot find: the two source entries, the
+Vitest alias target `test/stubs/freelensapp-extensions.ts` and the probes in
+`environment-tests/`. Its Vite plugin is off: it adds the renderer entry of
+`vite.config.mjs` as a development entry, which displaces
+`src/renderer/index.tsx!`, and the production pass then skips the renderer.
+`--no-config-hints` is set because one config serves both passes, and an entry
+that only the production pass needs is reported as redundant by the other.
+
+Two more settings keep the file check to real findings. `project` leaves out
+the CSS module declarations with `!src/**/*.d.scss.ts`: TypeScript reaches them
+through `allowArbitraryExtensions`, while knip resolves
+`import styles from "./x.module.scss"` to the stylesheet, so nothing would
+import them. The negation has no trailing `!`, which would apply it to the
+production pass only. And the SVGO plugin is on (`"svgo": true`), so that
+`svgo.config.mjs` is an entry: Trunk runs SVGO, and no dependency turns the
+plugin on.
+
+### Workflows
+
+| Workflow                 | Runs                                                                          |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| `type-check.yaml`        | `pnpm type:check`                                                             |
+| `check.yaml`             | `pnpm build`, `pnpm lint:check`, `pnpm knip:check`                            |
+| `unit-tests.yaml`        | `pnpm test:unit`                                                              |
+| `trunk-check.yaml`       | `trunk check --all`                                                           |
+| `integration-tests.yaml` | the integration tests in `integration/`, against a Freelens build             |
+| `mise-lock-check.yaml`   | on a change to `mise.lock`: no checksum changed for an unchanged tool version |
+
+The type check has a workflow of its own, on pull requests and on pushes to
+`main`, as in Freelens. It runs every program, tests, tooling and environment
+tests included, which no build reaches, and a type error shows as its own
+failed check rather than as a failed build. `check.yaml` builds without the
+type check for the same reason, so it does not run twice.
+
+The integration tests run inside a Freelens checkout: the workflow builds the
+extension, packs it with a `.tgz.sha256` checksum next to the tarball, as the
+release publishes it, checks out and packages Freelens, copies
+`integration/__tests__/` into `freelens/integration/__tests__/` and runs them
+there under Freelens's Vitest, with its helpers. The test installs the
+tarball from the extensions page and fails on any error logged by either
+process.
+
 ## Code Style
 
-- **Biome** formats **TypeScript/TSX, JS, JSON, CSS/SCSS, HTML**: double quotes, semicolons, trailing commas, 2-space indent, 120 char line width — use `pnpm biome:fix`
-- **Prettier / Trunk** format **Markdown, YAML**, and other formats not covered by biome — use `pnpm prettier:fix` (or `pnpm trunk:fix`)
+- **Biome** formats **TypeScript/TSX, JS, JSON, CSS, HTML**: double quotes, semicolons, trailing commas, 2-space indent, 120 char line width — use `pnpm biome:fix`
+- **Prettier / Trunk** format **SCSS, Markdown, YAML**, and other formats not covered by biome — use `pnpm prettier:fix` (or `pnpm trunk:fix`)
 - Import order (enforced by biome organizeImports): built-in modules → `@freelensapp/**` → packages → relative paths
 - **No emoji** in Markdown files (`.md`), comments, or any source code
 
