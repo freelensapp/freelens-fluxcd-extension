@@ -6,25 +6,45 @@ import type React from "react";
 import type { HelmRepository } from "../k8s/fluxcd/source/helmrepository-v1";
 import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../k8s/fluxcd/types";
 
-const getStats = (
-  objects: Renderer.K8sApi.LensExtensionKubeObject<any, FluxCDKubeObjectStatus, FluxCDKubeObjectSpecWithSuspend>[],
-) => {
-  const suspended = objects.filter((o) => o.spec.suspend === true).length;
-  const ready = objects.filter(
-    (o) =>
-      !o.spec.suspend &&
-      ((o.kind === "HelmRepository" && (o as HelmRepository).spec.type === "oci") ||
-        o.status?.conditions?.find((c) => c.type === "Ready")?.status === "True"),
-  ).length;
-  const notReady = objects.filter(
-    (o) => !o.spec.suspend && o.status?.conditions?.find((c) => c.type === "Ready")?.status === "False",
-  ).length;
-  const unknown = objects.filter(
-    (o) => (o.kind !== "HelmRepository" || (o as HelmRepository).spec.type !== "oci") && !o.status?.conditions,
-  ).length;
-  const inProgress = objects.length - ready - notReady - suspended - unknown;
+type StatsObject = Renderer.K8sApi.LensExtensionKubeObject<
+  any,
+  FluxCDKubeObjectStatus,
+  FluxCDKubeObjectSpecWithSuspend
+>;
 
-  return [ready, notReady, inProgress, suspended, unknown];
+const READY = 0;
+const NOT_READY = 1;
+const IN_PROGRESS = 2;
+const SUSPENDED = 3;
+const UNKNOWN = 4;
+
+/**
+ * The category of an object, in the order of the chart. Each object has
+ * exactly one: suspension wins over the status, and an OCI HelmRepository,
+ * which has no status to reconcile, is ready.
+ */
+const getCategory = (o: StatsObject) => {
+  if (o.spec.suspend === true) return SUSPENDED;
+  if (o.kind === "HelmRepository" && (o as HelmRepository).spec.type === "oci") return READY;
+  if (!o.status?.conditions) return UNKNOWN;
+
+  const ready = o.status.conditions.find((c) => c.type === "Ready")?.status;
+  if (ready === "True") return READY;
+  if (ready === "False") return NOT_READY;
+  return IN_PROGRESS;
+};
+
+/**
+ * Counts of ready, not ready, in progress, suspended and unknown objects, in
+ * this order. The categories are disjoint and add up to the number of objects.
+ */
+export const getStats = (objects: StatsObject[]) => {
+  const stats: [number, number, number, number, number] = [0, 0, 0, 0, 0];
+  for (const o of objects) {
+    stats[getCategory(o)]++;
+  }
+
+  return stats;
 };
 
 /**
