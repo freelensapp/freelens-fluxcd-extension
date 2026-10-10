@@ -209,7 +209,7 @@ importers:
         specifier: 10.0.2
         version: 10.0.2(mobx@7.0.6)(react@19.3.0)
       moment:
-        specifier: ^2.30.1
+        specifier: ^2.31.0
         version: 2.31.0
       monaco-editor:
         specifier: 0.57.0
