@@ -32,6 +32,10 @@ class LensExtensionKubeObject {
 }
 
 export const Renderer = {
+  Component: {
+    // The host draws the chart with Chart.js; a test checks what is around it.
+    PieChart: () => null,
+  },
   K8sApi: {
     LensExtensionKubeObject,
     KubeApi: class KubeApi {},
