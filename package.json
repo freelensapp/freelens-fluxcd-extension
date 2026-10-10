@@ -7,10 +7,10 @@
     "url": "git+https://github.com/freelensapp/freelens-fluxcd-extension.git",
     "directory": "."
   },
-  "main": "out/main/index.js",
-  "renderer": "out/renderer/index.js",
+  "main": "dist/main.js",
+  "renderer": "dist/renderer.js",
   "files": [
-    "out/**/*"
+    "dist/**/*"
   ],
   "engines": {
     "node": ">= 24.0.0",
@@ -49,18 +49,18 @@
     "knip:production": "pnpm knip --production --strict",
     "test:unit": "vitest run",
     "type:check": "tsc --noEmit -p tsconfig.json --composite false",
-    "prebuild": "pnpm type:check",
-    "build": "electron-vite build",
-    "build:production": "VITE_PRESERVE_MODULES=false electron-vite build",
-    "build:force": "electron-vite build",
+    "build": "vite build && vite build --mode main",
+    "dev": "pnpm \"/^dev:(renderer|main)\\$/\"",
+    "dev:main": "vite build --watch --mode main",
+    "dev:renderer": "vite build --watch --no-emptyOutDir",
     "bump-version": "pnpm version --no-commit-hooks --no-git-checks --no-git-tag-version",
-    "pack:dev": "pnpm bump-version prerelease && pnpm build:force && pnpm build && pnpm clean:tgz && pnpm pack && pnpm dlx shx@0.4.0 ls \"$PWD/*.tgz\"",
-    "clean": "pnpm clean:out",
+    "pack:dev": "pnpm bump-version prerelease && pnpm build && pnpm clean:tgz && pnpm pack && pnpm dlx shx@0.4.0 ls \"$PWD/*.tgz\"",
+    "clean": "pnpm clean:dist",
+    "clean:dist": "pnpm dlx shx@0.4.0 rm -rf dist",
     "clean:dts": "pnpm dlx shx@0.4.0 rm -f \"src/**/*.d.scss.ts\"",
     "clean:node_modules": "pnpm dlx shx@0.4.0 rm -rf node_modules",
-    "clean:out": "pnpm dlx shx@0.4.0 rm -rf out",
     "clean:tgz": "pnpm dlx shx@0.4.0 rm -f \"*.tgz\"",
-    "clean:all": "pnpm \"/^clean:(dts|node_modules|out|tgz)\\$/\"",
+    "clean:all": "pnpm \"/^clean:(dist|dts|node_modules|tgz)\\$/\"",
     "postupdate": "pnpm biome:migrate"
   },
   "devDependencies": {
