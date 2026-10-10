@@ -1,6 +1,6 @@
 {
   "name": "@freelensapp/fluxcd-extension",
-  "version": "5.3.1",
+  "version": "6.0.0-0",
   "description": "Freelens extension for FluxCD",
   "repository": {
     "type": "git",
@@ -13,11 +13,12 @@
     "out/**/*"
   ],
   "engines": {
-    "node": ">= 22.0.0",
-    "freelens": "^1.6.2"
+    "node": ">= 24.0.0",
+    "freelens": "^2.0.0"
   },
   "copyright": "© 2025-2026 Freelens Authors",
   "license": "MIT",
+  "type": "module",
   "author": {
     "name": "Freelens Authors",
     "email": "freelens@freelens.app"
@@ -27,7 +28,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "biome": "pnpm dlx @biomejs/biome@2.5.2",
+    "biome": "pnpm dlx @biomejs/biome@2.5.4",
     "biome:check": "pnpm biome check",
     "biome:fix": "pnpm biome check --fix",
     "biome:migrate": "pnpm biome migrate --write",
@@ -42,7 +43,7 @@
     "lint": "pnpm lint:check",
     "lint:check": "pnpm \"/^(biome|prettier):check\\$/\"",
     "lint:fix": "pnpm \"/^(biome|prettier):fix\\$/\"",
-    "knip": "pnpm dlx knip@6.24.0 --dependencies --no-gitignore",
+    "knip": "pnpm dlx knip@6.39.0 --dependencies --no-gitignore --no-config-hints",
     "knip:check": "pnpm \"/^knip:(development|production)\\$/\"",
     "knip:development": "pnpm knip",
     "knip:production": "pnpm knip --production --strict",
@@ -52,7 +53,7 @@
     "build": "electron-vite build",
     "build:production": "VITE_PRESERVE_MODULES=false electron-vite build",
     "build:force": "electron-vite build",
-    "bump-version": "pnpm version --no-commit-hooks --no-git-tag-version",
+    "bump-version": "pnpm version --no-commit-hooks --no-git-checks --no-git-tag-version",
     "pack:dev": "pnpm bump-version prerelease && pnpm build:force && pnpm build && pnpm clean:tgz && pnpm pack && pnpm dlx shx@0.4.0 ls \"$PWD/*.tgz\"",
     "clean": "pnpm clean:out",
     "clean:dts": "pnpm dlx shx@0.4.0 rm -f \"src/**/*.d.scss.ts\"",
@@ -63,27 +64,25 @@
     "postupdate": "pnpm biome:migrate"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-decorators": "^8.0.2",
-    "@electron-toolkit/tsconfig": "^2.0.0",
-    "@freelensapp/extensions": "^1.10.3",
-    "@freelensapp/kube-object": "^1.10.3",
-    "@types/chart.js": "^2.9.41",
-    "@types/node": "^22.16.4",
-    "@types/react": "^17.0.93",
-    "@types/react-router-dom": "^5.3.3",
-    "@vitejs/plugin-react": "^6.0.3",
-    "electron-vite": "^5.0.0",
+    "@freelensapp/extensions": "2.0.0-0-nightly-2026-10-09",
+    "@types/node": "24.19.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "electron": "43.7.9",
+    "esbuild": "0.28.2",
     "js-base64": "^3.8.0",
-    "js-yaml": "^5.2.1",
-    "mobx": "6.13.7",
-    "mobx-react": "7.6.0",
+    "js-yaml": "5.4.2",
+    "mobx": "7.0.6",
+    "mobx-react": "10.0.2",
     "moment": "^2.30.1",
-    "react": "17.0.2",
-    "sass": "^1.101.0",
-    "typescript": "5.9.3",
-    "vite": "^8.1.3",
-    "vite-plugin-sass-dts": "^1.3.37",
-    "vitest": "^4.1.9"
+    "monaco-editor": "0.57.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "sass-embedded": "1.105.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.2",
+    "vitest": "5.0.3"
   },
   "keywords": [
     "extension",
@@ -94,5 +93,5 @@
     "flux",
     "fluxcd"
   ],
-  "packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800"
+  "packageManager": "pnpm@12.9.1+sha512.06b055fff5cd20dc12781de173ced3310ce0951bf2ec620211a16045d5444d5c93a663210764ef29a653a610459ba0368f0e74f84d80c54723cf95aae7bc0d6d"
 }

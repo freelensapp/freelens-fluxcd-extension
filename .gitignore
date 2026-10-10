@@ -1,6 +1,7 @@
 *.d.ts
 *.gz
 *.lock
+!mise.lock
 *.log
 *.map
 *.out
@@ -23,6 +24,9 @@
 /coverage/
 /node_modules/
 /out/
+
+# Scratch space of the CI agent, which checks out Freelens at tmp/freelens.
+/tmp/
 
 /.nyc_output/
 

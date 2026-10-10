@@ -10,10 +10,43 @@ This repository integrates FluxCD support into the Freelens application. It
 provides dashboards, detail views, cluster pages, and resource menus (reconcile,
 suspend, resume) for FluxCD v2 custom resources.
 
-- **Language**: TypeScript 5.9.3
-- **Runtime**: Node.js >= 22.0.0, Freelens >= 1.6.2
-- **Package manager**: pnpm 10.x (locked)
+- **Language**: TypeScript 7.0.2
+- **Runtime**: Freelens >= 2.0.0 (extension API v2)
+- **Toolchain**: Node.js 24.21.0, yq 4.54.1 and cosign 3.1.3 (`mise.toml` with
+  `mise.lock`; Node also in `.nvmrc`)
+- **Package manager**: pnpm 12.9.1 (`packageManager`, run through corepack)
 - **License**: MIT
+
+Library and tool versions follow the Freelens stack exactly: the catalog in
+Freelens's `pnpm-workspace.yaml` for libraries, the root `package.json` scripts
+of Freelens for tools run with `pnpm dlx` (Biome, knip, Trunk launcher), and
+Freelens's `mise.toml` and `.nvmrc` for Node and the other mise tools.
+`@freelensapp/extensions` is pinned to one exact version. The libraries the
+host provides at runtime (`react`, `react-dom`, `mobx`, `mobx-react`) and their
+types are devDependencies only, for compiling and testing; `electron` is a
+devDependency for its types only. The libraries the extension bundles
+(`js-yaml`, `js-base64`, `moment`) are devDependencies too: the host installs
+no dependencies of an extension, so they reach it only inside the bundle.
+`mise.lock` pins a checksum and a URL per tool for every platform; after
+changing `mise.toml`, run `mise lock`, not only `mise install`.
+
+pnpm settings live in `pnpm-workspace.yaml`. A dependency runs its install
+scripts only when `allowBuilds` sets it to `true`; a new dependency with
+install scripts that is not listed there fails `pnpm install`, so add it with
+`true` or `false` deliberately. pnpm refuses versions younger than its
+`minimumReleaseAge` (1 day), with `@freelensapp/extensions` excluded because
+its pinned nightly is often adopted on the day it is published.
+
+`strictPeerDependencies: true` makes `pnpm install` fail when the extension's
+own copy of a shared library is outside the peer range that
+`@freelensapp/extensions` declares for it: `react`, `react-dom`,
+`@types/react`, `@types/react-dom`, `mobx`, `mobx-react`, `monaco-editor` and
+`electron`. These peers are optional, so they are checked only when the
+extension declares the library, which it does for every one it imports or
+compiles against. Without the setting pnpm reports a mismatch as one warning
+line and installs anyway. The types are peers as well, so the package's
+declaration compiles against the extension's own `@types/react` and
+`@types/react-dom`, one copy of each.
 
 ## Common Commands
 
