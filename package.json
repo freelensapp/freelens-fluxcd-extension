@@ -65,8 +65,7 @@
     "clean:dts": "pnpm dlx shx@0.4.0 rm -f \"src/**/*.d.scss.ts\"",
     "clean:node_modules": "pnpm dlx shx@0.4.0 rm -rf node_modules",
     "clean:tgz": "pnpm dlx shx@0.4.0 rm -f \"*.tgz\"",
-    "clean:all": "pnpm \"/^clean:(dist|dts|node_modules|tgz)\\$/\"",
-    "postupdate": "pnpm biome:migrate"
+    "clean:all": "pnpm \"/^clean:(dist|dts|node_modules|tgz)\\$/\""
   },
   "devDependencies": {
     "@freelensapp/extensions": "2.0.0-0-nightly-2026-10-09",

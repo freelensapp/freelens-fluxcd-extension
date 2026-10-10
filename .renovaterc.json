@@ -138,11 +138,6 @@
       "matchDepNames": ["npm"],
       "matchUpdateTypes": ["major"],
       "enabled": false
-    },
-    {
-      "description": "Run the postupdate script, which applies `biome migrate`.",
-      "matchDepNames": ["@biomejs/biome"],
-      "postUpdateOptions": ["runScripts"]
     }
   ],
   "customDatasources": {
