@@ -791,16 +791,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
-      kind: GitRepository_v1.kind,
-      apiVersions: GitRepository_v1.crd.apiVersions,
-      priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository_v1>) => (
-          <GitRepositoryDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
       kind: HelmChart_v1beta1.kind,
       apiVersions: HelmChart_v1beta1.crd.apiVersions,
       priority: 10,
