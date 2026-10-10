@@ -278,6 +278,14 @@ and the class does not call `makeObservable(this)`. `@observable` on a plain
 field type-checks and builds; the development build of mobx throws when the
 class is defined, and the production build leaves the field unobservable.
 
+An `@observer` class component reads `this.props` in its own `render()` only.
+mobx-react 10 throws `Cannot read "X.props" in a reactive context` on a read in
+any other derivation: a `@computed` getter of the component, and also a plain
+method that the host calls from its own computed value or observer, such as
+`getItems` and `customizeHeader` of `KubeObjectListLayout`. `render()` passes
+such a callback the props it needs. Nothing before runtime reports it, so a
+component with such a callback gets a jsdom test (`fluxcd-events.test.tsx`).
+
 ### CSS
 
 The host links the stylesheet named after the renderer entry, `renderer.css`

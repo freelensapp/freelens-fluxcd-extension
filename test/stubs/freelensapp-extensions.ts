@@ -10,6 +10,9 @@
 // tests are type-checked against the real declaration of the package. Extend it
 // as the tests need more of the host API.
 import { createHash } from "node:crypto";
+import { computed } from "mobx";
+import { observer } from "mobx-react";
+import React from "react";
 import { vi } from "vitest";
 
 class LensExtensionKubeObject {
@@ -31,8 +34,37 @@ class LensExtensionKubeObject {
   }
 }
 
+interface KubeObjectListLayoutProps {
+  getItems: () => { getName(): string }[];
+  customizeHeader?: (header: { title: string }) => { title?: unknown; info?: unknown };
+}
+
+// The header is an observer of its own, so `customizeHeader` runs in its
+// render, as in the host.
+const ListLayoutHeader = observer(({ customizeHeader }: Pick<KubeObjectListLayoutProps, "customizeHeader">) => {
+  const { title, info } = customizeHeader?.({ title: "" }) ?? {};
+
+  return React.createElement("div", { "data-testid": "header" }, title as React.ReactNode, info as React.ReactNode);
+});
+
+// Only the parts of the host's list layout where it calls back into the
+// extension: it reads `getItems()` in a computed value
+// (`item-object-list/list-layout.tsx`) and renders a header that calls
+// `customizeHeader`. Each item is rendered by its name.
+const KubeObjectListLayout = observer(({ getItems, customizeHeader }: KubeObjectListLayoutProps) => {
+  const items = computed(() => getItems()).get();
+
+  return React.createElement(
+    "div",
+    null,
+    React.createElement(ListLayoutHeader, { customizeHeader }),
+    items.map((item) => React.createElement("div", { key: item.getName(), "data-testid": "item" }, item.getName())),
+  );
+});
+
 export const Renderer = {
   Component: {
+    KubeObjectListLayout,
     // The host draws the chart with Chart.js; a test checks what is around it.
     PieChart: () => null,
   },
@@ -40,6 +72,14 @@ export const Renderer = {
     LensExtensionKubeObject,
     KubeApi: class KubeApi {},
     KubeObjectStore: class KubeObjectStore {},
+    // Without a host there are no events; a test that needs some spies on
+    // `contextItems`.
+    eventStore: {
+      get contextItems(): unknown[] {
+        return [];
+      },
+      limit: 1000,
+    },
     apiManager: {
       // Returns a deterministic value so tests can assert that a link was built.
       lookupApiLink: (ref: { kind?: string; name?: string }) => `/apis/${ref?.kind ?? "Unknown"}/${ref?.name ?? ""}`,
@@ -61,5 +101,19 @@ export const Common = {
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
+  },
+  Util: {
+    cssNames: (...names: unknown[]) =>
+      names
+        .flatMap((name) =>
+          name && typeof name === "object"
+            ? Object.entries(name)
+                .filter(([, enabled]) => enabled)
+                .map(([key]) => key)
+            : [name],
+        )
+        .filter(Boolean)
+        .join(" "),
+    stopPropagation: (event: Event) => event.stopPropagation(),
   },
 };
