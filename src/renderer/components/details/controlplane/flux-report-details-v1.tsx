@@ -3,7 +3,6 @@ import * as MobxReact from "mobx-react";
 import React from "react";
 import { createEnumFromKeys } from "../../../utils";
 import styles from "./flux-report-details.module.scss";
-import stylesInline from "./flux-report-details.module.scss?inline";
 
 import type { FluxReconcilerStatus, FluxReport } from "../../../k8s/fluxcd/controlplane/fluxreport-v1";
 
@@ -47,7 +46,6 @@ export const FluxReportDetails: React.FC<Renderer.Component.KubeObjectDetailsPro
 
   return (
     <>
-      <style>{stylesInline}</style>
       <DrawerItem name="Reconciliation Enabled">
         <BadgeBoolean
           value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}
@@ -122,7 +120,7 @@ export const FluxReportDetails: React.FC<Renderer.Component.KubeObjectDetailsPro
             sortable={reconcilersSortable}
             sortByDefault={reconcilersSortByDefault}
             sortSyncWithUrl={false}
-            className="box grow"
+            className={styles.table}
           >
             <TableHead flat sticky={false}>
               <TableCell className="kind" sortBy="kind">

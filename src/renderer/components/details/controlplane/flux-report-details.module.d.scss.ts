@@ -1,5 +1,6 @@
 declare const classNames: {
   readonly title: "title";
+  readonly table: "table";
   readonly apiVersion: "apiVersion";
   readonly kind: "kind";
   readonly running: "running";

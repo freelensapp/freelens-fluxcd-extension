@@ -9,7 +9,6 @@ import {
 } from "../../components/status-conditions";
 import { FluxReport, type FluxReportApi } from "../../k8s/fluxcd/controlplane/fluxreport-v1";
 import styles from "./fluxreports.module.scss";
-import stylesInline from "./fluxreports.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -71,7 +70,6 @@ export const FluxReportsPage = observer((props: FluxReportsPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

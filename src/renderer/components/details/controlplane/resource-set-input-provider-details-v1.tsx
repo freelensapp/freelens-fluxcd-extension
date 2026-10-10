@@ -4,7 +4,6 @@ import React from "react";
 import { createEnumFromKeys } from "../../../utils";
 import { YamlDump } from "../../yaml-dump";
 import styles from "./resource-set-input-provider-details.module.scss";
-import stylesInline from "./resource-set-input-provider-details.module.scss?inline";
 
 import type { ResourceSetInputProvider, Schedule } from "../../../k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
 
@@ -51,7 +50,6 @@ export const ResourceSetInputProviderDetails: React.FC<
 
   return (
     <>
-      <style>{stylesInline}</style>
       <DrawerItem name="Reconciliation Enabled">
         <BadgeBoolean
           value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}
@@ -140,7 +138,7 @@ export const ResourceSetInputProviderDetails: React.FC<
             sortable={schedulesSortable}
             sortByDefault={schedulesSortByDefault}
             sortSyncWithUrl={false}
-            className="box grow"
+            className={styles.table}
           >
             <TableHead flat sticky={false}>
               <TableCell className="cron" sortBy="cron">

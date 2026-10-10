@@ -4,6 +4,7 @@ declare const classNames: {
   readonly cron: "cron";
   readonly timeZone: "timeZone";
   readonly window: "window";
+  readonly table: "table";
   readonly exportedInputs: "exportedInputs";
   readonly index: "index";
   readonly content: "content";

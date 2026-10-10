@@ -6,7 +6,6 @@ import { SpecPatches } from "../../spec-patches";
 import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
 import styles from "./flux-instance-details.module.scss";
-import stylesInline from "./flux-instance-details.module.scss?inline";
 
 import type { FluxInstance } from "../../../k8s/fluxcd/controlplane/fluxinstance-v1";
 
@@ -52,7 +51,6 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
 
     return (
       <>
-        <style>{stylesInline}</style>
         <DrawerItem name="Reconciliation Enabled">
           <BadgeBoolean
             value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}
@@ -206,7 +204,7 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
               sortable={componentsSortable}
               sortByDefault={componentsSortByDefault}
               sortSyncWithUrl={false}
-              className="box grow"
+              className={styles.table}
             >
               <TableHead flat sticky={false}>
                 <TableCell className="name" sortBy="name">

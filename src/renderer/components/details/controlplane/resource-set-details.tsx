@@ -5,7 +5,6 @@ import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
 import { YamlDump } from "../../yaml-dump";
 import styles from "./resource-set-details.module.scss";
-import stylesInline from "./resource-set-details.module.scss?inline";
 
 import type { ResourceSet } from "../../../k8s/fluxcd/controlplane/resourceset-v1";
 
@@ -33,8 +32,6 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
 
     return (
       <>
-        <style>{stylesInline}</style>
-
         <DrawerItem name="Reconciliation Enabled">
           <BadgeBoolean
             value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}

@@ -9,5 +9,6 @@ declare const classNames: {
   readonly patch: "patch";
   readonly sync: "sync";
   readonly syncDetails: "syncDetails";
+  readonly table: "table";
 };
 export = classNames;
