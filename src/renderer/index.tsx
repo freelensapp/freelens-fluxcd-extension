@@ -262,7 +262,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     {
       id: "dashboard",
       components: {
-        Page: () => <FluxCDOverviewPage />,
+        Page: () => <FluxCDOverviewPage extension={this} />,
       },
     },
     {

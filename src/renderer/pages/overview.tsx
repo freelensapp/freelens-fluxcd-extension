@@ -1,6 +1,6 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FluxCDEvents } from "../components/fluxcd-events";
 import { InfoPage } from "../components/info-page";
 import { PieChart } from "../components/pie-chart";
@@ -12,12 +12,12 @@ import { HelmRelease as HelmRelease_v2beta2 } from "../k8s/fluxcd/helm/helmrelea
 import { ImagePolicy as ImagePolicy_v1 } from "../k8s/fluxcd/image/imagepolicy-v1";
 import { ImagePolicy as ImagePolicy_v1beta1 } from "../k8s/fluxcd/image/imagepolicy-v1beta1";
 import { ImagePolicy as ImagePolicy_v1beta2 } from "../k8s/fluxcd/image/imagepolicy-v1beta2";
-import { ImageRepository as ImageRepository_v2 } from "../k8s/fluxcd/image/imagerepository-v1";
-import { ImageRepository as ImageRepository_v2beta1 } from "../k8s/fluxcd/image/imagerepository-v1beta1";
-import { ImageRepository as ImageRepository_v2beta2 } from "../k8s/fluxcd/image/imagerepository-v1beta2";
-import { ImageUpdateAutomation as ImageUpdateAutomation_v2 } from "../k8s/fluxcd/image/imageupdateautomation-v1";
-import { ImageUpdateAutomation as ImageUpdateAutomation_v2beta1 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta1";
-import { ImageUpdateAutomation as ImageUpdateAutomation_v2beta2 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta2";
+import { ImageRepository as ImageRepository_v1 } from "../k8s/fluxcd/image/imagerepository-v1";
+import { ImageRepository as ImageRepository_v1beta1 } from "../k8s/fluxcd/image/imagerepository-v1beta1";
+import { ImageRepository as ImageRepository_v1beta2 } from "../k8s/fluxcd/image/imagerepository-v1beta2";
+import { ImageUpdateAutomation as ImageUpdateAutomation_v1 } from "../k8s/fluxcd/image/imageupdateautomation-v1";
+import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta1 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta1";
+import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta2 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta2";
 import { Kustomization as Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization-v1";
 import { Kustomization as Kustomization_v1beta1 } from "../k8s/fluxcd/kustomize/kustomization-v1beta1";
 import { Kustomization as Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/kustomization-v1beta2";
@@ -45,8 +45,8 @@ import { HelmRepository as HelmRepository_v1beta1 } from "../k8s/fluxcd/source/h
 import { HelmRepository as HelmRepository_v1beta2 } from "../k8s/fluxcd/source/helmrepository-v1beta2";
 import { OCIRepository as OCIRepository_v1 } from "../k8s/fluxcd/source/ocirepository-v1";
 import { OCIRepository as OCIRepository_v1beta2 } from "../k8s/fluxcd/source/ocirepository-v1beta2";
+import { getServedStore } from "../utils";
 import styles from "./overview.module.scss";
-import stylesInline from "./overview.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -54,14 +54,48 @@ const {
   Component: { NamespaceSelectFilter, TabLayout },
 } = Renderer;
 
-const {
-  Util: { cssNames },
-} = Common;
+/**
+ * The kinds with a chart, in the order of the charts, each with its classes ordered newest API version first. Only
+ * the first version the cluster serves is used (see `getServedStore`).
+ */
+const kinds = [
+  { title: Kustomization_v1.crd.title, classes: [Kustomization_v1, Kustomization_v1beta2, Kustomization_v1beta1] },
+  { title: HelmRelease_v2.crd.title, classes: [HelmRelease_v2, HelmRelease_v2beta2, HelmRelease_v2beta1] },
+  { title: GitRepository_v1.crd.title, classes: [GitRepository_v1, GitRepository_v1beta2, GitRepository_v1beta1] },
+  {
+    title: HelmRepository_v1.crd.title,
+    classes: [HelmRepository_v1, HelmRepository_v1beta2, HelmRepository_v1beta1],
+  },
+  { title: HelmChart_v1.crd.title, classes: [HelmChart_v1, HelmChart_v1beta2, HelmChart_v1beta1] },
+  { title: Bucket_v1.crd.title, classes: [Bucket_v1, Bucket_v1beta2, Bucket_v1beta1] },
+  { title: OCIRepository_v1.crd.title, classes: [OCIRepository_v1, OCIRepository_v1beta2] },
+  {
+    title: ImageRepository_v1.crd.title,
+    classes: [ImageRepository_v1, ImageRepository_v1beta2, ImageRepository_v1beta1],
+  },
+  { title: ImagePolicy_v1.crd.title, classes: [ImagePolicy_v1, ImagePolicy_v1beta2, ImagePolicy_v1beta1] },
+  {
+    title: ImageUpdateAutomation_v1.crd.title,
+    classes: [ImageUpdateAutomation_v1, ImageUpdateAutomation_v1beta2, ImageUpdateAutomation_v1beta1],
+  },
+  { title: Alert_v1beta3.crd.title, classes: [Alert_v1beta3, Alert_v1beta2, Alert_v1beta1] },
+  { title: Provider_v1beta3.crd.title, classes: [Provider_v1beta3, Provider_v1beta2, Provider_v1beta1] },
+  { title: Receiver_v1.crd.title, classes: [Receiver_v1, Receiver_v1beta3, Receiver_v1beta2, Receiver_v1beta1] },
+  { title: ResourceSet_v1.crd.title, classes: [ResourceSet_v1] },
+  { title: ResourceSetInputProvider_v1.crd.title, classes: [ResourceSetInputProvider_v1] },
+];
 
-export const FluxCDOverviewPage = observer(() => {
+export interface FluxCDOverviewPageProps {
+  extension: Renderer.LensExtension;
+}
+
+export const FluxCDOverviewPage = observer(({ extension }: FluxCDOverviewPageProps) => {
   const [crds, setCrds] = useState<Renderer.K8sApi.CustomResourceDefinition[]>([]);
-  const watches = useRef<(() => void)[]>([]);
-  const abortController = useRef(new AbortController());
+  const [namespaces, setNamespaces] = useState<string[]>();
+
+  // The page is an observer, so this is evaluated again when the host registers the APIs of the CRDs.
+  const stores = kinds.map(({ title, classes }) => ({ title, store: getServedStore(classes) }));
+  const storesKey = stores.map(({ store }) => store?.api.apiBase ?? "").join(",");
 
   const getCrd = useCallback(
     (store: Renderer.K8sApi.KubeObjectStore) => {
@@ -70,153 +104,92 @@ export const FluxCDOverviewPage = observer(() => {
     [crds],
   );
 
-  const getChart = useCallback(
-    (title: string, resource: typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>) => {
-      try {
-        const store = resource.getStore();
-        if (!store) return <></>;
-        const crd = getCrd(store);
-        if (!crd) return <></>;
-
-        const items = store.contextItems;
-
-        return (
-          <div className={cssNames(styles.chartColumn, "column")} hidden={!items.length}>
-            <PieChart title={title} objects={items} crd={crd} />
-          </div>
-        );
-      } catch (_) {
-        return null;
-      }
-    },
-    [getCrd],
-  );
-
   useEffect(() => {
     let isMounted = true;
+    const abortController = new AbortController();
+    const watches: (() => void)[] = [];
+
     (async () => {
       const crdStore = Renderer.K8sApi.crdStore;
       const crds = (await crdStore.loadAll()) || [];
-      if (isMounted) setCrds(crds);
+      if (!isMounted) return;
+      setCrds(crds);
 
       const namespaceStore = Renderer.K8sApi.namespaceStore;
-      await namespaceStore.loadAll({ namespaces: [], reqInit: { signal: abortController.current.signal } });
-      watches.current.push(namespaceStore.subscribe());
+      await namespaceStore.loadAll({ namespaces: [], reqInit: { signal: abortController.signal } });
+      if (!isMounted) return;
+      watches.push(namespaceStore.subscribe());
 
-      const namespaces = namespaceStore.items.map((ns) => ns.getName());
+      setNamespaces(namespaceStore.items.map((ns) => ns.getName()));
+    })();
 
-      for (const object of [
-        Kustomization_v1beta1,
-        Kustomization_v1beta2,
-        Kustomization_v1,
-        HelmRelease_v2beta1,
-        HelmRelease_v2beta2,
-        HelmRelease_v2,
-        GitRepository_v1beta1,
-        GitRepository_v1beta2,
-        GitRepository_v1,
-        HelmChart_v1beta1,
-        HelmChart_v1beta2,
-        HelmChart_v1,
-        HelmRepository_v1beta1,
-        HelmRepository_v1beta2,
-        HelmRepository_v1,
-        Bucket_v1beta1,
-        Bucket_v1beta2,
-        Bucket_v1,
-        OCIRepository_v1beta2,
-        OCIRepository_v1,
-        ImageUpdateAutomation_v2beta1,
-        ImageUpdateAutomation_v2beta2,
-        ImageUpdateAutomation_v2,
-        ImageRepository_v2beta1,
-        ImageRepository_v2beta2,
-        ImageRepository_v2,
-        ImagePolicy_v1beta1,
-        ImagePolicy_v1beta2,
-        ImagePolicy_v1,
-        Alert_v1beta1,
-        Alert_v1beta2,
-        Alert_v1beta3,
-        Provider_v1beta1,
-        Provider_v1beta2,
-        Provider_v1beta3,
-        Receiver_v1beta1,
-        Receiver_v1beta2,
-        Receiver_v1beta3,
-        Receiver_v1,
-        ResourceSet_v1,
-        ResourceSetInputProvider_v1,
-      ]) {
+    return () => {
+      isMounted = false;
+      abortController.abort();
+      watches.forEach((w) => w());
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!namespaces) return;
+
+    let isMounted = true;
+    const abortController = new AbortController();
+    const watches: (() => void)[] = [];
+
+    (async () => {
+      for (const { store } of stores) {
+        if (!store) continue;
         try {
-          const store = object.getStore();
-          if (!store) continue;
-          await store.loadAll({ namespaces, reqInit: { signal: abortController.current.signal } });
-          watches.current.push(store.subscribe());
-        } catch (_) {
-          continue;
+          await store.loadAll({ namespaces, reqInit: { signal: abortController.signal } });
+          if (!isMounted) return;
+          watches.push(store.subscribe());
+        } catch {
+          // not loaded, as when the page is left while loading: no chart for this kind
         }
       }
     })();
 
     return () => {
       isMounted = false;
-      abortController.current.abort();
-      watches.current.forEach((w) => w());
-      watches.current = [];
+      abortController.abort();
+      watches.forEach((w) => w());
     };
-  }, []);
+  }, [namespaces, storesKey]);
 
   if (crds.length === 0) {
     return <InfoPage message="Loading Flux components..." />;
   }
 
   return (
-    <>
-      <style>{stylesInline}</style>
-      <TabLayout>
-        <div className={styles.fluxContent}>
-          <header>
-            <h5>FluxCD Overview</h5>
-            <NamespaceSelectFilter id="overview-namespace-select-filter-input" />
-          </header>
+    <TabLayout>
+      <div className={styles.fluxContent}>
+        <header>
+          <h5>FluxCD Overview</h5>
+          <NamespaceSelectFilter id="overview-namespace-select-filter-input" />
+        </header>
 
-          <div className={styles.overviewStatuses}>
-            <div className={styles.statuses}>
-              {getChart(Kustomization_v1beta1.crd.title, Kustomization_v1beta1)}
-              {getChart(Kustomization_v1beta2.crd.title, Kustomization_v1beta2)}
-              {getChart(Kustomization_v1.crd.title, Kustomization_v1)}
-              {getChart(HelmRelease_v2beta1.crd.title, HelmRelease_v2beta1)}
-              {getChart(HelmRelease_v2beta2.crd.title, HelmRelease_v2beta2)}
-              {getChart(HelmRelease_v2.crd.title, HelmRelease_v2)}
-              {getChart(GitRepository_v1beta1.crd.title, GitRepository_v1beta1)}
-              {getChart(GitRepository_v1beta2.crd.title, GitRepository_v1beta2)}
-              {getChart(GitRepository_v1.crd.title, GitRepository_v1)}
-              {getChart(HelmRepository_v1beta1.crd.title, HelmRepository_v1beta1)}
-              {getChart(HelmRepository_v1beta2.crd.title, HelmRepository_v1beta2)}
-              {getChart(HelmRepository_v1.crd.title, HelmRepository_v1)}
-              {getChart(HelmChart_v1beta1.crd.title, HelmChart_v1beta1)}
-              {getChart(HelmChart_v1beta2.crd.title, HelmChart_v1beta2)}
-              {getChart(HelmChart_v1.crd.title, HelmChart_v1)}
-              {getChart(Bucket_v1beta1.crd.title, Bucket_v1beta1)}
-              {getChart(Bucket_v1beta2.crd.title, Bucket_v1beta2)}
-              {getChart(Bucket_v1.crd.title, Bucket_v1)}
-              {getChart(OCIRepository_v1beta2.crd.title, OCIRepository_v1beta2)}
-              {getChart(OCIRepository_v1.crd.title, OCIRepository_v1)}
-              {getChart(ImageRepository_v2beta1.crd.title, ImageRepository_v2beta1)}
-              {getChart(ImagePolicy_v1beta1.crd.title, ImagePolicy_v1beta1)}
-              {getChart(ImageUpdateAutomation_v2beta1.crd.title, ImageUpdateAutomation_v2beta1)}
-              {getChart(Alert_v1beta1.crd.title, Alert_v1beta1)}
-              {getChart(Provider_v1beta1.crd.title, Provider_v1beta1)}
-              {getChart(Receiver_v1beta1.crd.title, Receiver_v1beta1)}
-              {getChart(ResourceSet_v1.crd.title, ResourceSet_v1)}
-              {getChart(ResourceSetInputProvider_v1.crd.title, ResourceSetInputProvider_v1)}
-            </div>
+        <div className={styles.overviewStatuses}>
+          <div className={styles.statuses}>
+            {stores.map(({ title, store }) => {
+              if (!store) return null;
+              const crd = getCrd(store);
+              if (!crd) return null;
+
+              const items = store.contextItems;
+              if (!items.length) return null;
+
+              return (
+                <div key={title} className={styles.chartColumn}>
+                  <PieChart extension={extension} title={title} objects={items} crd={crd} />
+                </div>
+              );
+            })}
           </div>
-
-          <FluxCDEvents compact compactLimit={100} />
         </div>
-      </TabLayout>
-    </>
+
+        <FluxCDEvents compact compactLimit={100} />
+      </div>
+    </TabLayout>
   );
 });

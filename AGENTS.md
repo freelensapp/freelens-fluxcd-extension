@@ -181,6 +181,14 @@ through a local alias after the imports (`type LocalObjectReference = Renderer.K
 - React keys for list items without a natural key come from `Renderer.Util.createReactKey(item)`.
 - Renderer code has no Node: no `crypto`, `node:*` or other builtins. Use `Renderer.Util.sha256Hex` for SHA-256.
 - Links inside components use `Renderer.Component.MaybeLink` (`to`, `onClick`); there is no `react-router-dom`.
+- A component opens a page of the extension with `extension.navigate(pageId)`, the page ids being the `id`s of the
+  `clusterPages` registrations (the singular name of the kind, `dashboard` for the Overview). `Renderer.Navigation.navigate`
+  takes an absolute pathname, such as the result of `Renderer.Navigation.getDetailsUrl`; the host logs a warning for a
+  relative one.
+- The host registers an API for every served version of a CRD, so every class of a kind whose version is served has a
+  store. Code that covers all kinds, such as the Overview page, takes one class per kind, the first served one of its
+  classes ordered newest first (`getServedStore` in `src/renderer/utils.ts`); using each class would load and count the
+  same objects once per served version.
 - The host renders a cluster page with `params` only. A page that needs the extension gets it from its registration
   (`Page: () => <AlertsPage extension={this} />`), with the page created once at module level by
   `createAvailableVersionPage` in `src/renderer/pages/available-version.tsx`. The page it returns is an `observer`:

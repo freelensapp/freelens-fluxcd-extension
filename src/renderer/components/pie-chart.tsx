@@ -27,11 +27,15 @@ const getStats = (
   return [ready, notReady, inProgress, suspended, unknown];
 };
 
-const getPath = (crd: Renderer.K8sApi.CustomResourceDefinition) => {
+/**
+ * The id of the cluster page of the kind, which is its singular name.
+ */
+const getPageId = (crd: Renderer.K8sApi.CustomResourceDefinition) => {
   return crd.spec.names.singular;
 };
 
 export interface PieChartProps<A extends Renderer.K8sApi.KubeObject> {
+  extension: Renderer.LensExtension;
   objects: A[];
   title: string;
   crd: Renderer.K8sApi.CustomResourceDefinition;
@@ -42,7 +46,7 @@ export function PieChart(
     Renderer.K8sApi.LensExtensionKubeObject<any, FluxCDKubeObjectStatus, FluxCDKubeObjectSpecWithSuspend>
   >,
 ): React.ReactElement {
-  const { objects, title, crd } = props;
+  const { extension, objects, title, crd } = props;
   const [ready, notReady, inProgress, suspended, unknown] = getStats(objects);
 
   const chartData: Renderer.Component.PieChartData = {
@@ -75,7 +79,7 @@ export function PieChart(
         <a
           onClick={(e) => {
             e.preventDefault();
-            Renderer.Navigation.navigate({ pathname: getPath(crd) });
+            void extension.navigate(getPageId(crd));
           }}
         >
           {title} ({objects.length})
