@@ -4,6 +4,7 @@ import { dump } from "js-yaml";
 import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot, type HelmReleaseStore } from "../../../k8s/fluxcd/helm/helmrelease-v2";
+import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
@@ -114,7 +115,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             </MaybeLink>
           </DrawerItem>
           <DrawerItem name="Helm Chart" hidden={!object.spec.chartRef}>
-            <LinkToObject objectRef={object.spec.chartRef} object={object} />
+            <LinkToObject objectRef={withServedApiVersion(object.spec.chartRef)} object={object} />
           </DrawerItem>
           <DrawerItem name="Chart Name">
             {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}

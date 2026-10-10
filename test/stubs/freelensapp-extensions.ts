@@ -62,6 +62,38 @@ const KubeObjectListLayout = observer(({ getItems, customizeHeader }: KubeObject
   );
 });
 
+interface StubKubeApi {
+  kind: string;
+  apiVersionWithGroup: string;
+  formatUrlForNotListing(descriptor: { name?: string; namespace?: string }): string;
+}
+
+interface StubObjectReference {
+  apiVersion?: string;
+  kind?: string;
+  name: string;
+  namespace?: string;
+}
+
+const apiManager = {
+  // The host's registry has an API for every resource the cluster serves.
+  // Without a host it has none; a test that needs some spies on `getApi`.
+  getApi: (_callback: (api: StubKubeApi) => boolean): StubKubeApi | undefined => undefined,
+
+  // As the host's (`api-manager.ts`): `apiVersion` defaults to `v1` and the
+  // namespace to the parent's; the link comes from the API of the kind and
+  // version, or, without one, is built under `/apis` from the defaulted
+  // `apiVersion`. The host's lookup of an API by the built path is left out.
+  lookupApiLink(ref: StubObjectReference, parentObject?: { metadata?: { namespace?: string } }): string {
+    const { kind, apiVersion = "v1", name, namespace = parentObject?.metadata?.namespace } = ref;
+    if (!kind) return "";
+    const api = apiManager.getApi((api) => api.kind === kind && api.apiVersionWithGroup === apiVersion);
+    if (api) return api.formatUrlForNotListing({ name, namespace });
+    const resource = kind.toLowerCase().replace(/y$/, "ie").replace(/s$/, "se") + "s";
+    return `/apis/${apiVersion}${namespace ? `/namespaces/${namespace}` : ""}/${resource}/${name}`;
+  },
+};
+
 export const Renderer = {
   Component: {
     KubeObjectListLayout,
@@ -80,10 +112,7 @@ export const Renderer = {
       },
       limit: 1000,
     },
-    apiManager: {
-      // Returns a deterministic value so tests can assert that a link was built.
-      lookupApiLink: (ref: { kind?: string; name?: string }) => `/apis/${ref?.kind ?? "Unknown"}/${ref?.name ?? ""}`,
-    },
+    apiManager,
   },
   Navigation: {
     getDetailsUrl: (url: string) => `/details?url=${encodeURIComponent(url)}`,

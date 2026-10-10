@@ -3,6 +3,7 @@ import * as MobxReact from "mobx-react";
 import React from "react";
 import { ImageUpdateAutomation } from "../../../k8s/fluxcd/image/imageupdateautomation-v1";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1";
+import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
 import { getHeight } from "../../../utils";
 import styles from "./image-update-automation-details.module.scss";
 
@@ -27,7 +28,7 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
           <DrawerItem name="Git Repository">
-            <LinkToObject objectRef={object.spec.sourceRef} object={object} />
+            <LinkToObject objectRef={withServedApiVersion(object.spec.sourceRef)} object={object} />
           </DrawerItem>
           <DrawerItem name="Git Ref" hidden={!gitRefFull}>
             {gitRefFull}

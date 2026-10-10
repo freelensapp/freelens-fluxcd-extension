@@ -25,12 +25,16 @@ const referenceSortByDefault: { sortBy: keyof typeof referenceSortable; orderBy:
   orderBy: "asc",
 };
 
-function inventoryResourceRefToObjectRef(resource: ResourceRef): NamespacedObjectKindReference | undefined {
+/**
+ * Turns an inventory entry, `<namespace>_<name>_<group>_<kind>` with the version in `v`, into an object reference. The
+ * core group is empty, and its `apiVersion` is the version alone (`v1`, not `/v1`).
+ */
+export function inventoryResourceRefToObjectRef(resource: ResourceRef): NamespacedObjectKindReference | undefined {
   try {
     const [namespace, name, group, kind] = resource.id.split("_");
     const { v } = resource;
     return {
-      apiVersion: `${group}/${v}`,
+      apiVersion: group ? `${group}/${v}` : v,
       kind,
       name,
       namespace,

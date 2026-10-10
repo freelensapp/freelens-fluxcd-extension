@@ -9,6 +9,7 @@ import {
   NamespacedObjectKindReference,
   NamespacedObjectReference,
 } from "../types";
+import { getRefUrl } from "../utils";
 
 import type { Patch, Selector } from "../../core/types";
 
@@ -263,7 +264,7 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
   static getSourceRefUrl(object: HelmRelease): string | undefined {
     const ref = object.spec.chart?.spec.sourceRef ?? object.spec.chartRef;
     if (!ref) return;
-    return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
+    return getRefUrl(ref, object);
   }
 
   static getSourceRefName(object: HelmRelease): string | undefined {

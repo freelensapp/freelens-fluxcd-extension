@@ -183,6 +183,10 @@ through a local alias after the imports (`type LocalObjectReference = Renderer.K
 - React keys for list items without a natural key come from `Renderer.Util.createReactKey(item)`.
 - Renderer code has no Node: no `crypto`, `node:*` or other builtins. Use `Renderer.Util.sha256Hex` for SHA-256.
 - Links inside components use `Renderer.Component.MaybeLink` (`to`, `onClick`); there is no `react-router-dom`.
+- A Flux reference with a `kind` usually has no `apiVersion` (`spec.sourceRef`, `spec.chartRef`, `eventSources`,
+  health checks), and the host's `lookupApiLink` then assumes `v1`, the core group. Such a reference goes through
+  `getRefUrl` or, for `Renderer.Component.LinkToObject`, `withServedApiVersion` (`src/renderer/k8s/fluxcd/utils.ts`),
+  which fill in the newest version the cluster serves for the kind, within its group for a Flux kind.
 - A component opens a page of the extension with `extension.navigate(pageId)`, the page ids being the `id`s of the
   `clusterPages` registrations (the singular name of the kind, `dashboard` for the Overview). `Renderer.Navigation.navigate`
   takes an absolute pathname, such as the result of `Renderer.Navigation.getDetailsUrl`; the host logs a warning for a

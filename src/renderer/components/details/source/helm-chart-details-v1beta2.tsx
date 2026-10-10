@@ -2,6 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
 import { HelmChart } from "../../../k8s/fluxcd/source/helmchart-v1beta2";
+import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
 import { StatusArtifact } from "../../status-artifact";
 
 const { observer } = MobxReact;
@@ -23,7 +24,7 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
       <DrawerItem name="Version">{object.spec.version ?? "*"}</DrawerItem>
       <DrawerItem name="Reconcile Strategy">{object.spec.reconcileStrategy ?? "ChartVersion"}</DrawerItem>
       <DrawerItem name="Source">
-        <LinkToObject objectRef={object.spec.sourceRef} object={object} />
+        <LinkToObject objectRef={withServedApiVersion(object.spec.sourceRef)} object={object} />
       </DrawerItem>
       <DrawerItem name="Values Files" hidden={!object.spec.valuesFiles?.length}>
         {object.spec.valuesFiles?.length &&

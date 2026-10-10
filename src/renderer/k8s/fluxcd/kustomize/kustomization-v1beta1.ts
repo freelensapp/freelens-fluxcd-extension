@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { getRefUrl } from "../utils";
 
 import type { Patch } from "../../core/types";
 import type {
@@ -97,7 +98,7 @@ export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<
   static getSourceRefUrl(object: Kustomization): string | undefined {
     const ref = object.spec.sourceRef;
     if (!ref) return;
-    return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
+    return getRefUrl(ref, object);
   }
 }
 
