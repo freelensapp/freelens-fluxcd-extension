@@ -1,7 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import { computed, observable } from "mobx";
 import * as MobxReact from "mobx-react";
-import moment from "moment";
 import React from "react";
 
 const { observer } = MobxReact;
@@ -202,7 +201,7 @@ export class FluxCDEvents extends React.Component<FluxCDEventsProps> {
             <WithTooltip>{event.getSource()}</WithTooltip>,
             event.count,
             <KubeObjectAge key="age" object={event} />,
-            <WithTooltip tooltip={event.lastTimestamp ? moment(event.lastTimestamp).toDate() : undefined}>
+            <WithTooltip tooltip={event.lastTimestamp ? new Date(event.lastTimestamp) : undefined}>
               <ReactiveDuration key="last-seen" timestamp={event.lastTimestamp} />
             </WithTooltip>,
           ];

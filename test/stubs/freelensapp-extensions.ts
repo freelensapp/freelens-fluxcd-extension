@@ -118,6 +118,11 @@ export const Renderer = {
     getDetailsUrl: (url: string) => `/details?url=${encodeURIComponent(url)}`,
   },
   Util: {
+    // A date, or a date and time with an optional offset, that the host
+    // accepts as ISO 8601 and that parses to a valid time.
+    isIso8601DateString: (value: string) =>
+      /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?)?$/.test(value) &&
+      !Number.isNaN(Date.parse(value)),
     // The host computes the same digest: SHA-256 of the UTF-8 bytes, as
     // lowercase hex.
     sha256Hex: (data: string | Uint8Array) => createHash("sha256").update(data).digest("hex"),

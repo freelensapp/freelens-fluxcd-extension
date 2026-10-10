@@ -1,12 +1,15 @@
-import moment from "moment";
-
-import type { Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 
 type Condition = Renderer.K8sApi.Condition;
 
+const {
+  Util: { isIso8601DateString },
+} = Renderer;
+
 function timeToUnix(dateStr?: string): number {
-  const m = moment(dateStr, moment.ISO_8601, true);
-  return m.isValid() ? m.unix() : 0;
+  if (!dateStr || !isIso8601DateString(dateStr)) return 0;
+  const time = Date.parse(dateStr);
+  return Number.isNaN(time) ? 0 : Math.floor(time / 1000);
 }
 
 const conditionTypePrioritiesDefault = {
