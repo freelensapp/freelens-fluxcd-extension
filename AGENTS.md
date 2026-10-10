@@ -107,14 +107,19 @@ src/
   renderer/index.tsx                   # Renderer entry (Renderer.LensExtension): every registration, ESM
   renderer/k8s/fluxcd/                 # K8s object model classes, grouped by controller
                                        #   (source, kustomize, helm, image, notification, controlplane)
+  renderer/k8s/fluxcd/utils.ts         # Links of Flux references (served API version)
   renderer/k8s/core/                   # Core K8s object models
   renderer/components/details/         # Detail view components, grouped by controller
   renderer/pages/                      # Cluster page components, grouped by controller
+  renderer/pages/available-version.tsx # Page that picks the first served API version of a kind
+  renderer/pages/overview.tsx          # Overview page (pie chart per kind, FluxCD events)
   renderer/menus/                      # Resource menu items (reconcile, suspend, resume)
   renderer/components/                 # Shared components (status, charts, YAML dump, etc.)
   renderer/icons/                      # SVG icons
-  renderer/utils.ts                    # Utility functions
+  renderer/utils.ts                    # Utility functions (getServedStore, getMaybeDetailsUrl, ...)
   common/                              # Code for both processes (none yet; its tsconfig.json only)
+test/stubs/                            # Runtime stub of @freelensapp/extensions for Vitest
+integration/__tests__/                 # Integration tests, run inside a Freelens checkout
 environment-tests/                     # Probes for the per-environment programs
 build/                                 # Vite plugins: host modules, standard decorators, CSS module declarations
 ```
@@ -206,6 +211,62 @@ through a local alias after the imports (`type LocalObjectReference = Renderer.K
 - SCSS modules get TypeScript declarations (`*.module.d.scss.ts`), written during the renderer build (see
   "CSS module declarations"). They are committed, because `pnpm type:check` runs without a build; commit the
   regenerated file with a change to its SCSS module. `pnpm clean:dts` removes them.
+
+## Rules That Fail Silently
+
+Each of these compiles when it is broken, and breaks the extension at runtime
+or not visibly at all. The sections named in parentheses explain the
+mechanism; this is the list to check a change against.
+
+- **The host's React and mobx, one copy each.** Import `react`, `react-dom`,
+  `mobx` and `mobx-react` by their bare module ids. A second React throws
+  `invalid hook call`; a second mobx throws nothing, and the host never reacts
+  to its observables. The build fails on the ways a second copy gets in
+  ("Modules provided by the host").
+- **Standard decorators.** An observable field is `@observable accessor`, and
+  the class does not call `makeObservable(this)`. Without `accessor` the
+  production build of mobx leaves the field unobservable ("Decorators").
+- **`this.props` of an `@observer` class component in its own `render()`
+  only.** A read in a `@computed` getter, or in a callback the host calls from
+  its own derivation, throws at runtime and crashes the page; only a jsdom
+  test shows it ("Decorators").
+- **No Node or Electron in renderer and common code.** They are `undefined` in
+  the renderer. The build fails on an import, `pnpm type:check` on a global
+  ("Process-specific settings").
+- **One CSS asset, `dist/renderer.css`.** Any other name, or a second asset,
+  leaves the extension unstyled. Nothing checks it; look at `dist/` after a
+  change to the CSS setup ("CSS").
+- **No flexbox utility classes.** The host has none, so `flex`, `column`,
+  `box` or `grow` in a `className` does nothing and the element loses its
+  layout ("Renderer Components").
+- **One tsconfig per environment.** Each program has only its runtime's `lib`
+  and `types`, and no declaration may load Node into the renderer or the DOM
+  into main; otherwise a wrong API type-checks and is `undefined` at runtime.
+  The environment tests fail on a leak ("TypeScript").
+- **No instance method on a KubeObject subclass.** The objects from the host
+  do not have it, and the call throws. Nothing checks it
+  ("CRD KubeObject Pattern").
+- **A component that chooses the version through `getStore()` is an
+  `observer`.** The host registers a CRD's APIs after the cluster frame has
+  loaded the CRDs; a component that is not an `observer` and rendered before
+  then shows the kind as not installed until the user navigates away and back
+  ("Renderer Components").
+- **One class per kind where code covers all kinds.** Every served version
+  resolves, so walking all the classes of a kind loads and counts the same
+  objects once per version (`getServedStore`, "Renderer Components").
+- **A cluster page gets the extension from its registration.** The host passes
+  `params` only. The type check rejects a page that requires another prop, but
+  not one that declares it optional ("Renderer Components").
+- **A Flux reference without `apiVersion` goes through `getRefUrl` or
+  `withServedApiVersion`.** Passed to the host as it is, it links to the core
+  group, and the details drawer opens nothing ("Renderer Components").
+- **An ESM `main`, and the entries in `package.json` unchanged while
+  `pnpm dev` runs.** The host refuses to reload a CommonJS main and logs why,
+  and it watches only the entries it started with, so a manifest change needs
+  Freelens restarted.
+
+Neither `pnpm build` nor `pnpm dev` runs the type check, so a Node global in
+renderer code passes them; `pnpm type:check` and `type-check.yaml` catch it.
 
 ## Build
 
@@ -522,6 +583,68 @@ there under Freelens's Vitest, with its helpers. The test installs the
 tarball from the extensions page and fails on any error logged by either
 process.
 
+## Checking the Extension in Freelens Dev
+
+The functional checks of a change run against Freelens started with
+`pnpm dev` from a freelensapp/freelens checkout. That script starts Electron
+with `--remoteDebuggingPort 9223`, so an agent can drive the app over the
+Chrome DevTools Protocol. How to attach Playwright MCP to it is in Freelens's
+`DEVELOPMENT.md`, "Inspecting the running dev app from an AI agent"; start
+Freelens before the session connects. Playwright MCP writes its snapshots to
+`.playwright-mcp/`, which is git-ignored.
+
+Without the MCP server, a `playwright-core` script with
+`chromium.connectOverCDP("http://127.0.0.1:9223")` does the same. End such a
+script by exiting the process; do not close the browser, which belongs to
+Freelens.
+
+The checks need a cluster with Flux, and with the Flux Operator for the
+`fluxcd.controlplane.io` kinds, and objects of the kinds under test; a kind
+whose CRD is missing shows the "not available" page instead.
+
+### Installing the checkout
+
+1. `pnpm install`, then `pnpm build`. After a branch switch, `node_modules`
+   can still hold another stack, and Freelens loads the extension from
+   `dist/`.
+2. On the Extensions page, enter the checkout's directory and press
+   "Install". Freelens then asks whether to load the extension in place;
+   confirm that too. The table lists the extension as "in place, unverified"
+   and enabled.
+3. A rebuild, by `pnpm build` or by `pnpm dev` of the extension, reloads it
+   once in the root frame and once in each cluster frame.
+
+### Driving the UI
+
+- Every cluster renders in a cross-origin `<clusterId>.renderer.freelens.app`
+  iframe. Pages, menus and details of the extension live in that frame, not
+  in the main page.
+- Pages of the extension have URLs like `/extension/<name>/<pageId>`, with the
+  package name's `@` dropped and `/` turned into `--`: the Overview is
+  `/extension/freelensapp--fluxcd-extension/dashboard`, and a resource page
+  has the singular name of its kind as page id, for example
+  `/extension/freelensapp--fluxcd-extension/gitrepository`. The sidebar
+  entries navigate in `onClick`; their `href` is not the page URL.
+- Playwright's actionability checks can fail on the hotbar, where
+  `#ScrollSpyRoot` intercepts pointer events; a DOM `click()` on the element
+  works.
+- Views fill in once the host's stores have loaded. Wait for the expected
+  content, not a fixed time, before deciding that a page is empty. A list
+  shows the selected namespaces only, so choose the namespaces of the test
+  objects first.
+
+### Reading the console
+
+The renderer console also carries the output of Freelens's terminal dock
+(`%cMESSAGE` lines), which can include the user's shell prompt, account names
+and paths. Keep only warnings, errors, page errors and the extension's own
+lines, and never paste the full console into a PR, an issue or a report.
+React reports key problems as console errors ("Each child in a list should
+have a unique key", "Encountered two children with the same key"); they count
+as failures of the "no error in DevTools" check. React reports each component
+once per frame, so open every details drawer in a fresh cluster frame to see
+them all.
+
 ## Code Style
 
 - **Biome** formats **TypeScript/TSX, JS, JSON, CSS, HTML**: double quotes, semicolons, trailing commas, 2-space indent, 120 char line width — use `pnpm biome:fix`
@@ -563,8 +686,10 @@ Extensions run in the same multi-process model as the Freelens host:
 ### Changes Not Appearing
 
 1. Check that files are not in ignored output directories (`dist/`, `node_modules/`)
-2. Full clean and rebuild: `pnpm clean:all && pnpm build`
-3. Reinstall the extension in Freelens (or restart the app in dev mode)
+2. Full clean and rebuild: `pnpm clean:all && pnpm install && pnpm build`
+3. With a directory install, check that `pnpm dev` is running: Freelens reloads the extension after each rebuild. A
+   change to `main` or `renderer` in `package.json` needs Freelens restarted once
+4. With a tarball install, pack and install the extension again (`pnpm pack:dev`)
 
 ### Build Failures
 
@@ -580,17 +705,21 @@ Extensions run in the same multi-process model as the Freelens host:
 3. Look for stack traces with file:line numbers
 4. Verify all CRD objects have proper `static readonly` properties (kind, apiBase, crd)
 5. Validate both with `pnpm type:check` **and** `pnpm build` — runtime failures can appear only in bundled `dist/` code
+6. Go through "Rules That Fail Silently": most runtime errors of a v2 extension that pass every check are listed there
 
 ## Best Practices
 
 1. **Use semantic search** to find examples and patterns in the codebase
 2. **Follow existing patterns** — grep for similar implementations before creating new ones
 3. **Test changes** before committing
-4. **Run validation before committing:** `pnpm lint:fix && pnpm type:check && pnpm build`
-5. **For TypeScript/TSX, JS, JSON, CSS/SCSS, HTML files:** run `pnpm biome:fix` (or `biome check` directly if `biome` is installed locally)
-6. **For Markdown, YAML, and other formats:** run `pnpm prettier:fix` or `pnpm trunk:fix`
-7. **Full build** when in doubt about cached state: `pnpm clean:all && pnpm build`
-8. **Do not use Anthropic Fable for coding tasks** — Fable may be used only for planning,
+4. **Run validation before committing:** `pnpm lint:fix && pnpm type:check && pnpm test:unit && pnpm build`, and
+   `pnpm knip:check` after adding, moving or removing a file or a dependency
+5. **For TypeScript/TSX, JS, JSON, CSS, HTML files:** run `pnpm biome:fix` (or `biome check` directly if `biome` is installed locally)
+6. **For SCSS, Markdown, YAML, and other formats:** run `pnpm prettier:fix` or `pnpm trunk:fix`
+7. **Full build** when in doubt about cached state: `pnpm clean:all && pnpm install && pnpm build`
+8. **Check the rules that fail silently** ("Rules That Fail Silently") against every change to the build, the
+   components or the models: the type check, the build and the unit tests do not catch them
+9. **Do not use Anthropic Fable for coding tasks** — Fable may be used only for planning,
    analysis, and thinking through problems. When writing or editing code,
    use standard editing tools instead.
 
@@ -668,6 +797,30 @@ When asked to implement a change on a PR:
    separately. Do not batch multiple independent fixes into a single
    commit. This keeps the history bisectable and makes each change easy
    to revert individually.
+
+### Modifying GitHub Actions Workflows
+
+Claude cannot push changes to files under `.github/workflows/` directly,
+because the GitHub token used by the action lacks the `workflows` permission.
+Any patch to a workflow file MUST therefore be delivered as a new, complete
+file under the `github-workflow-fix/` directory in the repository root instead
+of editing the file in place:
+
+1. Write the full, final contents of the workflow to
+   `github-workflow-fix/<workflow-file-name>`, with the same file name as in
+   `.github/workflows/` (e.g. `github-workflow-fix/check.yaml`). Do **not**
+   edit the original file under `.github/workflows/`.
+2. Make it a **complete** file — the entire workflow as it should look after
+   the change, not just a diff or fragment — so it can be copied verbatim.
+3. Commit it with the change that needs it, and list it in the report. In the
+   PR description, note it as a proposed workflow change that a maintainer
+   must move from `github-workflow-fix/` to `.github/workflows/`.
+
+A maintainer moves the file into `.github/workflows/` in a separate commit and
+removes `github-workflow-fix/`. Pull before continuing on the branch, as it may
+have gained such a commit. Until then, the development pass of
+`pnpm knip:check` still reads the workflows under `.github/workflows/`, so a
+dependency that only the old workflow uses is reported there.
 
 ### Branch Naming Conventions
 
