@@ -1488,11 +1488,29 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ImagePolicy_v1beta2.kind,
+      apiVersions: ImagePolicy_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImagePolicy_v1beta2>) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImagePolicy_v1beta2} />
+        ),
+      },
+    },
+    {
       kind: ImagePolicy_v1.kind,
       apiVersions: ImagePolicy_v1.crd.apiVersions,
       components: {
         MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImagePolicy_v1>) => (
           <FluxCDObjectReconcileMenuItem {...props} resource={ImagePolicy_v1} />
+        ),
+      },
+    },
+    {
+      kind: ImagePolicy_v1.kind,
+      apiVersions: ImagePolicy_v1.crd.apiVersions,
+      components: {
+        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImagePolicy_v1>) => (
+          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImagePolicy_v1} />
         ),
       },
     },

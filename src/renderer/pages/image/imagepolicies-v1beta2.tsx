@@ -19,9 +19,9 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   repository: (object: KubeObject) => object.spec.imageRepositoryRef.name,
-  latestTag: (object: KubeObject) => object.status?.latestImage?.split(":")[1],
-  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
-  status: (object: KubeObject) => getConditionText(object.status?.conditions),
+  latestTag: (object: KubeObject) => KubeObject.getLatestTag(object),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
+  status: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -57,10 +57,10 @@ export const ImagePoliciesPage = observer((props: ImagePoliciesPageProps) =>
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
             <WithTooltip>{object.spec.imageRepositoryRef.name}</WithTooltip>,
-            <WithTooltip>{object.status?.latestImage?.split(":")[1]}</WithTooltip>,
+            <WithTooltip>{KubeObject.getLatestTag(object)}</WithTooltip>,
             <Badge
-              className={getConditionClass(object.status?.conditions)}
-              label={getConditionText(object.status?.conditions)}
+              className={getConditionClass(object.status?.conditions, object.spec.suspend)}
+              label={getConditionText(object.status?.conditions, object.spec.suspend)}
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,

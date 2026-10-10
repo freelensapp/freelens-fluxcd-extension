@@ -7,7 +7,7 @@ import { withFluxKind } from "../../../k8s/fluxcd/utils";
 const { observer } = MobxReact;
 
 const {
-  Component: { DrawerItem, LinkToObject },
+  Component: { BadgeBoolean, DrawerItem, LinkToObject },
 } = Renderer;
 
 export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImagePolicy>> = observer(
@@ -17,6 +17,9 @@ export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
     return (
       <>
         <div>
+          <DrawerItem name="Resumed">
+            <BadgeBoolean value={!object.spec.suspend} />
+          </DrawerItem>
           <DrawerItem name="Image Repository">
             <LinkToObject objectRef={withFluxKind(object.spec.imageRepositoryRef, "ImageRepository")} object={object} />
           </DrawerItem>
@@ -32,6 +35,16 @@ export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Filter Tags" hidden={!object.spec.filterTags}>
             <DrawerItem name="pattern">{object.spec.filterTags?.pattern}</DrawerItem>
             <DrawerItem name="extract">{object.spec.filterTags?.extract}</DrawerItem>
+          </DrawerItem>
+          <DrawerItem name="Digest Reflection Policy">{object.spec.digestReflectionPolicy ?? "Never"}</DrawerItem>
+          <DrawerItem name="Interval" hidden={!object.spec.interval}>
+            {object.spec.interval}
+          </DrawerItem>
+          <DrawerItem name="Latest Image" hidden={!object.status?.latestRef}>
+            {ImagePolicy.getLatestImage(object)}
+          </DrawerItem>
+          <DrawerItem name="Previous Image" hidden={!object.status?.observedPreviousRef}>
+            {ImagePolicy.getObservedPreviousImage(object)}
           </DrawerItem>
         </div>
       </>
