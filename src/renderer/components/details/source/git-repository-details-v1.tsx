@@ -2,6 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1";
+import { withFluxKind } from "../../../k8s/fluxcd/utils";
 import { getHeight } from "../../../utils";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./git-repository-details.module.scss";
@@ -75,7 +76,7 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
                       <Icon small material="list" />
                     </div>
                     <DrawerItem name="Git Repository">
-                      <LinkToObject objectRef={include.repository} object={object} />
+                      <LinkToObject objectRef={withFluxKind(include.repository, GitRepository.kind)} object={object} />
                     </DrawerItem>
                     <DrawerItem name="From Path">{include.fromPath}</DrawerItem>
                     <DrawerItem name="To Path">{include.toPath}</DrawerItem>

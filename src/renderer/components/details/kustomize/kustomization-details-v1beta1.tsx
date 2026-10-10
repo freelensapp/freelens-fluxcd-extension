@@ -5,7 +5,7 @@ import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization-v1beta1";
 import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
-import { getRefUrl } from "../../../k8s/fluxcd/utils";
+import { getRefUrl, withFluxKind } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import { SpecPatches } from "../../spec-patches";
@@ -148,7 +148,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                     </div>
 
                     <DrawerItem name="Name">
-                      <LinkToObject objectRef={dependency} object={object} />
+                      <LinkToObject objectRef={withFluxKind(dependency, Kustomization.kind)} object={object} />
                     </DrawerItem>
                     <DrawerItem name="Namespace">
                       <LinkToNamespace namespace={dependency.namespace ?? namespace} />

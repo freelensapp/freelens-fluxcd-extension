@@ -4,14 +4,13 @@ import { dump } from "js-yaml";
 import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot, type HelmReleaseStore } from "../../../k8s/fluxcd/helm/helmrelease-v2";
-import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
+import { withFluxKind, withServedApiVersion } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import styles from "./helm-release-details.module.scss";
 
 import type { Patch } from "../../../k8s/core/types";
-import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 
 const { observer } = MobxReact;
 
@@ -178,11 +177,6 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
               <DrawerTitle>Depends On</DrawerTitle>
               {object.spec.dependsOn.map((dependency) => {
                 const reference = store.getByName(dependency.name, dependency.namespace ?? namespace);
-                const dependencyRef: NamespacedObjectKindReference = {
-                  ...dependency,
-                  kind: HelmRelease.kind,
-                  apiVersion: HelmRelease.crd.apiVersions[0],
-                };
                 return (
                   <div className="dependency" key={dependency.name + (dependency.namespace ?? "")}>
                     <div className={styles.title}>
@@ -190,7 +184,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                     </div>
 
                     <DrawerItem name="Name">
-                      <LinkToObject objectRef={dependencyRef} object={object} />
+                      <LinkToObject objectRef={withFluxKind(dependency, HelmRelease.kind)} object={object} />
                     </DrawerItem>
                     <DrawerItem name="Namespace">
                       <LinkToNamespace namespace={dependency.namespace ?? namespace} />
