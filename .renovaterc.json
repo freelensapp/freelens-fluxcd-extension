@@ -70,11 +70,6 @@
       "groupName": "Freelens"
     },
     {
-      "description": "pnpm and the mise of the workflows are updated from their own registries, not to the versions of Freelens, but in the Freelens group pull request, so that one pull request carries every toolchain update.",
-      "matchDepNames": ["pnpm", "jdx/mise"],
-      "groupName": "Freelens"
-    },
-    {
       "description": "Tools run with pnpm dlx, and the Biome and Prettier that Trunk runs, take the version Freelens runs with pnpm dlx in the scripts of its root package.json on main, except the ones excluded with ! here, which Freelens does not run. The custom datasource has no release dates, so minimumReleaseAge is off.",
       "matchManagers": ["custom.regex"],
       "matchFileNames": ["package.json", ".trunk/trunk.yaml"],
