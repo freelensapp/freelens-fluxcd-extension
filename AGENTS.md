@@ -71,6 +71,9 @@ pnpm lint:fix             # Runs biome:fix and prettier:fix
 # Dead-code / dependency checks
 pnpm knip:check           # Unused files, exports, and dependencies
 
+# Tests
+pnpm test:unit            # vitest
+
 # Build
 pnpm build                # Both Vite runs, without the type check
 pnpm dev                  # Both Vite runs in watch mode, for a directory install
@@ -84,9 +87,9 @@ pnpm clean:dts            # Remove generated *.d.scss.ts files
 pnpm clean:all            # Clean everything (dist, dts, node_modules, tgz)
 ```
 
-There are no unit tests in this repository; validation is done via
-`pnpm type:check` and `pnpm build`. End-to-end behavior is exercised by the
-integration tests in `.github/workflows/integration-tests.yaml`.
+Unit tests (`*.test.ts(x)` next to the code) run with Vitest; see "Tests and
+tooling". End-to-end behavior is exercised by the integration tests in
+`.github/workflows/integration-tests.yaml`.
 
 ## Architecture
 
@@ -375,6 +378,40 @@ environment config next to the test excludes it, and the editor goes on to the
 next `tsconfig.json` up the tree. Tests compile against the real
 `@freelensapp/extensions` declaration, while Vitest replaces the package with a
 stub at runtime.
+
+No config declares the Vitest globals. TypeScript has no per-file globals, so
+declaring `describe` or `vi` for tests would declare them for every file in the
+program. Test and test-support files import what they use:
+
+```ts
+import { describe, expect, it, vi } from "vitest";
+```
+
+The module resolves from every program, so Biome keeps it out of the
+extension's code: `style/noRestrictedImports` rejects an import of `vitest`
+outside `src/**/*.test.*`, `test/` and `integration/`. `globals: true` stays on in
+`vitest.config.ts` at runtime only, because React Testing Library registers its
+automatic cleanup only when `afterEach` is a global. A test that renders a
+component opts into jsdom with `// @vitest-environment jsdom` at the top of the
+file; the others run in Node.
+
+`@freelensapp/extensions` is stubbed because the real package cannot run in a
+test: it is a shim that reads `Common`, `Main` and `Renderer` off
+`globalThis.FreelensExtensionApi`, which only the host sets, and it ships no
+mocks. The `alias` in `vitest.config.ts` points the import at
+`test/stubs/freelensapp-extensions.ts`, for the tests and for the extension code
+they import. The stub covers only what the tests use, at runtime only; the type
+check still uses the real declaration. So a test that reaches a member the stub
+lacks compiles and fails on `undefined`: add the member to the stub, as small as
+the test needs. Its `getStore()` throws, as the host's does for a version the
+cluster does not serve; a test that needs a store spies on `getStore` of the
+class. The other host modules are not stubbed: `react`, `mobx` and
+`mobx-react` resolve to the devDependencies, the host's versions.
+
+Biome also rejects a Node builtin import in `src/renderer/` and `src/common/`
+(`correctness/noNodejsModules`, tests left out). It flags the import in the
+editor, before `pnpm type:check` does; it does not see Node globals such as
+`Buffer` or `process`, which only the type check catches.
 
 The root `tsconfig.json` checks the tooling files. It has `checkJs`, so the
 Vite config and the build plugins are type-checked too; give their function

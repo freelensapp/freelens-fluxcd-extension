@@ -50,6 +50,9 @@ describe("HelmRelease.getReleaseNameShortened", () => {
     const result = HelmRelease.getReleaseNameShortened(object);
     expect(result).toMatch(/^a{40}-[0-9a-f]{12}$/);
     expect(result.length).toBe(53);
+    // The first 12 hex digits of the SHA-256 of the name, as helm-controller
+    // computes the storage name.
+    expect(result).toBe(`${"a".repeat(40)}-11ee391211c6`);
   });
 });
 

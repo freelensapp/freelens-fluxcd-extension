@@ -105,6 +105,55 @@
       }
     }
   },
+  "overrides": [
+    {
+      // No tsconfig declares the Vitest globals, so test code imports them
+      // from "vitest". The module resolves from every program, so only this
+      // rule keeps it out of the extension's code; the next override lifts it
+      // for tests and test support.
+      "includes": ["**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "vitest": "Vitest is for test code only"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      // Tests and test support, which import their Vitest functions from
+      // "vitest" explicitly. The integration tests run inside a Freelens
+      // checkout, under its Vitest.
+      "includes": ["**/integration/**", "**/src/**/*.test.*", "**/test/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": "off"
+          }
+        }
+      }
+    },
+    {
+      // Renderer and common code, as the extension migration guide recommends:
+      // a Node builtin import belongs in the main entry point only. Tests are
+      // left out, as they are of the renderer and common programs.
+      "includes": ["**/src/common/**", "**/src/renderer/**", "!**/*.test.*"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "error"
+          }
+        }
+      }
+    }
+  ],
   "vcs": {
     "clientKind": "git",
     "enabled": true,
