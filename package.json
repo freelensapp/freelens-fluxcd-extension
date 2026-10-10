@@ -28,7 +28,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "biome": "pnpm dlx @biomejs/biome@2.5.4",
+    "biome": "pnpm dlx @biomejs/biome@2.5.15",
     "biome:check": "pnpm biome check",
     "biome:fix": "pnpm biome check --fix",
     "biome:migrate": "pnpm biome migrate --write",
@@ -68,17 +68,17 @@
     "clean:all": "pnpm \"/^clean:(dist|dts|node_modules|tgz)\\$/\""
   },
   "devDependencies": {
-    "@freelensapp/extensions": "2.0.0-0-nightly-2026-10-09",
+    "@freelensapp/extensions": "2.0.0-0-nightly-2026-10-10",
     "@testing-library/dom": "10.4.2",
     "@testing-library/react": "16.3.3",
     "@types/node": "24.19.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@vitejs/plugin-react": "6.1.1",
+    "@vitejs/plugin-react": "6.1.2",
     "electron": "43.7.9",
     "esbuild": "0.28.2",
     "js-base64": "^3.8.0",
-    "js-yaml": "5.4.2",
+    "js-yaml": "5.4.3",
     "jsdom": "30.1.1",
     "mobx": "7.0.6",
     "mobx-react": "10.0.2",
@@ -88,7 +88,7 @@
     "react-dom": "19.3.0",
     "sass-embedded": "1.105.1",
     "typescript": "7.0.2",
-    "vite": "8.3.2",
+    "vite": "8.3.4",
     "vitest": "5.0.3"
   },
   "keywords": [
