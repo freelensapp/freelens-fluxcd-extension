@@ -10,11 +10,11 @@ This repository integrates FluxCD support into the Freelens application. It
 provides dashboards, detail views, cluster pages, and resource menus (reconcile,
 suspend, resume) for FluxCD v2 custom resources.
 
-- **Language**: TypeScript 7.0.2
+- **Language**: TypeScript 7.x
 - **Runtime**: Freelens >= 2.0.0 (extension API v2)
-- **Toolchain**: Node.js 24.21.0, yq 4.54.1 and cosign 3.1.3 (`mise.toml` with
+- **Toolchain**: Node.js 24.x, yq 4.x and cosign 3.x (`mise.toml` with
   `mise.lock`; Node also in `.nvmrc`)
-- **Package manager**: pnpm 12.9.1 (`packageManager`, run through corepack)
+- **Package manager**: pnpm 12.x (`packageManager`, run through corepack)
 - **License**: MIT
 
 Library and tool versions follow the Freelens stack exactly: the catalog in
