@@ -1,6 +1,4 @@
-import { Common, Renderer } from "@freelensapp/extensions";
-
-import type { FluxCDKubeObjectSpecWithSuspend } from "../k8s/fluxcd/types";
+import { type Common, Renderer } from "@freelensapp/extensions";
 
 const {
   Component: { MenuItem, Icon },
@@ -17,9 +15,13 @@ type FluxCDKubeObjectWithMetadataCtor = typeof Renderer.K8sApi.LensExtensionKube
   unknown
 >;
 
-export interface FluxCDObjectReconcileMenuItemProps
-  extends Common.Types.KubeObjectMenuItemProps<Renderer.K8sApi.KubeObject<any, any, FluxCDKubeObjectSpecWithSuspend>> {
+export interface FluxCDObjectReconcileMenuItemProps extends Common.Types.KubeObjectMenuItemProps {
   resource: FluxCDKubeObjectWithMetadataCtor;
+}
+
+function isSuspended(object: Renderer.K8sApi.KubeObject): boolean {
+  const { spec } = object;
+  return typeof spec === "object" && spec !== null && "suspend" in spec && spec.suspend === true;
 }
 
 export function FluxCDObjectReconcileMenuItem(props: FluxCDObjectReconcileMenuItemProps) {
@@ -42,7 +44,7 @@ export function FluxCDObjectReconcileMenuItem(props: FluxCDObjectReconcileMenuIt
   };
 
   return (
-    <MenuItem onClick={reconcile} disabled={object.spec.suspend === true}>
+    <MenuItem onClick={reconcile} disabled={isSuspended(object)}>
       <Icon material="autorenew" interactive={toolbar} title="Reconcile" />
       <span className="title">Reconcile</span>
     </MenuItem>

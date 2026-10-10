@@ -1,8 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { LocalObjectReference } from "@freelensapp/kube-object";
-
 import type { AccessFrom, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
+
+type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
 export interface ScanResult {
   tagCount: number;

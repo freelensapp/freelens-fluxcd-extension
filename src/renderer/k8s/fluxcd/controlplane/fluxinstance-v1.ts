@@ -1,9 +1,9 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { Condition } from "@freelensapp/kube-object";
-
 import type { Patch } from "../../core/types";
 import type { History, ResourceInventory } from "../types";
+
+type Condition = Renderer.K8sApi.Condition;
 
 export interface Distribution {
   version: string;

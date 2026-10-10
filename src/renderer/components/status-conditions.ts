@@ -1,6 +1,8 @@
 import moment from "moment";
 
-import type { Condition } from "@freelensapp/kube-object";
+import type { Renderer } from "@freelensapp/extensions";
+
+type Condition = Renderer.K8sApi.Condition;
 
 function timeToUnix(dateStr?: string): number {
   const m = moment(dateStr, moment.ISO_8601, true);

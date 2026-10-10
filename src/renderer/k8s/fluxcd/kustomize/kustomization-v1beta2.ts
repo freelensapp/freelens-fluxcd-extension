@@ -1,7 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { LocalObjectReference } from "@freelensapp/kube-object";
-
 import type { Patch } from "../../core/types";
 import type {
   FluxCDKubeObjectCRD,
@@ -15,6 +13,8 @@ import type {
   ResourceInventory,
   Snapshot,
 } from "../types";
+
+type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
 export interface Decryption {
   provider: string;

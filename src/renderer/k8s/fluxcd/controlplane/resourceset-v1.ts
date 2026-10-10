@@ -1,8 +1,9 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { Condition, LabelSelector } from "@freelensapp/kube-object";
-
 import type { History } from "../types";
+
+type Condition = Renderer.K8sApi.Condition;
+type LabelSelector = Renderer.K8sApi.LabelSelector;
 
 export interface CommonMetadata {
   annotations?: Record<string, string>;

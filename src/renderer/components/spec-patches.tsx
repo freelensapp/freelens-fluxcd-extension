@@ -1,8 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { createHash } from "../utils";
 import styles from "./spec-patches.module.scss";
-import stylesInline from "./spec-patches.module.scss?inline";
 import { YamlDump } from "./yaml-dump";
 
 import type { Patch } from "../k8s/core/types";
@@ -24,13 +22,12 @@ export const SpecPatches: React.FC<SpecPatchesProps> = observer((props) => {
 
   return (
     <>
-      <style>{stylesInline}</style>
       <DrawerTitle>Patches</DrawerTitle>
       {patches.map((patch, index) => {
         if (!patch) return null;
 
         return (
-          <div key={createHash(patch)}>
+          <div key={Renderer.Util.createReactKey(patch)}>
             <div className={styles.title}>
               <Icon small material="list" /> {index + 1}
             </div>

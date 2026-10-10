@@ -1,4 +1,4 @@
-import { Renderer } from "@freelensapp/extensions";
+import { type Common, Renderer } from "@freelensapp/extensions";
 
 const {
   Component: { MenuItem, Icon },
@@ -16,7 +16,7 @@ type FluxCDKubeObjectWithMetadataCtor = typeof Renderer.K8sApi.LensExtensionKube
 >;
 
 export interface FluxCDObjectAnnotationSuspendResumeMenuItemProps
-  extends Renderer.Component.KubeObjectMenuProps<FluxCDKubeObjectWithMetadata> {
+  extends Common.Types.KubeObjectMenuItemProps<FluxCDKubeObjectWithMetadata> {
   resource: FluxCDKubeObjectWithMetadataCtor;
 }
 

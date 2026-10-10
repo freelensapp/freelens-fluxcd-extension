@@ -8,7 +8,9 @@ import {
   sortConditions,
 } from "./status-conditions";
 
-import type { Condition } from "@freelensapp/kube-object";
+import type { Renderer } from "@freelensapp/extensions";
+
+type Condition = Renderer.K8sApi.Condition;
 
 function condition(overrides: Partial<Condition> = {}): Condition {
   return {

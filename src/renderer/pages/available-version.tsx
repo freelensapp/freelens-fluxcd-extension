@@ -1,6 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
+import { observer } from "mobx-react";
 import styles from "./available-version.module.scss";
-import stylesInline from "./available-version.module.scss?inline";
 
 export interface AvailableVersionPageProps {
   extension: Renderer.LensExtension;
@@ -41,6 +41,10 @@ interface VersionVariant<T extends AvailableVersionPageProps> {
  * Tries versions in order and renders the first available one.
  * Shows a helpful message if no versions are available (CRD not installed).
  *
+ * The component is an observer: `getStore()` reads the host's observable API registry, so the page renders again
+ * when the host registers an API after the page was first rendered, as it does for a page opened while the cluster
+ * frame is still loading its CRDs.
+ *
  * @param resourceName - Human-readable resource name (e.g., "OCI Repositories")
  * @param variants - Array of version variants, ordered by preference
  * @returns A page component that auto-detects a valid API version if present
@@ -60,7 +64,7 @@ export function createAvailableVersionPage<T extends AvailableVersionPageProps>(
   resourceName: ResourceName,
   variants: VersionVariant<T>[],
 ): React.ComponentType<T> {
-  return (props: T) => {
+  return observer((props: T) => {
     for (const variant of variants) {
       try {
         const store = variant.kubeObjectClass.getStore();
@@ -84,20 +88,17 @@ export function createAvailableVersionPage<T extends AvailableVersionPageProps>(
     );
 
     return (
-      <>
-        <style>{stylesInline}</style>
-        <div className={styles.unavailablePage}>
-          <div className={styles.unavailableContent}>
-            <h3 className={styles.unavailableTitle}>{resourceName} Not Available</h3>
-            <p className={styles.unavailableMessage}>
-              The <strong>{resourceName}</strong> CRDs are not installed in this cluster.
-            </p>
-            <p className={styles.unavailableDetails}>
-              Tried API versions: <code>{triedVersions}</code>
-            </p>
-          </div>
+      <div className={styles.unavailablePage}>
+        <div className={styles.unavailableContent}>
+          <h3 className={styles.unavailableTitle}>{resourceName} Not Available</h3>
+          <p className={styles.unavailableMessage}>
+            The <strong>{resourceName}</strong> CRDs are not installed in this cluster.
+          </p>
+          <p className={styles.unavailableDetails}>
+            Tried API versions: <code>{triedVersions}</code>
+          </p>
         </div>
-      </>
+      </div>
     );
-  };
+  });
 }

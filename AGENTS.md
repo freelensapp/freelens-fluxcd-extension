@@ -158,10 +158,26 @@ export class GitRepositoryStore extends Renderer.K8sApi.KubeObjectStore<GitRepos
 
 Each CRD file exports three classes: the KubeObject, the KubeApi, and the KubeObjectStore. They are registered in `src/renderer/index.tsx` via `kubeObjectDetailItems`, `clusterPages`, `clusterPageMenus`, and `kubeObjectMenuItems`.
 
+Shared Kubernetes types (`Condition`, `LocalObjectReference`, `LabelSelector`) come from `Renderer.K8sApi`, usually
+through a local alias after the imports (`type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;`).
+
 ## Renderer Components
 
 - Detail views and pages are grouped by FluxCD controller (source, kustomize, helm, image, notification, controlplane).
 - Shared spec/status widgets live in `src/renderer/components/` (e.g. `status-history`, `status-inventory`, `status-artifact`, `pie-chart`, `yaml-dump`).
+- Shared components import their CSS module for the class names only, with no `?inline` import and no `<style>` tag;
+  the rules reach the page through `renderer.css`.
+- React keys for list items without a natural key come from `Renderer.Util.createReactKey(item)`.
+- Renderer code has no Node: no `crypto`, `node:*` or other builtins. Use `Renderer.Util.sha256Hex` for SHA-256.
+- Links inside components use `Renderer.Component.MaybeLink` (`to`, `onClick`); there is no `react-router-dom`.
+- The host renders a cluster page with `params` only. A page that needs the extension gets it from its registration
+  (`Page: () => <AlertsPage extension={this} />`), with the page created once at module level by
+  `createAvailableVersionPage` in `src/renderer/pages/available-version.tsx`. The page it returns is an `observer`:
+  `getStore()` reads the host's observable API registry, and the host registers a CRD's APIs only after the cluster
+  frame has loaded the CRDs, so the page renders again when the version becomes available.
+- A `kubeObjectMenuItems` `MenuItem` gets `object` and `toolbar` (`Common.Types.KubeObjectMenuItemProps<Kind>`); the
+  registration passes `resource`:
+  `MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Alert_v1beta3>) => <FluxCDObjectReconcileMenuItem {...props} resource={Alert_v1beta3} />`.
 - SCSS modules get TypeScript declarations (`*.module.d.scss.ts`), written during the renderer build (see
   "CSS module declarations"). They are committed, because `pnpm type:check` runs without a build; commit the
   regenerated file with a change to its SCSS module. `pnpm clean:dts` removes them.

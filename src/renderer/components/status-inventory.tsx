@@ -3,7 +3,6 @@ import * as MobxReact from "mobx-react";
 import { createEnumFromKeys } from "../utils";
 import { ObjectRefTooltip } from "./object-ref-tooltip";
 import styles from "./status-inventory.module.scss";
-import stylesInline from "./status-inventory.module.scss?inline";
 
 import type { NamespacedObjectKindReference, ResourceInventory, ResourceRef } from "../k8s/fluxcd/types";
 
@@ -52,48 +51,45 @@ export const StatusInventory: React.FC<StatusInventoryProps> = observer((props) 
   if (!inventory) return null;
 
   return (
-    <>
-      <style>{stylesInline}</style>
-      <div className={styles.inventory}>
-        <DrawerTitle>Inventory</DrawerTitle>
-        <Table
-          selectable
-          tableId="inventory"
-          scrollable={false}
-          sortable={referenceSortable}
-          sortByDefault={referenceSortByDefault}
-          sortSyncWithUrl={false}
-        >
-          <TableHead flat sticky={false}>
-            <TableCell className={styles.kind} sortBy={referenceSortByNames.kind}>
-              Kind
-            </TableCell>
-            <TableCell className={styles.name} sortBy={referenceSortByNames.name}>
-              Name
-            </TableCell>
-            <TableCell className={styles.namespace} sortBy={referenceSortByNames.namespace}>
-              Namespace
-            </TableCell>
-          </TableHead>
-          {inventory?.entries.map((inventoryResourceRef) => {
-            const objectRef = inventoryResourceRefToObjectRef(inventoryResourceRef);
-            if (!objectRef) return null;
-            return (
-              <TableRow key={inventoryResourceRef.id} sortItem={objectRef} nowrap>
-                <TableCell className={styles.kind}>
-                  <WithTooltip tooltip={<ObjectRefTooltip objectRef={objectRef} />}>{objectRef.kind}</WithTooltip>
-                </TableCell>
-                <TableCell className={styles.name}>
-                  <LinkToObject objectRef={objectRef} object={object} />
-                </TableCell>
-                <TableCell className={styles.namespace}>
-                  <LinkToNamespace namespace={objectRef.namespace ?? object.getNs()} />
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </Table>
-      </div>
-    </>
+    <div className={styles.inventory}>
+      <DrawerTitle>Inventory</DrawerTitle>
+      <Table
+        selectable
+        tableId="inventory"
+        scrollable={false}
+        sortable={referenceSortable}
+        sortByDefault={referenceSortByDefault}
+        sortSyncWithUrl={false}
+      >
+        <TableHead flat sticky={false}>
+          <TableCell className={styles.kind} sortBy={referenceSortByNames.kind}>
+            Kind
+          </TableCell>
+          <TableCell className={styles.name} sortBy={referenceSortByNames.name}>
+            Name
+          </TableCell>
+          <TableCell className={styles.namespace} sortBy={referenceSortByNames.namespace}>
+            Namespace
+          </TableCell>
+        </TableHead>
+        {inventory?.entries.map((inventoryResourceRef) => {
+          const objectRef = inventoryResourceRefToObjectRef(inventoryResourceRef);
+          if (!objectRef) return null;
+          return (
+            <TableRow key={inventoryResourceRef.id} sortItem={objectRef} nowrap>
+              <TableCell className={styles.kind}>
+                <WithTooltip tooltip={<ObjectRefTooltip objectRef={objectRef} />}>{objectRef.kind}</WithTooltip>
+              </TableCell>
+              <TableCell className={styles.name}>
+                <LinkToObject objectRef={objectRef} object={object} />
+              </TableCell>
+              <TableCell className={styles.namespace}>
+                <LinkToNamespace namespace={objectRef.namespace ?? object.getNs()} />
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </Table>
+    </div>
   );
 });

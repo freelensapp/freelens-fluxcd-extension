@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import { Renderer } from "@freelensapp/extensions";
 import {
   type FluxCDKubeObjectCRD,
@@ -11,9 +10,9 @@ import {
   NamespacedObjectReference,
 } from "../types";
 
-import type { LocalObjectReference } from "@freelensapp/kube-object";
-
 import type { Patch, Selector } from "../../core/types";
+
+type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
 export interface HelmReleaseSnapshot {
   apiVersion?: string;
@@ -255,7 +254,7 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
   static getReleaseNameShortened(object: HelmRelease): string {
     const name = HelmRelease.getReleaseName(object);
     if (name.length > 53) {
-      const hash = crypto.createHash("sha256").update(name).digest("hex").slice(0, 12);
+      const hash = Renderer.Util.sha256Hex(name).slice(0, 12);
       return `${name.slice(0, 40)}-${hash}`;
     }
     return name;

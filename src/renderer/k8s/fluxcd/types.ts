@@ -1,8 +1,9 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { Condition, LocalObjectReference } from "@freelensapp/kube-object";
-
 import type { Selector } from "../core/types";
+
+type Condition = Renderer.K8sApi.Condition;
+type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
 export interface NamespacedObjectReference extends LocalObjectReference {
   namespace?: string;

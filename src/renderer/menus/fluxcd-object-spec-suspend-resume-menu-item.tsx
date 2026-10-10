@@ -1,4 +1,4 @@
-import { Renderer } from "@freelensapp/extensions";
+import { type Common, Renderer } from "@freelensapp/extensions";
 
 import type { FluxCDKubeObjectSpecWithSuspend } from "../k8s/fluxcd/types";
 
@@ -18,7 +18,7 @@ type FluxCDKubeObjectWithSuspendCtor = typeof Renderer.K8sApi.LensExtensionKubeO
 >;
 
 export interface FluxCDObjectSpecSuspendResumeMenuItemProps
-  extends Renderer.Component.KubeObjectMenuProps<FluxCDKubeObjectWithSuspend> {
+  extends Common.Types.KubeObjectMenuItemProps<FluxCDKubeObjectWithSuspend> {
   resource: FluxCDKubeObjectWithSuspendCtor;
 }
 

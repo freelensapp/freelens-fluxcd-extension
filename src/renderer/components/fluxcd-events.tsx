@@ -1,19 +1,17 @@
 import { Common, Renderer } from "@freelensapp/extensions";
-import { computed, makeObservable, observable } from "mobx";
+import { computed, observable } from "mobx";
 import * as MobxReact from "mobx-react";
 import moment from "moment";
 import React from "react";
-import * as ReactRouterDom from "react-router-dom";
 
 const { observer } = MobxReact;
-
-const { Link } = ReactRouterDom;
 
 const {
   Component: {
     KubeObjectListLayout,
     Icon,
     KubeObjectAge,
+    MaybeLink,
     NamespaceSelectBadge,
     WithTooltip,
     TabLayout,
@@ -42,6 +40,8 @@ enum columnId {
   lastSeen = "last-seen",
 }
 
+type SortingCallback = (event: Renderer.K8sApi.KubeEvent) => string | number | undefined;
+
 export interface FluxCDEventsProps {
   className?: string;
   compact?: boolean;
@@ -55,7 +55,7 @@ export class FluxCDEvents extends React.Component<FluxCDEventsProps> {
     orderBy: "asc" as "asc" | "desc",
   });
 
-  private sortingCallbacks = {
+  private sortingCallbacks: Partial<Record<columnId, SortingCallback>> = {
     [columnId.namespace]: (event: Renderer.K8sApi.KubeEvent) => event.getNs(),
     [columnId.type]: (event: Renderer.K8sApi.KubeEvent) => event.type,
     [columnId.object]: (event: Renderer.K8sApi.KubeEvent) => event.involvedObject.name,
@@ -65,19 +65,17 @@ export class FluxCDEvents extends React.Component<FluxCDEventsProps> {
       event.lastTimestamp ? -new Date(event.lastTimestamp).getTime() : 0,
   };
 
-  constructor(props: FluxCDEventsProps) {
-    super(props);
-    makeObservable(this);
-  }
-
   @computed get items(): Renderer.K8sApi.KubeEvent[] {
     // Filter FIRST, then sort to maintain performance on large clusters
     const items = eventStore.contextItems.filter(isFluxCDEvent);
     const { sortBy, orderBy } = this.sorting;
+    const sortingCallback = this.sortingCallbacks[sortBy];
+
+    if (!sortingCallback) return items;
 
     return [...items].sort((a, b) => {
-      const valA = this.sortingCallbacks[sortBy](a);
-      const valB = this.sortingCallbacks[sortBy](b);
+      const valA = sortingCallback(a) ?? "";
+      const valB = sortingCallback(b) ?? "";
       if (valA === valB) return 0;
       const compare = valA > valB ? 1 : -1;
       return orderBy === "asc" ? compare : -compare;
@@ -193,13 +191,13 @@ export class FluxCDEvents extends React.Component<FluxCDEventsProps> {
               title: <WithTooltip>{message}</WithTooltip>,
             },
             <NamespaceSelectBadge key="namespace" namespace={event.getNs()} />,
-            <Link
+            <MaybeLink
               key="link"
               to={getDetailsUrl(apiManager.lookupApiLink(involvedObject, event))}
               onClick={stopPropagation}
             >
               <WithTooltip>{`${involvedObject.kind}: ${involvedObject.name}`}</WithTooltip>
-            </Link>,
+            </MaybeLink>,
             <WithTooltip>{event.getSource()}</WithTooltip>,
             event.count,
             <KubeObjectAge key="age" object={event} />,

@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import styles from "./pie-chart.module.scss";
-import stylesInline from "./pie-chart.module.scss?inline";
 
 import type React from "react";
 
@@ -72,20 +71,17 @@ export function PieChart(
 
   return (
     <>
-      <style>{stylesInline}</style>
-      <>
-        <div className={styles.title}>
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-              Renderer.Navigation.navigate({ pathname: getPath(crd) });
-            }}
-          >
-            {title} ({objects.length})
-          </a>
-        </div>
-        <Renderer.Component.PieChart data={chartData} />
-      </>
+      <div className={styles.title}>
+        <a
+          onClick={(e) => {
+            e.preventDefault();
+            Renderer.Navigation.navigate({ pathname: getPath(crd) });
+          }}
+        >
+          {title} ({objects.length})
+        </a>
+      </div>
+      <Renderer.Component.PieChart data={chartData} />
     </>
   );
 }
