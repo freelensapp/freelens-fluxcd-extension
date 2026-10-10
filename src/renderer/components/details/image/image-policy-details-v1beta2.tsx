@@ -2,6 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
 import { ImagePolicy } from "../../../k8s/fluxcd/image/imagepolicy-v1beta2";
+import { withFluxKind } from "../../../k8s/fluxcd/utils";
 
 const { observer } = MobxReact;
 
@@ -17,7 +18,7 @@ export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
       <>
         <div>
           <DrawerItem name="Image Repository">
-            <LinkToObject objectRef={object.spec.imageRepositoryRef} object={object} />
+            <LinkToObject objectRef={withFluxKind(object.spec.imageRepositoryRef, "ImageRepository")} object={object} />
           </DrawerItem>
           <DrawerItem name="SemVer Policy" hidden={!object.spec.policy.semver}>
             {object.spec.policy.semver?.range}

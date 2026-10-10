@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { compareApiVersions, getRefUrl, getServedApiVersion, withServedApiVersion } from "./utils";
+import { compareApiVersions, getRefUrl, getServedApiVersion, withFluxKind, withServedApiVersion } from "./utils";
 
 import type { NamespacedObjectKindReference } from "./types";
 
@@ -100,6 +100,49 @@ describe("withServedApiVersion", () => {
     expect(withServedApiVersion(local)).toBe(local);
     expect(withServedApiVersion(unserved)).toBe(unserved);
     expect(withServedApiVersion(undefined)).toBeUndefined();
+  });
+});
+
+describe("withFluxKind", () => {
+  const parent = { metadata: { namespace: "flux-system" } } as unknown as KubeObject;
+
+  test("fills in the kind and its served apiVersion in the Flux group", () => {
+    serveApis(
+      fakeApi("Provider", "example.com", "v2", "providers"),
+      fakeApi("Provider", "notification.toolkit.fluxcd.io", "v1beta2", "providers"),
+      fakeApi("Provider", "notification.toolkit.fluxcd.io", "v1beta3", "providers"),
+    );
+    expect(withFluxKind({ name: "generic-webhook" }, "Provider")).toEqual({
+      apiVersion: "notification.toolkit.fluxcd.io/v1beta3",
+      kind: "Provider",
+      name: "generic-webhook",
+    });
+  });
+
+  test("keeps the namespace of a reference that has one", () => {
+    serveApis(fakeApi("Kustomization", "kustomize.toolkit.fluxcd.io", "v1", "kustomizations"));
+    const ref = withFluxKind({ name: "infra", namespace: "apps" }, "Kustomization");
+    expect(ref).toEqual({
+      apiVersion: "kustomize.toolkit.fluxcd.io/v1",
+      kind: "Kustomization",
+      name: "infra",
+      namespace: "apps",
+    });
+    expect(getRefUrl(ref, parent)).toBe("/apis/kustomize.toolkit.fluxcd.io/v1/namespaces/apps/kustomizations/infra");
+  });
+
+  test("links a reference without a namespace in the namespace of the object", () => {
+    serveApis(fakeApi("ImageRepository", "image.toolkit.fluxcd.io", "v1", "imagerepositories"));
+    const ref = withFluxKind({ name: "podinfo" }, "ImageRepository");
+    expect(ref.namespace).toBeUndefined();
+    expect(getRefUrl(ref, parent)).toBe(
+      "/apis/image.toolkit.fluxcd.io/v1/namespaces/flux-system/imagerepositories/podinfo",
+    );
+  });
+
+  test("fills in the kind only when the cluster serves no API for it", () => {
+    serveApis();
+    expect(withFluxKind({ name: "app" }, "GitRepository")).toEqual({ kind: "GitRepository", name: "app" });
   });
 });
 

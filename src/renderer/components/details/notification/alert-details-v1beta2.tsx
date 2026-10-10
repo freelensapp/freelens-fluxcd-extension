@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
 import { Alert } from "../../../k8s/fluxcd/notification/alert-v1beta2";
-import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
+import { withFluxKind, withServedApiVersion } from "../../../k8s/fluxcd/utils";
 
 const { observer } = MobxReact;
 
@@ -34,7 +34,7 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
         })}
       </DrawerItem>
       <DrawerItem name="Provider">
-        <LinkToObject objectRef={object.spec.providerRef} object={object} />
+        <LinkToObject objectRef={withFluxKind(object.spec.providerRef, "Provider")} object={object} />
       </DrawerItem>
       <DrawerItemLabels
         name="Event Metadata"
