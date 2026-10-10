@@ -40,6 +40,12 @@ export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Interval" hidden={!object.spec.interval}>
             {object.spec.interval}
           </DrawerItem>
+          <DrawerItem name="Latest Image" hidden={!object.status?.latestRef}>
+            {ImagePolicy.getLatestImage(object)}
+          </DrawerItem>
+          <DrawerItem name="Previous Image" hidden={!object.status?.observedPreviousRef}>
+            {ImagePolicy.getObservedPreviousImage(object)}
+          </DrawerItem>
         </div>
       </>
     );

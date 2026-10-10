@@ -33,6 +33,9 @@ export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             <DrawerItem name="pattern">{object.spec.filterTags?.pattern}</DrawerItem>
             <DrawerItem name="extract">{object.spec.filterTags?.extract}</DrawerItem>
           </DrawerItem>
+          <DrawerItem name="Latest Image" hidden={!object.status?.latestImage}>
+            {object.status?.latestImage}
+          </DrawerItem>
         </div>
       </>
     );
