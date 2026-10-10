@@ -23,8 +23,8 @@ of Freelens for tools run with `pnpm dlx` (Biome, knip, Trunk launcher), and
 Freelens's `mise.toml` and `.nvmrc` for Node and the other mise tools.
 Renovate keeps them there: custom datasources in `.renovaterc.json` read the
 versions from the same Freelens files on `main`, so an update arrives only once
-Freelens has adopted it, at that version, in one `Freelens` group PR together
-with the `@freelensapp/extensions` nightly. A dependency added to
+Freelens has adopted it, at that version, in one `Freelens dependencies` group
+PR together with the `@freelensapp/extensions` nightly. A dependency added to
 `package.json` follows the Freelens catalog unless the catalog rule excludes
 it; one that Freelens does not have (`js-base64`, `moment`) must be excluded
 there, or its lookup fails on the Dependency Dashboard. What Freelens does not

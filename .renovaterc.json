@@ -69,7 +69,7 @@
       "overrideDatasource": "custom.freelens-catalog",
       "rangeStrategy": "replace",
       "minimumReleaseAge": "0 days",
-      "groupName": "Freelens"
+      "groupName": "Freelens dependencies"
     },
     {
       "description": "Tools run with pnpm dlx, and the Biome and Prettier that Trunk runs, take the version Freelens runs with pnpm dlx in the scripts of its root package.json on main, except the ones excluded with ! here, which Freelens does not run. The custom datasource has no release dates, so minimumReleaseAge is off.",
@@ -80,7 +80,7 @@
       "overrideDatasource": "custom.freelens-dlx",
       "rangeStrategy": "replace",
       "minimumReleaseAge": "0 days",
-      "groupName": "Freelens"
+      "groupName": "Freelens dependencies"
     },
     {
       "description": "The tools in mise.toml and Node in .nvmrc take the versions in mise.toml of Freelens on main, where Node is the version bundled in Electron. The mise manager expects a leading v in the releases of tools that come from GitHub, which mise.toml does not have, so extractVersion makes it optional. The custom datasource has no release dates, so minimumReleaseAge is off.",
@@ -90,7 +90,7 @@
       "extractVersion": "^v?(?<version>.+)$",
       "rangeStrategy": "replace",
       "minimumReleaseAge": "0 days",
-      "groupName": "Freelens"
+      "groupName": "Freelens dependencies"
     },
     {
       "description": "The Node runtime of Trunk takes the version in mise.toml of Freelens on main, like the one in mise.toml here. The custom datasource has no release dates, so minimumReleaseAge is off.",
@@ -101,7 +101,7 @@
       "overridePackageName": "{{depName}}",
       "rangeStrategy": "replace",
       "minimumReleaseAge": "0 days",
-      "groupName": "Freelens"
+      "groupName": "Freelens dependencies"
     },
     {
       "description": "No updates of engines.node, the oldest Node the extension runs on, which Freelens keeps as a range too. engines.freelens is updated by the custom manager for it.",
@@ -112,7 +112,7 @@
     {
       "description": "Group @freelensapp/* with everything that follows Freelens into one PR, so that a nightly of @freelensapp/extensions and the stack it was built with arrive together.",
       "matchPackageNames": ["@freelensapp/**"],
-      "groupName": "Freelens"
+      "groupName": "Freelens dependencies"
     },
     {
       "description": "peerDependencies are widened.",
