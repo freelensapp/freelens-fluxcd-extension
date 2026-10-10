@@ -539,7 +539,9 @@ setting on for `pnpm biome` and editors.
 Renovate updates Biome, in the `biome` script and in `.trunk/trunk.yaml`, but
 cannot run `biome migrate`. `biome-migrate.yaml` runs it on the Renovate
 branch and commits the migrated `biome.jsonc` there, so that the update and its
-migration are one pull request.
+migration are one pull request. The commit is by `github-actions[bot]`, which
+`gitIgnoredAuthors` in `.renovaterc.json` lists, so that Renovate does not take
+it for a manual edit and stop updating the branch.
 
 Biome does not read SCSS; Prettier formats it, through `pnpm prettier:fix` or
 Trunk.
