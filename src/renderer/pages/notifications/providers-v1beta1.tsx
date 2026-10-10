@@ -3,7 +3,6 @@ import * as MobxReact from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { Provider, type ProviderApi } from "../../k8s/fluxcd/notification/provider-v1beta1";
 import styles from "./providers.module.scss";
-import stylesInline from "./providers.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -41,7 +40,6 @@ export const ProvidersPage = observer((props: ProvidersPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

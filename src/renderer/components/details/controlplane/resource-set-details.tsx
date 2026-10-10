@@ -1,12 +1,10 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
-import { createHash } from "../../../utils";
 import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
 import { YamlDump } from "../../yaml-dump";
 import styles from "./resource-set-details.module.scss";
-import stylesInline from "./resource-set-details.module.scss?inline";
 
 import type { ResourceSet } from "../../../k8s/fluxcd/controlplane/resourceset-v1";
 
@@ -34,8 +32,6 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
 
     return (
       <>
-        <style>{stylesInline}</style>
-
         <DrawerItem name="Reconciliation Enabled">
           <BadgeBoolean
             value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}
@@ -112,7 +108,7 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <div>
             <DrawerTitle>Inputs From</DrawerTitle>
             {object.spec.inputsFrom.map((inputsFrom) => (
-              <div key={createHash(inputsFrom)}>
+              <div key={Renderer.Util.createReactKey(inputsFrom)}>
                 <div className={styles.title}>
                   <Icon small material="list" />
                 </div>
@@ -129,7 +125,7 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                   <DrawerItemLabels name="Match Labels" labels={inputsFrom.selector?.matchLabels ?? {}} />
                   <DrawerItem name="Match Expressions" hidden={!inputsFrom.selector?.matchExpressions}>
                     {inputsFrom.selector?.matchExpressions?.map((expr) => (
-                      <div key={createHash(expr)}>
+                      <div key={Renderer.Util.createReactKey(expr)}>
                         <DrawerItem name="Key">{expr.key}</DrawerItem>
                         <DrawerItem name="Operator">{expr.operator}</DrawerItem>
                         <DrawerItem name="Values" hidden={!expr.values || expr.values.length === 0}>
@@ -150,7 +146,7 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <div className={styles.inputs}>
             <DrawerTitle>Inputs</DrawerTitle>
             {object.spec.inputs.map((input, index) => (
-              <div key={createHash(input)}>
+              <div key={Renderer.Util.createReactKey(input)}>
                 <div className={styles.title}>
                   <Icon small material="list" />
                   <span>{index + 1}</span>
@@ -167,12 +163,12 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <>
             <DrawerTitle>Resources</DrawerTitle>
             {object.spec.resources?.map((resource, index) => (
-              <>
+              <React.Fragment key={Renderer.Util.createReactKey(resource)}>
                 <div className={styles.title}>
                   <Icon small material="list" /> {index + 1}
                 </div>
                 <YamlDump data={resource} />
-              </>
+              </React.Fragment>
             ))}
           </>
         )}

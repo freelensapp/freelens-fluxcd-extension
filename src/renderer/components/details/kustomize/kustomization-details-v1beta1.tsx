@@ -6,13 +6,12 @@ import { useEffect, useState } from "react";
 import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization-v1beta1";
 import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 import { getRefUrl } from "../../../k8s/fluxcd/utils";
-import { createEnumFromKeys, createHash, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
+import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import { StatusInventory } from "../../status-inventory";
 import styles from "./kustomization-details.module.scss";
-import stylesInline from "./kustomization-details.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -101,7 +100,6 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
 
     return (
       <>
-        <style>{stylesInline}</style>
         <div className={styles.details}>
           <DrawerItem name="Resumed">
             <BadgeBoolean value={!object.spec.suspend} />
@@ -183,7 +181,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             <div>
               <DrawerTitle>Patches: Strategic Merge</DrawerTitle>
               {object.spec.patchesStrategicMerge.map((patch) => {
-                const key = createHash(patch);
+                const key = Renderer.Util.createReactKey(patch);
 
                 return (
                   <div key={key}>
@@ -218,7 +216,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
               <DrawerTitle>Patches: RFC 6902</DrawerTitle>
               {object.spec.patchesJson6902.map((patch) => {
                 const patchYaml = dump(patch.patch, defaultYamlDumpOptions);
-                const key = createHash(patch);
+                const key = Renderer.Util.createReactKey(patch);
 
                 return (
                   <div key={key}>
@@ -376,7 +374,7 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           )}
 
           {object.spec.healthChecks && (
-            <div className="KustomizationHealthChecks flex column">
+            <div className={styles.healthChecks}>
               <DrawerTitle>Health Checks</DrawerTitle>
               <Table
                 selectable

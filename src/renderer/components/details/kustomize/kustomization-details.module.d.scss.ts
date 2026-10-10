@@ -3,7 +3,6 @@ declare const classNames: {
   readonly title: "title";
   readonly editor: "editor";
   readonly substitution: "substitution";
-  readonly tableCell: "tableCell";
   readonly key: "key";
   readonly value: "value";
   readonly inventory: "inventory";

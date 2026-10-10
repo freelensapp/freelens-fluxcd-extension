@@ -3,10 +3,15 @@
  * Licensed under MIT License. See LICENSE in root directory for more information.
  */
 
-import { expect } from "@jest/globals";
+// Runs inside a Freelens checkout, copied into `freelens/integration/__tests__/`
+// by the integration tests workflow, and imports the helpers found there.
+
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import * as utils from "../helpers/utils";
 
 import type { ConsoleMessage, ElectronApplication, Page } from "playwright";
+
+const extensionName = "@freelensapp/fluxcd-extension";
 
 describe("extensions page tests", () => {
   let window: Page;
@@ -84,24 +89,21 @@ describe("extensions page tests", () => {
         ?.click();
     });
 
-    // Trigger extension install
-    const textbox = window.getByPlaceholder("Name or file path or URL");
+    // Trigger extension install: the packed tarball from the workflow, or the
+    // published package when the test runs without one.
     console.log("await textbox.fill");
-    await textbox.fill(process.env.EXTENSION_PATH || "@freelensapp/fluxcd-extension");
-    const install_button_selector = 'button[class*="Button install-module__button--"]';
-    console.log("await window.click [data-waiting=false]");
-    await window.click(install_button_selector.concat("[data-waiting=false]"));
+    await window
+      .getByPlaceholder("Name, URL, or path to a package or directory")
+      .fill(process.env.EXTENSION_PATH || extensionName);
+    console.log("await install button click");
+    await window.getByRole("button", { name: "Install", exact: true }).click();
 
-    // Expect extension to be listed in installed list and enabled
-    console.log('await window.waitForSelector div[class*="installed-extensions-module__extensionName--"]');
-    const installedExtensionName = await (
-      await window.waitForSelector('div[class*="installed-extensions-module__extensionName--"]')
-    ).textContent();
-    expect(installedExtensionName).toBe("@freelensapp/fluxcd-extension");
-    const installedExtensionState = await (
-      await window.waitForSelector('div[class*="installed-extensions-module__enabled--"]')
-    ).textContent();
-    expect(installedExtensionState).toBe("Enabled");
+    // Expect extension to be listed in installed list and enabled. The status
+    // column reads "Incompatible" if the host refuses `engines.freelens`.
+    console.log("await extensions table row");
+    const row = window.getByTestId("extensions-table").locator("tbody tr", { hasText: extensionName });
+    await row.locator("td").nth(2).getByText("Enabled", { exact: true }).waitFor();
+
     // Dismiss any notifications so a notification still in its enter animation
     // does not intercept pointer events on the elements behind it.
     console.log("dismiss notifications");

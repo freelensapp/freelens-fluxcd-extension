@@ -1,9 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
-import { createEnumFromKeys, createHash } from "../../../utils";
+import { createEnumFromKeys } from "../../../utils";
 import styles from "./flux-report-details.module.scss";
-import stylesInline from "./flux-report-details.module.scss?inline";
 
 import type { FluxReconcilerStatus, FluxReport } from "../../../k8s/fluxcd/controlplane/fluxreport-v1";
 
@@ -47,7 +46,6 @@ export const FluxReportDetails: React.FC<Renderer.Component.KubeObjectDetailsPro
 
   return (
     <>
-      <style>{stylesInline}</style>
       <DrawerItem name="Reconciliation Enabled">
         <BadgeBoolean
           value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}
@@ -94,7 +92,7 @@ export const FluxReportDetails: React.FC<Renderer.Component.KubeObjectDetailsPro
         <>
           <DrawerTitle>Components</DrawerTitle>
           {object.spec.components.map((component) => {
-            const key = createHash(component);
+            const key = Renderer.Util.createReactKey(component);
             return (
               <div key={key}>
                 <div className={styles.title}>
@@ -122,7 +120,7 @@ export const FluxReportDetails: React.FC<Renderer.Component.KubeObjectDetailsPro
             sortable={reconcilersSortable}
             sortByDefault={reconcilersSortByDefault}
             sortSyncWithUrl={false}
-            className="box grow"
+            className={styles.table}
           >
             <TableHead flat sticky={false}>
               <TableCell className="kind" sortBy="kind">
@@ -140,7 +138,7 @@ export const FluxReportDetails: React.FC<Renderer.Component.KubeObjectDetailsPro
               <TableCell className="totalSize">Total Size</TableCell>
             </TableHead>
             {object.spec.reconcilers.map((reconciler) => {
-              const key = createHash(reconciler);
+              const key = Renderer.Util.createReactKey(reconciler);
               return (
                 <TableRow key={key} sortItem={reconciler} nowrap>
                   <TableCell className="kind">

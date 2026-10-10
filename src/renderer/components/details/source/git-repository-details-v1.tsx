@@ -5,7 +5,6 @@ import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1";
 import { getHeight } from "../../../utils";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./git-repository-details.module.scss";
-import stylesInline from "./git-repository-details.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -23,7 +22,6 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
 
     return (
       <>
-        <style>{stylesInline}</style>
         <div className={styles.details}>
           <DrawerItem name="Resumed">
             <BadgeBoolean value={!object.spec.suspend} />

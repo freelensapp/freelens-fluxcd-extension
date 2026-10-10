@@ -4,10 +4,10 @@ import { dump } from "js-yaml";
 import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease-v2beta1";
+import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
 import styles from "./helm-release-details.module.scss";
-import stylesInline from "./helm-release-details.module.scss?inline";
 
 import type { Patch } from "../../../k8s/core/types";
 
@@ -104,7 +104,6 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
 
     return (
       <>
-        <style>{stylesInline}</style>
         <div className={styles.details}>
           <DrawerItem name="Release Name">
             <MaybeLink key="link" to={HelmRelease.getHelmReleaseUrl(object, namespace)} onClick={stopPropagation}>
@@ -112,7 +111,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             </MaybeLink>
           </DrawerItem>
           <DrawerItem name="Helm Chart" hidden={!object.spec.chartRef}>
-            <LinkToObject objectRef={object.spec.chartRef} object={object} />
+            <LinkToObject objectRef={withServedApiVersion(object.spec.chartRef)} object={object} />
           </DrawerItem>
           <DrawerItem name="Chart Name">
             {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}

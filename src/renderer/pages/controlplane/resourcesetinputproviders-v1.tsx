@@ -7,7 +7,6 @@ import {
   type ResourceSetInputProviderApi,
 } from "../../k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
 import styles from "./resourcesetinputproviders.module.scss";
-import stylesInline from "./resourcesetinputproviders.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -52,7 +51,6 @@ export const ResourceSetInputProvidersPage = observer((props: ResourceSetInputPr
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

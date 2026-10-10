@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import styles from "./pie-chart.module.scss";
-import stylesInline from "./pie-chart.module.scss?inline";
 
 import type React from "react";
 
@@ -28,11 +27,15 @@ const getStats = (
   return [ready, notReady, inProgress, suspended, unknown];
 };
 
-const getPath = (crd: Renderer.K8sApi.CustomResourceDefinition) => {
+/**
+ * The id of the cluster page of the kind, which is its singular name.
+ */
+const getPageId = (crd: Renderer.K8sApi.CustomResourceDefinition) => {
   return crd.spec.names.singular;
 };
 
 export interface PieChartProps<A extends Renderer.K8sApi.KubeObject> {
+  extension: Renderer.LensExtension;
   objects: A[];
   title: string;
   crd: Renderer.K8sApi.CustomResourceDefinition;
@@ -43,7 +46,7 @@ export function PieChart(
     Renderer.K8sApi.LensExtensionKubeObject<any, FluxCDKubeObjectStatus, FluxCDKubeObjectSpecWithSuspend>
   >,
 ): React.ReactElement {
-  const { objects, title, crd } = props;
+  const { extension, objects, title, crd } = props;
   const [ready, notReady, inProgress, suspended, unknown] = getStats(objects);
 
   const chartData: Renderer.Component.PieChartData = {
@@ -72,20 +75,17 @@ export function PieChart(
 
   return (
     <>
-      <style>{stylesInline}</style>
-      <>
-        <div className={styles.title}>
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-              Renderer.Navigation.navigate({ pathname: getPath(crd) });
-            }}
-          >
-            {title} ({objects.length})
-          </a>
-        </div>
-        <Renderer.Component.PieChart data={chartData} />
-      </>
+      <div className={styles.title}>
+        <a
+          onClick={(e) => {
+            e.preventDefault();
+            void extension.navigate(getPageId(crd));
+          }}
+        >
+          {title} ({objects.length})
+        </a>
+      </div>
+      <Renderer.Component.PieChart data={chartData} />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { Condition } from "@freelensapp/kube-object";
+type Condition = Renderer.K8sApi.Condition;
 
 export interface ResourceSetInput {
   [key: string]: any;

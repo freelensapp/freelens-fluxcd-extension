@@ -4,7 +4,6 @@ import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { ImageUpdateAutomation, type ImageUpdateAutomationApi } from "../../k8s/fluxcd/image/imageupdateautomation-v1";
 import styles from "./imageupdateautomations.module.scss";
-import stylesInline from "./imageupdateautomations.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -52,7 +51,6 @@ export const ImageUpdateAutomationsPage = observer((props: ImageUpdateAutomation
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

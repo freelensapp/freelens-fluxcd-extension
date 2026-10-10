@@ -4,7 +4,6 @@ import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { HelmRepository, type HelmRepositoryApi } from "../../k8s/fluxcd/source/helmrepository-v1";
 import styles from "./helmrepositories.module.scss";
-import stylesInline from "./helmrepositories.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -47,7 +46,6 @@ export const HelmRepositoriesPage = observer((props: HelmRepositoriesPageProps) 
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

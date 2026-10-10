@@ -1,26 +1,40 @@
-import { describe, expect, test } from "vitest";
-import { createEnumFromKeys, createHash, getHeight } from "./utils";
+import { Renderer } from "@freelensapp/extensions";
+import { afterEach, describe, expect, test, vi } from "vitest";
+import { createEnumFromKeys, getHeight, getServedStore } from "./utils";
 
-describe("createHash", () => {
-  test("is a 16-character lowercase hex string", () => {
-    expect(createHash({ a: 1 })).toMatch(/^[0-9a-f]{16}$/);
+// The stub's `getStore()` throws, as the host's does for a version that is not
+// served. A test marks a version as served by spying on `getStore` of its class.
+class KindV1 extends Renderer.K8sApi.LensExtensionKubeObject {}
+class KindV1beta2 extends Renderer.K8sApi.LensExtensionKubeObject {}
+class KindV1beta1 extends Renderer.K8sApi.LensExtensionKubeObject {}
+
+function serve(kubeObjectClass: typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>) {
+  const store = {} as Renderer.K8sApi.KubeObjectStore<any, any, any>;
+  vi.spyOn(kubeObjectClass, "getStore").mockReturnValue(store);
+  return store;
+}
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe("getServedStore", () => {
+  test("returns the store of the first served version only", () => {
+    const store = serve(KindV1);
+    serve(KindV1beta2);
+
+    expect(getServedStore([KindV1, KindV1beta2, KindV1beta1])).toBe(store);
+    expect(KindV1beta2.getStore).not.toHaveBeenCalled();
   });
 
-  test("is stable for equal input", () => {
-    expect(createHash({ a: 1 })).toBe(createHash({ a: 1 }));
+  test("falls back to an older version when the newer ones are not served", () => {
+    const store = serve(KindV1beta1);
+
+    expect(getServedStore([KindV1, KindV1beta2, KindV1beta1])).toBe(store);
   });
 
-  test("differs for different input", () => {
-    expect(createHash({ a: 1 })).not.toBe(createHash({ a: 2 }));
-  });
-
-  test("is sensitive to key order, matching JSON.stringify semantics", () => {
-    expect(createHash({ a: 1, b: 2 })).not.toBe(createHash({ b: 2, a: 1 }));
-  });
-
-  test("handles primitive and array input", () => {
-    expect(createHash("hello")).toMatch(/^[0-9a-f]{16}$/);
-    expect(createHash([1, 2, 3])).toMatch(/^[0-9a-f]{16}$/);
+  test("returns undefined when no version is served", () => {
+    expect(getServedStore([KindV1, KindV1beta2, KindV1beta1])).toBeUndefined();
   });
 });
 

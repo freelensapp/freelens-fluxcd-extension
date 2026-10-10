@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-
-import type { LocalObjectReference } from "@freelensapp/kube-object";
+import { getRefUrl } from "../utils";
 
 import type { Patch } from "../../core/types";
 import type {
@@ -13,6 +12,8 @@ import type {
   NamespacedObjectReference,
   ResourceInventory,
 } from "../types";
+
+type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
 export interface Decryption {
   provider: string;
@@ -88,7 +89,7 @@ export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<
   static getSourceRefUrl(object: Kustomization): string | undefined {
     const ref = object.spec.sourceRef;
     if (!ref) return;
-    return Renderer.K8sApi.apiManager.lookupApiLink(ref, object);
+    return getRefUrl(ref, object);
   }
 }
 

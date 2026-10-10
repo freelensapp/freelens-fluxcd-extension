@@ -5,7 +5,6 @@ import { getConditionClass, getConditionText, getStatusMessage } from "../../com
 import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease-v2";
 import { getMaybeDetailsUrl } from "../../utils";
 import styles from "./helmreleases.module.scss";
-import stylesInline from "./helmreleases.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -55,7 +54,6 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

@@ -2,10 +2,10 @@ import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver-v1beta1";
+import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys } from "../../../utils";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import styles from "./receiver-details.module.scss";
-import stylesInline from "./receiver-details.module.scss?inline";
 
 import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 
@@ -46,7 +46,6 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
 
   return (
     <>
-      <style>{stylesInline}</style>
       <div className={styles.details}>
         <DrawerItem name="Resumed">
           <BadgeBoolean value={!object.spec.suspend} />
@@ -92,7 +91,7 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
                     <WithTooltip tooltip={<ObjectRefTooltip objectRef={resource} />}>{resource.kind}</WithTooltip>
                   </TableCell>
                   <TableCell className={styles.name}>
-                    <LinkToObject objectRef={resource} object={object} />
+                    <LinkToObject objectRef={withServedApiVersion(resource)} object={object} />
                   </TableCell>
                   <TableCell className={styles.namespace}>
                     <LinkToNamespace namespace={resource.namespace ?? namespace} />

@@ -4,7 +4,6 @@ import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { ResourceSet, type ResourceSetApi } from "../../k8s/fluxcd/controlplane/resourceset-v1";
 import styles from "./resourcesets.module.scss";
-import stylesInline from "./resourcesets.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -47,7 +46,6 @@ export const ResourceSetsPage = observer((props: ResourceSetsPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

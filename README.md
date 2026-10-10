@@ -32,7 +32,7 @@ suspending, and resuming FluxCD resources directly from the UI.
 ## Requirements
 
 - Kubernetes >= 1.24
-- Freelens >= 1.6.2
+- Freelens >= 2.0.0 (for Freelens 1.x, use a 5.x release of this extension)
 - Flux >= v2.0.0, <= 2.8.x
 - flux-operator >= v0.6.0
 - kustomize-controller >= v0.1.0
@@ -137,12 +137,38 @@ Resources managed by the
 
 ## Install
 
-To install, open Freelens and go to Extensions (`ctrl`+`shift`+`E` or `cmd`+`shift`+`E`),
-then search for and install `@freelensapp/fluxcd-extension`.
+Open Freelens and go to Extensions (`ctrl`+`shift`+`E` or
+`cmd`+`shift`+`E`). The field at the top takes a package name, the URL of a
+tarball, or the path to a tarball or a directory.
+
+### From the registry
+
+Enter `@freelensapp/fluxcd-extension` and press Install.
 
 Alternatively, open the following URL in the browser to install directly:
 
 [freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension](freelens://app/extensions/install/%40freelensapp%2Ffluxcd-extension)
+
+### From a release tarball
+
+Each [release](https://github.com/freelensapp/freelens-fluxcd-extension/releases)
+has the extension as `freelensapp-fluxcd-extension-<version>.tgz`, with its
+checksum in `freelensapp-fluxcd-extension-<version>.tgz.sha256`. Use a 6.x or
+later release with Freelens 2.x, and a 5.x release with Freelens 1.x.
+
+- Enter the URL of the `.tgz` asset and press Install. Freelens downloads the
+  `.tgz.sha256` next to it and checks the tarball against it.
+- Or download both files into one directory and enter the path to the `.tgz`,
+  or drop the `.tgz` on the Freelens window. Freelens checks it against the
+  `.tgz.sha256` next to it.
+
+### From a directory
+
+Build the extension (see below), then enter the path to your checkout, the
+directory with `package.json`, and press Install. Freelens runs the extension
+from that directory, from the files in `dist/`, and lists it as unverified.
+This is how you work on the extension: see
+[Development loop](#development-loop).
 
 ### Migrating from `@freelensapp/extension-fluxcd`
 
@@ -168,7 +194,7 @@ You can build the extension from this repository.
 Use [NVM](https://github.com/nvm-sh/nvm),
 [mise-en-place](https://mise.jdx.dev/), or
 [windows-nvm](https://github.com/coreybutler/nvm-windows) to install the
-required Node.js version.
+Node.js version in `.nvmrc`.
 
 From the root of this repository:
 
@@ -178,8 +204,8 @@ nvm install
 mise install
 # or
 winget install CoreyButler.NVMforWindows
-nvm install 24.15.0
-nvm use 24.15.0
+nvm install "$(cat .nvmrc)"
+nvm use "$(cat .nvmrc)"
 ```
 
 Install pnpm:
@@ -195,40 +221,59 @@ winget install pnpm.pnpm
 ### Build extension
 
 ```sh
-pnpm i
+pnpm install
 pnpm build
+```
+
+The extension is built into `dist/`. To pack it into a tarball:
+
+```sh
 pnpm pack
 ```
 
-One script to build and pack the extension for testing:
+One script to bump the prerelease version, build and pack the extension for
+testing:
 
 ```sh
 pnpm pack:dev
 ```
 
-### Install built extension
+The tarball is placed in the current directory. Install it as described in
+[From a release tarball](#from-a-release-tarball).
 
-The tarball will be placed in the current directory. In Freelens, navigate
-to the Extensions page and provide the path to the tarball, or drag and
-drop the `.tgz` file into the Freelens window.
+### Development loop
 
-### Check code statically
+Install the extension from your checkout once, as described in
+[From a directory](#from-a-directory), then run:
 
 ```sh
-pnpm lint:check
+pnpm dev
 ```
 
-or
+It rebuilds the extension whenever a source file changes, and Freelens
+reloads the extension after each rebuild, without a restart and without
+packing. Stop it with `ctrl`+`C`.
+
+Neither `pnpm build` nor `pnpm dev` type-checks; run `pnpm type:check` for
+that. A change to `main` or `renderer` in `package.json` needs Freelens
+restarted once.
+
+To check the extension in Freelens with an AI agent, see "Checking the
+Extension in Freelens Dev" in [AGENTS.md](AGENTS.md).
+
+### Check the code
+
+```sh
+pnpm type:check
+pnpm test:unit
+pnpm lint:check
+pnpm knip:check
+```
+
+and, for the formats that Biome does not cover:
 
 ```sh
 pnpm trunk:check
-```
-
-and
-
-```sh
-pnpm build
-pnpm knip:check
 ```
 
 ### Testing the extension with unpublished Freelens

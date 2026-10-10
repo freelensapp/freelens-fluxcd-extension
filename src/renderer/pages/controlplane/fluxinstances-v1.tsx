@@ -4,7 +4,6 @@ import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { FluxInstance, type FluxInstanceApi } from "../../k8s/fluxcd/controlplane/fluxinstance-v1";
 import styles from "./fluxinstances.module.scss";
-import stylesInline from "./fluxinstances.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -47,7 +46,6 @@ export const FluxInstancesPage = observer((props: FluxInstancesPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

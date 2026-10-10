@@ -5,6 +5,10 @@
   margin-bottom: vars.$margin;
 }
 
+.table {
+  flex: 1 0;
+}
+
 :global(.TableCell) {
   &.apiVersion {
     flex-grow: 1;

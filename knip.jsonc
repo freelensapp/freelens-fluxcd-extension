@@ -1,23 +1,74 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
 
-  "entry": ["out/{main,renderer}/index.js!", "src/main/index.ts", "src/renderer/index.tsx"],
-  "project": ["*.{js,mjs,ts}", "out/**/*.js!", "src/**/*.{ts,tsx}"],
+  // The extension is not a library: its entry points are the `main` and
+  // `renderer` manifest fields, which point at build output, and knip does not
+  // read `renderer` at all, so the sources are listed instead. The Vitest
+  // plugin adds vitest.config.ts and the test files.
+  "entry": [
+    "vite.config.mjs",
+    "src/main/index.ts!",
+    "src/renderer/index.tsx!",
+    // the Vitest alias for @freelensapp/extensions, which knip does not follow
+    "test/stubs/freelensapp-extensions.ts",
+    // compiled by `type:check:environments` only, with no importer
+    "environment-tests/*.ts"
+  ],
+  "project": [
+    "*.{js,mjs,ts}",
+    "build/*.mjs",
+    "environment-tests/*.ts",
+    "src/**/*.{scss,ts,tsx}!",
+    // the CSS module declarations. TypeScript reaches them through
+    // allowArbitraryExtensions, while knip resolves `import styles from
+    // "./x.module.scss"` to the stylesheet, so it would report them as unused
+    "!src/**/*.d.scss.ts",
+    "test/**/*.ts"
+  ],
 
-  "ignoreBinaries": ["build:.*", "electron-rebuild", "yq"],
+  // The Vite plugin adds the renderer entry of vite.config.mjs as an entry of
+  // its own, which is not a production one, and it replaces the
+  // `src/renderer/index.tsx!` above: the --production pass would then skip the
+  // whole renderer. vite.config.mjs is listed as an entry instead.
+  "vite": false,
+
+  // Trunk runs SVGO, so no dependency turns on the plugin that finds
+  // svgo.config.mjs.
+  "svgo": true,
+
+  // Binaries the workflows call that no dependency provides: yq comes from
+  // mise (see mise.toml).
+  "ignoreBinaries": ["yq"],
+
   "ignoreDependencies": [
-    // used as vite plugin
-    "@babel/plugin-proposal-decorators",
-    // part of the extensions API
-    "@types/chart.js",
-    "react-router-dom"
+    // host-provided modules. The bundle maps them onto
+    // globalThis.FreelensExtensionApi (see build/vite-plugin-host-modules.mjs),
+    // and Freelens installs no dependencies of an extension, so they are
+    // declared as devDependencies for their types alone, which the
+    // --production --strict pass reports as unlisted
+    "@freelensapp/extensions",
+    "@types/react",
+    "mobx",
+    "mobx-react",
+    "react",
+    // bundled libraries. They reach the extension only inside the bundle, so
+    // they are devDependencies too, which the --production --strict pass
+    // reports as unlisted
+    "js-base64",
+    "js-yaml",
+    "moment"
   ],
 
   "typescript": {
-    "config": ["tsconfig.json"]
-  },
-  "vite": {
-    "config": ["electron.vite.config.js"]
+    // one program per runtime environment, one for the tests and one for the
+    // tooling files
+    "config": [
+      "src/main/tsconfig.json",
+      "src/renderer/tsconfig.json",
+      "src/common/tsconfig.json",
+      "src/tsconfig.json",
+      "tsconfig.json"
+    ]
   },
 
   "exclude": ["exports"]

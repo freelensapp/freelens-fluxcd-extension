@@ -4,7 +4,6 @@ import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { Bucket, type BucketApi } from "../../k8s/fluxcd/source/bucket-v1beta1";
 import styles from "./buckets.module.scss";
-import stylesInline from "./buckets.module.scss?inline";
 
 const { observer } = MobxReact;
 
@@ -48,7 +47,6 @@ export const BucketsPage = observer((props: BucketsPageProps) =>
 
     return (
       <>
-        <style>{stylesInline}</style>
         <KubeObjectListLayout<KubeObject, KubeObjectApi>
           tableId={`${KubeObject.crd.plural}Table`}
           className={styles.page}

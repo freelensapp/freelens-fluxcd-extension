@@ -1,6 +1,5 @@
 declare const classNames: {
   readonly page: "page";
-  readonly tableCell: "tableCell";
   readonly type: "type";
   readonly resumed: "resumed";
   readonly condition: "condition";
