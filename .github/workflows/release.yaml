@@ -16,9 +16,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     environment: publishing
 
-    env:
-      VITE_PRESERVE_MODULES: "false"
-
     steps:
       - name: Checkout plugin
         uses: actions/checkout@v7
