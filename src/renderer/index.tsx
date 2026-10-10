@@ -1416,6 +1416,24 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: HelmRepository_v1beta1.kind,
+      apiVersions: HelmRepository_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRepository_v1beta1>) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRepository_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: HelmRepository_v1beta2.kind,
+      apiVersions: HelmRepository_v1beta2.crd.apiVersions,
+      components: {
+        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRepository_v1beta2>) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRepository_v1beta2} />
+        ),
+      },
+    },
+    {
       kind: HelmRepository_v1.kind,
       apiVersions: HelmRepository_v1.crd.apiVersions,
       components: {
