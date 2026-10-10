@@ -1,14 +1,10 @@
 {
-  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
-  "include": ["*.ts", "src/**/*"],
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node10",
-    "jsx": "react-jsx",
-    "types": ["vite/client", "electron-vite/node"],
-    "paths": {
-      "@vitejs/plugin-react": ["./node_modules/@vitejs/plugin-react/dist/index.d.ts"]
-    }
-  }
+    "lib": ["ES2024"],
+    "types": ["node"],
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": ["*.ts", "*.mjs", "build/**/*"]
 }
