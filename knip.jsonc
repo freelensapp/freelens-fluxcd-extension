@@ -55,8 +55,7 @@
     // they are devDependencies too, which the --production --strict pass
     // reports as unlisted
     "js-base64",
-    "js-yaml",
-    "moment"
+    "js-yaml"
   ],
 
   "typescript": {
