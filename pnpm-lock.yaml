@@ -194,7 +194,7 @@ importers:
         specifier: 0.28.2
         version: 0.28.2
       js-base64:
-        specifier: ^3.8.0
+        specifier: ^3.9.4
         version: 3.9.4
       js-yaml:
         specifier: 5.4.3
