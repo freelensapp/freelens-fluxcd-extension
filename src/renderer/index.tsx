@@ -228,8 +228,8 @@ const KustomizationsPage = createAvailableVersionPage("Kustomizations", [
 ]);
 
 const OCIRepositoriesPage = createAvailableVersionPage("OCI Repositories", [
-  { kubeObjectClass: OCIRepository_v1beta2, PageComponent: OCIRepositoriesPage_v1beta2, version: "v1beta2" },
   { kubeObjectClass: OCIRepository_v1, PageComponent: OCIRepositoriesPage_v1, version: "v1" },
+  { kubeObjectClass: OCIRepository_v1beta2, PageComponent: OCIRepositoriesPage_v1beta2, version: "v1beta2" },
 ]);
 
 const ProvidersPage = createAvailableVersionPage("Providers", [
