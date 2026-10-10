@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { NamespacedObjectKindReference } from "./types";
+import type { NamespacedObjectKindReference, NamespacedObjectReference } from "./types";
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
@@ -89,6 +89,20 @@ export function withServedApiVersion<Ref extends LocalObjectReference | Namespac
   const apiVersion = getServedApiVersion(ref.kind);
   if (!apiVersion) return ref;
   return { ...ref, apiVersion };
+}
+
+/**
+ * Returns the reference as one to the Flux kind `kind`, with the `apiVersion` the cluster serves for the kind in its
+ * group.
+ *
+ * Some Flux references have only a name, and a namespace at most, because their field implies the kind: `dependsOn`
+ * of a Kustomization or a HelmRelease, `spec.providerRef` of an Alert, `spec.imageRepositoryRef` of an ImagePolicy,
+ * `spec.include[].repository` of a GitRepository. The host's `lookupApiLink` has no link for a reference without a
+ * kind. A reference without a namespace still refers to the namespace of the object that holds it, which
+ * `LinkToObject` and `getRefUrl` take from the object passed with it.
+ */
+export function withFluxKind(ref: LocalObjectReference | NamespacedObjectReference, kind: string) {
+  return withServedApiVersion<NamespacedObjectKindReference>({ ...ref, kind });
 }
 
 export function getRefUrl(
