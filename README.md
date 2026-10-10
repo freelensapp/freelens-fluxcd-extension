@@ -33,7 +33,7 @@ suspending, and resuming FluxCD resources directly from the UI.
 
 - Kubernetes >= 1.24
 - Freelens >= 2.0.0 (for Freelens 1.x, use a 5.x release of this extension)
-- Flux >= v2.0.0, <= 2.8.x
+- Flux >= v2.0.0, <= 2.9.x
 - flux-operator >= v0.6.0
 - kustomize-controller >= v0.1.0
 - helm-controller >= v0.1.0
