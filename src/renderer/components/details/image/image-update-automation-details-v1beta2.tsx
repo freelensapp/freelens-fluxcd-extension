@@ -84,19 +84,17 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
             <>
               <DrawerTitle>Observed Policies</DrawerTitle>
               {Object.entries(object.status.observedPolicies ?? {}).map(([key, value]) => (
-                <>
-                  <div>
-                    <div className={styles.title}>
-                      <Icon small material="list" />
-                      <span>{key}</span>
-                    </div>
-                    <DrawerItem name="Name">{value.name}</DrawerItem>
-                    <DrawerItem name="Tag">{value.tag}</DrawerItem>
-                    <DrawerItem name="Digest" hidden={!value.digest}>
-                      {value.digest}
-                    </DrawerItem>
+                <div key={key}>
+                  <div className={styles.title}>
+                    <Icon small material="list" />
+                    <span>{key}</span>
                   </div>
-                </>
+                  <DrawerItem name="Name">{value.name}</DrawerItem>
+                  <DrawerItem name="Tag">{value.tag}</DrawerItem>
+                  <DrawerItem name="Digest" hidden={!value.digest}>
+                    {value.digest}
+                  </DrawerItem>
+                </div>
               ))}
             </>
           )}

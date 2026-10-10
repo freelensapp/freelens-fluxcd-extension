@@ -27,7 +27,11 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
       </DrawerItem>
       <DrawerItem name="Values Files" hidden={!object.spec.valuesFiles?.length}>
         {object.spec.valuesFiles?.length &&
-          object.spec.valuesFiles.map((file) => <DrawerItem name="">{file}</DrawerItem>)}
+          object.spec.valuesFiles.map((file) => (
+            <DrawerItem key={file} name="">
+              {file}
+            </DrawerItem>
+          ))}
       </DrawerItem>
       <DrawerItem name="Values File" hidden={!object.spec.valuesFile}>
         <DrawerItem name="">{object.spec.valuesFile}</DrawerItem>

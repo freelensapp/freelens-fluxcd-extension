@@ -163,12 +163,12 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <>
             <DrawerTitle>Resources</DrawerTitle>
             {object.spec.resources?.map((resource, index) => (
-              <>
+              <React.Fragment key={Renderer.Util.createReactKey(resource)}>
                 <div className={styles.title}>
                   <Icon small material="list" /> {index + 1}
                 </div>
                 <YamlDump data={resource} />
-              </>
+              </React.Fragment>
             ))}
           </>
         )}
