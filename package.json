@@ -83,7 +83,7 @@
     "jsdom": "30.1.1",
     "mobx": "7.0.6",
     "mobx-react": "10.0.2",
-    "moment": "^2.30.1",
+    "moment": "^2.31.0",
     "monaco-editor": "0.57.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
