@@ -201,8 +201,8 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                     <DrawerItem name="Condition" hidden={!reference}>
                       {reference ? (
                         <Badge
-                          className={getConditionClass(reference.status?.conditions)}
-                          label={getConditionText(reference.status?.conditions)}
+                          className={getConditionClass(reference.status?.conditions, reference.spec.suspend)}
+                          label={getConditionText(reference.status?.conditions, reference.spec.suspend)}
                         />
                       ) : (
                         ""

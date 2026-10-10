@@ -20,8 +20,8 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   url: (object: KubeObject) => object.spec.url,
   resumed: (object: KubeObject) => String(!object.spec.suspend),
-  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
-  status: (object: KubeObject) => getConditionText(object.status?.conditions),
+  condition: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
+  status: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
 
@@ -59,8 +59,8 @@ export const OCIRepositoriesPage = observer((props: OCIRepositoriesPageProps) =>
             <WithTooltip>{object.spec.url}</WithTooltip>,
             <BadgeBoolean value={!object.spec.suspend} />,
             <Badge
-              className={getConditionClass(object.status?.conditions)}
-              label={getConditionText(object.status?.conditions)}
+              className={getConditionClass(object.status?.conditions, object.spec.suspend)}
+              label={getConditionText(object.status?.conditions, object.spec.suspend)}
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,
