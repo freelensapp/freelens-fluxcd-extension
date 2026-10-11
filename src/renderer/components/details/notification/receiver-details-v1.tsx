@@ -51,7 +51,7 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
           <BadgeBoolean value={!object.spec.suspend} />
         </DrawerItem>
         <DrawerItem name="Type">{object.spec.type}</DrawerItem>
-        <DrawerItem name="Events">
+        <DrawerItem name="Events" hidden={!object.spec.events?.length}>
           {object.spec.events?.map((event) => (
             <DrawerItem key={event} name="">
               {event}
