@@ -31,6 +31,7 @@ import { Receiver as Receiver_v1 } from "../k8s/fluxcd/notification/receiver-v1"
 import { Receiver as Receiver_v1beta1 } from "../k8s/fluxcd/notification/receiver-v1beta1";
 import { Receiver as Receiver_v1beta2 } from "../k8s/fluxcd/notification/receiver-v1beta2";
 import { Receiver as Receiver_v1beta3 } from "../k8s/fluxcd/notification/receiver-v1beta3";
+import { ArtifactGenerator as ArtifactGenerator_v1beta1 } from "../k8s/fluxcd/source/artifactgenerator-v1beta1";
 import { Bucket as Bucket_v1 } from "../k8s/fluxcd/source/bucket-v1";
 import { Bucket as Bucket_v1beta1 } from "../k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "../k8s/fluxcd/source/bucket-v1beta2";
@@ -71,6 +72,7 @@ const kinds = [
   { title: Bucket_v1.crd.title, classes: [Bucket_v1, Bucket_v1beta2, Bucket_v1beta1] },
   { title: OCIRepository_v1.crd.title, classes: [OCIRepository_v1, OCIRepository_v1beta2] },
   { title: ExternalArtifact_v1.crd.title, classes: [ExternalArtifact_v1] },
+  { title: ArtifactGenerator_v1beta1.crd.title, classes: [ArtifactGenerator_v1beta1] },
   {
     title: ImageRepository_v1.crd.title,
     classes: [ImageRepository_v1, ImageRepository_v1beta2, ImageRepository_v1beta1],

@@ -20,14 +20,15 @@ FluxCD v2.0.0 or higher is supported.
 
 The extension provides a dashboard, cluster pages, list views, and detail
 panels for the FluxCD custom resources across the `fluxcd.controlplane.io`,
-`source.toolkit.fluxcd.io`, `kustomize.toolkit.fluxcd.io`,
-`helm.toolkit.fluxcd.io`, `image.toolkit.fluxcd.io`, and
-`notification.toolkit.fluxcd.io` API groups. Each resource is accessible from
-the Freelens sidebar, with status conditions, spec fields, and related
-objects displayed in the detail view. While the extension is enabled, these
-resources are left out of the Custom Resources tree of the sidebar, so each
-is listed once, under "FluxCD". Resource menus allow reconciling,
-suspending, and resuming FluxCD resources directly from the UI.
+`source.toolkit.fluxcd.io`, `source.extensions.fluxcd.io`,
+`kustomize.toolkit.fluxcd.io`, `helm.toolkit.fluxcd.io`,
+`image.toolkit.fluxcd.io`, and `notification.toolkit.fluxcd.io` API groups.
+Each resource is accessible from the Freelens sidebar, with status
+conditions, spec fields, and related objects displayed in the detail view.
+While the extension is enabled, these resources are left out of the Custom
+Resources tree of the sidebar, so each is listed once, under "FluxCD".
+Resource menus allow reconciling, suspending, and resuming FluxCD resources
+directly from the UI.
 
 ![screenshot](docs/images/dashboard.png)
 
@@ -43,6 +44,7 @@ suspending, and resuming FluxCD resources directly from the UI.
 - image-reflector-controller >= v0.11.0
 - notification-controller >= v0.1.0
 - source-controller >= v0.1.0
+- source-watcher >= v2.0.0 (optional, for `ArtifactGenerator`)
 
 ## Supported APIs
 
@@ -77,6 +79,21 @@ Resources managed by the
 | v1beta1, v1beta2, v1 | `HelmChart` | `hc` | Namespaced | Defines a Helm chart produced from a source |
 | v1beta1, v1beta2, v1 | `Bucket` | | Namespaced | Defines an S3-compatible bucket as a source |
 | v1 | `ExternalArtifact` | `ea` | Namespaced | An artifact produced by a controller other than source-controller, such as the `ArtifactGenerator` of source-watcher (Flux >= 2.7) |
+
+<!-- markdownlint-enable MD013 -->
+
+### source.extensions.fluxcd.io
+
+Resources managed by the
+[source-watcher](https://github.com/fluxcd/source-watcher), an optional Flux
+component (Flux >= 2.7). An `ArtifactGenerator` is suspended and resumed by
+its `source.extensions.fluxcd.io/reconcile` annotation.
+
+<!-- markdownlint-disable MD013 -->
+
+| API Version | Kind | Short Name | Scope | Description |
+| --- | --- | --- | --- | --- |
+| v1beta1 | `ArtifactGenerator` | `ag` | Namespaced | Composes and decomposes sources into `ExternalArtifact` objects |
 
 <!-- markdownlint-enable MD013 -->
 

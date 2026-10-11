@@ -15,6 +15,7 @@ const fluxApiGroups: Partial<Record<string, string>> = {
   HelmChart: "source.toolkit.fluxcd.io",
   HelmRepository: "source.toolkit.fluxcd.io",
   OCIRepository: "source.toolkit.fluxcd.io",
+  ArtifactGenerator: "source.extensions.fluxcd.io",
   Kustomization: "kustomize.toolkit.fluxcd.io",
   HelmRelease: "helm.toolkit.fluxcd.io",
   ImagePolicy: "image.toolkit.fluxcd.io",
@@ -103,6 +104,14 @@ export function withServedApiVersion<Ref extends LocalObjectReference | Namespac
  */
 export function withFluxKind(ref: LocalObjectReference | NamespacedObjectReference, kind: string) {
   return withServedApiVersion<NamespacedObjectKindReference>({ ...ref, kind });
+}
+
+/**
+ * Whether the object is suspended by its reconcile annotation, for a kind that has one instead of `spec.suspend`:
+ * the value `disabled`, in any case, as `IsDisabled` of source-watcher and of the Flux Operator tells it.
+ */
+export function isReconcileDisabled(object: { metadata: Renderer.K8sApi.KubeObjectMetadata }, annotation: string) {
+  return object.metadata.annotations?.[annotation]?.toLowerCase() === "disabled";
 }
 
 export function getRefUrl(

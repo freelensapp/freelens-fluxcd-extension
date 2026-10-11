@@ -59,9 +59,7 @@ export interface FluxReportSpec {
 }
 
 export interface FluxReportStatus {
-  // ReconcileRequestStatus:
   lastHandledReconcileAt?: string;
-  // FluxReportStatus:
   conditions?: Condition[];
 }
 

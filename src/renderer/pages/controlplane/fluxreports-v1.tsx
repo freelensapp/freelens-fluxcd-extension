@@ -8,6 +8,8 @@ import {
   getStatusMessage,
 } from "../../components/status-conditions";
 import { FluxReport, type FluxReportApi } from "../../k8s/fluxcd/controlplane/fluxreport-v1";
+import { fluxOperatorReconcileAnnotation } from "../../k8s/fluxcd/controlplane/types";
+import { isReconcileDisabled } from "../../k8s/fluxcd/utils";
 import styles from "./fluxreports.module.scss";
 
 const { observer } = MobxReact;
@@ -38,9 +40,9 @@ const sortingCallbacks = {
     object.spec.reconcilers?.map((r) => r.stats?.running || 0).reduce((a, b) => a + b, 0) ?? 0,
   suspended: (object: KubeObject) =>
     object.spec.reconcilers?.map((r) => r.stats?.suspended || 0).reduce((a, b) => a + b, 0) ?? 0,
-  enabled: (object: KubeObject) =>
-    String((object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"),
-  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
+  enabled: (object: KubeObject) => String(!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
+  condition: (object: KubeObject) =>
+    getConditionText(object.status?.conditions, isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   lastUpdated: (object: KubeObject) => getLastUpdated(object.status?.conditions),
   status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -91,12 +93,16 @@ export const FluxReportsPage = observer((props: FluxReportsPageProps) =>
             <WithTooltip>
               {object.spec.reconcilers?.map((r) => r.stats?.suspended || 0).reduce((a, b) => a + b, 0) ?? "N/A"}
             </WithTooltip>,
-            <BadgeBoolean
-              value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}
-            />,
+            <BadgeBoolean value={!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
             <Badge
-              label={getConditionText(object.status?.conditions)}
-              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(
+                object.status?.conditions,
+                isReconcileDisabled(object, fluxOperatorReconcileAnnotation),
+              )}
+              className={getConditionClass(
+                object.status?.conditions,
+                isReconcileDisabled(object, fluxOperatorReconcileAnnotation),
+              )}
             />,
             <ReactiveDuration timestamp={getLastUpdated(object.status?.conditions)} />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,

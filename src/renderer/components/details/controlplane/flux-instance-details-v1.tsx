@@ -1,6 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
+import { fluxOperatorReconcileAnnotation } from "../../../k8s/fluxcd/controlplane/types";
+import { isReconcileDisabled } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys } from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
 import { StatusHistory } from "../../status-history";
@@ -52,9 +54,7 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
     return (
       <>
         <DrawerItem name="Reconciliation Enabled">
-          <BadgeBoolean
-            value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}
-          />
+          <BadgeBoolean value={!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />
         </DrawerItem>
         <DrawerItem name="Reconciliation Interval">
           {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileEvery"] ?? "1h (default)"}

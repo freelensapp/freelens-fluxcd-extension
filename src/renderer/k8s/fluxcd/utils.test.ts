@@ -1,6 +1,13 @@
 import { Renderer } from "@freelensapp/extensions";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { compareApiVersions, getRefUrl, getServedApiVersion, withFluxKind, withServedApiVersion } from "./utils";
+import {
+  compareApiVersions,
+  getRefUrl,
+  getServedApiVersion,
+  isReconcileDisabled,
+  withFluxKind,
+  withServedApiVersion,
+} from "./utils";
 
 import type { NamespacedObjectKindReference } from "./types";
 
@@ -54,6 +61,14 @@ describe("getServedApiVersion", () => {
       fakeApi("Bucket", "source.toolkit.fluxcd.io", "v1", "buckets"),
     );
     expect(getServedApiVersion("Bucket")).toBe("source.toolkit.fluxcd.io/v1");
+  });
+
+  test("looks up ArtifactGenerator in source.extensions.fluxcd.io only", () => {
+    serveApis(
+      fakeApi("ArtifactGenerator", "example.com", "v1", "artifactgenerators"),
+      fakeApi("ArtifactGenerator", "source.extensions.fluxcd.io", "v1beta1", "artifactgenerators"),
+    );
+    expect(getServedApiVersion("ArtifactGenerator")).toBe("source.extensions.fluxcd.io/v1beta1");
   });
 
   test("falls back to an older version when the newer ones are not served", () => {
@@ -159,10 +174,48 @@ describe("getRefUrl", () => {
     );
   });
 
+  test("links the ArtifactGenerator of a generated ExternalArtifact to its group, past a kind of the same name", () => {
+    serveApis(
+      fakeApi("ArtifactGenerator", "example.com", "v1", "artifactgenerators"),
+      fakeApi("ArtifactGenerator", "source.extensions.fluxcd.io", "v1beta1", "artifactgenerators"),
+    );
+    expect(getRefUrl({ kind: "ArtifactGenerator", name: "podinfo" }, parent)).toBe(
+      "/apis/source.extensions.fluxcd.io/v1beta1/namespaces/flux-system/artifactgenerators/podinfo",
+    );
+  });
+
   test("links a health check of a core kind without apiVersion under /api", () => {
     serveApis(fakeApi("Service", "", "v1", "services"));
     expect(getRefUrl({ kind: "Service", name: "podinfo", namespace: "apps" }, parent)).toBe(
       "/api/v1/namespaces/apps/services/podinfo",
+    );
+  });
+});
+
+describe("isReconcileDisabled", () => {
+  const annotation = "fluxcd.controlplane.io/reconcile";
+  const object = (annotations?: Record<string, string>) =>
+    ({ metadata: { name: "flux", annotations } }) as Parameters<typeof isReconcileDisabled>[0];
+
+  test("is false without the annotation", () => {
+    expect(isReconcileDisabled(object(), annotation)).toBe(false);
+    expect(isReconcileDisabled(object({ "kustomize.toolkit.fluxcd.io/reconcile": "disabled" }), annotation)).toBe(
+      false,
+    );
+  });
+
+  // As IsDisabled of source-watcher and of the Flux Operator: the value, lowercased, is "disabled".
+  test.each(["disabled", "Disabled", "DISABLED"])("is true when the annotation is %s", (value) => {
+    expect(isReconcileDisabled(object({ [annotation]: value }), annotation)).toBe(true);
+  });
+
+  test.each(["enabled", "Enabled", "", "false", "disabled "])("is false when the annotation is %j", (value) => {
+    expect(isReconcileDisabled(object({ [annotation]: value }), annotation)).toBe(false);
+  });
+
+  test("reads the annotation it is given only", () => {
+    expect(isReconcileDisabled(object({ [annotation]: "disabled" }), "source.extensions.fluxcd.io/reconcile")).toBe(
+      false,
     );
   });
 });

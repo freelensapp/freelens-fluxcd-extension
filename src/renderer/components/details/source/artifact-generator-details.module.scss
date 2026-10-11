@@ -1,0 +1,33 @@
+@use "../../../vars";
+
+.artifact {
+  margin-bottom: vars.$margin * 2;
+}
+
+.copy,
+.inventory {
+  :global(.TableCell) {
+    &.from,
+    &.to {
+      flex-grow: 1;
+    }
+
+    &.strategy {
+      flex-grow: 0.4;
+    }
+
+    &.exclude {
+      flex-grow: 0.8;
+    }
+
+    &.name,
+    &.digest,
+    &.filename {
+      flex-grow: 1;
+    }
+
+    &.namespace {
+      flex-grow: 0.5;
+    }
+  }
+}

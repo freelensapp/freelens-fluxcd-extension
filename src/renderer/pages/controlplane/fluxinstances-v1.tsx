@@ -3,6 +3,8 @@ import * as MobxReact from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { FluxInstance, type FluxInstanceApi } from "../../k8s/fluxcd/controlplane/fluxinstance-v1";
+import { fluxOperatorReconcileAnnotation } from "../../k8s/fluxcd/controlplane/types";
+import { isReconcileDisabled } from "../../k8s/fluxcd/utils";
 import styles from "./fluxinstances.module.scss";
 
 const { observer } = MobxReact;
@@ -19,9 +21,9 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   revision: (object: KubeObject) => object.status?.lastAttemptedRevision,
-  enabled: (object: KubeObject) =>
-    String((object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"),
-  condition: (object: KubeObject) => getConditionText(object.status?.conditions),
+  enabled: (object: KubeObject) => String(!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
+  condition: (object: KubeObject) =>
+    getConditionText(object.status?.conditions, isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
@@ -58,12 +60,16 @@ export const FluxInstancesPage = observer((props: FluxInstancesPageProps) =>
             <WithTooltip>{object.getName()}</WithTooltip>,
             <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
             <WithTooltip>{object.status?.lastAttemptedRevision || "N/A"}</WithTooltip>,
-            <BadgeBoolean
-              value={(object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled"}
-            />,
+            <BadgeBoolean value={!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
             <Badge
-              label={getConditionText(object.status?.conditions)}
-              className={getConditionClass(object.status?.conditions)}
+              label={getConditionText(
+                object.status?.conditions,
+                isReconcileDisabled(object, fluxOperatorReconcileAnnotation),
+              )}
+              className={getConditionClass(
+                object.status?.conditions,
+                isReconcileDisabled(object, fluxOperatorReconcileAnnotation),
+              )}
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,

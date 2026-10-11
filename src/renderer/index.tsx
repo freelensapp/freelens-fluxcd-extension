@@ -28,6 +28,7 @@ import { ReceiverDetails as ReceiverDetails_v1 } from "./components/details/noti
 import { ReceiverDetails as ReceiverDetails_v1beta1 } from "./components/details/notification/receiver-details-v1beta1";
 import { ReceiverDetails as ReceiverDetails_v1beta2 } from "./components/details/notification/receiver-details-v1beta2";
 import { ReceiverDetails as ReceiverDetails_v1beta3 } from "./components/details/notification/receiver-details-v1beta3";
+import { ArtifactGeneratorDetails as ArtifactGeneratorDetails_v1beta1 } from "./components/details/source/artifact-generator-details-v1beta1";
 import { BucketDetails as BucketDetails_v1 } from "./components/details/source/bucket-details-v1";
 import { BucketDetails as BucketDetails_v1beta1 } from "./components/details/source/bucket-details-v1beta1";
 import { BucketDetails as BucketDetails_v1beta2 } from "./components/details/source/bucket-details-v1beta2";
@@ -48,6 +49,7 @@ import { FluxInstance as FluxInstance_v1 } from "./k8s/fluxcd/controlplane/fluxi
 import { FluxReport as FluxReport_v1 } from "./k8s/fluxcd/controlplane/fluxreport-v1";
 import { ResourceSet as ResourceSet_v1 } from "./k8s/fluxcd/controlplane/resourceset-v1";
 import { ResourceSetInputProvider as ResourceSetInputProvider_v1 } from "./k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
+import { fluxOperatorReconcileAnnotation } from "./k8s/fluxcd/controlplane/types";
 import { HelmRelease as HelmRelease_v2 } from "./k8s/fluxcd/helm/helmrelease-v2";
 import { HelmRelease as HelmRelease_v2beta1 } from "./k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "./k8s/fluxcd/helm/helmrelease-v2beta2";
@@ -73,6 +75,10 @@ import { Receiver as Receiver_v1 } from "./k8s/fluxcd/notification/receiver-v1";
 import { Receiver as Receiver_v1beta1 } from "./k8s/fluxcd/notification/receiver-v1beta1";
 import { Receiver as Receiver_v1beta2 } from "./k8s/fluxcd/notification/receiver-v1beta2";
 import { Receiver as Receiver_v1beta3 } from "./k8s/fluxcd/notification/receiver-v1beta3";
+import {
+  ArtifactGenerator as ArtifactGenerator_v1beta1,
+  sourceWatcherReconcileAnnotation,
+} from "./k8s/fluxcd/source/artifactgenerator-v1beta1";
 import { Bucket as Bucket_v1 } from "./k8s/fluxcd/source/bucket-v1";
 import { Bucket as Bucket_v1beta1 } from "./k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "./k8s/fluxcd/source/bucket-v1beta2";
@@ -122,6 +128,7 @@ import { ReceiversPage as ReceiversPage_v1beta1 } from "./pages/notifications/re
 import { ReceiversPage as ReceiversPage_v1beta2 } from "./pages/notifications/receivers-v1beta2";
 import { ReceiversPage as ReceiversPage_v1beta3 } from "./pages/notifications/receivers-v1beta3";
 import { FluxCDOverviewPage } from "./pages/overview";
+import { ArtifactGeneratorsPage as ArtifactGeneratorsPage_v1beta1 } from "./pages/source/artifactgenerators-v1beta1";
 import { BucketsPage as BucketsPage_v1 } from "./pages/source/buckets-v1";
 import { BucketsPage as BucketsPage_v1beta1 } from "./pages/source/buckets-v1beta1";
 import { BucketsPage as BucketsPage_v1beta2 } from "./pages/source/buckets-v1beta2";
@@ -150,6 +157,10 @@ const AlertsPage = createAvailableVersionPage("Alerts", [
   { kubeObjectClass: Alert_v1beta3, PageComponent: AlertsPage_v1beta3, version: "v1beta3" },
   { kubeObjectClass: Alert_v1beta2, PageComponent: AlertsPage_v1beta2, version: "v1beta2" },
   { kubeObjectClass: Alert_v1beta1, PageComponent: AlertsPage_v1beta1, version: "v1beta1" },
+]);
+
+const ArtifactGeneratorsPage = createAvailableVersionPage("Artifact Generators", [
+  { kubeObjectClass: ArtifactGenerator_v1beta1, PageComponent: ArtifactGeneratorsPage_v1beta1, version: "v1beta1" },
 ]);
 
 const BucketsPage = createAvailableVersionPage("Buckets", [
@@ -267,6 +278,7 @@ const ResourceSetInputProvidersPage = createAvailableVersionPage("Resource Set I
 // Every page of a kind, each with the model classes of all its versions, for `customResources`.
 const availableVersionPages = [
   AlertsPage,
+  ArtifactGeneratorsPage,
   BucketsPage,
   ExternalArtifactsPage,
   FluxInstancesPage,
@@ -298,6 +310,12 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "alert",
       components: {
         Page: () => <AlertsPage extension={this} />,
+      },
+    },
+    {
+      id: "artifactgenerator",
+      components: {
+        Page: () => <ArtifactGeneratorsPage extension={this} />,
       },
     },
     {
@@ -575,6 +593,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {},
     },
     {
+      id: "artifactgenerator",
+      parentId: "source",
+      target: { pageId: "artifactgenerator" },
+      title: ArtifactGenerator_v1beta1.crd.title,
+      components: {},
+    },
+    {
       id: "image",
       parentId: "fluxcd",
       target: { pageId: "imagerepository" },
@@ -754,6 +779,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert_v1beta3>) => (
           <AlertDetails_v1beta3 {...props} />
+        ),
+      },
+    },
+    {
+      kind: ArtifactGenerator_v1beta1.kind,
+      apiVersions: ArtifactGenerator_v1beta1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ArtifactGenerator_v1beta1>) => (
+          <ArtifactGeneratorDetails_v1beta1 {...props} />
         ),
       },
     },
@@ -1219,6 +1254,28 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ArtifactGenerator_v1beta1.kind,
+      apiVersions: ArtifactGenerator_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ArtifactGenerator_v1beta1>) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ArtifactGenerator_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: ArtifactGenerator_v1beta1.kind,
+      apiVersions: ArtifactGenerator_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ArtifactGenerator_v1beta1>) => (
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={ArtifactGenerator_v1beta1}
+            annotation={sourceWatcherReconcileAnnotation}
+          />
+        ),
+      },
+    },
+    {
       kind: Bucket_v1beta1.kind,
       apiVersions: Bucket_v1beta1.crd.apiVersions,
       components: {
@@ -1286,7 +1343,11 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       apiVersions: FluxInstance_v1.crd.apiVersions,
       components: {
         MenuItem: (props: Common.Types.KubeObjectMenuItemProps<FluxInstance_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={FluxInstance_v1} />
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={FluxInstance_v1}
+            annotation={fluxOperatorReconcileAnnotation}
+          />
         ),
       },
     },
@@ -1304,7 +1365,11 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       apiVersions: FluxReport_v1.crd.apiVersions,
       components: {
         MenuItem: (props: Common.Types.KubeObjectMenuItemProps<FluxReport_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={FluxReport_v1} />
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={FluxReport_v1}
+            annotation={fluxOperatorReconcileAnnotation}
+          />
         ),
       },
     },
@@ -1907,7 +1972,11 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       apiVersions: ResourceSet_v1.crd.apiVersions,
       components: {
         MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ResourceSet_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={ResourceSet_v1} />
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={ResourceSet_v1}
+            annotation={fluxOperatorReconcileAnnotation}
+          />
         ),
       },
     },
@@ -1925,7 +1994,11 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       apiVersions: ResourceSetInputProvider_v1.crd.apiVersions,
       components: {
         MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ResourceSetInputProvider_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={ResourceSetInputProvider_v1} />
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={ResourceSetInputProvider_v1}
+            annotation={fluxOperatorReconcileAnnotation}
+          />
         ),
       },
     },
