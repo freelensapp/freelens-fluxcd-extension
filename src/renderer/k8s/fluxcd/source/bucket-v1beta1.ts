@@ -26,6 +26,9 @@ export class Bucket extends Renderer.K8sApi.LensExtensionKubeObject<
   BucketStatus,
   BucketSpec
 > {
+  declare kind: "Bucket";
+  declare apiVersion: "source.toolkit.fluxcd.io/v1beta1";
+
   static readonly kind = "Bucket";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1beta1/buckets";

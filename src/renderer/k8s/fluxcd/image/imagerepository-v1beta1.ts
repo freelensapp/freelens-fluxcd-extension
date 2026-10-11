@@ -31,6 +31,9 @@ export class ImageRepository extends Renderer.K8sApi.LensExtensionKubeObject<
   ImageRepositoryStatus,
   ImageRepositorySpec
 > {
+  declare kind: "ImageRepository";
+  declare apiVersion: "image.toolkit.fluxcd.io/v1beta1";
+
   static readonly kind = "ImageRepository";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1beta1/imagerepositories";

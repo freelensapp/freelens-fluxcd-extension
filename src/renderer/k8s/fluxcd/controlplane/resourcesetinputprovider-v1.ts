@@ -74,6 +74,9 @@ export class ResourceSetInputProvider extends Renderer.K8sApi.LensExtensionKubeO
   ResourceSetInputProviderStatus,
   ResourceSetInputProviderSpec
 > {
+  declare kind: "ResourceSetInputProvider";
+  declare apiVersion: "fluxcd.controlplane.io/v1";
+
   static readonly kind = "ResourceSetInputProvider";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/fluxcd.controlplane.io/v1/resourcesetinputproviders";

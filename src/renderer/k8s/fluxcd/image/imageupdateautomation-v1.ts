@@ -67,6 +67,9 @@ export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObje
   ImageUpdateAutomationStatus,
   ImageUpdateAutomationSpec
 > {
+  declare kind: "ImageUpdateAutomation";
+  declare apiVersion: "image.toolkit.fluxcd.io/v1";
+
   static readonly kind = "ImageUpdateAutomation";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1/imageupdateautomations";
