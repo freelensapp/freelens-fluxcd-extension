@@ -122,7 +122,7 @@ src/
   renderer/pages/available-version.tsx # Page that picks the first served API version of a kind
   renderer/pages/overview.tsx          # Overview page (pie chart per kind, FluxCD events)
   renderer/menus/                      # Resource menu items (reconcile, suspend, resume)
-  renderer/components/                 # Shared components (status, charts, YAML dump, etc.)
+  renderer/components/                 # Shared components (status, charts, YAML dump, error boundary, etc.)
   renderer/icons/                      # SVG icons
   renderer/utils.ts                    # Utility functions (getServedStore, getMaybeDetailsUrl, ...)
   common/                              # Code for both processes (none yet; its tsconfig.json only)
@@ -328,6 +328,23 @@ Overview chart maps each such kind to its annotation.
   The item is then checked against the objects of every class in the list: a kind without `spec.suspend` in
   `specSuspendClasses` fails the type check. A version-specific component is registered with one call per class, as
   the details panels are; a list would pair it with the union of the classes.
+- Every page, details panel and menu item renders inside `ErrorBoundary` (`src/renderer/components/error-boundary.tsx`).
+  The host has a boundary around the main area of a cluster and around the whole cluster frame, but none around the
+  details drawer, which it renders as a portal, or around a menu item of an extension: an error there reaches the
+  boundary of the cluster frame and replaces the whole cluster view with the host's crash page. The boundary logs the
+  error with the extension's name and renders `ErrorPage` in place of a page or a details panel, and nothing in place
+  of a menu item; a details panel or a menu item renders again when the host passes a new object.
+  `clusterPages`, `kubeObjectDetailItems` and `kubeObjectMenuItems` are mapped through `withPageErrorBoundary`,
+  `withDetailsErrorBoundary` and `withMenuItemErrorBoundary`. They wrap the registration that `detailsFor` or
+  `menuItemFor` has already checked against its model class, so the type check stays, and an entry added to one of
+  the fields is wrapped too; `src/renderer/index.test.ts` checks that every registration is.
+- A `try`/`catch` around the body of a component, as the removed `withErrorPage` was, is no substitute for the
+  boundary. It catches only what the call of the function throws, and neither what a child throws when React renders
+  it nor what a callback throws when the host calls it from its own render (`renderTableContents`, `getItems`,
+  `customizeHeader` of `KubeObjectListLayout`). The boundary catches errors of rendering only: an error in an event
+  handler, such as `onClick` of a menu item, or in a promise does not reach it, so such code catches and reports its
+  own errors. `ErrorBoundary` is a class component of the host's React and not an `observer`, so it may read
+  `this.props` in `componentDidCatch` too.
 - SCSS modules get TypeScript declarations (`*.module.d.scss.ts`), written during the renderer build (see
   "CSS module declarations"). They are committed, because `pnpm type:check` runs without a build; commit the
   regenerated file with a change to its SCSS module. `pnpm clean:dts` removes them.
@@ -363,6 +380,12 @@ mechanism; this is the list to check a change against.
   and `types`, and no declaration may load Node into the renderer or the DOM
   into main; otherwise a wrong API type-checks and is `undefined` at runtime.
   The environment tests fail on a leak ("TypeScript").
+- **Every page, details panel and menu item inside the error boundary.** A
+  registration that does not go through the three registration fields and
+  their wrappers has none, and a render error in it reaches the boundary of the
+  cluster frame and replaces the whole cluster view. A `try`/`catch` in the
+  component does not help: it misses what a child, or a callback that the host
+  calls from its own render, throws ("Renderer Components").
 - **No instance method on a KubeObject subclass.** The objects from the host
   do not have it, and the call throws. Nothing checks it
   ("CRD KubeObject Pattern").
