@@ -139,6 +139,32 @@ const tablePart =
 // installed extension; a test reads only the registrations of the subclass.
 class LensExtension {}
 
+interface StubKubeObjectClass {
+  name: string;
+  kind?: string;
+  crd?: { apiVersions: readonly string[] };
+}
+
+// As the host's (`kube-object-registrations.ts`): `kind` and a copy of
+// `crd.apiVersions` from the class, and an error without either. The
+// `apiVersions` and `visible` options and the fallback to the version of
+// `apiBase` are left out.
+const registrationOf = (helper: string, kubeObjectClass: StubKubeObjectClass) => {
+  const { kind, crd } = kubeObjectClass;
+  if (!kind) throw new Error(`${helper}(${kubeObjectClass.name}): the class has no static "kind"`);
+  if (!crd?.apiVersions.length) throw new Error(`${helper}(${kubeObjectClass.name}): no "crd.apiVersions"`);
+  return { kind, apiVersions: [...crd.apiVersions] };
+};
+
+const detailsFor = (
+  kubeObjectClass: StubKubeObjectClass,
+  { Details, priority }: { Details: unknown; priority?: number },
+) => ({
+  ...registrationOf("detailsFor", kubeObjectClass),
+  components: { Details },
+  ...(priority === undefined ? {} : { priority }),
+});
+
 export const Renderer = {
   LensExtension,
   Component: {
@@ -205,6 +231,7 @@ export const Renderer = {
       limit: 1000,
     },
     apiManager,
+    detailsFor,
   },
   Navigation: {
     getDetailsUrl: (url: string) => `/details?url=${encodeURIComponent(url)}`,

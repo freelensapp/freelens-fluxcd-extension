@@ -752,450 +752,186 @@ export default class FluxCDExtension extends Renderer.LensExtension {
   customResources = availableVersionPages.flatMap((page) => page.kubeObjectClasses);
 
   kubeObjectDetailItems = [
-    {
-      kind: Alert_v1beta1.kind,
-      apiVersions: Alert_v1beta1.crd.apiVersions,
+    Renderer.K8sApi.detailsFor(Alert_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert_v1beta1>) => (
-          <AlertDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Alert_v1beta2.kind,
-      apiVersions: Alert_v1beta2.crd.apiVersions,
+      Details: (props) => <AlertDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Alert_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert_v1beta2>) => (
-          <AlertDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Alert_v1beta3.kind,
-      apiVersions: Alert_v1beta3.crd.apiVersions,
+      Details: (props) => <AlertDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Alert_v1beta3, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert_v1beta3>) => (
-          <AlertDetails_v1beta3 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ArtifactGenerator_v1beta1.kind,
-      apiVersions: ArtifactGenerator_v1beta1.crd.apiVersions,
+      Details: (props) => <AlertDetails_v1beta3 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ArtifactGenerator_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ArtifactGenerator_v1beta1>) => (
-          <ArtifactGeneratorDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Bucket_v1beta1.kind,
-      apiVersions: Bucket_v1beta1.crd.apiVersions,
+      Details: (props) => <ArtifactGeneratorDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Bucket_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket_v1beta1>) => (
-          <BucketDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Bucket_v1beta2.kind,
-      apiVersions: Bucket_v1beta2.crd.apiVersions,
+      Details: (props) => <BucketDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Bucket_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket_v1beta2>) => (
-          <BucketDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Bucket_v1.kind,
-      apiVersions: Bucket_v1.crd.apiVersions,
+      Details: (props) => <BucketDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Bucket_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket_v1>) => <BucketDetails_v1 {...props} />,
-      },
-    },
-    {
-      kind: ExternalArtifact_v1.kind,
-      apiVersions: ExternalArtifact_v1.crd.apiVersions,
+      Details: (props) => <BucketDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ExternalArtifact_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ExternalArtifact_v1>) => (
-          <ExternalArtifactDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: FluxInstance_v1.kind,
-      apiVersions: FluxInstance_v1.crd.apiVersions,
+      Details: (props) => <ExternalArtifactDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(FluxInstance_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<FluxInstance_v1>) => (
-          <FluxInstanceDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: FluxReport_v1.kind,
-      apiVersions: FluxReport_v1.crd.apiVersions,
+      Details: (props) => <FluxInstanceDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(FluxReport_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<FluxReport_v1>) => (
-          <FluxReportDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: GitRepository_v1beta1.kind,
-      apiVersions: GitRepository_v1beta1.crd.apiVersions,
+      Details: (props) => <FluxReportDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(GitRepository_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository_v1beta1>) => (
-          <GitRepositoryDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: GitRepository_v1beta2.kind,
-      apiVersions: GitRepository_v1beta2.crd.apiVersions,
+      Details: (props) => <GitRepositoryDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(GitRepository_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository_v1beta2>) => (
-          <GitRepositoryDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: GitRepository_v1.kind,
-      apiVersions: GitRepository_v1.crd.apiVersions,
+      Details: (props) => <GitRepositoryDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(GitRepository_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<GitRepository_v1>) => (
-          <GitRepositoryDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: HelmChart_v1beta1.kind,
-      apiVersions: HelmChart_v1beta1.crd.apiVersions,
+      Details: (props) => <GitRepositoryDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HelmChart_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart_v1beta1>) => (
-          <HelmChartDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: HelmChart_v1beta2.kind,
-      apiVersions: HelmChart_v1beta2.crd.apiVersions,
+      Details: (props) => <HelmChartDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HelmChart_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart_v1beta2>) => (
-          <HelmChartDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: HelmChart_v1.kind,
-      apiVersions: HelmChart_v1.crd.apiVersions,
+      Details: (props) => <HelmChartDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HelmChart_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmChart_v1>) => <HelmChartDetails_v1 {...props} />,
-      },
-    },
-    {
-      kind: HelmRelease_v2beta1.kind,
-      apiVersions: HelmRelease_v2beta1.crd.apiVersions,
+      Details: (props) => <HelmChartDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HelmRelease_v2beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRelease_v2beta1>) => (
-          <HelmReleaseDetails_v2beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: HelmRelease_v2beta2.kind,
-      apiVersions: HelmRelease_v2beta2.crd.apiVersions,
+      Details: (props) => <HelmReleaseDetails_v2beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HelmRelease_v2beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRelease_v2beta2>) => (
-          <HelmReleaseDetails_v2beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: HelmRelease_v2.kind,
-      apiVersions: HelmRelease_v2.crd.apiVersions,
+      Details: (props) => <HelmReleaseDetails_v2beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HelmRelease_v2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRelease_v2>) => (
-          <HelmReleaseDetails_v2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: HelmRepository_v1beta1.kind,
-      apiVersions: HelmRepository_v1beta1.crd.apiVersions,
+      Details: (props) => <HelmReleaseDetails_v2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HelmRepository_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository_v1beta1>) => (
-          <HelmRepositoryDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: HelmRepository_v1beta2.kind,
-      apiVersions: HelmRepository_v1beta2.crd.apiVersions,
+      Details: (props) => <HelmRepositoryDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HelmRepository_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository_v1beta2>) => (
-          <HelmRepositoryDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: HelmRepository_v1.kind,
-      apiVersions: HelmRepository_v1.crd.apiVersions,
+      Details: (props) => <HelmRepositoryDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(HelmRepository_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<HelmRepository_v1>) => (
-          <HelmRepositoryDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ImagePolicy_v1beta1.kind,
-      apiVersions: ImagePolicy_v1beta1.crd.apiVersions,
+      Details: (props) => <HelmRepositoryDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ImagePolicy_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImagePolicy_v1beta1>) => (
-          <ImagePolicyDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ImagePolicy_v1beta2.kind,
-      apiVersions: ImagePolicy_v1beta2.crd.apiVersions,
+      Details: (props) => <ImagePolicyDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ImagePolicy_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImagePolicy_v1beta2>) => (
-          <ImagePolicyDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ImagePolicy_v1.kind,
-      apiVersions: ImagePolicy_v1.crd.apiVersions,
+      Details: (props) => <ImagePolicyDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ImagePolicy_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImagePolicy_v1>) => (
-          <ImagePolicyDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ImageRepository_v1beta1.kind,
-      apiVersions: ImageRepository_v1beta1.crd.apiVersions,
+      Details: (props) => <ImagePolicyDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ImageRepository_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageRepository_v1beta1>) => (
-          <ImageRepositoryDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ImageRepository_v1beta2.kind,
-      apiVersions: ImageRepository_v1beta2.crd.apiVersions,
+      Details: (props) => <ImageRepositoryDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ImageRepository_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageRepository_v1beta2>) => (
-          <ImageRepositoryDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ImageRepository_v1.kind,
-      apiVersions: ImageRepository_v1.crd.apiVersions,
+      Details: (props) => <ImageRepositoryDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ImageRepository_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageRepository_v1>) => (
-          <ImageRepositoryDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ImageUpdateAutomation_v1beta1.kind,
-      apiVersions: ImageUpdateAutomation_v1beta1.crd.apiVersions,
+      Details: (props) => <ImageRepositoryDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ImageUpdateAutomation_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation_v1beta1>) => (
-          <ImageUpdateAutomationDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ImageUpdateAutomation_v1beta2.kind,
-      apiVersions: ImageUpdateAutomation_v1beta2.crd.apiVersions,
+      Details: (props) => <ImageUpdateAutomationDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ImageUpdateAutomation_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation_v1beta2>) => (
-          <ImageUpdateAutomationDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ImageUpdateAutomation_v1.kind,
-      apiVersions: ImageUpdateAutomation_v1.crd.apiVersions,
+      Details: (props) => <ImageUpdateAutomationDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ImageUpdateAutomation_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation_v1>) => (
-          <ImageUpdateAutomationDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Kustomization_v1beta1.kind,
-      apiVersions: Kustomization_v1beta1.crd.apiVersions,
+      Details: (props) => <ImageUpdateAutomationDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Kustomization_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Kustomization_v1beta1>) => (
-          <KustomizationDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Kustomization_v1beta2.kind,
-      apiVersions: Kustomization_v1beta2.crd.apiVersions,
+      Details: (props) => <KustomizationDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Kustomization_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Kustomization_v1beta2>) => (
-          <KustomizationDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Kustomization_v1.kind,
-      apiVersions: Kustomization_v1.crd.apiVersions,
+      Details: (props) => <KustomizationDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Kustomization_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Kustomization_v1>) => (
-          <KustomizationDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: OCIRepository_v1beta2.kind,
-      apiVersions: OCIRepository_v1beta2.crd.apiVersions,
+      Details: (props) => <KustomizationDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(OCIRepository_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<OCIRepository_v1beta2>) => (
-          <OCIRepositoryDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: OCIRepository_v1.kind,
-      apiVersions: OCIRepository_v1.crd.apiVersions,
+      Details: (props) => <OCIRepositoryDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(OCIRepository_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<OCIRepository_v1>) => (
-          <OCIRepositoryDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Provider_v1beta1.kind,
-      apiVersions: Provider_v1beta1.crd.apiVersions,
+      Details: (props) => <OCIRepositoryDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Provider_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider_v1beta1>) => (
-          <ProviderDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Provider_v1beta2.kind,
-      apiVersions: Provider_v1beta2.crd.apiVersions,
+      Details: (props) => <ProviderDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Provider_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider_v1beta2>) => (
-          <ProviderDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Provider_v1beta3.kind,
-      apiVersions: Provider_v1beta3.crd.apiVersions,
+      Details: (props) => <ProviderDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Provider_v1beta3, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Provider_v1beta3>) => (
-          <ProviderDetails_v1beta3 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1beta1.kind,
-      apiVersions: Receiver_v1beta1.crd.apiVersions,
+      Details: (props) => <ProviderDetails_v1beta3 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Receiver_v1beta1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver_v1beta1>) => (
-          <ReceiverDetails_v1beta1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1beta2.kind,
-      apiVersions: Receiver_v1beta2.crd.apiVersions,
+      Details: (props) => <ReceiverDetails_v1beta1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Receiver_v1beta2, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver_v1beta2>) => (
-          <ReceiverDetails_v1beta2 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1beta3.kind,
-      apiVersions: Receiver_v1beta3.crd.apiVersions,
+      Details: (props) => <ReceiverDetails_v1beta2 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Receiver_v1beta3, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver_v1beta3>) => (
-          <ReceiverDetails_v1beta3 {...props} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1.kind,
-      apiVersions: Receiver_v1.crd.apiVersions,
+      Details: (props) => <ReceiverDetails_v1beta3 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Receiver_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<Receiver_v1>) => <ReceiverDetails_v1 {...props} />,
-      },
-    },
-    {
-      kind: ResourceSet_v1.kind,
-      apiVersions: ResourceSet_v1.crd.apiVersions,
+      Details: (props) => <ReceiverDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ResourceSet_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ResourceSet_v1>) => (
-          <ResourceSetDetails_v1 {...props} />
-        ),
-      },
-    },
-    {
-      kind: ResourceSetInputProvider_v1.kind,
-      apiVersions: ResourceSetInputProvider_v1.crd.apiVersions,
+      Details: (props) => <ResourceSetDetails_v1 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(ResourceSetInputProvider_v1, {
       priority: 10,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<ResourceSetInputProvider_v1>) => (
-          <ResourceSetInputProviderDetails_v1 {...props} />
-        ),
-      },
-    },
+      Details: (props) => <ResourceSetInputProviderDetails_v1 {...props} />,
+    }),
   ];
 
   kubeObjectMenuItems = [
