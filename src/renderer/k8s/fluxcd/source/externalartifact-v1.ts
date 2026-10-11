@@ -23,6 +23,9 @@ export class ExternalArtifact extends Renderer.K8sApi.LensExtensionKubeObject<
   ExternalArtifactStatus,
   ExternalArtifactSpec
 > {
+  declare kind: "ExternalArtifact";
+  declare apiVersion: "source.toolkit.fluxcd.io/v1";
+
   static readonly kind = "ExternalArtifact";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1/externalartifacts";

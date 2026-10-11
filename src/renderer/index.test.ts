@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { Component, type ComponentType, type FunctionComponent, isValidElement } from "react";
 import { describe, expect, it } from "vitest";
 import FluxCDExtension from "./index";
 import { FluxInstance } from "./k8s/fluxcd/controlplane/fluxinstance-v1";
@@ -10,6 +11,9 @@ import { FluxCDObjectAnnotationSuspendResumeMenuItem } from "./menus/fluxcd-obje
 import { FluxCDObjectReconcileMenuItem } from "./menus/fluxcd-object-reconcile-menu-item";
 
 type KubeObjectClass = typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>;
+
+const isFunctionComponent = <P>(component: ComponentType<P>): component is FunctionComponent<P> =>
+  !(component.prototype instanceof Component);
 
 // Every model of the extension, one module per version of a kind. Each of them
 // has a page, so each belongs in `customResources`.
@@ -63,12 +67,20 @@ describe("FluxCDExtension.kubeObjectMenuItems", () => {
   const { kubeObjectMenuItems } = new FluxCDExtension({} as ConstructorParameters<typeof FluxCDExtension>[0]);
 
   // The element each menu item of the kind renders, for an object of the kind.
+  // The registrations wrap the shared items in function components, which
+  // return the element when called.
   const renderMenuItems = (kubeObjectClass: KubeObjectClass) =>
     kubeObjectMenuItems
       .filter(
-        ({ kind, apiVersions }) => kind === kubeObjectClass.kind && apiVersions === kubeObjectClass.crd?.apiVersions,
+        ({ kind, apiVersions }) =>
+          kind === kubeObjectClass.kind && apiVersions.join() === kubeObjectClass.crd?.apiVersions.join(),
       )
-      .map(({ components: { MenuItem } }) => MenuItem({ object: {} as never }));
+      .map(({ components: { MenuItem } }) => {
+        if (!isFunctionComponent(MenuItem)) throw new Error(`${MenuItem.name} is not a function component`);
+        const element = MenuItem({ object: {} as never });
+        if (!isValidElement(element)) throw new Error(`${MenuItem.name} renders no element`);
+        return element;
+      });
 
   it("registers Reconcile and the annotation Suspend/Resume item for ArtifactGenerator", () => {
     const elements = renderMenuItems(ArtifactGenerator);

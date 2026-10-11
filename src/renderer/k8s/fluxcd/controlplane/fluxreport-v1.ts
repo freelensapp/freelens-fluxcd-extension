@@ -68,6 +68,9 @@ export class FluxReport extends Renderer.K8sApi.LensExtensionKubeObject<
   FluxReportStatus,
   FluxReportSpec
 > {
+  declare kind: "FluxReport";
+  declare apiVersion: "fluxcd.controlplane.io/v1";
+
   static readonly kind = "FluxReport";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/fluxcd.controlplane.io/v1/fluxreports";
