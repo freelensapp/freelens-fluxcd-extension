@@ -1,4 +1,4 @@
-import { Common, Renderer } from "@freelensapp/extensions";
+import { Renderer } from "@freelensapp/extensions";
 import { FluxInstanceDetails as FluxInstanceDetails_v1 } from "./components/details/controlplane/flux-instance-details-v1";
 import { FluxReportDetails as FluxReportDetails_v1 } from "./components/details/controlplane/flux-report-details-v1";
 import { ResourceSetDetails as ResourceSetDetails_v1 } from "./components/details/controlplane/resource-set-details";
@@ -296,6 +296,58 @@ const availableVersionPages = [
   ReceiversPage,
   ResourceSetsPage,
   ResourceSetInputProvidersPage,
+];
+
+// The kinds that `spec.suspend` suspends, every version: each gets Reconcile and the spec Suspend/Resume item.
+const specSuspendClasses = [
+  Alert_v1beta1,
+  Alert_v1beta2,
+  Alert_v1beta3,
+  Bucket_v1beta1,
+  Bucket_v1beta2,
+  Bucket_v1,
+  GitRepository_v1beta1,
+  GitRepository_v1beta2,
+  GitRepository_v1,
+  HelmChart_v1beta1,
+  HelmChart_v1beta2,
+  HelmChart_v1,
+  HelmRelease_v2beta1,
+  HelmRelease_v2beta2,
+  HelmRelease_v2,
+  HelmRepository_v1beta1,
+  HelmRepository_v1beta2,
+  HelmRepository_v1,
+  ImagePolicy_v1beta2,
+  ImagePolicy_v1,
+  ImageRepository_v1beta1,
+  ImageRepository_v1beta2,
+  ImageRepository_v1,
+  ImageUpdateAutomation_v1beta1,
+  ImageUpdateAutomation_v1beta2,
+  ImageUpdateAutomation_v1,
+  Kustomization_v1beta1,
+  Kustomization_v1beta2,
+  Kustomization_v1,
+  OCIRepository_v1beta2,
+  OCIRepository_v1,
+  Provider_v1beta1,
+  Provider_v1beta2,
+  Provider_v1beta3,
+  Receiver_v1beta1,
+  Receiver_v1beta2,
+  Receiver_v1beta3,
+  Receiver_v1,
+];
+
+// The kinds that an annotation suspends, every version, with the annotation: each gets Reconcile and the
+// annotation Suspend/Resume item.
+const annotationSuspendClasses = [
+  { kubeObjectClass: ArtifactGenerator_v1beta1, annotation: sourceWatcherReconcileAnnotation },
+  { kubeObjectClass: FluxInstance_v1, annotation: fluxOperatorReconcileAnnotation },
+  { kubeObjectClass: FluxReport_v1, annotation: fluxOperatorReconcileAnnotation },
+  { kubeObjectClass: ResourceSet_v1, annotation: fluxOperatorReconcileAnnotation },
+  { kubeObjectClass: ResourceSetInputProvider_v1, annotation: fluxOperatorReconcileAnnotation },
 ];
 
 export default class FluxCDExtension extends Renderer.LensExtension {
@@ -934,809 +986,31 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     }),
   ];
 
+  // In a list, `kubeObjectClass` is the union of its classes, from which `menuItemFor` would infer the object type of
+  // one of them and reject the others. The type argument is the union of their objects instead, so the menu item is
+  // checked against the objects of every class in the list.
   kubeObjectMenuItems = [
-    {
-      kind: Alert_v1beta1.kind,
-      apiVersions: Alert_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Alert_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Alert_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Alert_v1beta1.kind,
-      apiVersions: Alert_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Alert_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Alert_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Alert_v1beta2.kind,
-      apiVersions: Alert_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Alert_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Alert_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Alert_v1beta2.kind,
-      apiVersions: Alert_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Alert_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Alert_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Alert_v1beta3.kind,
-      apiVersions: Alert_v1beta3.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Alert_v1beta3>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Alert_v1beta3} />
-        ),
-      },
-    },
-    {
-      kind: Alert_v1beta3.kind,
-      apiVersions: Alert_v1beta3.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Alert_v1beta3>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Alert_v1beta3} />
-        ),
-      },
-    },
-    {
-      kind: ArtifactGenerator_v1beta1.kind,
-      apiVersions: ArtifactGenerator_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ArtifactGenerator_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ArtifactGenerator_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: ArtifactGenerator_v1beta1.kind,
-      apiVersions: ArtifactGenerator_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ArtifactGenerator_v1beta1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem
-            {...props}
-            resource={ArtifactGenerator_v1beta1}
-            annotation={sourceWatcherReconcileAnnotation}
-          />
-        ),
-      },
-    },
-    {
-      kind: Bucket_v1beta1.kind,
-      apiVersions: Bucket_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Bucket_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Bucket_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Bucket_v1beta1.kind,
-      apiVersions: Bucket_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Bucket_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Bucket_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Bucket_v1beta2.kind,
-      apiVersions: Bucket_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Bucket_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Bucket_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Bucket_v1beta2.kind,
-      apiVersions: Bucket_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Bucket_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Bucket_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Bucket_v1.kind,
-      apiVersions: Bucket_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Bucket_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Bucket_v1} />
-        ),
-      },
-    },
-    {
-      kind: Bucket_v1.kind,
-      apiVersions: Bucket_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Bucket_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Bucket_v1} />
-        ),
-      },
-    },
-    {
-      kind: FluxInstance_v1.kind,
-      apiVersions: FluxInstance_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<FluxInstance_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={FluxInstance_v1} />
-        ),
-      },
-    },
-    {
-      kind: FluxInstance_v1.kind,
-      apiVersions: FluxInstance_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<FluxInstance_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem
-            {...props}
-            resource={FluxInstance_v1}
-            annotation={fluxOperatorReconcileAnnotation}
-          />
-        ),
-      },
-    },
-    {
-      kind: FluxReport_v1.kind,
-      apiVersions: FluxReport_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<FluxReport_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={FluxReport_v1} />
-        ),
-      },
-    },
-    {
-      kind: FluxReport_v1.kind,
-      apiVersions: FluxReport_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<FluxReport_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem
-            {...props}
-            resource={FluxReport_v1}
-            annotation={fluxOperatorReconcileAnnotation}
-          />
-        ),
-      },
-    },
-    {
-      kind: GitRepository_v1beta1.kind,
-      apiVersions: GitRepository_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<GitRepository_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={GitRepository_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: GitRepository_v1beta1.kind,
-      apiVersions: GitRepository_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<GitRepository_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={GitRepository_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: GitRepository_v1beta2.kind,
-      apiVersions: GitRepository_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<GitRepository_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={GitRepository_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: GitRepository_v1beta2.kind,
-      apiVersions: GitRepository_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<GitRepository_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={GitRepository_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: GitRepository_v1.kind,
-      apiVersions: GitRepository_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<GitRepository_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={GitRepository_v1} />
-        ),
-      },
-    },
-    {
-      kind: GitRepository_v1.kind,
-      apiVersions: GitRepository_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<GitRepository_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={GitRepository_v1} />
-        ),
-      },
-    },
-    {
-      kind: HelmChart_v1beta1.kind,
-      apiVersions: HelmChart_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmChart_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmChart_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: HelmChart_v1beta1.kind,
-      apiVersions: HelmChart_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmChart_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmChart_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: HelmChart_v1beta2.kind,
-      apiVersions: HelmChart_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmChart_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmChart_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: HelmChart_v1beta2.kind,
-      apiVersions: HelmChart_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmChart_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmChart_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: HelmChart_v1.kind,
-      apiVersions: HelmChart_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmChart_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmChart_v1} />
-        ),
-      },
-    },
-    {
-      kind: HelmChart_v1.kind,
-      apiVersions: HelmChart_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmChart_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmChart_v1} />
-        ),
-      },
-    },
-    {
-      kind: HelmRelease_v2beta1.kind,
-      apiVersions: HelmRelease_v2beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRelease_v2beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRelease_v2beta1} />
-        ),
-      },
-    },
-    {
-      kind: HelmRelease_v2beta1.kind,
-      apiVersions: HelmRelease_v2beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRelease_v2beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRelease_v2beta1} />
-        ),
-      },
-    },
-    {
-      kind: HelmRelease_v2beta2.kind,
-      apiVersions: HelmRelease_v2beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRelease_v2beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRelease_v2beta2} />
-        ),
-      },
-    },
-    {
-      kind: HelmRelease_v2beta2.kind,
-      apiVersions: HelmRelease_v2beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRelease_v2beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRelease_v2beta2} />
-        ),
-      },
-    },
-    {
-      kind: HelmRelease_v2.kind,
-      apiVersions: HelmRelease_v2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRelease_v2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRelease_v2} />
-        ),
-      },
-    },
-    {
-      kind: HelmRelease_v2.kind,
-      apiVersions: HelmRelease_v2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRelease_v2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRelease_v2} />
-        ),
-      },
-    },
-    {
-      kind: HelmRepository_v1beta1.kind,
-      apiVersions: HelmRepository_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRepository_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRepository_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: HelmRepository_v1beta1.kind,
-      apiVersions: HelmRepository_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRepository_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRepository_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: HelmRepository_v1beta2.kind,
-      apiVersions: HelmRepository_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRepository_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRepository_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: HelmRepository_v1beta2.kind,
-      apiVersions: HelmRepository_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRepository_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRepository_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: HelmRepository_v1.kind,
-      apiVersions: HelmRepository_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRepository_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={HelmRepository_v1} />
-        ),
-      },
-    },
-    {
-      kind: HelmRepository_v1.kind,
-      apiVersions: HelmRepository_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<HelmRepository_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={HelmRepository_v1} />
-        ),
-      },
-    },
-    {
-      kind: ImagePolicy_v1beta1.kind,
-      apiVersions: ImagePolicy_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImagePolicy_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ImagePolicy_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: ImagePolicy_v1beta2.kind,
-      apiVersions: ImagePolicy_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImagePolicy_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ImagePolicy_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: ImagePolicy_v1beta2.kind,
-      apiVersions: ImagePolicy_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImagePolicy_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImagePolicy_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: ImagePolicy_v1.kind,
-      apiVersions: ImagePolicy_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImagePolicy_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ImagePolicy_v1} />
-        ),
-      },
-    },
-    {
-      kind: ImagePolicy_v1.kind,
-      apiVersions: ImagePolicy_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImagePolicy_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImagePolicy_v1} />
-        ),
-      },
-    },
-    {
-      kind: ImageRepository_v1beta1.kind,
-      apiVersions: ImageRepository_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageRepository_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ImageRepository_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: ImageRepository_v1beta1.kind,
-      apiVersions: ImageRepository_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageRepository_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageRepository_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: ImageRepository_v1beta2.kind,
-      apiVersions: ImageRepository_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageRepository_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ImageRepository_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: ImageRepository_v1beta2.kind,
-      apiVersions: ImageRepository_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageRepository_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageRepository_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: ImageRepository_v1.kind,
-      apiVersions: ImageRepository_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageRepository_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ImageRepository_v1} />
-        ),
-      },
-    },
-    {
-      kind: ImageRepository_v1.kind,
-      apiVersions: ImageRepository_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageRepository_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageRepository_v1} />
-        ),
-      },
-    },
-    {
-      kind: ImageUpdateAutomation_v1beta1.kind,
-      apiVersions: ImageUpdateAutomation_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageUpdateAutomation_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ImageUpdateAutomation_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: ImageUpdateAutomation_v1beta1.kind,
-      apiVersions: ImageUpdateAutomation_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageUpdateAutomation_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: ImageUpdateAutomation_v1beta2.kind,
-      apiVersions: ImageUpdateAutomation_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageUpdateAutomation_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ImageUpdateAutomation_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: ImageUpdateAutomation_v1beta2.kind,
-      apiVersions: ImageUpdateAutomation_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageUpdateAutomation_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: ImageUpdateAutomation_v1.kind,
-      apiVersions: ImageUpdateAutomation_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageUpdateAutomation_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ImageUpdateAutomation_v1} />
-        ),
-      },
-    },
-    {
-      kind: ImageUpdateAutomation_v1.kind,
-      apiVersions: ImageUpdateAutomation_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ImageUpdateAutomation_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={ImageUpdateAutomation_v1} />
-        ),
-      },
-    },
-    {
-      kind: Kustomization_v1beta1.kind,
-      apiVersions: Kustomization_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Kustomization_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Kustomization_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Kustomization_v1beta1.kind,
-      apiVersions: Kustomization_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Kustomization_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Kustomization_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Kustomization_v1beta2.kind,
-      apiVersions: Kustomization_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Kustomization_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Kustomization_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Kustomization_v1beta2.kind,
-      apiVersions: Kustomization_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Kustomization_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Kustomization_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Kustomization_v1.kind,
-      apiVersions: Kustomization_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Kustomization_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Kustomization_v1} />
-        ),
-      },
-    },
-    {
-      kind: Kustomization_v1.kind,
-      apiVersions: Kustomization_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Kustomization_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Kustomization_v1} />
-        ),
-      },
-    },
-    {
-      kind: OCIRepository_v1beta2.kind,
-      apiVersions: OCIRepository_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<OCIRepository_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={OCIRepository_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: OCIRepository_v1beta2.kind,
-      apiVersions: OCIRepository_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<OCIRepository_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={OCIRepository_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: OCIRepository_v1.kind,
-      apiVersions: OCIRepository_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<OCIRepository_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={OCIRepository_v1} />
-        ),
-      },
-    },
-    {
-      kind: OCIRepository_v1.kind,
-      apiVersions: OCIRepository_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<OCIRepository_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={OCIRepository_v1} />
-        ),
-      },
-    },
-    {
-      kind: Provider_v1beta1.kind,
-      apiVersions: Provider_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Provider_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Provider_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Provider_v1beta1.kind,
-      apiVersions: Provider_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Provider_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Provider_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Provider_v1beta2.kind,
-      apiVersions: Provider_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Provider_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Provider_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Provider_v1beta2.kind,
-      apiVersions: Provider_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Provider_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Provider_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Provider_v1beta3.kind,
-      apiVersions: Provider_v1beta3.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Provider_v1beta3>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Provider_v1beta3} />
-        ),
-      },
-    },
-    {
-      kind: Provider_v1beta3.kind,
-      apiVersions: Provider_v1beta3.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Provider_v1beta3>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Provider_v1beta3} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1beta1.kind,
-      apiVersions: Receiver_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Receiver_v1beta1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1beta1.kind,
-      apiVersions: Receiver_v1beta1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Receiver_v1beta1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Receiver_v1beta1} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1beta2.kind,
-      apiVersions: Receiver_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Receiver_v1beta2>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1beta2.kind,
-      apiVersions: Receiver_v1beta2.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Receiver_v1beta2>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Receiver_v1beta2} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1beta3.kind,
-      apiVersions: Receiver_v1beta3.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Receiver_v1beta3>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver_v1beta3} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1beta3.kind,
-      apiVersions: Receiver_v1beta3.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Receiver_v1beta3>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Receiver_v1beta3} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1.kind,
-      apiVersions: Receiver_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Receiver_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={Receiver_v1} />
-        ),
-      },
-    },
-    {
-      kind: Receiver_v1.kind,
-      apiVersions: Receiver_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Receiver_v1>) => (
-          <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={Receiver_v1} />
-        ),
-      },
-    },
-    {
-      kind: ResourceSet_v1.kind,
-      apiVersions: ResourceSet_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ResourceSet_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ResourceSet_v1} />
-        ),
-      },
-    },
-    {
-      kind: ResourceSet_v1.kind,
-      apiVersions: ResourceSet_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ResourceSet_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem
-            {...props}
-            resource={ResourceSet_v1}
-            annotation={fluxOperatorReconcileAnnotation}
-          />
-        ),
-      },
-    },
-    {
-      kind: ResourceSetInputProvider_v1.kind,
-      apiVersions: ResourceSetInputProvider_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ResourceSetInputProvider_v1>) => (
-          <FluxCDObjectReconcileMenuItem {...props} resource={ResourceSetInputProvider_v1} />
-        ),
-      },
-    },
-    {
-      kind: ResourceSetInputProvider_v1.kind,
-      apiVersions: ResourceSetInputProvider_v1.crd.apiVersions,
-      components: {
-        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ResourceSetInputProvider_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem
-            {...props}
-            resource={ResourceSetInputProvider_v1}
-            annotation={fluxOperatorReconcileAnnotation}
-          />
-        ),
-      },
-    },
+    ...specSuspendClasses.flatMap((kubeObjectClass) => [
+      Renderer.K8sApi.menuItemFor<InstanceType<typeof kubeObjectClass>>(kubeObjectClass, {
+        MenuItem: (props) => <FluxCDObjectReconcileMenuItem {...props} resource={kubeObjectClass} />,
+      }),
+      Renderer.K8sApi.menuItemFor<InstanceType<typeof kubeObjectClass>>(kubeObjectClass, {
+        MenuItem: (props) => <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={kubeObjectClass} />,
+      }),
+    ]),
+    // ImagePolicy v1beta1 has no `spec.suspend`, and gets Reconcile only.
+    Renderer.K8sApi.menuItemFor(ImagePolicy_v1beta1, {
+      MenuItem: (props) => <FluxCDObjectReconcileMenuItem {...props} resource={ImagePolicy_v1beta1} />,
+    }),
+    ...annotationSuspendClasses.flatMap(({ kubeObjectClass, annotation }) => [
+      Renderer.K8sApi.menuItemFor<InstanceType<typeof kubeObjectClass>>(kubeObjectClass, {
+        MenuItem: (props) => <FluxCDObjectReconcileMenuItem {...props} resource={kubeObjectClass} />,
+      }),
+      Renderer.K8sApi.menuItemFor<InstanceType<typeof kubeObjectClass>>(kubeObjectClass, {
+        MenuItem: (props) => (
+          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={kubeObjectClass} annotation={annotation} />
+        ),
+      }),
+    ]),
   ];
 }

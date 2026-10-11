@@ -165,6 +165,11 @@ const detailsFor = (
   ...(priority === undefined ? {} : { priority }),
 });
 
+const menuItemFor = (kubeObjectClass: StubKubeObjectClass, { MenuItem }: { MenuItem: unknown }) => ({
+  ...registrationOf("menuItemFor", kubeObjectClass),
+  components: { MenuItem },
+});
+
 export const Renderer = {
   LensExtension,
   Component: {
@@ -232,6 +237,7 @@ export const Renderer = {
     },
     apiManager,
     detailsFor,
+    menuItemFor,
   },
   Navigation: {
     getDetailsUrl: (url: string) => `/details?url=${encodeURIComponent(url)}`,
