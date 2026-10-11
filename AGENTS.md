@@ -112,7 +112,9 @@ src/
   main/index.ts                        # Main entry (Main.LensExtension), ESM
   renderer/index.tsx                   # Renderer entry (Renderer.LensExtension): every registration, ESM
   renderer/k8s/fluxcd/                 # K8s object model classes, grouped by controller
-                                       #   (source, kustomize, helm, image, notification, controlplane)
+                                       #   (source, kustomize, helm, image, notification, controlplane);
+                                       #   source/ also has ArtifactGenerator of source-watcher
+                                       #   (source.extensions.fluxcd.io)
   renderer/k8s/fluxcd/utils.ts         # Links of Flux references (served API version)
   renderer/k8s/core/                   # Core K8s object models
   renderer/components/details/         # Detail view components, grouped by controller
@@ -216,14 +218,29 @@ that serves the version, read from the Go sources and not from memory:
 - Every `+kubebuilder:validation:Enum` is a string-literal union type alias,
   used by the fields that have it: `ReflectionPolicy` in `imagepolicy-v1.ts`,
   `CrossNamespaceSourceReferenceKind` in `kustomization-v1.ts` and
-  `helmrelease-v2.ts`.
+  `helmrelease-v2.ts`, `SourceReferenceKind` and `CopyStrategy` in
+  `artifactgenerator-v1beta1.ts`. Where the Go field has no named type, the
+  alias takes its name from the struct and the field.
 - A type that `types.ts` shares across versions, such as `Artifact`
   (`meta.Artifact` of fluxcd/pkg for `v1`), has the fields of every version
   it covers, optional where one of them omits it.
 
-A kind that its controller does not reconcile, or that has no `spec.suspend`,
-gets no Reconcile or Suspend/Resume menu item: `ExternalArtifact` is
-reconciled by its producer, such as source-watcher.
+A kind that its controller does not reconcile gets no Reconcile or
+Suspend/Resume menu item: `ExternalArtifact` is reconciled by its producer,
+such as source-watcher. A kind with `spec.suspend` gets
+`FluxCDObjectSpecSuspendResumeMenuItem`. A kind that an annotation suspends
+instead gets `FluxCDObjectAnnotationSuspendResumeMenuItem`, with the
+annotation as its `annotation` prop, which Suspend sets to `disabled` and
+Resume to `enabled`: `fluxcd.controlplane.io/reconcile` for the Flux Operator
+kinds, `source.extensions.fluxcd.io/reconcile`
+(`ArtifactGenerator.reconcileAnnotation`) for `ArtifactGenerator`. A kind with
+neither gets no Suspend/Resume item.
+
+The Overview chart and the condition badge show an object as suspended by
+its `spec.suspend`, the `suspend` argument of `getConditionText` and
+`getConditionClass`. For `ArtifactGenerator`, which has no `spec.suspend`,
+they read the annotation through `ArtifactGenerator.isReconcileDisabled`,
+which compares it as source-watcher's `IsDisabled` does.
 
 ## Renderer Components
 
@@ -258,6 +275,7 @@ reconciled by its producer, such as source-watcher.
 - A `kubeObjectMenuItems` `MenuItem` gets `object` and `toolbar` (`Common.Types.KubeObjectMenuItemProps<Kind>`); the
   registration passes `resource`:
   `MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Alert_v1beta3>) => <FluxCDObjectReconcileMenuItem {...props} resource={Alert_v1beta3} />`.
+  The annotation Suspend/Resume item also gets `annotation` (see "CRD KubeObject Pattern").
 - SCSS modules get TypeScript declarations (`*.module.d.scss.ts`), written during the renderer build (see
   "CSS module declarations"). They are committed, because `pnpm type:check` runs without a build; commit the
   regenerated file with a change to its SCSS module. `pnpm clean:dts` removes them.
