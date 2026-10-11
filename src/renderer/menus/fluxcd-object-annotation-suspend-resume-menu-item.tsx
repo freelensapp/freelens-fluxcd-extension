@@ -18,10 +18,16 @@ type FluxCDKubeObjectWithMetadataCtor = typeof Renderer.K8sApi.LensExtensionKube
 export interface FluxCDObjectAnnotationSuspendResumeMenuItemProps
   extends Common.Types.KubeObjectMenuItemProps<FluxCDKubeObjectWithMetadata> {
   resource: FluxCDKubeObjectWithMetadataCtor;
+  /**
+   * The annotation that disables the reconciliation of the object with the value `disabled` and enables it with
+   * `enabled`: `fluxcd.controlplane.io/reconcile` for the Flux Operator kinds, `source.extensions.fluxcd.io/reconcile`
+   * for an ArtifactGenerator.
+   */
+  annotation: string;
 }
 
 export function FluxCDObjectAnnotationSuspendResumeMenuItem(props: FluxCDObjectAnnotationSuspendResumeMenuItemProps) {
-  const { object, toolbar, resource } = props;
+  const { object, toolbar, resource, annotation } = props;
   if (!object) return <></>;
 
   const store = resource.getStore<FluxCDKubeObjectWithMetadata>();
@@ -32,7 +38,7 @@ export function FluxCDObjectAnnotationSuspendResumeMenuItem(props: FluxCDObjectA
       object,
       {
         metadata: {
-          annotations: { "fluxcd.controlplane.io/reconcile": "disabled" },
+          annotations: { [annotation]: "disabled" },
         },
       },
       "merge",
@@ -44,14 +50,14 @@ export function FluxCDObjectAnnotationSuspendResumeMenuItem(props: FluxCDObjectA
       object,
       {
         metadata: {
-          annotations: { "fluxcd.controlplane.io/reconcile": "enabled" },
+          annotations: { [annotation]: "enabled" },
         },
       },
       "merge",
     );
   };
 
-  if ((object.metadata.annotations?.["fluxcd.controlplane.io/reconcile"] ?? "enabled") === "enabled") {
+  if ((object.metadata.annotations?.[annotation] ?? "enabled") === "enabled") {
     return (
       <MenuItem onClick={suspend}>
         <Icon material="pause_circle_filled" interactive={toolbar} title="Suspend" />

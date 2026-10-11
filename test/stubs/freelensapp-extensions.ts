@@ -124,10 +124,27 @@ export const Renderer = {
     DrawerTitle: ({ children }: { children?: React.ReactNode }) => React.createElement("div", null, children),
     DurationAbsoluteTimestamp: ({ timestamp }: { timestamp?: string }) =>
       React.createElement(React.Fragment, null, timestamp),
+    // The host draws a font or SVG icon; a test reads the text next to it.
+    Icon: () => null,
     KubeObjectListLayout,
     // A link where `to` is set, and its text only otherwise, as in the host.
     MaybeLink: ({ to, children }: { to?: string; children?: React.ReactNode }) =>
       to ? React.createElement("a", { href: to }, children) : React.createElement(React.Fragment, null, children),
+    // An item of a menu, which calls `onClick` when clicked and not when disabled, as in the host.
+    MenuItem: ({
+      onClick,
+      disabled,
+      children,
+    }: {
+      onClick?: () => void;
+      disabled?: boolean;
+      children?: React.ReactNode;
+    }) =>
+      React.createElement(
+        "li",
+        { role: "menuitem", "aria-disabled": disabled, onClick: disabled ? undefined : onClick },
+        children,
+      ),
     // The host draws the chart with Chart.js; a test checks what is around it.
     PieChart: () => null,
   },

@@ -1286,7 +1286,11 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       apiVersions: FluxInstance_v1.crd.apiVersions,
       components: {
         MenuItem: (props: Common.Types.KubeObjectMenuItemProps<FluxInstance_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={FluxInstance_v1} />
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={FluxInstance_v1}
+            annotation="fluxcd.controlplane.io/reconcile"
+          />
         ),
       },
     },
@@ -1304,7 +1308,11 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       apiVersions: FluxReport_v1.crd.apiVersions,
       components: {
         MenuItem: (props: Common.Types.KubeObjectMenuItemProps<FluxReport_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={FluxReport_v1} />
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={FluxReport_v1}
+            annotation="fluxcd.controlplane.io/reconcile"
+          />
         ),
       },
     },
@@ -1907,7 +1915,11 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       apiVersions: ResourceSet_v1.crd.apiVersions,
       components: {
         MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ResourceSet_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={ResourceSet_v1} />
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={ResourceSet_v1}
+            annotation="fluxcd.controlplane.io/reconcile"
+          />
         ),
       },
     },
@@ -1925,7 +1937,11 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       apiVersions: ResourceSetInputProvider_v1.crd.apiVersions,
       components: {
         MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ResourceSetInputProvider_v1>) => (
-          <FluxCDObjectAnnotationSuspendResumeMenuItem {...props} resource={ResourceSetInputProvider_v1} />
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={ResourceSetInputProvider_v1}
+            annotation="fluxcd.controlplane.io/reconcile"
+          />
         ),
       },
     },
