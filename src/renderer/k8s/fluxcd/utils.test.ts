@@ -56,6 +56,14 @@ describe("getServedApiVersion", () => {
     expect(getServedApiVersion("Bucket")).toBe("source.toolkit.fluxcd.io/v1");
   });
 
+  test("looks up ArtifactGenerator in source.extensions.fluxcd.io only", () => {
+    serveApis(
+      fakeApi("ArtifactGenerator", "example.com", "v1", "artifactgenerators"),
+      fakeApi("ArtifactGenerator", "source.extensions.fluxcd.io", "v1beta1", "artifactgenerators"),
+    );
+    expect(getServedApiVersion("ArtifactGenerator")).toBe("source.extensions.fluxcd.io/v1beta1");
+  });
+
   test("falls back to an older version when the newer ones are not served", () => {
     serveApis(fakeApi("GitRepository", "source.toolkit.fluxcd.io", "v1beta2", "gitrepositories"));
     expect(getServedApiVersion("GitRepository")).toBe("source.toolkit.fluxcd.io/v1beta2");
@@ -156,6 +164,16 @@ describe("getRefUrl", () => {
     );
     expect(getRefUrl({ kind: "GitRepository", name: "app" }, parent)).toBe(
       "/apis/source.toolkit.fluxcd.io/v1/namespaces/flux-system/gitrepositories/app",
+    );
+  });
+
+  test("links the ArtifactGenerator of a generated ExternalArtifact to its group, past a kind of the same name", () => {
+    serveApis(
+      fakeApi("ArtifactGenerator", "example.com", "v1", "artifactgenerators"),
+      fakeApi("ArtifactGenerator", "source.extensions.fluxcd.io", "v1beta1", "artifactgenerators"),
+    );
+    expect(getRefUrl({ kind: "ArtifactGenerator", name: "podinfo" }, parent)).toBe(
+      "/apis/source.extensions.fluxcd.io/v1beta1/namespaces/flux-system/artifactgenerators/podinfo",
     );
   });
 

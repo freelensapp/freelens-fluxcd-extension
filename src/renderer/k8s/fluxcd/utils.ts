@@ -15,6 +15,7 @@ const fluxApiGroups: Partial<Record<string, string>> = {
   HelmChart: "source.toolkit.fluxcd.io",
   HelmRepository: "source.toolkit.fluxcd.io",
   OCIRepository: "source.toolkit.fluxcd.io",
+  ArtifactGenerator: "source.extensions.fluxcd.io",
   Kustomization: "kustomize.toolkit.fluxcd.io",
   HelmRelease: "helm.toolkit.fluxcd.io",
   ImagePolicy: "image.toolkit.fluxcd.io",
