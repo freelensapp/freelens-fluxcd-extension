@@ -5,7 +5,7 @@ import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "..
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
 export interface ProviderSpec extends FluxCDKubeObjectSpecWithSuspend {
-  type?:
+  type:
     | "slack"
     | "discord"
     | "msteams"
