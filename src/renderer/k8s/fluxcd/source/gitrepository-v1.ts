@@ -14,8 +14,8 @@ export interface GitRepositoryRef {
 
 export interface GitRepositoryInclude {
   repository: LocalObjectReference;
-  fromPath: string;
-  toPath: string;
+  fromPath?: string;
+  toPath?: string;
 }
 
 export interface GitRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
@@ -25,7 +25,7 @@ export interface GitRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   interval: string;
   timeout?: string;
   ref?: GitRepositoryRef;
-  verify?: { mode?: string; secretRef?: LocalObjectReference };
+  verify?: { mode?: string; secretRef: LocalObjectReference };
   ignore?: string;
   suspend?: boolean;
   recurseSubmodules?: boolean;
