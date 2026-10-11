@@ -28,6 +28,7 @@ import { ReceiverDetails as ReceiverDetails_v1 } from "./components/details/noti
 import { ReceiverDetails as ReceiverDetails_v1beta1 } from "./components/details/notification/receiver-details-v1beta1";
 import { ReceiverDetails as ReceiverDetails_v1beta2 } from "./components/details/notification/receiver-details-v1beta2";
 import { ReceiverDetails as ReceiverDetails_v1beta3 } from "./components/details/notification/receiver-details-v1beta3";
+import { ArtifactGeneratorDetails as ArtifactGeneratorDetails_v1beta1 } from "./components/details/source/artifact-generator-details-v1beta1";
 import { BucketDetails as BucketDetails_v1 } from "./components/details/source/bucket-details-v1";
 import { BucketDetails as BucketDetails_v1beta1 } from "./components/details/source/bucket-details-v1beta1";
 import { BucketDetails as BucketDetails_v1beta2 } from "./components/details/source/bucket-details-v1beta2";
@@ -73,6 +74,7 @@ import { Receiver as Receiver_v1 } from "./k8s/fluxcd/notification/receiver-v1";
 import { Receiver as Receiver_v1beta1 } from "./k8s/fluxcd/notification/receiver-v1beta1";
 import { Receiver as Receiver_v1beta2 } from "./k8s/fluxcd/notification/receiver-v1beta2";
 import { Receiver as Receiver_v1beta3 } from "./k8s/fluxcd/notification/receiver-v1beta3";
+import { ArtifactGenerator as ArtifactGenerator_v1beta1 } from "./k8s/fluxcd/source/artifactgenerator-v1beta1";
 import { Bucket as Bucket_v1 } from "./k8s/fluxcd/source/bucket-v1";
 import { Bucket as Bucket_v1beta1 } from "./k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "./k8s/fluxcd/source/bucket-v1beta2";
@@ -122,6 +124,7 @@ import { ReceiversPage as ReceiversPage_v1beta1 } from "./pages/notifications/re
 import { ReceiversPage as ReceiversPage_v1beta2 } from "./pages/notifications/receivers-v1beta2";
 import { ReceiversPage as ReceiversPage_v1beta3 } from "./pages/notifications/receivers-v1beta3";
 import { FluxCDOverviewPage } from "./pages/overview";
+import { ArtifactGeneratorsPage as ArtifactGeneratorsPage_v1beta1 } from "./pages/source/artifactgenerators-v1beta1";
 import { BucketsPage as BucketsPage_v1 } from "./pages/source/buckets-v1";
 import { BucketsPage as BucketsPage_v1beta1 } from "./pages/source/buckets-v1beta1";
 import { BucketsPage as BucketsPage_v1beta2 } from "./pages/source/buckets-v1beta2";
@@ -150,6 +153,10 @@ const AlertsPage = createAvailableVersionPage("Alerts", [
   { kubeObjectClass: Alert_v1beta3, PageComponent: AlertsPage_v1beta3, version: "v1beta3" },
   { kubeObjectClass: Alert_v1beta2, PageComponent: AlertsPage_v1beta2, version: "v1beta2" },
   { kubeObjectClass: Alert_v1beta1, PageComponent: AlertsPage_v1beta1, version: "v1beta1" },
+]);
+
+const ArtifactGeneratorsPage = createAvailableVersionPage("Artifact Generators", [
+  { kubeObjectClass: ArtifactGenerator_v1beta1, PageComponent: ArtifactGeneratorsPage_v1beta1, version: "v1beta1" },
 ]);
 
 const BucketsPage = createAvailableVersionPage("Buckets", [
@@ -267,6 +274,7 @@ const ResourceSetInputProvidersPage = createAvailableVersionPage("Resource Set I
 // Every page of a kind, each with the model classes of all its versions, for `customResources`.
 const availableVersionPages = [
   AlertsPage,
+  ArtifactGeneratorsPage,
   BucketsPage,
   ExternalArtifactsPage,
   FluxInstancesPage,
@@ -298,6 +306,12 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "alert",
       components: {
         Page: () => <AlertsPage extension={this} />,
+      },
+    },
+    {
+      id: "artifactgenerator",
+      components: {
+        Page: () => <ArtifactGeneratorsPage extension={this} />,
       },
     },
     {
@@ -575,6 +589,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {},
     },
     {
+      id: "artifactgenerator",
+      parentId: "source",
+      target: { pageId: "artifactgenerator" },
+      title: ArtifactGenerator_v1beta1.crd.title,
+      components: {},
+    },
+    {
       id: "image",
       parentId: "fluxcd",
       target: { pageId: "imagerepository" },
@@ -754,6 +775,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {
         Details: (props: Renderer.Component.KubeObjectDetailsProps<Alert_v1beta3>) => (
           <AlertDetails_v1beta3 {...props} />
+        ),
+      },
+    },
+    {
+      kind: ArtifactGenerator_v1beta1.kind,
+      apiVersions: ArtifactGenerator_v1beta1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ArtifactGenerator_v1beta1>) => (
+          <ArtifactGeneratorDetails_v1beta1 {...props} />
         ),
       },
     },

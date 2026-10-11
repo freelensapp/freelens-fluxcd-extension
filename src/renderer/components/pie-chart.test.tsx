@@ -11,8 +11,12 @@ afterEach(() => {
 
 type StatsObject = Parameters<typeof getStats>[0][number];
 
-const object = (data: { kind?: string; spec?: Record<string, unknown>; status?: Record<string, unknown> }) =>
-  ({ kind: "Kustomization", spec: {}, ...data }) as unknown as StatsObject;
+const object = (data: {
+  kind?: string;
+  metadata?: Record<string, unknown>;
+  spec?: Record<string, unknown>;
+  status?: Record<string, unknown>;
+}) => ({ kind: "Kustomization", metadata: {}, spec: {}, ...data }) as unknown as StatsObject;
 
 const readyCondition = (status: string) => ({ conditions: [{ type: "Ready", status }] });
 
@@ -55,6 +59,22 @@ describe("getStats", () => {
     const stats = getStats(objects);
 
     expect(stats).toEqual([1, 0, 0, 0, 1]);
+    expect(sum(stats)).toBe(objects.length);
+  });
+
+  it("counts an ArtifactGenerator suspended by its annotation as suspended only", () => {
+    const annotations = (value: string) => ({ annotations: { "source.extensions.fluxcd.io/reconcile": value } });
+    const objects = [
+      object({ kind: "ArtifactGenerator", metadata: annotations("disabled"), status: readyCondition("False") }),
+      object({ kind: "ArtifactGenerator", metadata: annotations("enabled"), status: readyCondition("True") }),
+      object({ kind: "ArtifactGenerator", status: readyCondition("True") }),
+      // The annotation of source-watcher has no effect on another kind.
+      object({ metadata: annotations("disabled"), status: readyCondition("True") }),
+    ];
+
+    const stats = getStats(objects);
+
+    expect(stats).toEqual([3, 0, 0, 1, 0]);
     expect(sum(stats)).toBe(objects.length);
   });
 

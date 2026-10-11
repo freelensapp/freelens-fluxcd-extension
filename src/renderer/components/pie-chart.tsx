@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { ArtifactGenerator } from "../k8s/fluxcd/source/artifactgenerator-v1beta1";
 import styles from "./pie-chart.module.scss";
 
 import type React from "react";
@@ -22,10 +23,12 @@ const UNKNOWN = 4;
  * The category of an object, in the order of the chart. Each object has
  * exactly one: suspension wins over the status, and an OCI HelmRepository,
  * which has no status to reconcile, is ready. An object can have no spec,
- * as an ExternalArtifact, whose spec has optional fields only.
+ * as an ExternalArtifact, whose spec has optional fields only. An
+ * ArtifactGenerator has no `spec.suspend` and is suspended by its annotation.
  */
 const getCategory = (o: StatsObject) => {
   if (o.spec?.suspend === true) return SUSPENDED;
+  if (o.kind === ArtifactGenerator.kind && ArtifactGenerator.isReconcileDisabled(o)) return SUSPENDED;
   if (o.kind === "HelmRepository" && (o as HelmRepository).spec.type === "oci") return READY;
   if (!o.status?.conditions) return UNKNOWN;
 

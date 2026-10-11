@@ -112,6 +112,13 @@ const DrawerItemLabels = ({ labels, ...props }: DrawerItemProps & { labels: stri
   return DrawerItem({ ...props, children: items.join(", ") });
 };
 
+// The parts of the host's table that hold the content: each renders its
+// children only, a row as `role="row"` and a cell as `role="cell"`.
+const tablePart =
+  (role?: string) =>
+  ({ children }: { children?: React.ReactNode }) =>
+    React.createElement("div", role ? { role } : null, children);
+
 // The base class of the renderer entry. The host's constructor takes the
 // installed extension; a test reads only the registrations of the subclass.
 class LensExtension {}
@@ -119,6 +126,9 @@ class LensExtension {}
 export const Renderer = {
   LensExtension,
   Component: {
+    // The host's badge reads True or False.
+    BadgeBoolean: ({ value }: { value: boolean }) =>
+      React.createElement(React.Fragment, null, value ? "True" : "False"),
     DrawerItem,
     DrawerItemLabels,
     DrawerTitle: ({ children }: { children?: React.ReactNode }) => React.createElement("div", null, children),
@@ -127,6 +137,8 @@ export const Renderer = {
     // The host draws a font or SVG icon; a test reads the text next to it.
     Icon: () => null,
     KubeObjectListLayout,
+    // The host links the name to the details of the namespace.
+    LinkToNamespace: ({ namespace }: { namespace?: string }) => React.createElement(React.Fragment, null, namespace),
     // A link where `to` is set, and its text only otherwise, as in the host.
     MaybeLink: ({ to, children }: { to?: string; children?: React.ReactNode }) =>
       to ? React.createElement("a", { href: to }, children) : React.createElement(React.Fragment, null, children),
@@ -147,6 +159,10 @@ export const Renderer = {
       ),
     // The host draws the chart with Chart.js; a test checks what is around it.
     PieChart: () => null,
+    Table: tablePart(),
+    TableCell: tablePart("cell"),
+    TableHead: tablePart(),
+    TableRow: tablePart("row"),
   },
   K8sApi: {
     LensExtensionKubeObject,
@@ -166,6 +182,9 @@ export const Renderer = {
     getDetailsUrl: (url: string) => `/details?url=${encodeURIComponent(url)}`,
   },
   Util: {
+    // A key that is the same for equal data; the host's is a hash of the same
+    // JSON.
+    createReactKey: (data: unknown) => JSON.stringify(data),
     // A date, or a date and time with an optional offset, that the host
     // accepts as ISO 8601 and that parses to a valid time.
     isIso8601DateString: (value: string) =>

@@ -5,12 +5,10 @@ import FluxCDExtension from "./index";
 type KubeObjectClass = typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>;
 
 // Every model of the extension, one module per version of a kind. Each of them
-// has a page, so each belongs in `customResources`. ArtifactGenerator has no
-// page yet.
-const modelModules = import.meta.glob<Record<string, unknown>>(
-  ["./k8s/fluxcd/*/*.ts", "!./k8s/fluxcd/*/*.test.ts", "!./k8s/fluxcd/source/artifactgenerator-v1beta1.ts"],
-  { eager: true },
-);
+// has a page, so each belongs in `customResources`.
+const modelModules = import.meta.glob<Record<string, unknown>>(["./k8s/fluxcd/*/*.ts", "!./k8s/fluxcd/*/*.test.ts"], {
+  eager: true,
+});
 
 const modelClasses = Object.values(modelModules).flatMap((module) =>
   Object.values(module).filter(

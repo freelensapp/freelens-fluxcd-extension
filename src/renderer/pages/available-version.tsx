@@ -20,6 +20,7 @@ type ResourceName =
   | "Buckets"
   | "OCI Repositories"
   | "External Artifacts"
+  | "Artifact Generators"
   | "Image Repositories"
   | "Image Policies"
   | "Image Update Automations"

@@ -1,0 +1,23 @@
+.page {
+  :global(.TableCell) {
+    &.sources {
+      flex-grow: 1.3;
+    }
+
+    &.artifacts {
+      flex-grow: 0.4;
+    }
+
+    &.condition {
+      flex-grow: 0.7;
+    }
+
+    &.status {
+      flex-grow: 1.5;
+    }
+
+    &.age {
+      flex-grow: 0.3;
+    }
+  }
+}
