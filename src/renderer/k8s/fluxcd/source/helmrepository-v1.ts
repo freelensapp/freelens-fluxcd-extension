@@ -22,7 +22,7 @@ export interface HelmRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   url: string;
   secretRef?: LocalObjectReference;
   passCredentials?: boolean;
-  interval: string;
+  interval?: string;
   timeout?: string;
   suspend?: boolean;
   accessFrom?: AccessFrom;
