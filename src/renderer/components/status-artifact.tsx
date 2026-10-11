@@ -8,7 +8,7 @@ import type { Artifact } from "../k8s/fluxcd/types";
 const { observer } = MobxReact;
 
 const {
-  Component: { DrawerTitle, DrawerItem, DurationAbsoluteTimestamp },
+  Component: { DrawerTitle, DrawerItem, DrawerItemLabels, DurationAbsoluteTimestamp },
 } = Renderer;
 
 export interface StatusArtifactProps {
@@ -29,15 +29,19 @@ export const StatusArtifact: React.FC<StatusArtifactProps> = observer((props) =>
         <DrawerItem name="Revision" hidden={!artifact.revision}>
           {artifact.revision}
         </DrawerItem>
+        <DrawerItem name="Digest" hidden={!artifact.digest}>
+          {artifact.digest}
+        </DrawerItem>
         <DrawerItem name="Checksum" hidden={!artifact.checksum}>
           {artifact.checksum}
         </DrawerItem>
         <DrawerItem name="Size" hidden={!artifact.size}>
           <HumanizeBytes value={artifact.size} />
         </DrawerItem>
-        <DrawerItem name="Last Update Time">
+        <DrawerItem name="Last Update Time" hidden={!artifact.lastUpdateTime}>
           <DurationAbsoluteTimestamp timestamp={artifact.lastUpdateTime} />
         </DrawerItem>
+        <DrawerItemLabels name="Metadata" labels={artifact.metadata ?? {}} hidden={!artifact.metadata} />
       </div>
     </div>
   );

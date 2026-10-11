@@ -22,13 +22,20 @@ export interface AccessFrom {
   namespaceSelectors: NamespaceSelector[];
 }
 
+/**
+ * `meta.Artifact` of fluxcd/pkg (`apis/meta/artifact.go`), the artifact of the `v1` sources and of an
+ * ExternalArtifact, and the `Artifact` of source-controller `v1beta2` and `v1beta1`, which this type covers too:
+ * `checksum` is set by those versions only, replaced by `digest` in `v1`, and `lastUpdateTime` is optional there.
+ */
 export interface Artifact {
   path: string;
   url: string;
   revision: string;
-  checksum: string;
+  digest?: string;
+  checksum?: string;
   lastUpdateTime?: string;
   size?: number;
+  metadata?: Record<string, string>;
 }
 
 export interface KubeConfigReference {
