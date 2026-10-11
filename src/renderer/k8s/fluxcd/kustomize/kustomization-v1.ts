@@ -30,6 +30,15 @@ export interface PostBuild {
   substituteFrom?: SubstituteReference[];
 }
 
+export type CrossNamespaceSourceReferenceKind = "OCIRepository" | "GitRepository" | "Bucket" | "ExternalArtifact";
+
+export interface CrossNamespaceSourceReference {
+  apiVersion?: string;
+  kind: CrossNamespaceSourceReferenceKind;
+  name: string;
+  namespace?: string;
+}
+
 export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   dependsOn?: NamespacedObjectReference[];
   decryption?: Decryption;
@@ -43,7 +52,7 @@ export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   patches?: Patch[];
   images: Image[];
   serviceAccountName?: string;
-  sourceRef: NamespacedObjectKindReference;
+  sourceRef: CrossNamespaceSourceReference;
   suspend?: boolean;
   targetNamespace?: string;
   timeout?: string;

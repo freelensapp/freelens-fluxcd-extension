@@ -1,6 +1,10 @@
 import { Renderer } from "@freelensapp/extensions";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { Kustomization } from "./kustomization-v1";
+import {
+  type CrossNamespaceSourceReference,
+  type CrossNamespaceSourceReferenceKind,
+  Kustomization,
+} from "./kustomization-v1";
 
 describe("Kustomization.getLastAppliedRevision", () => {
   test("returns undefined when there is no applied revision", () => {
@@ -50,6 +54,47 @@ describe("Kustomization.getSourceRefUrl", () => {
     } as unknown as Kustomization;
     expect(Kustomization.getSourceRefUrl(object)).toBe(
       "/apis/source.toolkit.fluxcd.io/v1/namespaces/fluxcd-test/gitrepositories/podinfo",
+    );
+  });
+});
+
+describe("Kustomization sourceRef", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test("takes the kinds of the upstream enum only", () => {
+    const kinds: CrossNamespaceSourceReferenceKind[] = ["OCIRepository", "GitRepository", "Bucket", "ExternalArtifact"];
+    expect(kinds).toHaveLength(4);
+    // @ts-expect-error a HelmChart is not a source of a Kustomization
+    const helmChart: CrossNamespaceSourceReferenceKind = "HelmChart";
+    expect(helmChart).toBe("HelmChart");
+  });
+
+  test("formats and links an ExternalArtifact with the version the cluster serves", () => {
+    const externalArtifactApi = {
+      kind: "ExternalArtifact",
+      apiGroup: "source.toolkit.fluxcd.io",
+      apiVersion: "v1",
+      apiVersionWithGroup: "source.toolkit.fluxcd.io/v1",
+      formatUrlForNotListing: ({ name, namespace }: { name?: string; namespace?: string }) =>
+        `/apis/source.toolkit.fluxcd.io/v1/namespaces/${namespace}/externalartifacts/${name}`,
+    };
+    vi.spyOn(Renderer.K8sApi.apiManager, "getApi").mockImplementation((callback) =>
+      typeof callback === "function" && callback(externalArtifactApi as never)
+        ? (externalArtifactApi as never)
+        : undefined,
+    );
+    const sourceRef: CrossNamespaceSourceReference = {
+      kind: "ExternalArtifact",
+      namespace: "flux-system",
+      name: "podinfo",
+    };
+    const object = { metadata: { namespace: "fluxcd-test" }, spec: { sourceRef } } as unknown as Kustomization;
+
+    expect(Kustomization.getSourceRefText(object)).toBe("ExternalArtifact: flux-system/podinfo");
+    expect(Kustomization.getSourceRefUrl(object)).toBe(
+      "/apis/source.toolkit.fluxcd.io/v1/namespaces/flux-system/externalartifacts/podinfo",
     );
   });
 });
