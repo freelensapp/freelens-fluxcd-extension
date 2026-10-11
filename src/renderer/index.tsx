@@ -49,6 +49,7 @@ import { FluxInstance as FluxInstance_v1 } from "./k8s/fluxcd/controlplane/fluxi
 import { FluxReport as FluxReport_v1 } from "./k8s/fluxcd/controlplane/fluxreport-v1";
 import { ResourceSet as ResourceSet_v1 } from "./k8s/fluxcd/controlplane/resourceset-v1";
 import { ResourceSetInputProvider as ResourceSetInputProvider_v1 } from "./k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
+import { fluxOperatorReconcileAnnotation } from "./k8s/fluxcd/controlplane/types";
 import { HelmRelease as HelmRelease_v2 } from "./k8s/fluxcd/helm/helmrelease-v2";
 import { HelmRelease as HelmRelease_v2beta1 } from "./k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "./k8s/fluxcd/helm/helmrelease-v2beta2";
@@ -74,7 +75,10 @@ import { Receiver as Receiver_v1 } from "./k8s/fluxcd/notification/receiver-v1";
 import { Receiver as Receiver_v1beta1 } from "./k8s/fluxcd/notification/receiver-v1beta1";
 import { Receiver as Receiver_v1beta2 } from "./k8s/fluxcd/notification/receiver-v1beta2";
 import { Receiver as Receiver_v1beta3 } from "./k8s/fluxcd/notification/receiver-v1beta3";
-import { ArtifactGenerator as ArtifactGenerator_v1beta1 } from "./k8s/fluxcd/source/artifactgenerator-v1beta1";
+import {
+  ArtifactGenerator as ArtifactGenerator_v1beta1,
+  sourceWatcherReconcileAnnotation,
+} from "./k8s/fluxcd/source/artifactgenerator-v1beta1";
 import { Bucket as Bucket_v1 } from "./k8s/fluxcd/source/bucket-v1";
 import { Bucket as Bucket_v1beta1 } from "./k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "./k8s/fluxcd/source/bucket-v1beta2";
@@ -1266,7 +1270,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
           <FluxCDObjectAnnotationSuspendResumeMenuItem
             {...props}
             resource={ArtifactGenerator_v1beta1}
-            annotation={ArtifactGenerator_v1beta1.reconcileAnnotation}
+            annotation={sourceWatcherReconcileAnnotation}
           />
         ),
       },
@@ -1342,7 +1346,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
           <FluxCDObjectAnnotationSuspendResumeMenuItem
             {...props}
             resource={FluxInstance_v1}
-            annotation="fluxcd.controlplane.io/reconcile"
+            annotation={fluxOperatorReconcileAnnotation}
           />
         ),
       },
@@ -1364,7 +1368,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
           <FluxCDObjectAnnotationSuspendResumeMenuItem
             {...props}
             resource={FluxReport_v1}
-            annotation="fluxcd.controlplane.io/reconcile"
+            annotation={fluxOperatorReconcileAnnotation}
           />
         ),
       },
@@ -1971,7 +1975,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
           <FluxCDObjectAnnotationSuspendResumeMenuItem
             {...props}
             resource={ResourceSet_v1}
-            annotation="fluxcd.controlplane.io/reconcile"
+            annotation={fluxOperatorReconcileAnnotation}
           />
         ),
       },
@@ -1993,7 +1997,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
           <FluxCDObjectAnnotationSuspendResumeMenuItem
             {...props}
             resource={ResourceSetInputProvider_v1}
-            annotation="fluxcd.controlplane.io/reconcile"
+            annotation={fluxOperatorReconcileAnnotation}
           />
         ),
       },

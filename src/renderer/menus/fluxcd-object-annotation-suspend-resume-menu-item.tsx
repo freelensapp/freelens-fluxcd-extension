@@ -1,4 +1,5 @@
 import { type Common, Renderer } from "@freelensapp/extensions";
+import { isReconcileDisabled } from "../k8s/fluxcd/utils";
 
 const {
   Component: { MenuItem, Icon },
@@ -57,7 +58,7 @@ export function FluxCDObjectAnnotationSuspendResumeMenuItem(props: FluxCDObjectA
     );
   };
 
-  if (object.metadata.annotations?.[annotation]?.toLowerCase() !== "disabled") {
+  if (!isReconcileDisabled(object, annotation)) {
     return (
       <MenuItem onClick={suspend}>
         <Icon material="pause_circle_filled" interactive={toolbar} title="Suspend" />

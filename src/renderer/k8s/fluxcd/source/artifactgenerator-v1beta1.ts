@@ -5,6 +5,8 @@ import type { FluxCDKubeObjectCRD, NamespacedObjectKindReference } from "../type
 
 type Condition = Renderer.K8sApi.Condition;
 
+export const sourceWatcherReconcileAnnotation = "source.extensions.fluxcd.io/reconcile";
+
 export interface CommonMetadata {
   annotations?: Record<string, string>;
   labels?: Record<string, string>;
@@ -72,12 +74,6 @@ export class ArtifactGenerator extends Renderer.K8sApi.LensExtensionKubeObject<
     shortNames: ["ag"],
     title: "Artifact Generators",
   };
-
-  static readonly reconcileAnnotation = "source.extensions.fluxcd.io/reconcile";
-
-  static isReconcileDisabled(object: { metadata: Renderer.K8sApi.KubeObjectMetadata }): boolean {
-    return object.metadata.annotations?.[ArtifactGenerator.reconcileAnnotation]?.toLowerCase() === "disabled";
-  }
 
   static getSourceRefText(source: SourceReference): string {
     return [source.kind, ": ", source.namespace ? `${source.namespace}/` : "", source.name].join("");

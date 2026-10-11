@@ -1,7 +1,11 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
-import { ArtifactGenerator } from "../../../k8s/fluxcd/source/artifactgenerator-v1beta1";
+import {
+  ArtifactGenerator,
+  sourceWatcherReconcileAnnotation,
+} from "../../../k8s/fluxcd/source/artifactgenerator-v1beta1";
+import { isReconcileDisabled } from "../../../k8s/fluxcd/utils";
 import { getMaybeDetailsUrl } from "../../../utils";
 import styles from "./artifact-generator-details.module.scss";
 
@@ -34,7 +38,7 @@ export const ArtifactGeneratorDetails: React.FC<Renderer.Component.KubeObjectDet
     return (
       <>
         <DrawerItem name="Resumed">
-          <BadgeBoolean value={!ArtifactGenerator.isReconcileDisabled(object)} />
+          <BadgeBoolean value={!isReconcileDisabled(object, sourceWatcherReconcileAnnotation)} />
         </DrawerItem>
         <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
           <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />

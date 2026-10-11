@@ -34,9 +34,15 @@ class LensExtensionKubeObject {
   }
 }
 
+interface ListItem {
+  getName(): string;
+}
+
 interface KubeObjectListLayoutProps {
-  getItems: () => { getName(): string }[];
+  getItems?: () => ListItem[];
+  store?: { items: ListItem[] };
   customizeHeader?: (header: { title: string }) => { title?: unknown; info?: unknown };
+  renderTableContents?: (item: ListItem) => React.ReactNode[];
 }
 
 // The header is an observer of its own, so `customizeHeader` runs in its
@@ -48,19 +54,29 @@ const ListLayoutHeader = observer(({ customizeHeader }: Pick<KubeObjectListLayou
 });
 
 // Only the parts of the host's list layout where it calls back into the
-// extension: it reads `getItems()` in a computed value
-// (`item-object-list/list-layout.tsx`) and renders a header that calls
-// `customizeHeader`. Each item is rendered by its name.
-const KubeObjectListLayout = observer(({ getItems, customizeHeader }: KubeObjectListLayoutProps) => {
-  const items = computed(() => getItems()).get();
+// extension: it reads `getItems()`, or the items of the store without it, in a
+// computed value (`item-object-list/list-layout.tsx`) and renders a header that
+// calls `customizeHeader`. An item of `getItems()` is rendered by its name; an
+// item of the store, as on a cluster page, as the cells of
+// `renderTableContents`, each of them a React node.
+const KubeObjectListLayout = observer(
+  ({ getItems, store, customizeHeader, renderTableContents }: KubeObjectListLayoutProps) => {
+    const items = computed(() => (getItems ? getItems() : (store?.items ?? []))).get();
+    const renderItem = (item: ListItem) =>
+      getItems || !renderTableContents
+        ? item.getName()
+        : renderTableContents(item).map((cell, index) =>
+            React.createElement("div", { key: index, role: "cell" }, cell),
+          );
 
-  return React.createElement(
-    "div",
-    null,
-    React.createElement(ListLayoutHeader, { customizeHeader }),
-    items.map((item) => React.createElement("div", { key: item.getName(), "data-testid": "item" }, item.getName())),
-  );
-});
+    return React.createElement(
+      "div",
+      null,
+      React.createElement(ListLayoutHeader, { customizeHeader }),
+      items.map((item) => React.createElement("div", { key: item.getName(), "data-testid": "item" }, renderItem(item))),
+    );
+  },
+);
 
 interface StubKubeApi {
   kind: string;
@@ -126,6 +142,9 @@ class LensExtension {}
 export const Renderer = {
   LensExtension,
   Component: {
+    // The host's badge shows its label with its class.
+    Badge: ({ label, className }: { label?: React.ReactNode; className?: string }) =>
+      React.createElement("span", { className }, label),
     // The host's badge reads True or False.
     BadgeBoolean: ({ value }: { value: boolean }) =>
       React.createElement(React.Fragment, null, value ? "True" : "False"),
@@ -136,6 +155,8 @@ export const Renderer = {
       React.createElement(React.Fragment, null, timestamp),
     // The host draws a font or SVG icon; a test reads the text next to it.
     Icon: () => null,
+    // The host shows the age of the object, which changes with the time.
+    KubeObjectAge: () => null,
     KubeObjectListLayout,
     // The host links the name to the details of the namespace.
     LinkToNamespace: ({ namespace }: { namespace?: string }) => React.createElement(React.Fragment, null, namespace),
@@ -157,12 +178,19 @@ export const Renderer = {
         { role: "menuitem", "aria-disabled": disabled, onClick: disabled ? undefined : onClick },
         children,
       ),
+    // The host links the namespace to its selection.
+    NamespaceSelectBadge: ({ namespace }: { namespace?: string }) =>
+      React.createElement(React.Fragment, null, namespace),
     // The host draws the chart with Chart.js; a test checks what is around it.
     PieChart: () => null,
+    // The host shows the time since the timestamp, which changes with the time.
+    ReactiveDuration: () => null,
     Table: tablePart(),
     TableCell: tablePart("cell"),
     TableHead: tablePart(),
     TableRow: tablePart("row"),
+    // The host adds a tooltip to its children.
+    WithTooltip: ({ children }: { children?: React.ReactNode }) => React.createElement(React.Fragment, null, children),
   },
   K8sApi: {
     LensExtensionKubeObject,

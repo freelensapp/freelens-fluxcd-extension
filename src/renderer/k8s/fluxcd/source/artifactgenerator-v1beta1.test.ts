@@ -1,7 +1,12 @@
 import { readFileSync } from "node:fs";
 import { Renderer } from "@freelensapp/extensions";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { ArtifactGenerator, type ExternalArtifactReference, type SourceReference } from "./artifactgenerator-v1beta1";
+import {
+  ArtifactGenerator,
+  type ExternalArtifactReference,
+  type SourceReference,
+  sourceWatcherReconcileAnnotation,
+} from "./artifactgenerator-v1beta1";
 
 // The parts of a host API that the code under test reads.
 function fakeApi(kind: string, apiGroup: string, apiVersion: string, resource: string) {
@@ -23,8 +28,8 @@ function serveApis(...apis: ReturnType<typeof fakeApi>[]) {
   );
 }
 
-const artifactGenerator = (annotations?: Record<string, string>) =>
-  ({ metadata: { name: "podinfo", namespace: "fluxcd-test", annotations } }) as unknown as ArtifactGenerator;
+const artifactGenerator = () =>
+  ({ metadata: { name: "podinfo", namespace: "fluxcd-test" } }) as unknown as ArtifactGenerator;
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -50,27 +55,9 @@ describe("ArtifactGenerator", () => {
   });
 });
 
-describe("ArtifactGenerator.isReconcileDisabled", () => {
-  test("is false without the annotation or with it enabled", () => {
-    expect(ArtifactGenerator.isReconcileDisabled(artifactGenerator())).toBe(false);
-    expect(
-      ArtifactGenerator.isReconcileDisabled(artifactGenerator({ "source.extensions.fluxcd.io/reconcile": "enabled" })),
-    ).toBe(false);
-  });
-
-  test("is true with the annotation disabled, in any case", () => {
-    expect(
-      ArtifactGenerator.isReconcileDisabled(artifactGenerator({ "source.extensions.fluxcd.io/reconcile": "disabled" })),
-    ).toBe(true);
-    expect(
-      ArtifactGenerator.isReconcileDisabled(artifactGenerator({ "source.extensions.fluxcd.io/reconcile": "Disabled" })),
-    ).toBe(true);
-  });
-
-  test("ignores the annotation of the Flux Operator", () => {
-    expect(
-      ArtifactGenerator.isReconcileDisabled(artifactGenerator({ "fluxcd.controlplane.io/reconcile": "disabled" })),
-    ).toBe(false);
+describe("sourceWatcherReconcileAnnotation", () => {
+  test("is ReconcileAnnotation of source-watcher", () => {
+    expect(sourceWatcherReconcileAnnotation).toBe("source.extensions.fluxcd.io/reconcile");
   });
 });
 

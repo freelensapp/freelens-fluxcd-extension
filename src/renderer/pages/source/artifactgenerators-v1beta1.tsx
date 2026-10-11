@@ -2,7 +2,12 @@ import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
-import { ArtifactGenerator, type ArtifactGeneratorApi } from "../../k8s/fluxcd/source/artifactgenerator-v1beta1";
+import {
+  ArtifactGenerator,
+  type ArtifactGeneratorApi,
+  sourceWatcherReconcileAnnotation,
+} from "../../k8s/fluxcd/source/artifactgenerator-v1beta1";
+import { isReconcileDisabled } from "../../k8s/fluxcd/utils";
 import styles from "./artifactgenerators.module.scss";
 
 const { observer } = MobxReact;
@@ -23,7 +28,7 @@ const sortingCallbacks = {
   sources: (object: KubeObject) => getSourceNames(object),
   artifacts: (object: KubeObject) => object.spec?.artifacts?.length ?? 0,
   condition: (object: KubeObject) =>
-    getConditionText(object.status?.conditions, KubeObject.isReconcileDisabled(object)),
+    getConditionText(object.status?.conditions, isReconcileDisabled(object, sourceWatcherReconcileAnnotation)),
   status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
 };
@@ -64,8 +69,14 @@ export const ArtifactGeneratorsPage = observer((props: ArtifactGeneratorsPagePro
             </WithTooltip>,
             <WithTooltip>{object.spec?.artifacts?.length ?? 0}</WithTooltip>,
             <Badge
-              className={getConditionClass(object.status?.conditions, KubeObject.isReconcileDisabled(object))}
-              label={getConditionText(object.status?.conditions, KubeObject.isReconcileDisabled(object))}
+              className={getConditionClass(
+                object.status?.conditions,
+                isReconcileDisabled(object, sourceWatcherReconcileAnnotation),
+              )}
+              label={getConditionText(
+                object.status?.conditions,
+                isReconcileDisabled(object, sourceWatcherReconcileAnnotation),
+              )}
             />,
             <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
             <KubeObjectAge object={object} key="age" />,

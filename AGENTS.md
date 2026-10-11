@@ -231,16 +231,20 @@ such as source-watcher. A kind with `spec.suspend` gets
 `FluxCDObjectSpecSuspendResumeMenuItem`. A kind that an annotation suspends
 instead gets `FluxCDObjectAnnotationSuspendResumeMenuItem`, with the
 annotation as its `annotation` prop, which Suspend sets to `disabled` and
-Resume to `enabled`: `fluxcd.controlplane.io/reconcile` for the Flux Operator
-kinds, `source.extensions.fluxcd.io/reconcile`
-(`ArtifactGenerator.reconcileAnnotation`) for `ArtifactGenerator`. A kind with
-neither gets no Suspend/Resume item.
+Resume to `enabled`: `fluxcd.controlplane.io/reconcile`
+(`fluxOperatorReconcileAnnotation` in `controlplane/types.ts`) for the Flux
+Operator kinds, `source.extensions.fluxcd.io/reconcile`
+(`sourceWatcherReconcileAnnotation` in `artifactgenerator-v1beta1.ts`) for
+`ArtifactGenerator`. A kind with neither gets no Suspend/Resume item.
 
 The Overview chart and the condition badge show an object as suspended by
 its `spec.suspend`, the `suspend` argument of `getConditionText` and
-`getConditionClass`. For `ArtifactGenerator`, which has no `spec.suspend`,
-they read the annotation through `ArtifactGenerator.isReconcileDisabled`,
-which compares it as source-watcher's `IsDisabled` does.
+`getConditionClass`. For a kind suspended by an annotation, they, the Enabled
+column and the Suspend/Resume item read it through `isReconcileDisabled`
+(`src/renderer/k8s/fluxcd/utils.ts`) with the annotation of the kind: the
+object is suspended when the value, lowercased, is `disabled`, as `IsDisabled`
+of source-watcher and of the Flux Operator tells it. `getStats` of the
+Overview chart maps each such kind to its annotation.
 
 ## Renderer Components
 

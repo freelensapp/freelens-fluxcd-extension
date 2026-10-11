@@ -1,6 +1,13 @@
 import { Renderer } from "@freelensapp/extensions";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { compareApiVersions, getRefUrl, getServedApiVersion, withFluxKind, withServedApiVersion } from "./utils";
+import {
+  compareApiVersions,
+  getRefUrl,
+  getServedApiVersion,
+  isReconcileDisabled,
+  withFluxKind,
+  withServedApiVersion,
+} from "./utils";
 
 import type { NamespacedObjectKindReference } from "./types";
 
@@ -181,6 +188,34 @@ describe("getRefUrl", () => {
     serveApis(fakeApi("Service", "", "v1", "services"));
     expect(getRefUrl({ kind: "Service", name: "podinfo", namespace: "apps" }, parent)).toBe(
       "/api/v1/namespaces/apps/services/podinfo",
+    );
+  });
+});
+
+describe("isReconcileDisabled", () => {
+  const annotation = "fluxcd.controlplane.io/reconcile";
+  const object = (annotations?: Record<string, string>) =>
+    ({ metadata: { name: "flux", annotations } }) as Parameters<typeof isReconcileDisabled>[0];
+
+  test("is false without the annotation", () => {
+    expect(isReconcileDisabled(object(), annotation)).toBe(false);
+    expect(isReconcileDisabled(object({ "kustomize.toolkit.fluxcd.io/reconcile": "disabled" }), annotation)).toBe(
+      false,
+    );
+  });
+
+  // As IsDisabled of source-watcher and of the Flux Operator: the value, lowercased, is "disabled".
+  test.each(["disabled", "Disabled", "DISABLED"])("is true when the annotation is %s", (value) => {
+    expect(isReconcileDisabled(object({ [annotation]: value }), annotation)).toBe(true);
+  });
+
+  test.each(["enabled", "Enabled", "", "false", "disabled "])("is false when the annotation is %j", (value) => {
+    expect(isReconcileDisabled(object({ [annotation]: value }), annotation)).toBe(false);
+  });
+
+  test("reads the annotation it is given only", () => {
+    expect(isReconcileDisabled(object({ [annotation]: "disabled" }), "source.extensions.fluxcd.io/reconcile")).toBe(
+      false,
     );
   });
 });

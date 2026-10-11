@@ -1,5 +1,11 @@
 import { Renderer } from "@freelensapp/extensions";
-import { ArtifactGenerator } from "../k8s/fluxcd/source/artifactgenerator-v1beta1";
+import { FluxInstance } from "../k8s/fluxcd/controlplane/fluxinstance-v1";
+import { FluxReport } from "../k8s/fluxcd/controlplane/fluxreport-v1";
+import { ResourceSet } from "../k8s/fluxcd/controlplane/resourceset-v1";
+import { ResourceSetInputProvider } from "../k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
+import { fluxOperatorReconcileAnnotation } from "../k8s/fluxcd/controlplane/types";
+import { ArtifactGenerator, sourceWatcherReconcileAnnotation } from "../k8s/fluxcd/source/artifactgenerator-v1beta1";
+import { isReconcileDisabled } from "../k8s/fluxcd/utils";
 import styles from "./pie-chart.module.scss";
 
 import type React from "react";
@@ -20,15 +26,29 @@ const SUSPENDED = 3;
 const UNKNOWN = 4;
 
 /**
+ * The reconcile annotation of each kind that is suspended by it, having no
+ * `spec.suspend`.
+ */
+const reconcileAnnotations: Partial<Record<string, string>> = {
+  [ArtifactGenerator.kind]: sourceWatcherReconcileAnnotation,
+  [FluxInstance.kind]: fluxOperatorReconcileAnnotation,
+  [FluxReport.kind]: fluxOperatorReconcileAnnotation,
+  [ResourceSet.kind]: fluxOperatorReconcileAnnotation,
+  [ResourceSetInputProvider.kind]: fluxOperatorReconcileAnnotation,
+};
+
+/**
  * The category of an object, in the order of the chart. Each object has
  * exactly one: suspension wins over the status, and an OCI HelmRepository,
  * which has no status to reconcile, is ready. An object can have no spec,
  * as an ExternalArtifact, whose spec has optional fields only. An
- * ArtifactGenerator has no `spec.suspend` and is suspended by its annotation.
+ * ArtifactGenerator and the Flux Operator kinds have no `spec.suspend` and
+ * are suspended by their reconcile annotation.
  */
 const getCategory = (o: StatsObject) => {
   if (o.spec?.suspend === true) return SUSPENDED;
-  if (o.kind === ArtifactGenerator.kind && ArtifactGenerator.isReconcileDisabled(o)) return SUSPENDED;
+  const annotation = reconcileAnnotations[o.kind];
+  if (annotation && isReconcileDisabled(o, annotation)) return SUSPENDED;
   if (o.kind === "HelmRepository" && (o as HelmRepository).spec.type === "oci") return READY;
   if (!o.status?.conditions) return UNKNOWN;
 

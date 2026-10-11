@@ -106,6 +106,14 @@ export function withFluxKind(ref: LocalObjectReference | NamespacedObjectReferen
   return withServedApiVersion<NamespacedObjectKindReference>({ ...ref, kind });
 }
 
+/**
+ * Whether the object is suspended by its reconcile annotation, for a kind that has one instead of `spec.suspend`:
+ * the value `disabled`, in any case, as `IsDisabled` of source-watcher and of the Flux Operator tells it.
+ */
+export function isReconcileDisabled(object: { metadata: Renderer.K8sApi.KubeObjectMetadata }, annotation: string) {
+  return object.metadata.annotations?.[annotation]?.toLowerCase() === "disabled";
+}
+
 export function getRefUrl(
   ref: LocalObjectReference | NamespacedObjectKindReference,
   parentObject?: Renderer.K8sApi.KubeObject,
