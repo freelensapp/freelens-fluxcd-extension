@@ -42,7 +42,7 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
           <DrawerItem name="Verify OpenPGP signature" hidden={!object.spec.verify}>
             {object.spec.verify?.mode ?? "unknown"}
             {": "}
-            <LinkToSecret name={object.spec.verify?.secretRef?.name} namespace={namespace} />
+            <LinkToSecret name={object.spec.verify?.secretRef.name} namespace={namespace} />
           </DrawerItem>
           <DrawerItem name="Source Ignore" hidden={!object.spec.ignore}>
             <MonacoEditor
@@ -78,8 +78,12 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
                     <DrawerItem name="Git Repository">
                       <LinkToObject objectRef={withFluxKind(include.repository, GitRepository.kind)} object={object} />
                     </DrawerItem>
-                    <DrawerItem name="From Path">{include.fromPath}</DrawerItem>
-                    <DrawerItem name="To Path">{include.toPath}</DrawerItem>
+                    <DrawerItem name="From Path" hidden={!include.fromPath}>
+                      {include.fromPath}
+                    </DrawerItem>
+                    <DrawerItem name="To Path" hidden={!include.toPath}>
+                      {include.toPath}
+                    </DrawerItem>
                   </div>
                 );
               })}
