@@ -7,7 +7,7 @@ type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 export interface AlertSpec extends FluxCDKubeObjectSpecWithSuspend {
   providerRef: LocalObjectReference;
   eventSeverity?: "info" | "error";
-  eventSources?: NamespacedObjectKindReference[];
+  eventSources: NamespacedObjectKindReference[];
   eventMetadata?: Record<string, string>;
   exclusionList?: string[];
   summary?: string;
