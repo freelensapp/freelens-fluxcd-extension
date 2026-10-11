@@ -160,9 +160,18 @@ export interface PostRenderer {
   kustomize?: Kustomize;
 }
 
+export type CrossNamespaceSourceReferenceKind = "OCIRepository" | "HelmChart" | "ExternalArtifact";
+
+export interface CrossNamespaceSourceReference {
+  apiVersion?: string;
+  kind: CrossNamespaceSourceReferenceKind;
+  name: string;
+  namespace?: string;
+}
+
 export interface HelmReleaseSpec extends FluxCDKubeObjectSpecWithSuspend {
   chart?: HelmChartTemplate;
-  chartRef?: NamespacedObjectKindReference;
+  chartRef?: CrossNamespaceSourceReference;
   interval: string;
   kubeConfig?: KubeConfigReference;
   suspend?: boolean;

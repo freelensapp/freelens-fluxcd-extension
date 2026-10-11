@@ -1,5 +1,10 @@
-import { describe, expect, test } from "vitest";
-import { HelmRelease } from "./helmrelease-v2";
+import { Renderer } from "@freelensapp/extensions";
+import { afterEach, describe, expect, test, vi } from "vitest";
+import {
+  type CrossNamespaceSourceReference,
+  type CrossNamespaceSourceReferenceKind,
+  HelmRelease,
+} from "./helmrelease-v2";
 
 describe("HelmRelease.getAppVersion / getChartVersion", () => {
   test("reads the app version from the newest history entry", () => {
@@ -79,5 +84,42 @@ describe("HelmRelease.getSourceRefText", () => {
       spec: { chartRef: { kind: "OCIRepository", name: "oci" } },
     } as unknown as HelmRelease;
     expect(HelmRelease.getSourceRefText(object)).toBe("OCIRepository: oci");
+  });
+});
+
+describe("HelmRelease chartRef", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test("takes the kinds of the upstream enum only", () => {
+    const kinds: CrossNamespaceSourceReferenceKind[] = ["OCIRepository", "HelmChart", "ExternalArtifact"];
+    expect(kinds).toHaveLength(3);
+    // @ts-expect-error a GitRepository is a source of spec.chart, not of spec.chartRef
+    const gitRepository: CrossNamespaceSourceReferenceKind = "GitRepository";
+    expect(gitRepository).toBe("GitRepository");
+  });
+
+  test("formats and links an ExternalArtifact with the version the cluster serves", () => {
+    const externalArtifactApi = {
+      kind: "ExternalArtifact",
+      apiGroup: "source.toolkit.fluxcd.io",
+      apiVersion: "v1",
+      apiVersionWithGroup: "source.toolkit.fluxcd.io/v1",
+      formatUrlForNotListing: ({ name, namespace }: { name?: string; namespace?: string }) =>
+        `/apis/source.toolkit.fluxcd.io/v1/namespaces/${namespace}/externalartifacts/${name}`,
+    };
+    vi.spyOn(Renderer.K8sApi.apiManager, "getApi").mockImplementation((callback) =>
+      typeof callback === "function" && callback(externalArtifactApi as never)
+        ? (externalArtifactApi as never)
+        : undefined,
+    );
+    const chartRef: CrossNamespaceSourceReference = { kind: "ExternalArtifact", name: "podinfo" };
+    const object = { metadata: { namespace: "fluxcd-test" }, spec: { chartRef } } as unknown as HelmRelease;
+
+    expect(HelmRelease.getSourceRefText(object)).toBe("ExternalArtifact: podinfo");
+    expect(HelmRelease.getSourceRefUrl(object)).toBe(
+      "/apis/source.toolkit.fluxcd.io/v1/namespaces/fluxcd-test/externalartifacts/podinfo",
+    );
   });
 });

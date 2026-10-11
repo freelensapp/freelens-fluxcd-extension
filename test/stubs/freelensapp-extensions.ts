@@ -94,6 +94,24 @@ const apiManager = {
   },
 };
 
+interface DrawerItemProps {
+  name?: React.ReactNode;
+  hidden?: boolean;
+  children?: React.ReactNode;
+}
+
+// The drawer items of a details view, each rendered as its name and value,
+// and not at all when `hidden`, as in the host.
+const DrawerItem = ({ name, hidden, children }: DrawerItemProps) =>
+  hidden ? null : React.createElement("div", { "data-testid": "drawer-item" }, name, ": ", children);
+
+// As the host's: `key=value` per label, and nothing without labels.
+const DrawerItemLabels = ({ labels, ...props }: DrawerItemProps & { labels: string[] | Record<string, string> }) => {
+  const items = Array.isArray(labels) ? labels : Object.entries(labels).map(([key, value]) => `${key}=${value}`);
+  if (!items.length) return null;
+  return DrawerItem({ ...props, children: items.join(", ") });
+};
+
 // The base class of the renderer entry. The host's constructor takes the
 // installed extension; a test reads only the registrations of the subclass.
 class LensExtension {}
@@ -101,7 +119,15 @@ class LensExtension {}
 export const Renderer = {
   LensExtension,
   Component: {
+    DrawerItem,
+    DrawerItemLabels,
+    DrawerTitle: ({ children }: { children?: React.ReactNode }) => React.createElement("div", null, children),
+    DurationAbsoluteTimestamp: ({ timestamp }: { timestamp?: string }) =>
+      React.createElement(React.Fragment, null, timestamp),
     KubeObjectListLayout,
+    // A link where `to` is set, and its text only otherwise, as in the host.
+    MaybeLink: ({ to, children }: { to?: string; children?: React.ReactNode }) =>
+      to ? React.createElement("a", { href: to }, children) : React.createElement(React.Fragment, null, children),
     // The host draws the chart with Chart.js; a test checks what is around it.
     PieChart: () => null,
   },

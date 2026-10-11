@@ -19,6 +19,7 @@ type ResourceName =
   | "Helm Charts"
   | "Buckets"
   | "OCI Repositories"
+  | "External Artifacts"
   | "Image Repositories"
   | "Image Policies"
   | "Image Update Automations"
