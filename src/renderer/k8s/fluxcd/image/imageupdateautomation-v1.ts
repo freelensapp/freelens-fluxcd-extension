@@ -15,11 +15,11 @@ export interface CommitUser {
 }
 
 export interface SigningKey {
-  secretRef?: LocalObjectReference;
+  secretRef: LocalObjectReference;
 }
 
 export interface CommitSpec {
-  author?: CommitUser;
+  author: CommitUser;
   signingKey?: SigningKey;
   messageTemplate?: string;
 }
@@ -32,12 +32,12 @@ export interface PushSpec {
 
 export interface GitSpec {
   checkout?: GitCheckoutSpec;
-  commit?: CommitSpec;
+  commit: CommitSpec;
   push?: PushSpec;
 }
 
 export interface UpdateStrategy {
-  strategy: string;
+  strategy?: string;
   path?: string;
 }
 
@@ -80,7 +80,7 @@ export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObje
   };
 
   static getCommitAuthor(object: ImageUpdateAutomation): string | undefined {
-    const { email, name } = object.spec.git?.commit?.author ?? {};
+    const { email, name } = object.spec.git?.commit.author ?? {};
     if (!email) return;
     return name ? `${name} <${email}>` : email;
   }

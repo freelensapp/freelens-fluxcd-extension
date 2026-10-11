@@ -33,21 +33,21 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
           <DrawerItem name="Git Ref" hidden={!gitRefFull}>
             {gitRefFull}
           </DrawerItem>
-          <DrawerItem name="Commit Author" hidden={!object.spec.git?.commit?.author}>
+          <DrawerItem name="Commit Author" hidden={!object.spec.git?.commit.author}>
             {ImageUpdateAutomation.getCommitAuthor(object)}
           </DrawerItem>
-          <DrawerItem name="Signing Key" hidden={!object.spec.git?.commit?.signingKey}>
-            <LinkToSecret name={object.spec.git?.commit?.signingKey?.secretRef?.name} namespace={namespace} />
+          <DrawerItem name="Signing Key" hidden={!object.spec.git?.commit.signingKey}>
+            <LinkToSecret name={object.spec.git?.commit.signingKey?.secretRef.name} namespace={namespace} />
           </DrawerItem>
-          <DrawerItem name="Message Template" hidden={!object.spec.git?.commit?.messageTemplate}>
+          <DrawerItem name="Message Template" hidden={!object.spec.git?.commit.messageTemplate}>
             <MonacoEditor
               readOnly
               id="ignore"
               className={styles.editor}
               style={{
-                minHeight: getHeight(object.spec.git?.commit?.messageTemplate ?? ""),
+                minHeight: getHeight(object.spec.git?.commit.messageTemplate ?? ""),
               }}
-              value={object.spec.git?.commit?.messageTemplate ?? ""}
+              value={object.spec.git?.commit.messageTemplate ?? ""}
               setInitialHeight
               options={{
                 scrollbar: {
@@ -76,7 +76,7 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
           {object.spec.update && (
             <>
               <DrawerTitle>Update Strategy</DrawerTitle>
-              <DrawerItem name="Strategy">{object.spec.update.strategy}</DrawerItem>
+              <DrawerItem name="Strategy">{object.spec.update.strategy ?? "Setters"}</DrawerItem>
               <DrawerItem name="Path">{object.spec.update.path}</DrawerItem>
             </>
           )}
