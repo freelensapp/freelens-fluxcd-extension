@@ -50,7 +50,7 @@ export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   prune: boolean;
   healthChecks?: NamespacedObjectKindReference[];
   patches?: Patch[];
-  images: Image[];
+  images?: Image[];
   serviceAccountName?: string;
   sourceRef: CrossNamespaceSourceReference;
   suspend?: boolean;
