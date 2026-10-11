@@ -127,7 +127,7 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
               {object.spec.cluster.domain}
             </DrawerItem>
             <DrawerItem name="Multitenant">
-              <BadgeBoolean value={object.spec.cluster.multitenant} />
+              <BadgeBoolean value={object.spec.cluster.multitenant ?? false} />
             </DrawerItem>
             <DrawerItem name="Tenant Default Service Account" hidden={!object.spec.cluster.tenantDefaultServiceAccount}>
               <LinkToServiceAccount name={object.spec.cluster.tenantDefaultServiceAccount} namespace={namespace} />
@@ -136,7 +136,7 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
               {object.spec.cluster.objectLevelWorkloadIdentity}
             </DrawerItem>
             <DrawerItem name="Network Policy">
-              <BadgeBoolean value={object.spec.cluster.networkPolicy} />
+              <BadgeBoolean value={object.spec.cluster.networkPolicy ?? true} />
             </DrawerItem>
             <DrawerItem name="Type" hidden={!object.spec.cluster.type}>
               {object.spec.cluster.type}

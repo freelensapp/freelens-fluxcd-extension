@@ -30,13 +30,13 @@ export interface CommonMetadata {
 
 export interface Cluster {
   domain?: string;
-  multitenant: boolean;
+  multitenant?: boolean;
   multitenantWorkloadIdentity?: boolean;
   tenantDefaultServiceAccount?: string;
   tenantDefaultDecryptionServiceAccount?: string;
   tenantDefaultKubeConfigServiceAccount?: string;
   objectLevelWorkloadIdentity?: string;
-  networkPolicy: boolean;
+  networkPolicy?: boolean;
   type?: "kubernetes" | "openshift" | "aws" | "azure" | "gcp";
   size?: "small" | "medium" | "large";
 }
@@ -53,7 +53,7 @@ export interface Storage {
 }
 
 export interface Kustomize {
-  patches: Patch[];
+  patches?: Patch[];
 }
 
 export interface Sync {
@@ -81,7 +81,7 @@ export interface FluxInstanceSpec {
   cluster?: Cluster;
   sharding?: Sharding;
   storage?: Storage;
-  kustomize: Kustomize;
+  kustomize?: Kustomize;
   wait?: boolean;
   migrateResources?: boolean;
   sync?: Sync;

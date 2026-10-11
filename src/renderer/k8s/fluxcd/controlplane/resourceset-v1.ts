@@ -11,12 +11,12 @@ export interface CommonMetadata {
 }
 
 export interface InputStrategySpec {
-  name?: "Flatten" | "Permute";
+  name: "Flatten" | "Permute";
 }
 
 export interface InputProviderReference {
   apiVersion?: "fluxcd.controlplane.io/v1";
-  kind: "ResourceSetInputProvider";
+  kind?: "ResourceSetInputProvider";
   name?: string;
   selector?: LabelSelector;
 }

@@ -235,13 +235,18 @@ that serves the version, read from the Go sources and not from memory:
   required and `+optional` (or `+kubebuilder:validation:Optional`) makes it
   optional, whatever the tag says. A field without a marker is optional with
   `omitempty` and required without it, unless the package sets
-  `+kubebuilder:validation:Optional`, which makes every such field optional.
-  Current API conventions pair `+required` with `omitempty`, so `omitempty`
-  alone does not make a field optional. The generated CRD settles any doubt.
-- The API server validates every object against the CRD, so a required field
-  is present. The one exception is a field that a newer CRD made required, on
-  an object stored before; a list column or details panel shows `-` when it
-  is missing, and the type does not allow for it.
+  `+kubebuilder:validation:Optional` (in `groupversion_info.go` or
+  `doc.go`), which makes every such field optional; no Flux API package does.
+  The Flux APIs pair `+required` with `omitempty` (`spec.interval` of
+  `ImageRepository`), so `omitempty` alone does not make a field optional.
+  The `required` lists of the generated CRD (`config/crd/bases/` at the same
+  tag) settle any doubt.
+- The API server validates every object against the CRD, so a required
+  field is present, and the code reads it without a check. The one
+  exception is a field that a newer CRD made required, on an object stored
+  before; a list column or details panel shows `-` when it is missing, and
+  the type does not allow for it. An optional field is read with a check: the
+  panel hides the item, or shows `-` or the default of the API.
 - Every `+kubebuilder:validation:Enum` is a string-literal union type alias,
   used by the fields that have it: `ReflectionPolicy` in `imagepolicy-v1.ts`,
   `CrossNamespaceSourceReferenceKind` in `kustomization-v1.ts` and
@@ -250,7 +255,8 @@ that serves the version, read from the Go sources and not from memory:
   alias takes its name from the struct and the field.
 - A type that `types.ts` shares across versions, such as `Artifact`
   (`meta.Artifact` of fluxcd/pkg for `v1`), has the fields of every version
-  it covers, optional where one of them omits it.
+  it covers, and a field is required only where every version it covers
+  requires it.
 
 A kind that its controller does not reconcile gets no Reconcile or
 Suspend/Resume menu item: `ExternalArtifact` is reconciled by its producer,

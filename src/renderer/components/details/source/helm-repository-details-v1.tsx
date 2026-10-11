@@ -20,7 +20,9 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
         <DrawerItem name="Resumed">
           <BadgeBoolean value={!object.spec.suspend} />
         </DrawerItem>
-        <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
+        <DrawerItem name="Interval" hidden={!object.spec.interval}>
+          {object.spec.interval}
+        </DrawerItem>
         <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>
         <DrawerItem name="Authentication Provider" hidden={object.spec.type !== "oci" && !object.spec.provider}>
           {object.spec.provider ?? "generic"}

@@ -20,7 +20,7 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
       </DrawerItem>
       <DrawerItem name="Event Severity">{object.spec.eventSeverity}</DrawerItem>
       <DrawerItem name="Event Sources">
-        {object.spec.eventSources?.map((eventSource) => {
+        {object.spec.eventSources.map((eventSource) => {
           const badge = <Badge label={`${eventSource.kind}:${eventSource.name}`} />;
           return (
             <DrawerItem key={`${eventSource.kind}:${eventSource.name}`} name="">
