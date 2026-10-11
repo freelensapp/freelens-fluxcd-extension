@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { withErrorPage } from "../../components/error-page";
 import {
   getConditionClass,
   getConditionText,
@@ -66,50 +65,48 @@ export interface FluxReportsPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const FluxReportsPage = observer((props: FluxReportsPageProps) =>
-  withErrorPage(props, () => {
-    const store = KubeObject.getStore<KubeObject>();
+export const FluxReportsPage = observer((props: FluxReportsPageProps) => {
+  const store = KubeObject.getStore<KubeObject>();
 
-    return (
-      <>
-        <KubeObjectListLayout<KubeObject, KubeObjectApi>
-          tableId={`${KubeObject.crd.plural}Table`}
-          className={styles.page}
-          store={store}
-          sortingCallbacks={sortingCallbacks}
-          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
-          renderHeaderTitle={KubeObject.crd.title}
-          renderTableHeader={renderTableHeader}
-          renderTableContents={(object: KubeObject) => [
-            <WithTooltip>{object.getName()}</WithTooltip>,
-            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip>{object.spec.distribution.version || "N/A"}</WithTooltip>,
-            <WithTooltip>
-              {object.spec.reconcilers?.map((r) => r.stats?.failing || 0).reduce((a, b) => a + b, 0) ?? "N/A"}
-            </WithTooltip>,
-            <WithTooltip>
-              {object.spec.reconcilers?.map((r) => r.stats?.running || 0).reduce((a, b) => a + b, 0) ?? "N/A"}
-            </WithTooltip>,
-            <WithTooltip>
-              {object.spec.reconcilers?.map((r) => r.stats?.suspended || 0).reduce((a, b) => a + b, 0) ?? "N/A"}
-            </WithTooltip>,
-            <BadgeBoolean value={!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
-            <Badge
-              label={getConditionText(
-                object.status?.conditions,
-                isReconcileDisabled(object, fluxOperatorReconcileAnnotation),
-              )}
-              className={getConditionClass(
-                object.status?.conditions,
-                isReconcileDisabled(object, fluxOperatorReconcileAnnotation),
-              )}
-            />,
-            <ReactiveDuration timestamp={getLastUpdated(object.status?.conditions)} />,
-            <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
-            <KubeObjectAge object={object} key="age" />,
-          ]}
-        />
-      </>
-    );
-  }),
-);
+  return (
+    <>
+      <KubeObjectListLayout<KubeObject, KubeObjectApi>
+        tableId={`${KubeObject.crd.plural}Table`}
+        className={styles.page}
+        store={store}
+        sortingCallbacks={sortingCallbacks}
+        searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+        renderHeaderTitle={KubeObject.crd.title}
+        renderTableHeader={renderTableHeader}
+        renderTableContents={(object: KubeObject) => [
+          <WithTooltip>{object.getName()}</WithTooltip>,
+          <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
+          <WithTooltip>{object.spec.distribution.version || "N/A"}</WithTooltip>,
+          <WithTooltip>
+            {object.spec.reconcilers?.map((r) => r.stats?.failing || 0).reduce((a, b) => a + b, 0) ?? "N/A"}
+          </WithTooltip>,
+          <WithTooltip>
+            {object.spec.reconcilers?.map((r) => r.stats?.running || 0).reduce((a, b) => a + b, 0) ?? "N/A"}
+          </WithTooltip>,
+          <WithTooltip>
+            {object.spec.reconcilers?.map((r) => r.stats?.suspended || 0).reduce((a, b) => a + b, 0) ?? "N/A"}
+          </WithTooltip>,
+          <BadgeBoolean value={!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
+          <Badge
+            label={getConditionText(
+              object.status?.conditions,
+              isReconcileDisabled(object, fluxOperatorReconcileAnnotation),
+            )}
+            className={getConditionClass(
+              object.status?.conditions,
+              isReconcileDisabled(object, fluxOperatorReconcileAnnotation),
+            )}
+          />,
+          <ReactiveDuration timestamp={getLastUpdated(object.status?.conditions)} />,
+          <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
+          <KubeObjectAge object={object} key="age" />,
+        ]}
+      />
+    </>
+  );
+});

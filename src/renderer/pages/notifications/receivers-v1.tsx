@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { withErrorPage } from "../../components/error-page";
 import { Receiver, type ReceiverApi } from "../../k8s/fluxcd/notification/receiver-v1";
 import styles from "./receivers.module.scss";
 
@@ -32,28 +31,26 @@ export interface ReceiversPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const ReceiversPage = observer((props: ReceiversPageProps) =>
-  withErrorPage(props, () => {
-    const store = KubeObject.getStore<KubeObject>();
+export const ReceiversPage = observer((props: ReceiversPageProps) => {
+  const store = KubeObject.getStore<KubeObject>();
 
-    return (
-      <>
-        <KubeObjectListLayout<KubeObject, KubeObjectApi>
-          tableId={`${KubeObject.crd.plural}Table`}
-          className={styles.page}
-          store={store}
-          sortingCallbacks={sortingCallbacks}
-          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
-          renderHeaderTitle={KubeObject.crd.title}
-          renderTableHeader={renderTableHeader}
-          renderTableContents={(object: KubeObject) => [
-            <WithTooltip>{object.getName()}</WithTooltip>,
-            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip>{object.spec.type}</WithTooltip>,
-            <KubeObjectAge object={object} key="age" />,
-          ]}
-        />
-      </>
-    );
-  }),
-);
+  return (
+    <>
+      <KubeObjectListLayout<KubeObject, KubeObjectApi>
+        tableId={`${KubeObject.crd.plural}Table`}
+        className={styles.page}
+        store={store}
+        sortingCallbacks={sortingCallbacks}
+        searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+        renderHeaderTitle={KubeObject.crd.title}
+        renderTableHeader={renderTableHeader}
+        renderTableContents={(object: KubeObject) => [
+          <WithTooltip>{object.getName()}</WithTooltip>,
+          <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
+          <WithTooltip>{object.spec.type}</WithTooltip>,
+          <KubeObjectAge object={object} key="age" />,
+        ]}
+      />
+    </>
+  );
+});

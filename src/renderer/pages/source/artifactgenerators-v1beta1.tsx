@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import {
   ArtifactGenerator,
@@ -47,42 +46,40 @@ export interface ArtifactGeneratorsPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const ArtifactGeneratorsPage = observer((props: ArtifactGeneratorsPageProps) =>
-  withErrorPage(props, () => {
-    const store = KubeObject.getStore<KubeObject>();
+export const ArtifactGeneratorsPage = observer((props: ArtifactGeneratorsPageProps) => {
+  const store = KubeObject.getStore<KubeObject>();
 
-    return (
-      <>
-        <KubeObjectListLayout<KubeObject, KubeObjectApi>
-          tableId={`${KubeObject.crd.plural}Table`}
-          className={styles.page}
-          store={store}
-          sortingCallbacks={sortingCallbacks}
-          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
-          renderHeaderTitle={KubeObject.crd.title}
-          renderTableHeader={renderTableHeader}
-          renderTableContents={(object: KubeObject) => [
-            <WithTooltip>{object.getName()}</WithTooltip>,
-            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip tooltip={object.spec?.sources?.map(KubeObject.getSourceRefText).join(", ")}>
-              {getSourceNames(object)}
-            </WithTooltip>,
-            <WithTooltip>{object.spec?.artifacts?.length ?? 0}</WithTooltip>,
-            <Badge
-              className={getConditionClass(
-                object.status?.conditions,
-                isReconcileDisabled(object, sourceWatcherReconcileAnnotation),
-              )}
-              label={getConditionText(
-                object.status?.conditions,
-                isReconcileDisabled(object, sourceWatcherReconcileAnnotation),
-              )}
-            />,
-            <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
-            <KubeObjectAge object={object} key="age" />,
-          ]}
-        />
-      </>
-    );
-  }),
-);
+  return (
+    <>
+      <KubeObjectListLayout<KubeObject, KubeObjectApi>
+        tableId={`${KubeObject.crd.plural}Table`}
+        className={styles.page}
+        store={store}
+        sortingCallbacks={sortingCallbacks}
+        searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+        renderHeaderTitle={KubeObject.crd.title}
+        renderTableHeader={renderTableHeader}
+        renderTableContents={(object: KubeObject) => [
+          <WithTooltip>{object.getName()}</WithTooltip>,
+          <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
+          <WithTooltip tooltip={object.spec?.sources?.map(KubeObject.getSourceRefText).join(", ")}>
+            {getSourceNames(object)}
+          </WithTooltip>,
+          <WithTooltip>{object.spec?.artifacts?.length ?? 0}</WithTooltip>,
+          <Badge
+            className={getConditionClass(
+              object.status?.conditions,
+              isReconcileDisabled(object, sourceWatcherReconcileAnnotation),
+            )}
+            label={getConditionText(
+              object.status?.conditions,
+              isReconcileDisabled(object, sourceWatcherReconcileAnnotation),
+            )}
+          />,
+          <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
+          <KubeObjectAge object={object} key="age" />,
+        ]}
+      />
+    </>
+  );
+});

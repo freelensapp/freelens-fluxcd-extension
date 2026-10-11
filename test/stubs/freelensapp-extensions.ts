@@ -26,6 +26,15 @@ class LensExtensionKubeObject {
     Object.assign(this, data);
   }
 
+  // The host's methods of a KubeObject that the details panels call.
+  getName(): string | undefined {
+    return (this.metadata as { name?: string } | undefined)?.name;
+  }
+
+  getNs(): string | undefined {
+    return (this.metadata as { namespace?: string } | undefined)?.namespace;
+  }
+
   // The host returns the store it registered for one of the class's
   // `crd.apiVersions`, and throws when there is none. Without a host there is
   // never one; a test that needs a store spies on `getStore` of its class.
@@ -189,8 +198,13 @@ export const Renderer = {
     // The host shows the age of the object, which changes with the time.
     KubeObjectAge: () => null,
     KubeObjectListLayout,
-    // The host links the name to the details of the namespace.
+    // The host links the name to the details of the namespace, Secret or ServiceAccount.
     LinkToNamespace: ({ namespace }: { namespace?: string }) => React.createElement(React.Fragment, null, namespace),
+    // The host links the reference to its details; a test reads the name.
+    LinkToObject: ({ objectRef }: { objectRef?: { name?: string } }) =>
+      React.createElement(React.Fragment, null, objectRef?.name),
+    LinkToSecret: ({ name }: { name?: string }) => React.createElement(React.Fragment, null, name),
+    LinkToServiceAccount: ({ name }: { name?: string }) => React.createElement(React.Fragment, null, name),
     // A link where `to` is set, and its text only otherwise, as in the host.
     MaybeLink: ({ to, children }: { to?: string; children?: React.ReactNode }) =>
       to ? React.createElement("a", { href: to }, children) : React.createElement(React.Fragment, null, children),
@@ -209,6 +223,8 @@ export const Renderer = {
         { role: "menuitem", "aria-disabled": disabled, onClick: disabled ? undefined : onClick },
         children,
       ),
+    // The host shows the value in a read-only Monaco editor.
+    MonacoEditor: ({ value }: { value?: string }) => React.createElement("pre", null, value),
     // The host links the namespace to its selection.
     NamespaceSelectBadge: ({ namespace }: { namespace?: string }) =>
       React.createElement(React.Fragment, null, namespace),
