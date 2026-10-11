@@ -42,6 +42,9 @@ export class GitRepository extends Renderer.K8sApi.LensExtensionKubeObject<
   GitRepositoryStatus,
   GitRepositorySpec
 > {
+  declare kind: "GitRepository";
+  declare apiVersion: "source.toolkit.fluxcd.io/v1";
+
   static readonly kind = "GitRepository";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1/gitrepositories";

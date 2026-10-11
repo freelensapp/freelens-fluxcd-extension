@@ -63,6 +63,9 @@ export class ArtifactGenerator extends Renderer.K8sApi.LensExtensionKubeObject<
   ArtifactGeneratorStatus,
   ArtifactGeneratorSpec
 > {
+  declare kind: "ArtifactGenerator";
+  declare apiVersion: "source.extensions.fluxcd.io/v1beta1";
+
   static readonly kind = "ArtifactGenerator";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/source.extensions.fluxcd.io/v1beta1/artifactgenerators";

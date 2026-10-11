@@ -107,6 +107,9 @@ export class FluxInstance extends Renderer.K8sApi.LensExtensionKubeObject<
   FluxInstanceStatus,
   FluxInstanceSpec
 > {
+  declare kind: "FluxInstance";
+  declare apiVersion: "fluxcd.controlplane.io/v1";
+
   static readonly kind = "FluxInstance";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/fluxcd.controlplane.io/v1/fluxinstances";

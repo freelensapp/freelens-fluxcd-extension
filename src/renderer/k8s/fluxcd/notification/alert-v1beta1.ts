@@ -17,6 +17,9 @@ export class Alert extends Renderer.K8sApi.LensExtensionKubeObject<
   AlertStatus,
   AlertSpec
 > {
+  declare kind: "Alert";
+  declare apiVersion: "notification.toolkit.fluxcd.io/v1beta1";
+
   static readonly kind = "Alert";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/notification.toolkit.fluxcd.io/v1beta1/alerts";

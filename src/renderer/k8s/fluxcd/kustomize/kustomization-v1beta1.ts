@@ -79,6 +79,9 @@ export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<
   KustomizationStatus,
   KustomizationSpec
 > {
+  declare kind: "Kustomization";
+  declare apiVersion: "kustomize.toolkit.fluxcd.io/v1beta1";
+
   static readonly kind = "Kustomization";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/kustomize.toolkit.fluxcd.io/v1beta1/kustomizations";

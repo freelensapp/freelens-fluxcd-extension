@@ -218,6 +218,9 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
   HelmReleaseStatus,
   HelmReleaseSpec
 > {
+  declare kind: "HelmRelease";
+  declare apiVersion: "helm.toolkit.fluxcd.io/v2";
+
   static readonly kind = "HelmRelease";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/helm.toolkit.fluxcd.io/v2/helmreleases";

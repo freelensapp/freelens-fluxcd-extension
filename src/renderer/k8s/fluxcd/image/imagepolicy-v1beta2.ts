@@ -55,6 +55,9 @@ export class ImagePolicy extends Renderer.K8sApi.LensExtensionKubeObject<
   ImagePolicyStatus,
   ImagePolicySpec
 > {
+  declare kind: "ImagePolicy";
+  declare apiVersion: "image.toolkit.fluxcd.io/v1beta2";
+
   static readonly kind = "ImagePolicy";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/image.toolkit.fluxcd.io/v1beta2/imagepolicies";

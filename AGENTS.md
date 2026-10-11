@@ -151,12 +151,23 @@ K8s object classes MUST use `static readonly` properties for metadata. **Instanc
 
 Always access `spec` and `status` properties directly via their typed interfaces. Do not define instance methods on KubeObject subclasses — they will not be callable at runtime.
 
+Every model declares its instance `kind` and `apiVersion` as literals, the
+same as its static `kind` and `crd.apiVersions`: `declare kind: "GitRepository";`
+and `declare apiVersion: "source.toolkit.fluxcd.io/v1";`. Two versions of a kind
+usually differ only in optional fields, so without the literals their classes
+are assignable to each other, and `detailsFor` and `menuItemFor` accept a
+component written for the other version (see "Renderer Components").
+`declare` emits nothing, so the runtime object is the host's as before.
+
 ```typescript
 export class GitRepository extends Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,
   GitRepositoryStatus,
   GitRepositorySpec
 > {
+  declare kind: "GitRepository";
+  declare apiVersion: "source.toolkit.fluxcd.io/v1";
+
   static readonly kind = "GitRepository";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1/gitrepositories";
@@ -181,6 +192,10 @@ export class GitRepositoryStore extends Renderer.K8sApi.KubeObjectStore<GitRepos
 ```
 
 Each CRD file exports three classes: the KubeObject, the KubeApi, and the KubeObjectStore. They are registered in `src/renderer/index.tsx` via `kubeObjectDetailItems`, `clusterPages`, `clusterPageMenus`, `kubeObjectMenuItems` and `customResources`.
+The details panel and the menu items of a version are registered with
+`Renderer.K8sApi.detailsFor` and `Renderer.K8sApi.menuItemFor` and the
+version's model class, which take `kind` and `crd.apiVersions` from the class
+(see "Renderer Components").
 
 `customResources` lists the model classes of every version of every kind that
 has a page of the extension (contract C6 of Freelens's `api.md`). The host
@@ -294,10 +309,25 @@ Overview chart maps each such kind to its annotation.
   `createAvailableVersionPage` in `src/renderer/pages/available-version.tsx`. The page it returns is an `observer`:
   `getStore()` reads the host's observable API registry, and the host registers a CRD's APIs only after the cluster
   frame has loaded the CRDs, so the page renders again when the version becomes available.
-- A `kubeObjectMenuItems` `MenuItem` gets `object` and `toolbar` (`Common.Types.KubeObjectMenuItemProps<Kind>`); the
-  registration passes `resource`:
-  `MenuItem: (props: Common.Types.KubeObjectMenuItemProps<Alert_v1beta3>) => <FluxCDObjectReconcileMenuItem {...props} resource={Alert_v1beta3} />`.
-  The annotation Suspend/Resume item also gets `annotation` (see "CRD KubeObject Pattern").
+- The `kubeObjectDetailItems` and `kubeObjectMenuItems` registrations are made by `Renderer.K8sApi.detailsFor` and
+  `Renderer.K8sApi.menuItemFor`, not written out with `kind` and `apiVersions`:
+  `Renderer.K8sApi.detailsFor(Alert_v1beta3, { priority: 10, Details: (props) => <AlertDetails_v1beta3 {...props} /> })`.
+  The helper takes both from the model class and types the props of `Details` and `MenuItem` from it, so the wrapper
+  needs no props annotation, and a component written for another model fails the type check. The check is structural:
+  it tells two versions of one kind apart only by the `declare apiVersion` literal of each model ("CRD KubeObject
+  Pattern"). `src/renderer/registrations.test.tsx` registers wrong pairings under `@ts-expect-error`, so the type check
+  fails once one of them compiles.
+- A `kubeObjectMenuItems` `MenuItem` gets `object` and `toolbar` (`Common.Types.KubeObjectMenuItemProps<Kind>`), not
+  `Renderer.Component.KubeObjectMenuProps`, the props of the host's whole menu; the registration passes `resource`, and
+  the annotation Suspend/Resume item also gets `annotation` (see "CRD KubeObject Pattern"). The shared items are
+  registered from two lists, one entry per class: `specSuspendClasses` gets Reconcile and the spec Suspend/Resume item,
+  `annotationSuspendClasses` Reconcile and the annotation Suspend/Resume item with its annotation. In the callback of a
+  list the class is the union of the list's classes, from which `menuItemFor` would infer one class and reject the
+  others, so the call gives the union of their objects as type argument:
+  `Renderer.K8sApi.menuItemFor<InstanceType<typeof kubeObjectClass>>(kubeObjectClass, { MenuItem: (props) => <FluxCDObjectReconcileMenuItem {...props} resource={kubeObjectClass} /> })`.
+  The item is then checked against the objects of every class in the list: a kind without `spec.suspend` in
+  `specSuspendClasses` fails the type check. A version-specific component is registered with one call per class, as
+  the details panels are; a list would pair it with the union of the classes.
 - SCSS modules get TypeScript declarations (`*.module.d.scss.ts`), written during the renderer build (see
   "CSS module declarations"). They are committed, because `pnpm type:check` runs without a build; commit the
   regenerated file with a change to its SCSS module. `pnpm clean:dts` removes them.
@@ -336,6 +366,11 @@ mechanism; this is the list to check a change against.
 - **No instance method on a KubeObject subclass.** The objects from the host
   do not have it, and the call throws. Nothing checks it
   ("CRD KubeObject Pattern").
+- **`declare kind` and `declare apiVersion` literals on every model.** Without
+  them the classes of two versions of a kind are assignable to each other, and
+  `detailsFor` and `menuItemFor` accept a details panel or menu item of the
+  other version, which the host then renders for these objects ("CRD
+  KubeObject Pattern").
 - **A component that chooses the version through `getStore()` is an
   `observer`.** The host registers a CRD's APIs after the cluster frame has
   loaded the CRDs; a component that is not an `observer` and rendered before

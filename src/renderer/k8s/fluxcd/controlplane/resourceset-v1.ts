@@ -66,6 +66,9 @@ export class ResourceSet extends Renderer.K8sApi.LensExtensionKubeObject<
   ResourceSetStatus,
   ResourceSetSpec
 > {
+  declare kind: "ResourceSet";
+  declare apiVersion: "fluxcd.controlplane.io/v1";
+
   static readonly kind = "ResourceSet";
   static readonly namespaced = true;
   static readonly apiBase = "/apis/fluxcd.controlplane.io/v1/resourcesets";
