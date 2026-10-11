@@ -63,6 +63,27 @@ describe("FluxCDObjectAnnotationSuspendResumeMenuItem", () => {
     );
   });
 
+  // As IsDisabled of source-watcher and the Flux Operator: only `disabled`, in any case, suspends the object.
+  it.each(["Disabled", "DISABLED"])("resumes an object whose annotation is %s", (value) => {
+    serveStore();
+    const annotation = "fluxcd.controlplane.io/reconcile";
+
+    renderItem(object({ [annotation]: value }), annotation);
+
+    expect(screen.getByText("Resume")).toBeTruthy();
+    expect(screen.queryByText("Suspend")).toBeNull();
+  });
+
+  it.each(["enabled", "Enabled", "", "false"])("suspends an object whose annotation is %j", (value) => {
+    serveStore();
+    const annotation = "source.extensions.fluxcd.io/reconcile";
+
+    renderItem(object({ [annotation]: value }), annotation);
+
+    expect(screen.getByText("Suspend")).toBeTruthy();
+    expect(screen.queryByText("Resume")).toBeNull();
+  });
+
   it("reads the annotation it is given only", () => {
     serveStore();
 

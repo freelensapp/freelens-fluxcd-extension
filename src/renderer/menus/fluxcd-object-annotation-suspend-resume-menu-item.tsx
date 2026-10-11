@@ -57,7 +57,7 @@ export function FluxCDObjectAnnotationSuspendResumeMenuItem(props: FluxCDObjectA
     );
   };
 
-  if ((object.metadata.annotations?.[annotation] ?? "enabled") === "enabled") {
+  if (object.metadata.annotations?.[annotation]?.toLowerCase() !== "disabled") {
     return (
       <MenuItem onClick={suspend}>
         <Icon material="pause_circle_filled" interactive={toolbar} title="Suspend" />
