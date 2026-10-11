@@ -17,7 +17,7 @@ export interface ReceiverSpec extends FluxCDKubeObjectSpecWithSuspend {
     | "gcr"
     | "nexus"
     | "acr";
-  events: string[];
+  events?: string[];
   resources: NamespacedObjectKindReference[];
   secretRef?: LocalObjectReference;
   suspend?: boolean;
