@@ -76,6 +76,7 @@ Resources managed by the
 | v1beta1, v1beta2, v1 | `HelmRepository` | `helmrepo` | Namespaced | Defines a Helm chart repository as a source |
 | v1beta1, v1beta2, v1 | `HelmChart` | `hc` | Namespaced | Defines a Helm chart produced from a source |
 | v1beta1, v1beta2, v1 | `Bucket` | | Namespaced | Defines an S3-compatible bucket as a source |
+| v1 | `ExternalArtifact` | `ea` | Namespaced | An artifact produced by a controller other than source-controller, such as the `ArtifactGenerator` of source-watcher (Flux >= 2.7) |
 
 <!-- markdownlint-enable MD013 -->
 

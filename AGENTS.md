@@ -207,6 +207,24 @@ and has to be left out of the test's models too.
 Shared Kubernetes types (`Condition`, `LocalObjectReference`, `LabelSelector`) come from `Renderer.K8sApi`, usually
 through a local alias after the imports (`type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;`).
 
+The types of a model follow the Go API of its controller, at the release
+that serves the version, read from the Go sources and not from memory:
+
+- Every Go struct has a TypeScript interface of the same name, with the same
+  fields under their `json` names. A field with `omitempty` or of a pointer
+  type is optional.
+- Every `+kubebuilder:validation:Enum` is a string-literal union type alias,
+  used by the fields that have it: `ReflectionPolicy` in `imagepolicy-v1.ts`,
+  `CrossNamespaceSourceReferenceKind` in `kustomization-v1.ts` and
+  `helmrelease-v2.ts`.
+- A type that `types.ts` shares across versions, such as `Artifact`
+  (`meta.Artifact` of fluxcd/pkg for `v1`), has the fields of every version
+  it covers, optional where one of them omits it.
+
+A kind that its controller does not reconcile, or that has no `spec.suspend`,
+gets no Reconcile or Suspend/Resume menu item: `ExternalArtifact` is
+reconciled by its producer, such as source-watcher.
+
 ## Renderer Components
 
 - Detail views and pages are grouped by FluxCD controller (source, kustomize, helm, image, notification, controlplane).
