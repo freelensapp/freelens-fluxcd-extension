@@ -42,7 +42,7 @@ export interface HelmChartTemplateObjectMeta {
 }
 
 export interface HelmChartTemplateVerification {
-  provider?: string;
+  provider: string;
   secretRef?: LocalObjectReference;
 }
 
@@ -58,12 +58,12 @@ export interface HelmChartTemplateSpec {
 }
 
 export interface HelmChartTemplate {
-  metadata: HelmChartTemplateObjectMeta;
+  metadata?: HelmChartTemplateObjectMeta;
   spec: HelmChartTemplateSpec;
 }
 
 export interface IgnoreRule {
-  paths?: string[];
+  paths: string[];
   target?: Selector;
 }
 
