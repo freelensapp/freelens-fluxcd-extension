@@ -1,6 +1,5 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { withErrorPage } from "../../components/error-page";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { HelmChart, type HelmChartApi } from "../../k8s/fluxcd/source/helmchart-v1beta2";
 import { getRefUrl } from "../../k8s/fluxcd/utils";
@@ -51,41 +50,39 @@ export interface HelmChartsPageProps {
   extension: Renderer.LensExtension;
 }
 
-export const HelmChartsPage = observer((props: HelmChartsPageProps) =>
-  withErrorPage(props, () => {
-    const store = KubeObject.getStore<KubeObject>();
+export const HelmChartsPage = observer((props: HelmChartsPageProps) => {
+  const store = KubeObject.getStore<KubeObject>();
 
-    return (
-      <>
-        <KubeObjectListLayout<KubeObject, KubeObjectApi>
-          tableId={`${KubeObject.crd.plural}Table`}
-          className={styles.page}
-          store={store}
-          sortingCallbacks={sortingCallbacks}
-          searchFilters={[(object: KubeObject) => object.getSearchFields()]}
-          renderHeaderTitle={KubeObject.crd.title}
-          renderTableHeader={renderTableHeader}
-          renderTableContents={(object: KubeObject) => [
-            <WithTooltip>{object.getName()}</WithTooltip>,
-            <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
-            <WithTooltip>{object.spec.chart}</WithTooltip>,
-            <WithTooltip>{object.spec.version ?? "N/A"}</WithTooltip>,
-            <WithTooltip>{object.spec.sourceRef.kind}</WithTooltip>,
-            <WithTooltip>
-              <MaybeLink to={getMaybeDetailsUrl(getRefUrl(object.spec.sourceRef, object))} onClick={stopPropagation}>
-                {object.spec.sourceRef?.name}
-              </MaybeLink>
-            </WithTooltip>,
-            <BadgeBoolean value={!object.spec.suspend} />,
-            <Badge
-              className={getConditionClass(object.status?.conditions, object.spec.suspend)}
-              label={getConditionText(object.status?.conditions, object.spec.suspend)}
-            />,
-            <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
-            <KubeObjectAge object={object} key="age" />,
-          ]}
-        />
-      </>
-    );
-  }),
-);
+  return (
+    <>
+      <KubeObjectListLayout<KubeObject, KubeObjectApi>
+        tableId={`${KubeObject.crd.plural}Table`}
+        className={styles.page}
+        store={store}
+        sortingCallbacks={sortingCallbacks}
+        searchFilters={[(object: KubeObject) => object.getSearchFields()]}
+        renderHeaderTitle={KubeObject.crd.title}
+        renderTableHeader={renderTableHeader}
+        renderTableContents={(object: KubeObject) => [
+          <WithTooltip>{object.getName()}</WithTooltip>,
+          <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
+          <WithTooltip>{object.spec.chart}</WithTooltip>,
+          <WithTooltip>{object.spec.version ?? "N/A"}</WithTooltip>,
+          <WithTooltip>{object.spec.sourceRef.kind}</WithTooltip>,
+          <WithTooltip>
+            <MaybeLink to={getMaybeDetailsUrl(getRefUrl(object.spec.sourceRef, object))} onClick={stopPropagation}>
+              {object.spec.sourceRef?.name}
+            </MaybeLink>
+          </WithTooltip>,
+          <BadgeBoolean value={!object.spec.suspend} />,
+          <Badge
+            className={getConditionClass(object.status?.conditions, object.spec.suspend)}
+            label={getConditionText(object.status?.conditions, object.spec.suspend)}
+          />,
+          <WithTooltip>{getStatusMessage(object.status?.conditions)}</WithTooltip>,
+          <KubeObjectAge object={object} key="age" />,
+        ]}
+      />
+    </>
+  );
+});

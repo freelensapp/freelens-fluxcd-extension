@@ -44,6 +44,11 @@ import { HelmRepositoryDetails as HelmRepositoryDetails_v1beta1 } from "./compon
 import { HelmRepositoryDetails as HelmRepositoryDetails_v1beta2 } from "./components/details/source/helm-repository-details-v1beta2";
 import { OCIRepositoryDetails as OCIRepositoryDetails_v1 } from "./components/details/source/oci-repository-details-v1";
 import { OCIRepositoryDetails as OCIRepositoryDetails_v1beta2 } from "./components/details/source/oci-repository-details-v1beta2";
+import {
+  withDetailsErrorBoundary,
+  withMenuItemErrorBoundary,
+  withPageErrorBoundary,
+} from "./components/error-boundary";
 import svgIcon from "./icons/fluxcd.svg?raw";
 import { FluxInstance as FluxInstance_v1 } from "./k8s/fluxcd/controlplane/fluxinstance-v1";
 import { FluxReport as FluxReport_v1 } from "./k8s/fluxcd/controlplane/fluxreport-v1";
@@ -350,8 +355,12 @@ const annotationSuspendClasses = [
   { kubeObjectClass: ResourceSetInputProvider_v1, annotation: fluxOperatorReconcileAnnotation },
 ];
 
+// Every page, details panel and menu item of the extension renders inside an error boundary, so that an error it
+// throws stays in its place: the host has none around the details drawer or a menu item, and the boundary of the
+// cluster frame would replace the whole cluster view. Each registration field is mapped through its wrapper, so an
+// entry added to it is wrapped too.
 export default class FluxCDExtension extends Renderer.LensExtension {
-  clusterPages = [
+  clusterPages: Renderer.LensExtension["clusterPages"] = [
     {
       id: "dashboard",
       components: {
@@ -472,7 +481,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
         Page: () => <ResourceSetInputProvidersPage extension={this} />,
       },
     },
-  ];
+  ].map((registration) => withPageErrorBoundary(this, registration));
 
   clusterPageMenus = [
     {
@@ -803,7 +812,7 @@ export default class FluxCDExtension extends Renderer.LensExtension {
   // The kinds with a page of their own, every version, so that the Custom Resources tree does not list them again.
   customResources = availableVersionPages.flatMap((page) => page.kubeObjectClasses);
 
-  kubeObjectDetailItems = [
+  kubeObjectDetailItems: Renderer.LensExtension["kubeObjectDetailItems"] = [
     Renderer.K8sApi.detailsFor(Alert_v1beta1, {
       priority: 10,
       Details: (props) => <AlertDetails_v1beta1 {...props} />,
@@ -984,12 +993,12 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       priority: 10,
       Details: (props) => <ResourceSetInputProviderDetails_v1 {...props} />,
     }),
-  ];
+  ].map((registration) => withDetailsErrorBoundary(this, registration));
 
   // In a list, `kubeObjectClass` is the union of its classes, from which `menuItemFor` would infer the object type of
   // one of them and reject the others. The type argument is the union of their objects instead, so the menu item is
   // checked against the objects of every class in the list.
-  kubeObjectMenuItems = [
+  kubeObjectMenuItems: Renderer.LensExtension["kubeObjectMenuItems"] = [
     ...specSuspendClasses.flatMap((kubeObjectClass) => [
       Renderer.K8sApi.menuItemFor<InstanceType<typeof kubeObjectClass>>(kubeObjectClass, {
         MenuItem: (props) => <FluxCDObjectReconcileMenuItem {...props} resource={kubeObjectClass} />,
@@ -1012,5 +1021,5 @@ export default class FluxCDExtension extends Renderer.LensExtension {
         ),
       }),
     ]),
-  ];
+  ].map((registration) => withMenuItemErrorBoundary(this, registration));
 }

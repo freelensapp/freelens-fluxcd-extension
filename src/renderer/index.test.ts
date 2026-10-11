@@ -1,6 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-import { Component, type ComponentType, type FunctionComponent, isValidElement } from "react";
+import { Component, type ComponentType, type FunctionComponent, isValidElement, type ReactElement } from "react";
 import { describe, expect, it } from "vitest";
+import { ErrorBoundary, type ErrorBoundaryProps } from "./components/error-boundary";
 import FluxCDExtension from "./index";
 import { FluxInstance } from "./k8s/fluxcd/controlplane/fluxinstance-v1";
 import { FluxReport } from "./k8s/fluxcd/controlplane/fluxreport-v1";
@@ -63,12 +64,57 @@ describe("FluxCDExtension", () => {
   });
 });
 
+// The element that a registered function component returns when called with
+// `props`.
+const callComponent = <P>(component: ComponentType<P>, props: P) => {
+  if (!isFunctionComponent(component)) throw new Error(`${component.name} is not a function component`);
+  const element = component(props);
+  if (!isValidElement(element)) throw new Error(`${component.name} renders no element`);
+  return element;
+};
+
+// The element of the error boundary that a registered component returns, and
+// the one element inside it.
+const unwrapErrorBoundary = (element: ReactElement) => {
+  if (element.type !== ErrorBoundary) throw new Error("the component renders no ErrorBoundary");
+  const { children, fallback } = element.props as ErrorBoundaryProps;
+  if (!isValidElement(children)) throw new Error("the ErrorBoundary has no element inside");
+  return { fallback, children };
+};
+
+describe("FluxCDExtension registrations", () => {
+  const { clusterPages, kubeObjectDetailItems, kubeObjectMenuItems } = new FluxCDExtension(
+    {} as ConstructorParameters<typeof FluxCDExtension>[0],
+  );
+
+  it("renders every page inside an error boundary that renders the error page", () => {
+    expect(clusterPages.length).toBeGreaterThan(0);
+    for (const { components } of clusterPages) {
+      expect(unwrapErrorBoundary(callComponent(components.Page, { params: {} })).fallback).toBeUndefined();
+    }
+  });
+
+  it("renders every details panel inside an error boundary that renders the error page", () => {
+    expect(kubeObjectDetailItems.length).toBeGreaterThan(0);
+    for (const { components } of kubeObjectDetailItems) {
+      expect(unwrapErrorBoundary(callComponent(components.Details, { object: {} })).fallback).toBeUndefined();
+    }
+  });
+
+  it("renders every menu item inside an error boundary that renders nothing", () => {
+    expect(kubeObjectMenuItems.length).toBeGreaterThan(0);
+    for (const { components } of kubeObjectMenuItems) {
+      expect(unwrapErrorBoundary(callComponent(components.MenuItem, { object: {} })).fallback).toBe("nothing");
+    }
+  });
+});
+
 describe("FluxCDExtension.kubeObjectMenuItems", () => {
   const { kubeObjectMenuItems } = new FluxCDExtension({} as ConstructorParameters<typeof FluxCDExtension>[0]);
 
   // The element each menu item of the kind renders, for an object of the kind.
-  // The registrations wrap the shared items in function components, which
-  // return the element when called.
+  // The registrations wrap the shared items in function components inside an
+  // error boundary, which return the element when called.
   const renderMenuItems = (kubeObjectClass: KubeObjectClass) =>
     kubeObjectMenuItems
       .filter(
@@ -76,10 +122,8 @@ describe("FluxCDExtension.kubeObjectMenuItems", () => {
           kind === kubeObjectClass.kind && apiVersions.join() === kubeObjectClass.crd?.apiVersions.join(),
       )
       .map(({ components: { MenuItem } }) => {
-        if (!isFunctionComponent(MenuItem)) throw new Error(`${MenuItem.name} is not a function component`);
-        const element = MenuItem({ object: {} as never });
-        if (!isValidElement(element)) throw new Error(`${MenuItem.name} renders no element`);
-        return element;
+        const { children } = unwrapErrorBoundary(callComponent(MenuItem, { object: {} as never }));
+        return callComponent(children.type as ComponentType<unknown>, children.props);
       });
 
   it("registers Reconcile and the annotation Suspend/Resume item for ArtifactGenerator", () => {
