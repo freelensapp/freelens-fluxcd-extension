@@ -11,10 +11,19 @@ import type {
   NamespacedObjectKindReference,
   NamespacedObjectReference,
   ResourceInventory,
-  Snapshot,
 } from "../types";
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
+
+export interface SnapshotEntry {
+  namespace?: string;
+  kinds: Record<string, string>;
+}
+
+export interface Snapshot {
+  checksum: string;
+  entries: SnapshotEntry[];
+}
 
 export interface Decryption {
   provider: string;
