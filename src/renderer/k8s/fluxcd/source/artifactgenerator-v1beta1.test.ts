@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { Renderer } from "@freelensapp/extensions";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { ArtifactGenerator, type ExternalArtifactReference, type SourceReference } from "./artifactgenerator-v1beta1";
@@ -40,6 +41,12 @@ describe("ArtifactGenerator", () => {
       singular: "artifactgenerator",
       shortNames: ["ag"],
     });
+  });
+
+  // The Go file and struct of each field belong in the pull request, not in the model (#256).
+  test("has no comments in its module", () => {
+    const source = readFileSync(new URL("./artifactgenerator-v1beta1.ts", import.meta.url), "utf8");
+    expect(source).not.toMatch(/^\s*(\/\/|\/\*|\*)/m);
   });
 });
 
