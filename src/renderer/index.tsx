@@ -257,6 +257,27 @@ const ResourceSetInputProvidersPage = createAvailableVersionPage("Resource Set I
   },
 ]);
 
+// Every page of a kind, each with the model classes of all its versions, for `customResources`.
+const availableVersionPages = [
+  AlertsPage,
+  BucketsPage,
+  FluxInstancesPage,
+  FluxReportsPage,
+  GitRepositoriesPage,
+  HelmChartsPage,
+  HelmReleasesPage,
+  HelmRepositoriesPage,
+  ImagePoliciesPage,
+  ImageRepositoriesPage,
+  ImageUpdateAutomationsPage,
+  KustomizationsPage,
+  OCIRepositoriesPage,
+  ProvidersPage,
+  ReceiversPage,
+  ResourceSetsPage,
+  ResourceSetInputProvidersPage,
+];
+
 export default class FluxCDExtension extends Renderer.LensExtension {
   clusterPages = [
     {
@@ -680,6 +701,9 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {},
     },
   ];
+
+  // The kinds with a page of their own, every version, so that the Custom Resources tree does not list them again.
+  customResources = availableVersionPages.flatMap((page) => page.kubeObjectClasses);
 
   kubeObjectDetailItems = [
     {
