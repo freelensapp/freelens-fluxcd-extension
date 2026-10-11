@@ -1,6 +1,13 @@
 import { Renderer } from "@freelensapp/extensions";
 import { describe, expect, it } from "vitest";
 import FluxCDExtension from "./index";
+import { FluxInstance } from "./k8s/fluxcd/controlplane/fluxinstance-v1";
+import { FluxReport } from "./k8s/fluxcd/controlplane/fluxreport-v1";
+import { ResourceSet } from "./k8s/fluxcd/controlplane/resourceset-v1";
+import { ResourceSetInputProvider } from "./k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
+import { ArtifactGenerator } from "./k8s/fluxcd/source/artifactgenerator-v1beta1";
+import { FluxCDObjectAnnotationSuspendResumeMenuItem } from "./menus/fluxcd-object-annotation-suspend-resume-menu-item";
+import { FluxCDObjectReconcileMenuItem } from "./menus/fluxcd-object-reconcile-menu-item";
 
 type KubeObjectClass = typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>;
 
@@ -48,6 +55,44 @@ describe("FluxCDExtension", () => {
       for (const apiVersion of kubeObjectClass.crd?.apiVersions ?? []) {
         expect(apiVersion).toMatch(/^[^/]+\.[^/]+\/[^/]+$/);
       }
+    }
+  });
+});
+
+describe("FluxCDExtension.kubeObjectMenuItems", () => {
+  const { kubeObjectMenuItems } = new FluxCDExtension({} as ConstructorParameters<typeof FluxCDExtension>[0]);
+
+  // The element each menu item of the kind renders, for an object of the kind.
+  const renderMenuItems = (kubeObjectClass: KubeObjectClass) =>
+    kubeObjectMenuItems
+      .filter(
+        ({ kind, apiVersions }) => kind === kubeObjectClass.kind && apiVersions === kubeObjectClass.crd?.apiVersions,
+      )
+      .map(({ components: { MenuItem } }) => MenuItem({ object: {} as never }));
+
+  it("registers Reconcile and the annotation Suspend/Resume item for ArtifactGenerator", () => {
+    const elements = renderMenuItems(ArtifactGenerator);
+
+    expect(elements.map((element) => element.type)).toEqual([
+      FluxCDObjectReconcileMenuItem,
+      FluxCDObjectAnnotationSuspendResumeMenuItem,
+    ]);
+    for (const element of elements) {
+      expect(element.props).toMatchObject({ resource: ArtifactGenerator });
+    }
+    expect(elements[1].props).toMatchObject({ annotation: "source.extensions.fluxcd.io/reconcile" });
+  });
+
+  it("passes the Flux Operator annotation to the annotation Suspend/Resume item of the Flux Operator kinds", () => {
+    for (const kubeObjectClass of [FluxInstance, FluxReport, ResourceSet, ResourceSetInputProvider]) {
+      const element = renderMenuItems(kubeObjectClass).find(
+        (element) => element.type === FluxCDObjectAnnotationSuspendResumeMenuItem,
+      );
+
+      expect(element?.props).toMatchObject({
+        resource: kubeObjectClass,
+        annotation: "fluxcd.controlplane.io/reconcile",
+      });
     }
   });
 });

@@ -1250,6 +1250,28 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       },
     },
     {
+      kind: ArtifactGenerator_v1beta1.kind,
+      apiVersions: ArtifactGenerator_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ArtifactGenerator_v1beta1>) => (
+          <FluxCDObjectReconcileMenuItem {...props} resource={ArtifactGenerator_v1beta1} />
+        ),
+      },
+    },
+    {
+      kind: ArtifactGenerator_v1beta1.kind,
+      apiVersions: ArtifactGenerator_v1beta1.crd.apiVersions,
+      components: {
+        MenuItem: (props: Common.Types.KubeObjectMenuItemProps<ArtifactGenerator_v1beta1>) => (
+          <FluxCDObjectAnnotationSuspendResumeMenuItem
+            {...props}
+            resource={ArtifactGenerator_v1beta1}
+            annotation={ArtifactGenerator_v1beta1.reconcileAnnotation}
+          />
+        ),
+      },
+    },
+    {
       kind: Bucket_v1beta1.kind,
       apiVersions: Bucket_v1beta1.crd.apiVersions,
       components: {
