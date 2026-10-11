@@ -25,10 +25,10 @@ export interface AccessFrom {
 export interface Artifact {
   path: string;
   url: string;
-  revision: string;
+  revision?: string;
   digest?: string;
   checksum?: string;
-  lastUpdateTime?: string;
+  lastUpdateTime: string;
   size?: number;
   metadata?: Record<string, string>;
 }
@@ -79,14 +79,6 @@ export interface ResourceInventory {
 export interface ResourceRef {
   id: string;
   v: string;
-}
-
-export interface Snapshot {
-  checksum: string;
-  entries: {
-    namespace: string;
-    kinds: Record<string, string>;
-  }[];
 }
 
 export interface FluxCDKubeObjectCRD extends Renderer.K8sApi.LensExtensionKubeObjectCRD {

@@ -12,8 +12,8 @@ import type {
   NamespacedObjectKindReference,
   NamespacedObjectReference,
   ResourceInventory,
-  Snapshot,
 } from "../types";
+import type { Snapshot } from "./kustomization-v1beta1";
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 

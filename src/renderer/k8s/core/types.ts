@@ -10,5 +10,5 @@ export interface Selector {
 
 export interface Patch {
   patch: string;
-  target: Selector;
+  target?: Selector;
 }

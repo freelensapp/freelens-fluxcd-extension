@@ -38,7 +38,7 @@ export const StatusArtifact: React.FC<StatusArtifactProps> = observer((props) =>
         <DrawerItem name="Size" hidden={!artifact.size}>
           <HumanizeBytes value={artifact.size} />
         </DrawerItem>
-        <DrawerItem name="Last Update Time" hidden={!artifact.lastUpdateTime}>
+        <DrawerItem name="Last Update Time">
           <DurationAbsoluteTimestamp timestamp={artifact.lastUpdateTime} />
         </DrawerItem>
         <DrawerItemLabels name="Metadata" labels={artifact.metadata ?? {}} hidden={!artifact.metadata} />

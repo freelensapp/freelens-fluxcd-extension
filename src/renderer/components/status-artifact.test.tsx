@@ -41,6 +41,7 @@ describe("StatusArtifact", () => {
       url: "http://source-controller.flux-system.svc.cluster.local./gitrepository/default/podinfo/abc.tar.gz",
       revision: "main/abc",
       checksum: "0123456789abcdef",
+      lastUpdateTime: "2026-10-11T12:00:00Z",
     };
 
     render(<StatusArtifact artifact={artifact} />);
@@ -50,6 +51,23 @@ describe("StatusArtifact", () => {
       `URL: ${artifact.url}`,
       "Revision: main/abc",
       "Checksum: 0123456789abcdef",
+      "Last Update Time: 2026-10-11T12:00:00Z",
+    ]);
+  });
+
+  it("hides the revision of an artifact that has none, which v1beta1 and v1beta2 allow", () => {
+    const artifact: Artifact = {
+      path: "bucket/default/podinfo/abc.tar.gz",
+      url: "http://source-controller.flux-system.svc.cluster.local./bucket/default/podinfo/abc.tar.gz",
+      lastUpdateTime: "2026-10-11T12:00:00Z",
+    };
+
+    render(<StatusArtifact artifact={artifact} />);
+
+    expect(items()).toEqual([
+      `Path: ${artifact.path}`,
+      `URL: ${artifact.url}`,
+      "Last Update Time: 2026-10-11T12:00:00Z",
     ]);
   });
 
