@@ -44,8 +44,8 @@ export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   healthChecks?: NamespacedObjectKindReference[];
   patches?: Patch[];
   patchesStrategicMerge?: string[];
-  patchesJson6902: JSON6902Patch[];
-  images: Image[];
+  patchesJson6902?: JSON6902Patch[];
+  images?: Image[];
   serviceAccountName?: string;
   sourceRef: NamespacedObjectKindReference;
   suspend?: boolean;

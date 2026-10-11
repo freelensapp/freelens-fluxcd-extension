@@ -200,6 +200,9 @@ export const Renderer = {
     KubeObjectListLayout,
     // The host links the name to the details of the namespace, Secret or ServiceAccount.
     LinkToNamespace: ({ namespace }: { namespace?: string }) => React.createElement(React.Fragment, null, namespace),
+    // The host links the reference to its details; a test reads the name.
+    LinkToObject: ({ objectRef }: { objectRef?: { name?: string } }) =>
+      React.createElement(React.Fragment, null, objectRef?.name),
     LinkToSecret: ({ name }: { name?: string }) => React.createElement(React.Fragment, null, name),
     LinkToServiceAccount: ({ name }: { name?: string }) => React.createElement(React.Fragment, null, name),
     // A link where `to` is set, and its text only otherwise, as in the host.
@@ -220,6 +223,8 @@ export const Renderer = {
         { role: "menuitem", "aria-disabled": disabled, onClick: disabled ? undefined : onClick },
         children,
       ),
+    // The host shows the value in a read-only Monaco editor.
+    MonacoEditor: ({ value }: { value?: string }) => React.createElement("pre", null, value),
     // The host links the namespace to its selection.
     NamespaceSelectBadge: ({ namespace }: { namespace?: string }) =>
       React.createElement(React.Fragment, null, namespace),
