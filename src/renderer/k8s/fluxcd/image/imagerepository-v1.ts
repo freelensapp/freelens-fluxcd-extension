@@ -7,11 +7,11 @@ type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 export interface ScanResult {
   tagCount: number;
   scanTime?: string;
-  latestTags: string[];
+  latestTags?: string[];
 }
 
 export interface ImageRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
-  image?: string;
+  image: string;
   interval: string;
   timeout?: string;
   secretRef?: LocalObjectReference;
