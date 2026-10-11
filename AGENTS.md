@@ -178,7 +178,28 @@ export class GitRepositoryApi extends Renderer.K8sApi.KubeApi<GitRepository> {}
 export class GitRepositoryStore extends Renderer.K8sApi.KubeObjectStore<GitRepository> {}
 ```
 
-Each CRD file exports three classes: the KubeObject, the KubeApi, and the KubeObjectStore. They are registered in `src/renderer/index.tsx` via `kubeObjectDetailItems`, `clusterPages`, `clusterPageMenus`, and `kubeObjectMenuItems`.
+Each CRD file exports three classes: the KubeObject, the KubeApi, and the KubeObjectStore. They are registered in `src/renderer/index.tsx` via `kubeObjectDetailItems`, `clusterPages`, `clusterPageMenus`, `kubeObjectMenuItems` and `customResources`.
+
+`customResources` lists the model classes of every version of every kind that
+has a page of the extension (contract C6 of Freelens's `api.md`). The host
+reads the group and plural from each class's `crd`, and while the extension is
+enabled it leaves the resource out of the Custom Resources tree of the cluster
+sidebar, where it would otherwise be listed a second time next to its page
+under "FluxCD". The versions of a kind name the same group and plural, so one
+class would do; all are listed so that removing one version leaves the others
+registered. The definition stays in the Definitions list, and the host's own
+list and details stay reachable by URL and from the command palette. A model
+the extension only decorates, with a details panel or a menu item and no page
+of its own, stays out of the field: registered, it would leave the tree with
+nothing in its place. The host rejects an entry it cannot read (no `kind`, no
+`crd` or `apiBase`, a core-group resource) with an error in the log, and the
+resource stays in the tree.
+
+The list is not written by hand: `createAvailableVersionPage` puts the classes
+of the versions it is given on the page's `kubeObjectClasses`, and
+`customResources` is the classes of the pages in `availableVersionPages`. A
+version added to a page is registered with it; a new kind with a page goes into
+`availableVersionPages`.
 
 Shared Kubernetes types (`Condition`, `LocalObjectReference`, `LabelSelector`) come from `Renderer.K8sApi`, usually
 through a local alias after the imports (`type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;`).
