@@ -36,6 +36,13 @@ interface VersionVariant<T extends AvailableVersionPageProps> {
 }
 
 /**
+ * A page component made by `createAvailableVersionPage`, with the model classes of its versions in the order given.
+ */
+export type AvailableVersionPage<T extends AvailableVersionPageProps> = React.FunctionComponent<T> & {
+  readonly kubeObjectClasses: readonly VersionVariant<T>["kubeObjectClass"][];
+};
+
+/**
  * Creates a page component that automatically selects the correct API version based on cluster availability.
  *
  * Tries versions in order and renders the first available one.
@@ -45,9 +52,12 @@ interface VersionVariant<T extends AvailableVersionPageProps> {
  * when the host registers an API after the page was first rendered, as it does for a page opened while the cluster
  * frame is still loading its CRDs.
  *
+ * The model classes of all the versions are on the page's `kubeObjectClasses`, so that the extension registers
+ * them in `customResources` from the same list.
+ *
  * @param resourceName - Human-readable resource name (e.g., "OCI Repositories")
  * @param variants - Array of version variants, ordered by preference
- * @returns A page component that auto-detects a valid API version if present
+ * @returns A page component that auto-detects a valid API version if present, with the classes of its versions
  *
  * @example
  * ```tsx
@@ -63,8 +73,8 @@ interface VersionVariant<T extends AvailableVersionPageProps> {
 export function createAvailableVersionPage<T extends AvailableVersionPageProps>(
   resourceName: ResourceName,
   variants: VersionVariant<T>[],
-): React.ComponentType<T> {
-  return observer((props: T) => {
+): AvailableVersionPage<T> {
+  const Page = observer((props: T) => {
     for (const variant of variants) {
       try {
         const store = variant.kubeObjectClass.getStore();
@@ -101,4 +111,6 @@ export function createAvailableVersionPage<T extends AvailableVersionPageProps>(
       </div>
     );
   });
+
+  return Object.assign(Page, { kubeObjectClasses: variants.map((variant) => variant.kubeObjectClass) });
 }

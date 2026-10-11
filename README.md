@@ -24,7 +24,9 @@ panels for the FluxCD custom resources across the `fluxcd.controlplane.io`,
 `helm.toolkit.fluxcd.io`, `image.toolkit.fluxcd.io`, and
 `notification.toolkit.fluxcd.io` API groups. Each resource is accessible from
 the Freelens sidebar, with status conditions, spec fields, and related
-objects displayed in the detail view. Resource menus allow reconciling,
+objects displayed in the detail view. While the extension is enabled, these
+resources are left out of the Custom Resources tree of the sidebar, so each
+is listed once, under "FluxCD". Resource menus allow reconciling,
 suspending, and resuming FluxCD resources directly from the UI.
 
 ![screenshot](docs/images/dashboard.png)
