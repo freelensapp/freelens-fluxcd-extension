@@ -31,6 +31,7 @@ import { ReceiverDetails as ReceiverDetails_v1beta3 } from "./components/details
 import { BucketDetails as BucketDetails_v1 } from "./components/details/source/bucket-details-v1";
 import { BucketDetails as BucketDetails_v1beta1 } from "./components/details/source/bucket-details-v1beta1";
 import { BucketDetails as BucketDetails_v1beta2 } from "./components/details/source/bucket-details-v1beta2";
+import { ExternalArtifactDetails as ExternalArtifactDetails_v1 } from "./components/details/source/external-artifact-details-v1";
 import { GitRepositoryDetails as GitRepositoryDetails_v1 } from "./components/details/source/git-repository-details-v1";
 import { GitRepositoryDetails as GitRepositoryDetails_v1beta1 } from "./components/details/source/git-repository-details-v1beta1";
 import { GitRepositoryDetails as GitRepositoryDetails_v1beta2 } from "./components/details/source/git-repository-details-v1beta2";
@@ -75,6 +76,7 @@ import { Receiver as Receiver_v1beta3 } from "./k8s/fluxcd/notification/receiver
 import { Bucket as Bucket_v1 } from "./k8s/fluxcd/source/bucket-v1";
 import { Bucket as Bucket_v1beta1 } from "./k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "./k8s/fluxcd/source/bucket-v1beta2";
+import { ExternalArtifact as ExternalArtifact_v1 } from "./k8s/fluxcd/source/externalartifact-v1";
 import { GitRepository as GitRepository_v1 } from "./k8s/fluxcd/source/gitrepository-v1";
 import { GitRepository as GitRepository_v1beta1 } from "./k8s/fluxcd/source/gitrepository-v1beta1";
 import { GitRepository as GitRepository_v1beta2 } from "./k8s/fluxcd/source/gitrepository-v1beta2";
@@ -123,6 +125,7 @@ import { FluxCDOverviewPage } from "./pages/overview";
 import { BucketsPage as BucketsPage_v1 } from "./pages/source/buckets-v1";
 import { BucketsPage as BucketsPage_v1beta1 } from "./pages/source/buckets-v1beta1";
 import { BucketsPage as BucketsPage_v1beta2 } from "./pages/source/buckets-v1beta2";
+import { ExternalArtifactsPage as ExternalArtifactsPage_v1 } from "./pages/source/externalartifacts-v1";
 import { GitRepositoriesPage as GitRepositoriesPage_v1 } from "./pages/source/gitrepositories-v1";
 import { GitRepositoriesPage as GitRepositoriesPage_v1beta1 } from "./pages/source/gitrepositories-v1beta1";
 import { GitRepositoriesPage as GitRepositoriesPage_v1beta2 } from "./pages/source/gitrepositories-v1beta2";
@@ -153,6 +156,10 @@ const BucketsPage = createAvailableVersionPage("Buckets", [
   { kubeObjectClass: Bucket_v1, PageComponent: BucketsPage_v1, version: "v1" },
   { kubeObjectClass: Bucket_v1beta2, PageComponent: BucketsPage_v1beta2, version: "v1beta2" },
   { kubeObjectClass: Bucket_v1beta1, PageComponent: BucketsPage_v1beta1, version: "v1beta1" },
+]);
+
+const ExternalArtifactsPage = createAvailableVersionPage("External Artifacts", [
+  { kubeObjectClass: ExternalArtifact_v1, PageComponent: ExternalArtifactsPage_v1, version: "v1" },
 ]);
 
 const FluxInstancesPage = createAvailableVersionPage("Flux Instances", [
@@ -261,6 +268,7 @@ const ResourceSetInputProvidersPage = createAvailableVersionPage("Resource Set I
 const availableVersionPages = [
   AlertsPage,
   BucketsPage,
+  ExternalArtifactsPage,
   FluxInstancesPage,
   FluxReportsPage,
   GitRepositoriesPage,
@@ -296,6 +304,12 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "bucket",
       components: {
         Page: () => <BucketsPage extension={this} />,
+      },
+    },
+    {
+      id: "externalartifact",
+      components: {
+        Page: () => <ExternalArtifactsPage extension={this} />,
       },
     },
     {
@@ -554,6 +568,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {},
     },
     {
+      id: "externalartifact",
+      parentId: "source",
+      target: { pageId: "externalartifact" },
+      title: ExternalArtifact_v1.crd.title,
+      components: {},
+    },
+    {
       id: "image",
       parentId: "fluxcd",
       target: { pageId: "imagerepository" },
@@ -762,6 +783,16 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       priority: 10,
       components: {
         Details: (props: Renderer.Component.KubeObjectDetailsProps<Bucket_v1>) => <BucketDetails_v1 {...props} />,
+      },
+    },
+    {
+      kind: ExternalArtifact_v1.kind,
+      apiVersions: ExternalArtifact_v1.crd.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<ExternalArtifact_v1>) => (
+          <ExternalArtifactDetails_v1 {...props} />
+        ),
       },
     },
     {

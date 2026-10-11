@@ -21,10 +21,11 @@ const UNKNOWN = 4;
 /**
  * The category of an object, in the order of the chart. Each object has
  * exactly one: suspension wins over the status, and an OCI HelmRepository,
- * which has no status to reconcile, is ready.
+ * which has no status to reconcile, is ready. An object can have no spec,
+ * as an ExternalArtifact, whose spec has optional fields only.
  */
 const getCategory = (o: StatsObject) => {
-  if (o.spec.suspend === true) return SUSPENDED;
+  if (o.spec?.suspend === true) return SUSPENDED;
   if (o.kind === "HelmRepository" && (o as HelmRepository).spec.type === "oci") return READY;
   if (!o.status?.conditions) return UNKNOWN;
 

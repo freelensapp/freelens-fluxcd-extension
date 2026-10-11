@@ -34,6 +34,7 @@ import { Receiver as Receiver_v1beta3 } from "../k8s/fluxcd/notification/receive
 import { Bucket as Bucket_v1 } from "../k8s/fluxcd/source/bucket-v1";
 import { Bucket as Bucket_v1beta1 } from "../k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "../k8s/fluxcd/source/bucket-v1beta2";
+import { ExternalArtifact as ExternalArtifact_v1 } from "../k8s/fluxcd/source/externalartifact-v1";
 import { GitRepository as GitRepository_v1 } from "../k8s/fluxcd/source/gitrepository-v1";
 import { GitRepository as GitRepository_v1beta1 } from "../k8s/fluxcd/source/gitrepository-v1beta1";
 import { GitRepository as GitRepository_v1beta2 } from "../k8s/fluxcd/source/gitrepository-v1beta2";
@@ -69,6 +70,7 @@ const kinds = [
   { title: HelmChart_v1.crd.title, classes: [HelmChart_v1, HelmChart_v1beta2, HelmChart_v1beta1] },
   { title: Bucket_v1.crd.title, classes: [Bucket_v1, Bucket_v1beta2, Bucket_v1beta1] },
   { title: OCIRepository_v1.crd.title, classes: [OCIRepository_v1, OCIRepository_v1beta2] },
+  { title: ExternalArtifact_v1.crd.title, classes: [ExternalArtifact_v1] },
   {
     title: ImageRepository_v1.crd.title,
     classes: [ImageRepository_v1, ImageRepository_v1beta2, ImageRepository_v1beta1],

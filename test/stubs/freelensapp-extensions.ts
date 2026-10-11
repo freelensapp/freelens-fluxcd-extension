@@ -125,6 +125,9 @@ export const Renderer = {
     DurationAbsoluteTimestamp: ({ timestamp }: { timestamp?: string }) =>
       React.createElement(React.Fragment, null, timestamp),
     KubeObjectListLayout,
+    // A link where `to` is set, and its text only otherwise, as in the host.
+    MaybeLink: ({ to, children }: { to?: string; children?: React.ReactNode }) =>
+      to ? React.createElement("a", { href: to }, children) : React.createElement(React.Fragment, null, children),
     // The host draws the chart with Chart.js; a test checks what is around it.
     PieChart: () => null,
   },

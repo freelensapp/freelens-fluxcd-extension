@@ -46,6 +46,18 @@ describe("getStats", () => {
     expect(sum(stats)).toBe(objects.length);
   });
 
+  it("counts an object without a spec, as an ExternalArtifact, by its conditions", () => {
+    const objects = [
+      object({ kind: "ExternalArtifact", spec: undefined, status: readyCondition("True") }),
+      object({ kind: "ExternalArtifact", spec: undefined }),
+    ];
+
+    const stats = getStats(objects);
+
+    expect(stats).toEqual([1, 0, 0, 0, 1]);
+    expect(sum(stats)).toBe(objects.length);
+  });
+
   it("counts an object without a status that is not suspended as unknown", () => {
     const objects = [object({}), object({ spec: { suspend: false } })];
 
