@@ -21,8 +21,8 @@ export interface ImagePolicyChoice {
 }
 
 export interface TagFilter {
-  pattern: string;
-  extract: string;
+  pattern?: string;
+  extract?: string;
 }
 
 export type ReflectionPolicy = "Always" | "IfNotPresent" | "Never";

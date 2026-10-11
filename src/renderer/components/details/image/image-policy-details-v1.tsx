@@ -33,8 +33,12 @@ export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             {object.spec.policy.numerical?.order ?? "asc"}
           </DrawerItem>
           <DrawerItem name="Filter Tags" hidden={!object.spec.filterTags}>
-            <DrawerItem name="pattern">{object.spec.filterTags?.pattern}</DrawerItem>
-            <DrawerItem name="extract">{object.spec.filterTags?.extract}</DrawerItem>
+            <DrawerItem name="pattern" hidden={!object.spec.filterTags?.pattern}>
+              {object.spec.filterTags?.pattern}
+            </DrawerItem>
+            <DrawerItem name="extract" hidden={!object.spec.filterTags?.extract}>
+              {object.spec.filterTags?.extract}
+            </DrawerItem>
           </DrawerItem>
           <DrawerItem name="Digest Reflection Policy">{object.spec.digestReflectionPolicy ?? "Never"}</DrawerItem>
           <DrawerItem name="Interval" hidden={!object.spec.interval}>
