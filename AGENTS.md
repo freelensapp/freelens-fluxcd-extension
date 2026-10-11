@@ -199,7 +199,10 @@ The list is not written by hand: `createAvailableVersionPage` puts the classes
 of the versions it is given on the page's `kubeObjectClasses`, and
 `customResources` is the classes of the pages in `availableVersionPages`. A
 version added to a page is registered with it; a new kind with a page goes into
-`availableVersionPages`.
+`availableVersionPages`. `src/renderer/index.test.ts` checks that the field has
+every model class under `src/renderer/k8s/fluxcd/`, each once, which holds
+while every model has a page; a model added without one stays out of the field
+and has to be left out of the test's models too.
 
 Shared Kubernetes types (`Condition`, `LocalObjectReference`, `LabelSelector`) come from `Renderer.K8sApi`, usually
 through a local alias after the imports (`type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;`).

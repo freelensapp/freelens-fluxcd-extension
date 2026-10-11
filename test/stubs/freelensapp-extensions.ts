@@ -94,7 +94,12 @@ const apiManager = {
   },
 };
 
+// The base class of the renderer entry. The host's constructor takes the
+// installed extension; a test reads only the registrations of the subclass.
+class LensExtension {}
+
 export const Renderer = {
+  LensExtension,
   Component: {
     KubeObjectListLayout,
     // The host draws the chart with Chart.js; a test checks what is around it.
