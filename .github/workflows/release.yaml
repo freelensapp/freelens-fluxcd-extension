@@ -161,6 +161,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           fail_on_unmatched_files: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
           files: |-
             *.tgz
             *.tgz.sha256
