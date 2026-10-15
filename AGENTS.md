@@ -628,7 +628,12 @@ import { describe, expect, it, vi } from "vitest";
 
 The module resolves from every program, so Biome keeps it out of the
 extension's code: `style/noRestrictedImports` rejects an import of `vitest`
-outside `src/**/*.test.*`, `test/` and `integration/`. `globals: true` stays on in
+outside `src/**/*.test.*`, `test/` and `integration/`. The same rule rejects
+there the testing helpers of React: the `act` named import of `react`,
+`react-dom/test-utils` and `@testing-library/*`. They type-check, build and
+pass the unit tests, which run the development build of React, but `act`
+delegates to `React.act`, which the production build that Freelens runs leaves
+out, so the call throws only in the host. `globals: true` stays on in
 `vitest.config.ts` at runtime only, because React Testing Library registers its
 automatic cleanup only when `afterEach` is a global. A test that renders a
 component opts into jsdom with `// @vitest-environment jsdom` at the top of the
@@ -658,8 +663,8 @@ parameters JSDoc types.
 `biome.jsonc` has the formatter, import groups and rules of Freelens. Two
 overrides are specific to how the extension is laid out:
 
-- `style/noRestrictedImports` keeps `vitest` out of the extension's code (see
-  "Tests and tooling").
+- `style/noRestrictedImports` keeps `vitest` and the testing helpers of React
+  out of the extension's code (see "Tests and tooling").
 - `correctness/noNodejsModules` rejects a Node builtin import in
   `src/renderer/` and `src/common/`, tests left out. It flags the import in the
   editor, before `pnpm type:check` does; it does not see Node globals such as
@@ -959,6 +964,24 @@ When asked to implement a change on a PR:
    separately. Do not batch multiple independent fixes into a single
    commit. This keeps the history bisectable and makes each change easy
    to revert individually.
+
+### Force-Pushing a Rewritten Branch
+
+When you are asked to rebase a pull request branch, or to rewrite its
+history in another way (amend, squash, drop a commit), push the result with:
+
+```bash
+git push --force-with-lease origin HEAD
+```
+
+The push wrapper the action names in its instructions, `git-push.sh`, accepts
+no flags, so it cannot do this; `git` itself is allowed in this workflow.
+Do not fall back to merging `main` into the branch instead: a merge commit is
+not what was asked for.
+
+Force-push only the pull request branch the run was invoked on, and only when
+the request calls for a rewrite. Never force-push `main` or any other branch,
+and never rewrite a history you were not asked to.
 
 ### Modifying GitHub Actions Workflows
 
