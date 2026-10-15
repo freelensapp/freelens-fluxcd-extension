@@ -474,7 +474,18 @@ has to be in the bundle.
   leaves it for a consumer's bundler and the page has no `process`.
 - **Main**: Node builtins (`node:*` and bare) and `electron` stay external.
   Bundled packages resolve with Vite's server conditions, so main gets their
-  Node builds rather than their browser builds.
+  Node builds rather than their browser builds. Main is built for Rolldown's
+  `node` platform (`build.rolldownOptions.platform`), the renderer for
+  `browser`, the default of a Vite client build. A bundled CommonJS package
+  `require()`s the builtins, and an ES module has no `require`: for the
+  `browser` platform Rolldown turns the call into a `__require` shim that
+  throws ``Calling `require` for "node:assert" in an environment that doesn't
+  expose the `require` function`` as soon as the bundle is evaluated, and for
+  `node` it defines `__require` with `createRequire(import.meta.url)`.
+  `pnpm build` and `pnpm type:check` pass either way, and nothing before
+  Freelens evaluates `dist/main.js`, so on the wrong platform the extension
+  fails only when Freelens loads it. A main bundle without CommonJS is the
+  same on both platforms, byte for byte.
 
 ### Decorators
 
