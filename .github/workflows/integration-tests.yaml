@@ -183,6 +183,25 @@ jobs:
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
 
+      # Without known checksums, @electron/get downloads SHASUMS256.txt from
+      # GitHub on every build, bypassing its cache, even when the Electron zip
+      # is cached, so an outage of GitHub fails the packaging. electron-builder
+      # takes them from SHASUMS256.txt-<version> at the root of that cache
+      # instead, and the electron package ships the same checksums, which the
+      # lockfile has verified. Electron is a devDependency of the app package,
+      # freelens/freelens in this checkout.
+      - name: Seed Electron checksums
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
+        shell: bash
+        working-directory: freelens/freelens
+        run: |-
+          mkdir -p ~/.cache/electron
+          node -e '
+            const checksums = require("electron/checksums.json");
+            const lines = Object.entries(checksums).map(([file, sha256]) => `${sha256} *${file}\n`);
+            require("node:fs").writeFileSync(process.argv[1], lines.join(""));
+          ' "$HOME/.cache/electron/SHASUMS256.txt-$electron_version"
+
       - name: Disable pre post scripts for pnpm
         working-directory: freelens
         run: pnpm config set enablePrePostScripts false --location project

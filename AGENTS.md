@@ -27,7 +27,16 @@ Freelens has adopted it, at that version, in one `Freelens dependencies` group
 PR together with the `@freelensapp/extensions` nightly. A dependency added to
 `package.json` follows the Freelens catalog unless the catalog rule excludes
 it; one that Freelens does not have (`js-base64`) must be excluded
-there, or its lookup fails on the Dependency Dashboard. What Freelens does not
+there, or its lookup fails on the Dependency Dashboard. The catalog rule
+matches only `dependencies` and `devDependencies`, so an override copied from
+Freelens's `pnpm-workspace.yaml`, such as `@kubernetes/client-node>@types/node`,
+is otherwise looked up on npm and runs ahead of Freelens. Such an override gets
+a rule of its own, next to the catalog rule: `matchManagers: ["npm"]`, the
+override's key in `matchDepNames`, `overrideDatasource: "custom.freelens-catalog"`,
+the overridden package in `overridePackageName`, and the catalog rule's
+`rangeStrategy`, `minimumReleaseAge` and `groupName`
+(freelensapp/freelens-for-claude-extension@f2f49241828f201890423e070655c2dc04120b23).
+This extension has no override. What Freelens does not
 define (GitHub Actions, the tool versions in the workflows, `shx`) Renovate
 updates as usual. pnpm is the exception: Renovate updates it from the npm
 registry, in a pull request of its own, and not to the version of Freelens's
@@ -474,7 +483,18 @@ has to be in the bundle.
   leaves it for a consumer's bundler and the page has no `process`.
 - **Main**: Node builtins (`node:*` and bare) and `electron` stay external.
   Bundled packages resolve with Vite's server conditions, so main gets their
-  Node builds rather than their browser builds.
+  Node builds rather than their browser builds. Main is built for Rolldown's
+  `node` platform (`build.rolldownOptions.platform`), the renderer for
+  `browser`, the default of a Vite client build. A bundled CommonJS package
+  `require()`s the builtins, and an ES module has no `require`: for the
+  `browser` platform Rolldown turns the call into a `__require` shim that
+  throws ``Calling `require` for "node:assert" in an environment that doesn't
+  expose the `require` function`` as soon as the bundle is evaluated, and for
+  `node` it defines `__require` with `createRequire(import.meta.url)`.
+  `pnpm build` and `pnpm type:check` pass either way, and nothing before
+  Freelens evaluates `dist/main.js`, so on the wrong platform the extension
+  fails only when Freelens loads it. A main bundle without CommonJS is the
+  same on both platforms, byte for byte.
 
 ### Decorators
 
@@ -628,7 +648,12 @@ import { describe, expect, it, vi } from "vitest";
 
 The module resolves from every program, so Biome keeps it out of the
 extension's code: `style/noRestrictedImports` rejects an import of `vitest`
-outside `src/**/*.test.*`, `test/` and `integration/`. `globals: true` stays on in
+outside `src/**/*.test.*`, `test/` and `integration/`. The same rule rejects
+there the testing helpers of React: the `act` named import of `react`,
+`react-dom/test-utils` and `@testing-library/*`. They type-check, build and
+pass the unit tests, which run the development build of React, but `act`
+delegates to `React.act`, which the production build that Freelens runs leaves
+out, so the call throws only in the host. `globals: true` stays on in
 `vitest.config.ts` at runtime only, because React Testing Library registers its
 automatic cleanup only when `afterEach` is a global. A test that renders a
 component opts into jsdom with `// @vitest-environment jsdom` at the top of the
@@ -658,8 +683,8 @@ parameters JSDoc types.
 `biome.jsonc` has the formatter, import groups and rules of Freelens. Two
 overrides are specific to how the extension is laid out:
 
-- `style/noRestrictedImports` keeps `vitest` out of the extension's code (see
-  "Tests and tooling").
+- `style/noRestrictedImports` keeps `vitest` and the testing helpers of React
+  out of the extension's code (see "Tests and tooling").
 - `correctness/noNodejsModules` rejects a Node builtin import in
   `src/renderer/` and `src/common/`, tests left out. It flags the import in the
   editor, before `pnpm type:check` does; it does not see Node globals such as
@@ -720,6 +745,15 @@ production pass only. And the SVGO plugin is on (`"svgo": true`), so that
 `svgo.config.mjs` is an entry: Trunk runs SVGO, and no dependency turns the
 plugin on.
 
+`ignore` leaves out `dist/**`. The `main` field of `package.json` makes
+`dist/main.js` an entry once it exists, and the `knip` script runs with
+`--no-gitignore`, so after `pnpm build`, which `check.yaml` runs first, knip
+would analyse the bundle and report what it inlines from the libraries it
+bundles: a `spawnSync("wsl.exe")` in a bundled `@kubernetes/client-node` comes
+out as `Unlisted binaries: wsl.exe dist/main.js`. Run `pnpm knip:check` after a
+build when changing `knip.jsonc`, as `check.yaml` does; without `dist/` the
+problem does not show.
+
 ### Workflows
 
 | Workflow                 | Runs                                                                          |
@@ -753,10 +787,12 @@ with `--remoteDebuggingPort 9223`, so an agent can drive the app over the
 Chrome DevTools Protocol. How to attach Playwright MCP to it is in Freelens's
 `DEVELOPMENT.md`, "Inspecting the running dev app from an AI agent"; start
 Freelens before the session connects. Playwright MCP writes its snapshots to
-`.playwright-mcp/`, which is git-ignored.
+`.playwright-mcp/`, which is git-ignored. Added to a Claude Code session that
+is already running, the server is listed as connected, but its tools appear
+only in a new session.
 
-Without the MCP server, a `playwright-core` script with
-`chromium.connectOverCDP("http://127.0.0.1:9223")` does the same. End such a
+Without the MCP server, or until that new session, a `playwright-core` script
+with `chromium.connectOverCDP("http://127.0.0.1:9223")` does the same. End such a
 script by exiting the process; do not close the browser, which belongs to
 Freelens.
 
@@ -786,7 +822,11 @@ whose CRD is missing shows the "not available" page instead.
   `/extension/freelensapp--fluxcd-extension/dashboard`, and a resource page
   has the singular name of its kind as page id, for example
   `/extension/freelensapp--fluxcd-extension/gitrepository`. The sidebar
-  entries navigate in `onClick`; their `href` is not the page URL.
+  entries navigate in `onClick`; their `href` is not the page URL. A click on an
+  entry's `[data-testid="sidebar-item-…"]` element does not navigate; a DOM
+  `click()` on the link inside it, `[data-testid="link-for-sidebar-item-…"]`,
+  does. In the cluster frame, `history.pushState` alone does not navigate
+  either; followed by `dispatchEvent(new PopStateEvent("popstate"))` it does.
 - Playwright's actionability checks can fail on the hotbar, where
   `#ScrollSpyRoot` intercepts pointer events; a DOM `click()` on the element
   works.
@@ -806,6 +846,12 @@ have a unique key", "Encountered two children with the same key"); they count
 as failures of the "no error in DevTools" check. React reports each component
 once per frame, so open every details drawer in a fresh cluster frame to see
 them all.
+
+The main process logs to the terminal running Freelens, and to a file. On
+macOS it is `~/Library/Logs/Freelens/lens.log`, with the renderer's
+`lens-renderer-*.log` next to it; when the terminal is not at hand, it shows
+the extension's activation, its reloads and its own lines. Filter it as the
+console.
 
 ## Code Style
 
@@ -959,6 +1005,24 @@ When asked to implement a change on a PR:
    separately. Do not batch multiple independent fixes into a single
    commit. This keeps the history bisectable and makes each change easy
    to revert individually.
+
+### Force-Pushing a Rewritten Branch
+
+When you are asked to rebase a pull request branch, or to rewrite its
+history in another way (amend, squash, drop a commit), push the result with:
+
+```bash
+git push --force-with-lease origin HEAD
+```
+
+The push wrapper the action names in its instructions, `git-push.sh`, accepts
+no flags, so it cannot do this; `git` itself is allowed in this workflow.
+Do not fall back to merging `main` into the branch instead: a merge commit is
+not what was asked for.
+
+Force-push only the pull request branch the run was invoked on, and only when
+the request calls for a rewrite. Never force-push `main` or any other branch,
+and never rewrite a history you were not asked to.
 
 ### Modifying GitHub Actions Workflows
 

@@ -36,6 +36,12 @@
   // svgo.config.mjs.
   "svgo": true,
 
+  // The build output. The `main` field of package.json makes dist/main.js an
+  // entry once it exists, and the `knip` script runs with --no-gitignore, so
+  // after `pnpm build` knip would report what the bundle inlines from its
+  // libraries, such as a binary a bundled library spawns.
+  "ignore": ["dist/**"],
+
   // Binaries the workflows call that no dependency provides: yq comes from
   // mise (see mise.toml).
   "ignoreBinaries": ["yq"],
