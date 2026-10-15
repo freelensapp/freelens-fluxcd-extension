@@ -3,6 +3,7 @@
   "description": [
     "rangeStrategy: always bump dependencies, even when the new version is already in the range.",
     "rebaseWhen: rebase only on conflicts, to save unnecessary workflow runs.",
+    "postUpdateOptions: pnpmDedupe dedupes pnpm-lock.yaml in Renovate's own commit, so an update lands without duplicates. Freelens does not set it, because there the dedupe runs out of memory on its much larger tree, and dedupes Renovate branches with a workflow instead (npm-dedupe-renovate.yaml); this repository needs no such workflow.",
     "internalChecksFilter: hold updates that do not yet satisfy minimumReleaseAge instead of raising a pending PR, which would run CI and fail pnpm's minimumReleaseAge policy.",
     "ignoreDeps: ubuntu must be the oldest possible version, for binary compatibility with older operating systems.",
     "gitIgnoredAuthors: biome-migrate.yaml commits the migrated biome.jsonc to a Renovate branch as github-actions[bot]; without this, Renovate takes that commit for a manual edit, marks the pull request as edited and stops updating it.",
