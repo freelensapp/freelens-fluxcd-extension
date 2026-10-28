@@ -104,20 +104,76 @@ export async function appReady({ cluster }: { cluster: boolean }): Promise<boole
 }
 
 /**
+ * Describes the arguments of a console message, read in the page: an `Error`
+ * by its stack, an `ErrorEvent` by its message, location and error, another
+ * `Event` by its type and target, anything else as JSON.
+ */
+async function describeConsoleArgs(msg: ConsoleMessage): Promise<string> {
+  const descriptions = await Promise.all(
+    msg.args().map((arg) =>
+      arg
+        .evaluate((value) => {
+          if (value instanceof Error) {
+            return value.stack ?? `${value.name}: ${value.message}`;
+          }
+
+          if (value instanceof ErrorEvent) {
+            const stack = value.error instanceof Error ? ` ${value.error.stack}` : "";
+
+            return `${value.type} event: ${value.message} (${value.filename}:${value.lineno}:${value.colno})${stack}`;
+          }
+
+          if (value instanceof Event) {
+            return `${value.type} event of ${value.target?.constructor.name ?? "no target"}`;
+          }
+
+          try {
+            return JSON.stringify(value) ?? String(value);
+          } catch {
+            return String(value);
+          }
+        })
+        .catch((error) => `<argument not readable: ${error instanceof Error ? error.message : error}>`),
+    ),
+  );
+
+  // A message of the browser itself, such as a resource or a worker that
+  // failed to load, has no arguments; its time ties it to the main log.
+  return descriptions.length
+    ? descriptions.join(" ")
+    : `<empty message without arguments, at ${new Date(msg.timestamp()).toISOString()}>`;
+}
+
+/**
  * Collects the errors of the renderer's console, of every frame, and the
  * lines of the main log written after the session started.
  */
 function collectErrors(window: Page) {
   const errorLogs: string[] = [];
+  const pendingDescriptions: Promise<void>[] = [];
   let mainLogOffset = mainLogFile && fs.existsSync(mainLogFile) ? fs.statSync(mainLogFile).size : 0;
 
   // Chromium logs every response that is not a success as "Failed to load
   // resource", whose text has no URL, so the location of the message is added.
+  // The text of a message is the preview of its arguments: the class name of
+  // an object, such as `ErrorEvent`, or nothing at all. Such a message is
+  // described from its arguments, read from the page after the event, and
+  // `settle()` waits for that. A message of a worker names the worker.
   const onConsole = (msg: ConsoleMessage) => {
     if (msg.type() === "error") {
-      const { url } = msg.location();
+      const { url, lineNumber, columnNumber } = msg.location();
+      const worker = msg.worker();
+      const location = `${url ? ` (${url}:${lineNumber}:${columnNumber})` : ""}${worker ? ` (worker ${worker.url()})` : ""}`;
       const text = msg.text().replaceAll(ansiEscapePattern, "");
-      errorLogs.push(`[renderer] ${text}${url ? ` (${url})` : ""}`);
+      const index = errorLogs.push(`[renderer] ${text}${location}`) - 1;
+
+      if (!text.trim() || /^[A-Z]\w*$/.test(text)) {
+        pendingDescriptions.push(
+          describeConsoleArgs(msg).then((description) => {
+            errorLogs[index] = `[renderer] ${description}${location}`;
+          }),
+        );
+      }
     }
   };
 
@@ -173,6 +229,9 @@ function collectErrors(window: Page) {
 
       return [...errorLogs];
     },
+    settle: async () => {
+      await Promise.all(pendingDescriptions);
+    },
     stop: () => {
       window.off("console", onConsole);
       window.off("pageerror", onPageError);
@@ -197,6 +256,8 @@ export async function connectApp(): Promise<AppSession> {
       window,
       errors: collector.errors,
       close: async () => {
+        await collector.settle();
+
         const errors = collector.errors();
 
         collector.stop();

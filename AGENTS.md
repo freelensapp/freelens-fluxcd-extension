@@ -874,7 +874,13 @@ and of every cluster frame; the main log is read from the file that
 `FREELENS_MAIN_LOG` names, from its size when the session started, and every
 line that starts with `error:` counts, also after a task prefix that turbo may
 add, such as `freelens:dev:`. Without the variable only the renderer is
-checked. The workflow sets `TURBO_LOG_ORDER=stream` for `pnpm dev`: in GitHub
+checked. A renderer error carries its location, line and column included,
+and the worker that logged it. Its text is the preview of its arguments, which
+is empty for some objects and only the class name for others, such as
+`ErrorEvent`; such an error is described from its arguments, read from the
+page, and an empty one without arguments, which the browser itself logs, gets
+its time, to find it in the main log. The workflow sets
+`TURBO_LOG_ORDER=stream` for `pnpm dev`: in GitHub
 Actions turbo otherwise groups the output of a task until it ends, and the
 persistent `dev` task never ends, so the log would stay empty.
 
