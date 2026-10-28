@@ -410,6 +410,14 @@ mechanism; this is the list to check a change against.
 - **One class per kind where code covers all kinds.** Every served version
   resolves, so walking all the classes of a kind loads and counts the same
   objects once per version (`getServedStore`, "Renderer Components").
+- **A memo over a store's items is keyed on something that changes with
+  them.** The host keeps one observable array per store and updates it in
+  place, with `replace` and `splice`, so `store.items` stays the same array
+  while the objects in it change. A `useMemo` keyed on it, or on a prop that
+  holds it, is computed once, and an open view keeps the objects it was opened
+  with. An `observer` that reads the items while it renders follows them; a
+  memo needs a key such as the ids and `resourceVersion`s of the objects. It
+  shows only on a cluster whose objects change while the view is open.
 - **A cluster page gets the extension from its registration.** The host passes
   `params` only. The type check rejects a page that requires another prop, but
   not one that declares it optional ("Renderer Components").
@@ -810,6 +818,17 @@ with `chromium.connectOverCDP("http://127.0.0.1:9223")` does the same. End such 
 script by exiting the process; do not close the browser, which belongs to
 Freelens.
 
+A profile of Freelens dev syncs no kubeconfig until one is added in
+"Kubeconfig Syncs" of the Kubernetes preferences, so its catalog lists none of
+the developer's clusters; `KUBECONFIG` does not change that. For the checks,
+add a kubeconfig with the test cluster alone, such as the output of
+`kubectl config view --minify --flatten --context kind-kind`. A fresh profile,
+in a `FREELENS_INTEGRATION_TESTING_DIR` under the system's temporary
+directory, can start with it already in place: seed
+`FreelensDev/lens-user-store.json` there with
+`preferences.syncKubeconfigEntries`, whose `filePath` is absolute ("Kubeconfig
+syncs of the dev profile" in Freelens's `DEVELOPMENT.md`).
+
 The checks need a cluster with Flux, and with the Flux Operator for the
 `fluxcd.controlplane.io` kinds, and objects of the kinds under test; a kind
 whose CRD is missing shows the "not available" page instead.
@@ -860,6 +879,13 @@ have a unique key", "Encountered two children with the same key"); they count
 as failures of the "no error in DevTools" check. React reports each component
 once per frame, so open every details drawer in a fresh cluster frame to see
 them all.
+
+The renderer's requests to Kubernetes go through Chromium, which logs every
+response that is not a success as a console error,
+`Failed to load resource: the server responded with a status of N`, also one
+that the code that sent it handles. The text names no URL; the location of the
+message does. Leave out such an error by its status and URL only where the
+response is expected, a 404 or a 409, not every "Failed to load resource".
 
 The main process logs to the terminal running Freelens, and to a file. On
 macOS it is `~/Library/Logs/Freelens/lens.log`, with the renderer's
