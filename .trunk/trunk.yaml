@@ -13,7 +13,7 @@ plugins:
 runtimes:
   enabled:
     - go@1.21.0
-    - node@24.21.0! # datasource=node-version depName=node
+    - node@24.22.1! # datasource=node-version depName=node
     - python@3.14.4
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
 lint:
@@ -96,7 +96,7 @@ lint:
         - sass
   enabled:
     - actionlint@1.7.12
-    - biome@2.5.15! # datasource=npm depName=@biomejs/biome
+    - biome@2.6.3! # datasource=npm depName=@biomejs/biome
     - git-diff-check
     - markdownlint@0.49.1
     - prettier@3.9.10! # datasource=npm depName=prettier
