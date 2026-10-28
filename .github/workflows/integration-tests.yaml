@@ -24,9 +24,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # No Freelens release has the v2 extension API yet; `main` is the
-          # only ref that does.
-          - freelens_version: main
+          # The Freelens releases the extension supports, by their tags.
+          - freelens_version: v2.0.0
 
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
@@ -165,6 +164,21 @@ jobs:
           path: freelens/freelens/dist
           key: ubuntu-24.04-arm-electron-dist-${{ env.freelens_sha }}
 
+      # The binaries that ensure-binaries downloads in "Build extra resources",
+      # which Turborepo does not cache (see "Bundled Binary Versions" in
+      # Freelens's AGENTS.md). The build hashes every restored binary against
+      # the lock and downloads it again on a mismatch. Saved right after that
+      # step, as in Freelens's own integration tests workflow.
+      - name: Restore bundled binaries cache
+        id: binaries-cache-restore
+        if: steps.electron-build-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@v6
+        with:
+          path: freelens/freelens/binaries
+          key: ubuntu-24.04-arm-binaries-${{ hashFiles('freelens/freelens/binaries.lock.json') }}
+          restore-keys: |
+            ubuntu-24.04-arm-binaries-
+
       - name: Delete node packages from the previous build to avoid issues with pnpm
         run: rm -rf pnpm-lock.yaml node_modules
 
@@ -252,6 +266,13 @@ jobs:
         if: steps.electron-build-cache.outputs.cache-hit != 'true' && steps.build-resources-2.outcome == 'failure'
         working-directory: freelens
         run: pnpm --color=always build:resources
+
+      - name: Save bundled binaries cache
+        if: steps.electron-build-cache.outputs.cache-hit != 'true' && steps.binaries-cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: freelens/freelens/binaries
+          key: ${{ steps.binaries-cache-restore.outputs.cache-primary-key }}
 
       - name: Get electron-builder path
         if: steps.electron-build-cache.outputs.cache-hit != 'true'

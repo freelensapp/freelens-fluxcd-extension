@@ -116,6 +116,17 @@ jobs:
           restore-keys: |
             ${{ env.RUNS_ON }}-turborepo-
 
+      # Turborepo does not cache the binaries that ensure-binaries downloads,
+      # see "Bundled Binary Versions" in Freelens's AGENTS.md. The build hashes
+      # every restored binary against the lock, so the cache is safe to use.
+      - name: Use bundled binaries cache
+        uses: actions/cache@v6
+        with:
+          path: tmp/freelens/freelens/binaries
+          key: ${{ runner.os }}-${{ runner.arch }}-binaries-${{ hashFiles('tmp/freelens/freelens/binaries.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-binaries-
+
       - name: Install pnpm dependencies
         id: install-pnpm
         working-directory: tmp/freelens
@@ -136,6 +147,19 @@ jobs:
       # job.
       - name: Install trunk
         uses: trunk-io/trunk-action/install@v2.0.0
+        continue-on-error: true
+
+      # mise with the cosign and yq that mise.lock pins, for `mise lock` after a
+      # version bump in mise.toml. node stays with setup-node. No cache:
+      # installing takes seconds, and a hanging cache lookup once held a job of
+      # Freelens for 25 minutes.
+      - name: Set up mise
+        uses: jdx/mise-action@v5
+        with:
+          version: 2026.10.11 # datasource=github-releases depName=jdx/mise
+          install_args: cosign yq
+          cache: false
+        timeout-minutes: 5
         continue-on-error: true
 
       - name: Prepare prompt
@@ -222,5 +246,5 @@ jobs:
             --model "${{ steps.parse-model.outputs.model }}"
             --fallback-model claude-opus-5
             --max-turns 100
-            --allowedTools "Read" "Write" "Edit" "Glob" "Grep" "Task" "WebSearch" "WebFetch" "BashOutput" "KillShell" "Bash(trunk:*)" "Bash(bash:*)" "Bash(pnpm:*)" "Bash(npx:*)" "Bash(node:*)" "Bash(git:*)" "Bash(gh:*)" "Bash(yq:*)" "Bash(jq:*)" "Bash(grep:*)" "Bash(rg:*)" "Bash(sed:*)" "Bash(awk:*)" "Bash(cut:*)" "Bash(tr:*)" "Bash(sort:*)" "Bash(uniq:*)" "Bash(cat:*)" "Bash(head:*)" "Bash(tail:*)" "Bash(wc:*)" "Bash(find:*)" "Bash(xargs:*)" "Bash(ls:*)" "Bash(tree:*)" "Bash(mkdir:*)" "Bash(touch:*)" "Bash(cp:*)" "Bash(mv:*)" "Bash(rm:*)" "Bash(tee:*)" "Bash(echo:*)"
+            --allowedTools "Read" "Write" "Edit" "Glob" "Grep" "Task" "WebSearch" "WebFetch" "BashOutput" "KillShell" "Bash(trunk:*)" "Bash(mise:*)" "Bash(bash:*)" "Bash(pnpm:*)" "Bash(npx:*)" "Bash(node:*)" "Bash(git:*)" "Bash(gh:*)" "Bash(yq:*)" "Bash(jq:*)" "Bash(grep:*)" "Bash(rg:*)" "Bash(sed:*)" "Bash(awk:*)" "Bash(cut:*)" "Bash(tr:*)" "Bash(sort:*)" "Bash(uniq:*)" "Bash(cat:*)" "Bash(head:*)" "Bash(tail:*)" "Bash(wc:*)" "Bash(find:*)" "Bash(xargs:*)" "Bash(ls:*)" "Bash(tree:*)" "Bash(mkdir:*)" "Bash(touch:*)" "Bash(cp:*)" "Bash(mv:*)" "Bash(rm:*)" "Bash(tee:*)" "Bash(echo:*)"
             --append-system-prompt-file /tmp/AGENTS.md

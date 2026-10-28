@@ -24,7 +24,7 @@ Freelens's `mise.toml` and `.nvmrc` for Node and the other mise tools.
 Renovate keeps them there: custom datasources in `.renovaterc.json` read the
 versions from the same Freelens files on `main`, so an update arrives only once
 Freelens has adopted it, at that version, in one `Freelens dependencies` group
-PR together with the `@freelensapp/extensions` nightly. A dependency added to
+PR together with a release of `@freelensapp/extensions`. A dependency added to
 `package.json` follows the Freelens catalog unless the catalog rule excludes
 it; one that Freelens does not have (`js-base64`) must be excluded
 there, or its lookup fails on the Dependency Dashboard. The catalog rule
@@ -58,7 +58,8 @@ scripts only when `allowBuilds` sets it to `true`; a new dependency with
 install scripts that is not listed there fails `pnpm install`, so add it with
 `true` or `false` deliberately. pnpm refuses versions younger than its
 `minimumReleaseAge` (1 day), with `@freelensapp/extensions` excluded because
-its pinned nightly is often adopted on the day it is published.
+a Freelens release is adopted on the day it is published, together with the
+stack it was built with.
 
 `strictPeerDependencies: true` makes `pnpm install` fail when the extension's
 own copy of a shared library is outside the peer range that
@@ -82,14 +83,12 @@ pnpm type:check:tooling        # Vite and Vitest configs, build plugins
 pnpm type:check:environments   # Environment tests
 
 # Linting & formatting
-pnpm biome:check          # TypeScript/TSX, JS, JSON, CSS, HTML (biome)
+pnpm biome:check          # TypeScript/TSX, JS, JSON, CSS, SCSS, HTML, YAML, Markdown (biome)
 pnpm biome:fix            # Auto-fix the formats above
-pnpm prettier:check       # SCSS and other formats not covered by biome
-pnpm prettier:fix         # Auto-fix SCSS, etc.
-pnpm trunk:check          # Markdown, YAML, TOML, SCSS, workflows, and Biome again (changed files)
-pnpm trunk:fix            # Auto-fix via trunk
-pnpm lint:check           # Runs biome:check and prettier:check
-pnpm lint:fix             # Runs biome:fix and prettier:fix
+pnpm trunk:check          # TOML, shell, workflows, yamllint, and Biome again (changed files)
+pnpm trunk:fix            # Auto-fix TOML, shell, and the Biome formats
+pnpm lint:check           # Alias for biome:check
+pnpm lint:fix             # Alias for biome:fix
 
 # Dead-code / dependency checks
 pnpm knip:check           # Unused files, unused and unlisted dependencies (knip)
@@ -411,6 +410,14 @@ mechanism; this is the list to check a change against.
 - **One class per kind where code covers all kinds.** Every served version
   resolves, so walking all the classes of a kind loads and counts the same
   objects once per version (`getServedStore`, "Renderer Components").
+- **A memo over a store's items is keyed on something that changes with
+  them.** The host keeps one observable array per store and updates it in
+  place, with `replace` and `splice`, so `store.items` stays the same array
+  while the objects in it change. A `useMemo` keyed on it, or on a prop that
+  holds it, is computed once, and an open view keeps the objects it was opened
+  with. An `observer` that reads the items while it renders follows them; a
+  memo needs a key such as the ids and `resourceVersion`s of the objects. It
+  shows only on a cluster whose objects change while the view is open.
 - **A cluster page gets the extension from its registration.** The host passes
   `params` only. The type check rejects a page that requires another prop, but
   not one that declares it optional ("Renderer Components").
@@ -421,6 +428,11 @@ mechanism; this is the list to check a change against.
   `pnpm dev` runs.** The host refuses to reload a CommonJS main and logs why,
   and it watches only the entries it started with, so a manifest change needs
   Freelens restarted.
+- **A bundled CommonJS package loads in the ESM main.** Main is built for
+  Rolldown's `node` platform, which gives it a `require`, and defines
+  `__dirname` and `__filename`. Without either, the package throws when
+  Freelens evaluates `dist/main.js`, and the extension does not activate;
+  `pnpm build` and `pnpm type:check` pass ("Process-specific settings").
 
 Neither `pnpm build` nor `pnpm dev` runs the type check, so a Node global in
 renderer code passes them; `pnpm type:check` and `type-check.yaml` catch it.
@@ -491,6 +503,13 @@ has to be in the bundle.
   throws ``Calling `require` for "node:assert" in an environment that doesn't
   expose the `require` function`` as soon as the bundle is evaluated, and for
   `node` it defines `__require` with `createRequire(import.meta.url)`.
+  `__dirname` and `__filename` are the other half: Node passes them to a
+  CommonJS module, Rolldown leaves them as they are on either platform, and
+  the ES module throws `ReferenceError: __dirname is not defined in ES module
+  scope`. Main defines them (`define`) as `import.meta.dirname` and
+  `import.meta.filename`, the directory and file of `dist/main.js`, not of the
+  package: a library that loads a file next to itself, such as a `.wasm`,
+  finds it only when the build puts it in `dist/`.
   `pnpm build` and `pnpm type:check` pass either way, and nothing before
   Freelens evaluates `dist/main.js`, so on the wrong platform the extension
   fails only when Freelens loads it. A main bundle without CommonJS is the
@@ -710,8 +729,11 @@ migration are one pull request. The commit is by `github-actions[bot]`, which
 `gitIgnoredAuthors` in `.renovaterc.json` lists, so that Renovate does not take
 it for a manual edit and stop updating the branch.
 
-Biome does not read SCSS; Prettier formats it, through `pnpm prettier:fix` or
-Trunk.
+Biome formats SCSS, YAML and Markdown too, as in Freelens, so Trunk runs no
+Prettier or markdownlint; yamllint still checks YAML. `biome.jsonc` leaves out
+`pnpm-lock.yaml` and `pnpm-workspace.yaml`, which pnpm writes, and `.trunk/`,
+whose `trunk.yaml` `trunk upgrade` rewrites. The Markdown rules are in
+`nursery`.
 
 ### Knip
 
@@ -796,6 +818,17 @@ with `chromium.connectOverCDP("http://127.0.0.1:9223")` does the same. End such 
 script by exiting the process; do not close the browser, which belongs to
 Freelens.
 
+A profile of Freelens dev syncs no kubeconfig until one is added in
+"Kubeconfig Syncs" of the Kubernetes preferences, so its catalog lists none of
+the developer's clusters; `KUBECONFIG` does not change that. For the checks,
+add a kubeconfig with the test cluster alone, such as the output of
+`kubectl config view --minify --flatten --context kind-kind`. A fresh profile,
+in a `FREELENS_INTEGRATION_TESTING_DIR` under the system's temporary
+directory, can start with it already in place: seed
+`FreelensDev/lens-user-store.json` there with
+`preferences.syncKubeconfigEntries`, whose `filePath` is absolute ("Kubeconfig
+syncs of the dev profile" in Freelens's `DEVELOPMENT.md`).
+
 The checks need a cluster with Flux, and with the Flux Operator for the
 `fluxcd.controlplane.io` kinds, and objects of the kinds under test; a kind
 whose CRD is missing shows the "not available" page instead.
@@ -847,6 +880,13 @@ as failures of the "no error in DevTools" check. React reports each component
 once per frame, so open every details drawer in a fresh cluster frame to see
 them all.
 
+The renderer's requests to Kubernetes go through Chromium, which logs every
+response that is not a success as a console error,
+`Failed to load resource: the server responded with a status of N`, also one
+that the code that sent it handles. The text names no URL; the location of the
+message does. Leave out such an error by its status and URL only where the
+response is expected, a 404 or a 409, not every "Failed to load resource".
+
 The main process logs to the terminal running Freelens, and to a file. On
 macOS it is `~/Library/Logs/Freelens/lens.log`, with the renderer's
 `lens-renderer-*.log` next to it; when the terminal is not at hand, it shows
@@ -855,8 +895,8 @@ console.
 
 ## Code Style
 
-- **Biome** formats **TypeScript/TSX, JS, JSON, CSS, HTML**: double quotes, semicolons, trailing commas, 2-space indent, 120 char line width — use `pnpm biome:fix`
-- **Prettier / Trunk** format **SCSS, Markdown, YAML**, and other formats not covered by biome — use `pnpm prettier:fix` (or `pnpm trunk:fix`)
+- **Biome** formats **TypeScript/TSX, JS, JSON, CSS, SCSS, HTML, YAML, Markdown**: double quotes, semicolons, trailing commas, 2-space indent, 120 char line width — use `pnpm biome:fix`
+- **Trunk** formats **TOML and shell scripts**, and runs the linters for formats not covered by Biome (yamllint, actionlint, shellcheck) — use `pnpm trunk:fix`
 - Import order (enforced by biome organizeImports): built-in modules → `@freelensapp/**` → packages → relative paths
 - **No emoji** in Markdown files (`.md`), comments, or any source code
 
@@ -922,8 +962,8 @@ Extensions run in the same multi-process model as the Freelens host:
 3. **Test changes** before committing
 4. **Run validation before committing:** `pnpm lint:fix && pnpm type:check && pnpm test:unit && pnpm build`, and
    `pnpm knip:check` after adding, moving or removing a file or a dependency
-5. **For TypeScript/TSX, JS, JSON, CSS, HTML files:** run `pnpm biome:fix` (or `biome check` directly if `biome` is installed locally)
-6. **For SCSS, Markdown, YAML, and other formats:** run `pnpm prettier:fix` or `pnpm trunk:fix`
+5. **For TypeScript/TSX, JS, JSON, CSS, SCSS, HTML, YAML and Markdown files:** run `pnpm biome:fix` (or `biome check` directly if `biome` is installed locally)
+6. **For other formats:** run `pnpm trunk:fix`
 7. **Full build** when in doubt about cached state: `pnpm clean:all && pnpm install && pnpm build`
 8. **Check the rules that fail silently** ("Rules That Fail Silently") against every change to the build, the
    components or the models: the type check, the build and the unit tests do not catch them
@@ -955,6 +995,7 @@ When reviewing code and proposing fixes:
    ```
 
    You can generate this from the terminal with:
+
    ```bash
    git diff -u -- path/to/file
    ```
@@ -986,9 +1027,9 @@ When reviewing code and proposing fixes:
    - Use GitHub's `suggestion` block for small targeted fixes so the PR
      author can accept the change with a single click:
 
-     ````suggestion
+     ```suggestion
      <same unified-diff format as shown above>
-     ````
+     ```
 
    - For larger multi-file changes, use `diff -u` blocks in a regular
      comment instead, with the proposed commit subject shown first

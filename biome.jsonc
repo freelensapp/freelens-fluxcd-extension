@@ -1,7 +1,7 @@
 {
   // Ignore mismatch for Biome version to make Renovate updates without error
   // trunk-ignore(biome/deserialize)
-  "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -26,7 +26,17 @@
     }
   },
   "files": {
-    "includes": ["**", "!**/.trunk/**", "!**/build/**", "!**/dist/**", "**/build/*.{js,cjs,mjs}"]
+    // pnpm writes its own lockfile and workspace file, and Trunk rewrites its
+    // own .trunk/trunk.yaml on every trunk upgrade.
+    "includes": [
+      "**",
+      "!**/.trunk/**",
+      "!**/build/**",
+      "!**/dist/**",
+      "**/build/*.{js,cjs,mjs}",
+      "!**/pnpm-lock.yaml",
+      "!**/pnpm-workspace.yaml"
+    ]
   },
   "formatter": {
     "attributePosition": "auto",
@@ -75,6 +85,12 @@
         // should be error later
         "noUnusedVariables": "off",
         "useExhaustiveDependencies": "off"
+      },
+      "nursery": {
+        // Markdown
+        "useConsistentHeadingLevel": "error",
+        "useFencedCodeLanguage": "error",
+        "useSingleTopLevelHeading": "error"
       },
       "preset": "none",
       "style": {
@@ -175,5 +191,12 @@
     "clientKind": "git",
     "enabled": true,
     "useIgnoreFile": true
+  },
+  "yaml": {
+    "formatter": {
+      // Flow sequences stay [a, b], as yamlfmt left them; the global
+      // bracketSpacing is meant for JavaScript objects.
+      "bracketSpacing": false
+    }
   }
 }
