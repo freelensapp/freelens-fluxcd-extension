@@ -90,6 +90,10 @@ export default defineConfig(({ mode }) => {
           // Main runs in Node: pick the Node builds of bundled packages, not
           // their browser builds.
           resolve: { conditions: [...defaultServerConditions], mainFields: [...defaultServerMainFields] },
+          // A bundled CommonJS package reads `__dirname` and `__filename`,
+          // which Node passes to a CommonJS module and an ES module does not
+          // have; Rolldown leaves them as they are.
+          define: { __dirname: "import.meta.dirname", __filename: "import.meta.filename" },
         }),
     build: {
       target: "esnext",

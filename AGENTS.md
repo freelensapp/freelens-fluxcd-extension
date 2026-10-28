@@ -420,6 +420,11 @@ mechanism; this is the list to check a change against.
   `pnpm dev` runs.** The host refuses to reload a CommonJS main and logs why,
   and it watches only the entries it started with, so a manifest change needs
   Freelens restarted.
+- **A bundled CommonJS package loads in the ESM main.** Main is built for
+  Rolldown's `node` platform, which gives it a `require`, and defines
+  `__dirname` and `__filename`. Without either, the package throws when
+  Freelens evaluates `dist/main.js`, and the extension does not activate;
+  `pnpm build` and `pnpm type:check` pass ("Process-specific settings").
 
 Neither `pnpm build` nor `pnpm dev` runs the type check, so a Node global in
 renderer code passes them; `pnpm type:check` and `type-check.yaml` catch it.
@@ -490,6 +495,13 @@ has to be in the bundle.
   throws ``Calling `require` for "node:assert" in an environment that doesn't
   expose the `require` function`` as soon as the bundle is evaluated, and for
   `node` it defines `__require` with `createRequire(import.meta.url)`.
+  `__dirname` and `__filename` are the other half: Node passes them to a
+  CommonJS module, Rolldown leaves them as they are on either platform, and
+  the ES module throws `ReferenceError: __dirname is not defined in ES module
+  scope`. Main defines them (`define`) as `import.meta.dirname` and
+  `import.meta.filename`, the directory and file of `dist/main.js`, not of the
+  package: a library that loads a file next to itself, such as a `.wasm`,
+  finds it only when the build puts it in `dist/`.
   `pnpm build` and `pnpm type:check` pass either way, and nothing before
   Freelens evaluates `dist/main.js`, so on the wrong platform the extension
   fails only when Freelens loads it. A main bundle without CommonJS is the
