@@ -91,12 +91,12 @@ jobs:
           if [[ $(gh pr view automated/npm-audit --json state --jq .state || true) != "OPEN" ]]; then
             gh pr create \
               --head automated/npm-audit \
-              --title "Automated npm audot" \
+              --title "Automated npm audit" \
               --body-file .github/pr_body.log \
               --label automated
           else
             gh pr edit automated/npm-audit \
-              --title "Automated npm audot" \
+              --title "Automated npm audit" \
               --body-file .github/pr_body.log
           fi
         env:
