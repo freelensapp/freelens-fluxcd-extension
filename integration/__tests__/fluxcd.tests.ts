@@ -222,13 +222,17 @@ describe.skipIf(!(await appReady({ cluster: true })))("FluxCD views", () => {
       let errors: string[] = [];
 
       try {
-        // The cluster first: the app watches the CRDs, and would log errors for
+        // The errors first: the app refreshes the cluster while it disconnects,
+        // and logs errors of its own when the refresh loses the race.
+        errors = (await session?.stopCollecting()) ?? [];
+
+        // The cluster then: the app watches the CRDs, and would log errors for
         // a CRD deleted under it.
         if (session) {
           await disconnectKindCluster(session);
         }
 
-        errors = (await session?.close()) ?? [];
+        await session?.close();
       } finally {
         tearDownCluster();
       }
