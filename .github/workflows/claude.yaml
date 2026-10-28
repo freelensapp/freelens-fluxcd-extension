@@ -22,11 +22,11 @@
 #     because the values end up in claude_args, which the action splits like
 #     a shell command line.
 #   - A pull request from a fork runs in review mode: its code is checked out
-#     but never executed. No dependency install, no trunk, no in-repo Claude
-#     settings, and no tool that runs the repository's code. The job holds a
-#     write token and an OIDC token, and anything the fork runs here could
-#     take them. Nothing is edited, committed or pushed either: a fork pull
-#     request that needs changes is first copied to a branch here by a
+#     but never executed. No dependency install, no trunk or mise, no in-repo
+#     Claude settings, and no tool that runs the repository's code. The job
+#     holds a write token and an OIDC token, and anything the fork runs here
+#     could take them. Nothing is edited, committed or pushed either: a fork
+#     pull request that needs changes is first copied to a branch here by a
 #     maintainer (see "Fork PRs: Review Only" in AGENTS.md).
 #
 # Jobs:
@@ -302,9 +302,10 @@ jobs:
           persist-credentials: false
 
       # Everything from here to the AGENTS.md step runs code: the pnpm
-      # install runs the lifecycle scripts of the upstream checkout, and trunk
-      # takes its tools and plugin sources from .trunk/trunk.yaml of the tree
-      # under review. So it is skipped for a fork pull request.
+      # install runs the lifecycle scripts of the upstream checkout, trunk
+      # takes its tools and plugin sources from .trunk/trunk.yaml, and mise its
+      # tools from mise.toml of the tree under review. So it is skipped for a
+      # fork pull request.
 
       - name: Setup node
         if: needs.parse.outputs.is-fork != 'true'
@@ -344,6 +345,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-turborepo-
 
+      # Turborepo does not cache the binaries that ensure-binaries downloads,
+      # see "Bundled Binary Versions" in Freelens's AGENTS.md. The build hashes
+      # every restored binary against the lock, so the cache is safe to use.
+      - name: Use bundled binaries cache
+        if: needs.parse.outputs.is-fork != 'true'
+        uses: actions/cache@v6
+        with:
+          path: tmp/freelens/freelens/binaries
+          key: ${{ runner.os }}-${{ runner.arch }}-binaries-${{ hashFiles('tmp/freelens/freelens/binaries.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-binaries-
+
       - name: Install pnpm dependencies
         if: needs.parse.outputs.is-fork != 'true'
         id: install-pnpm
@@ -366,6 +379,20 @@ jobs:
       - name: Install trunk
         if: needs.parse.outputs.is-fork != 'true'
         uses: trunk-io/trunk-action/install@v2.0.0
+        continue-on-error: true
+
+      # mise with the cosign and yq that mise.lock pins, for `mise lock` after a
+      # version bump in mise.toml. node stays with setup-node. No cache:
+      # installing takes seconds, and a hanging cache lookup once held a job of
+      # Freelens for 25 minutes.
+      - name: Set up mise
+        if: needs.parse.outputs.is-fork != 'true'
+        uses: jdx/mise-action@v5
+        with:
+          version: 2026.10.11 # datasource=github-releases depName=jdx/mise
+          install_args: cosign yq
+          cache: false
+        timeout-minutes: 5
         continue-on-error: true
 
       # Fetched by URL from the base repository, so the system prompt never
@@ -404,16 +431,16 @@ jobs:
             --model "${{ needs.parse.outputs.model }}"
             ${{ needs.parse.outputs.effort-arg }}
             --fallback-model claude-opus-5
-            --max-turns 200
-            --allowedTools "Read" "Write" "Edit" "Glob" "Grep" "Task" "WebSearch" "WebFetch" "BashOutput" "KillShell" "Bash(trunk:*)" "Bash(bash:*)" "Bash(pnpm:*)" "Bash(npx:*)" "Bash(node:*)" "Bash(git:*)" "Bash(gh:*)" "Bash(yq:*)" "Bash(jq:*)" "Bash(grep:*)" "Bash(rg:*)" "Bash(sed:*)" "Bash(awk:*)" "Bash(cut:*)" "Bash(tr:*)" "Bash(sort:*)" "Bash(uniq:*)" "Bash(cat:*)" "Bash(head:*)" "Bash(tail:*)" "Bash(wc:*)" "Bash(find:*)" "Bash(xargs:*)" "Bash(ls:*)" "Bash(tree:*)" "Bash(mkdir:*)" "Bash(touch:*)" "Bash(cp:*)" "Bash(mv:*)" "Bash(rm:*)" "Bash(tee:*)" "Bash(echo:*)"
+            --max-turns 400
+            --allowedTools "Read" "Write" "Edit" "Glob" "Grep" "Task" "WebSearch" "WebFetch" "BashOutput" "KillShell" "Bash(trunk:*)" "Bash(mise:*)" "Bash(bash:*)" "Bash(pnpm:*)" "Bash(npx:*)" "Bash(node:*)" "Bash(git:*)" "Bash(gh:*)" "Bash(yq:*)" "Bash(jq:*)" "Bash(grep:*)" "Bash(rg:*)" "Bash(sed:*)" "Bash(awk:*)" "Bash(cut:*)" "Bash(tr:*)" "Bash(sort:*)" "Bash(uniq:*)" "Bash(cat:*)" "Bash(head:*)" "Bash(tail:*)" "Bash(wc:*)" "Bash(find:*)" "Bash(xargs:*)" "Bash(ls:*)" "Bash(tree:*)" "Bash(mkdir:*)" "Bash(touch:*)" "Bash(cp:*)" "Bash(mv:*)" "Bash(rm:*)" "Bash(tee:*)" "Bash(echo:*)"
             --append-system-prompt-file /tmp/AGENTS.md
 
       # Review mode for a fork pull request. --setting-sources user keeps
       # Claude Code from loading .claude/settings.json (hooks, permissions)
       # and CLAUDE.md from the tree under review. The tool list leaves out
       # everything that executes code from the tree (pnpm, node, npx, bash,
-      # trunk) or can run arbitrary commands (sed, awk, find, xargs), and the
-      # web tools that would give a prompt injection a way out.
+      # trunk, mise) or can run arbitrary commands (sed, awk, find, xargs), and
+      # the web tools that would give a prompt injection a way out.
       #
       # Nothing from the checkout may reach origin, because the head of a
       # fork pull request can change after a maintainer looked at it. Tag
@@ -430,7 +457,7 @@ jobs:
             --model "${{ needs.parse.outputs.model }}"
             ${{ needs.parse.outputs.effort-arg }}
             --fallback-model claude-opus-5
-            --max-turns 200
+            --max-turns 400
             --setting-sources user
             --allowedTools "Read" "Glob" "Grep" "Task" "mcp__github_inline_comment__create_inline_comment" "Bash(git diff:*)" "Bash(git log:*)" "Bash(git show:*)" "Bash(git status:*)" "Bash(gh pr view:*)" "Bash(gh pr diff:*)" "Bash(jq:*)" "Bash(cut:*)" "Bash(tr:*)" "Bash(sort:*)" "Bash(uniq:*)" "Bash(cat:*)" "Bash(head:*)" "Bash(tail:*)" "Bash(wc:*)" "Bash(ls:*)" "Bash(tree:*)"
             --disallowedTools "Edit" "Write" "MultiEdit" "NotebookEdit" "Bash(git add:*)" "Bash(git commit:*)" "Bash(git rm:*)" "Bash(git push:*)" "Bash(*git-push.sh*)" "Bash(mkdir:*)" "Bash(touch:*)" "Bash(cp:*)" "Bash(mv:*)" "Bash(rm:*)" "Bash(rmdir:*)" "Bash(sed:*)"
@@ -613,12 +640,16 @@ jobs:
         id: install-pnpm
         shell: bash
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
         continue-on-error: true
 
       - name: Install pnpm dependencies (retry)
         if: steps.install-pnpm.outcome == 'failure'
         shell: bash
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
 
       - name: Download PowerShell script
         uses: actions/download-artifact@v8
