@@ -4,7 +4,8 @@
   // The extension is not a library: its entry points are the `main` and
   // `renderer` manifest fields, which point at build output, and knip does not
   // read `renderer` at all, so the sources are listed instead. The Vitest
-  // plugin adds vitest.config.ts and the test files.
+  // plugin adds vitest.config.ts, vitest.integration.config.ts and the test
+  // files.
   "entry": [
     "vite.config.mjs",
     "src/main/index.ts!",
@@ -18,6 +19,7 @@
     "*.{js,mjs,ts}",
     "build/*.mjs",
     "environment-tests/*.ts",
+    "integration/**/*.ts",
     "src/**/*.{scss,ts,tsx}!",
     // the CSS module declarations. TypeScript reaches them through
     // allowArbitraryExtensions, while knip resolves `import styles from
@@ -42,9 +44,10 @@
   // libraries, such as a binary a bundled library spawns.
   "ignore": ["dist/**"],
 
-  // Binaries the workflows call that no dependency provides: yq comes from
-  // mise (see mise.toml).
-  "ignoreBinaries": ["yq"],
+  // Binaries that no dependency provides: yq, which the workflows call, comes
+  // from mise (see mise.toml), and kubectl, which the integration tests call,
+  // from the system, or from helm/kind-action in CI.
+  "ignoreBinaries": ["kubectl", "yq"],
 
   "ignoreDependencies": [
     // host-provided modules. The bundle maps them onto
@@ -65,13 +68,14 @@
   ],
 
   "typescript": {
-    // one program per runtime environment, one for the tests and one for the
-    // tooling files
+    // one program per runtime environment, one for the tests, one for the
+    // integration tests and one for the tooling files
     "config": [
       "src/main/tsconfig.json",
       "src/renderer/tsconfig.json",
       "src/common/tsconfig.json",
       "src/tsconfig.json",
+      "integration/tsconfig.json",
       "tsconfig.json"
     ]
   },

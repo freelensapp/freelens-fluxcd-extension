@@ -1,0 +1,40 @@
+# A FluxInstance must be named flux.
+apiVersion: fluxcd.controlplane.io/v1
+kind: FluxInstance
+metadata:
+  name: flux
+spec:
+  distribution:
+    version: 2.9.x
+    registry: ghcr.io/fluxcd
+---
+apiVersion: fluxcd.controlplane.io/v1
+kind: FluxReport
+metadata:
+  name: flux
+spec:
+  distribution:
+    entitlement: Unknown
+    status: Unknown
+---
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSet
+metadata:
+  name: test
+spec:
+  inputs:
+    - name: test
+  resources:
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: << inputs.name >>
+---
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSetInputProvider
+metadata:
+  name: test
+spec:
+  type: Static
+  defaultValues:
+    name: test

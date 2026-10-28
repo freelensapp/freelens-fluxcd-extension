@@ -69,12 +69,18 @@ jobs:
       - name: Install pnpm dependencies for extension
         id: install-pnpm-extension
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
         continue-on-error: true
 
       - name: Install pnpm dependencies for extension (retry)
         if: steps.install-pnpm-extension.outcome == 'failure'
         run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
 
+      # The tests install this checkout in place, so Freelens loads the
+      # extension from dist/.
       - name: Build plugin
         id: build-plugin
         run: pnpm build
@@ -90,19 +96,38 @@ jobs:
         if: steps.build-plugin-2.outcome == 'failure'
         run: pnpm build
 
-      # The checksum sidecar is what the release publishes next to the tarball.
-      # Freelens verifies a tarball against a `.tgz.sha256` beside it, so the
-      # test installs the extension the way a user installs a release.
-      - name: Pack plugin
+      # Cache the .deb archives and package lists that `playwright install-deps`
+      # downloads through apt, so re-runs reuse them instead of re-downloading.
+      # apt is pointed at this project-local directory via a global config file
+      # written in the install step below.
+      - name: Use APT cache
+        uses: actions/cache@v6
+        with:
+          path: .apt
+          key: ubuntu-24.04-arm-apt-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ubuntu-24.04-arm-apt-
+
+      # The tests attach to Electron's own Chromium over CDP, so Playwright's
+      # browsers are never downloaded. `install-deps` still apt-installs the
+      # shared libraries that Chromium (and thus Electron) needs to launch
+      # under xvfb. It runs the playwright that pnpm-lock.yaml pins.
+      - name: Install Playwright's OS dependencies
         run: |
           set -eo pipefail
-          pnpm pack
-          for f in *.tgz; do
-            sha256sum "$f" | tee "$f.sha256"
-          done
-
-      - name: Get extension path
-        run: echo "EXTENSION_PATH=$(find $(pwd) -maxdepth 1 -name '*.tgz')" >> ${GITHUB_ENV}
+          # `playwright install-deps` runs its own `apt-get update`/`install`,
+          # so the archive/list redirect has to be a global apt config file it
+          # picks up rather than per-invocation `-o` flags. dpkg's status stays
+          # at the system default, so packages still install into the runner.
+          mkdir -p .apt/cache/archives/partial .apt/state/lists/partial
+          sudo tee /etc/apt/apt.conf.d/00freelens-cache >/dev/null <<EOF
+          Dir::Cache::archives "$PWD/.apt/cache/archives";
+          Dir::State::lists "$PWD/.apt/state/lists";
+          EOF
+          pnpm exec playwright install-deps chromium
+          # apt ran as root, so hand the cache dir back to the runner user for
+          # the cache-save post step to read.
+          sudo chown -R "$(id -u):$(id -g)" .apt
 
       - name: Checkout app
         uses: actions/checkout@v7
@@ -111,11 +136,7 @@ jobs:
           ref: ${{ matrix.freelens_version }}
           path: freelens
 
-      # A branch moves, so the app build is cached per commit.
-      - name: Get app commit
-        run: echo "freelens_sha=$(git -C freelens rev-parse HEAD)" >> ${GITHUB_ENV}
-
-      - name: Setup node
+      - name: Setup node for app
         uses: actions/setup-node@v7
         with:
           node-version-file: freelens/.nvmrc
@@ -130,39 +151,29 @@ jobs:
           electron_version=$(yq ea -r '[.importers.freelens.devDependencies.electron.version | select(. != null)] | .[0] // error("electron not found in pnpm-lock.yaml") | split("(") | .[0]' freelens/pnpm-lock.yaml)
           echo "electron_version=${electron_version}" >> ${GITHUB_ENV}
 
-      # electron-builder's Electron zip downloader reads no cache directory
-      # override and always writes into the OS-default Electron cache dir, so
-      # that is what has to be cached.
-      - name: Use Electron cache
-        uses: actions/cache@v6
+      # install-electron downloads the Electron zip into the OS-default
+      # Electron cache dir. Restored here and saved explicitly right after the
+      # "Install Electron binary" step below, instead of the combined
+      # actions/cache action: that action's save only runs in a post-job step,
+      # which is skipped once a later step in the job fails, and the cache
+      # would then stay empty.
+      - name: Restore Electron cache
+        id: electron-cache-restore
+        uses: actions/cache/restore@v6
         with:
           path: ~/.cache/electron
           key: ubuntu-24.04-arm-electron-${{ env.electron_version }}
           restore-keys: |
             ubuntu-24.04-arm-electron-
 
+      # The same files as in Freelens's own integration tests workflow.
       - name: Use Turborepo cache
         uses: actions/cache@v6
         with:
           path: ${{ env.TURBOREPO_CACHE }}
-          key: ubuntu-24.04-arm-turborepo-${{ hashFiles('freelens/**/package.json', 'freelens/**/pnpm-lock.yaml', 'freelens/turbo.json') }}
+          key: ubuntu-24.04-arm-turborepo-${{ hashFiles('freelens/package.json', 'freelens/freelens/package.json', 'freelens/packages/**/package.json', 'freelens/pnpm-lock.yaml', 'freelens/turbo.json', 'freelens/tsconfig*.json', 'freelens/packages/infrastructure/typescript/config/*.json') }}
           restore-keys: |
             ubuntu-24.04-arm-turborepo-
-
-      # The packaged Electron app does not depend on the extension under test
-      # (the extension .tgz is installed at runtime by the integration tests),
-      # so the build output is deterministic for a given Freelens commit.
-      # Restore it to skip the expensive app build and electron-builder run on a
-      # cache hit. The cache key is exact (no restore-keys) so a partial match
-      # never produces a stale or incomplete dist directory. The matching save
-      # step runs only after a successful build, so a failed build never
-      # poisons the cache with an incomplete dist.
-      - name: Restore Electron build cache
-        id: electron-build-cache
-        uses: actions/cache/restore@v6
-        with:
-          path: freelens/freelens/dist
-          key: ubuntu-24.04-arm-electron-dist-${{ env.freelens_sha }}
 
       # The binaries that ensure-binaries downloads in "Build extra resources",
       # which Turborepo does not cache (see "Bundled Binary Versions" in
@@ -171,16 +182,12 @@ jobs:
       # step, as in Freelens's own integration tests workflow.
       - name: Restore bundled binaries cache
         id: binaries-cache-restore
-        if: steps.electron-build-cache.outputs.cache-hit != 'true'
         uses: actions/cache/restore@v6
         with:
           path: freelens/freelens/binaries
           key: ubuntu-24.04-arm-binaries-${{ hashFiles('freelens/freelens/binaries.lock.json') }}
           restore-keys: |
             ubuntu-24.04-arm-binaries-
-
-      - name: Delete node packages from the previous build to avoid issues with pnpm
-        run: rm -rf pnpm-lock.yaml node_modules
 
       - name: Install pnpm dependencies for app
         id: install-pnpm-app
@@ -197,48 +204,54 @@ jobs:
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
 
-      # Without known checksums, @electron/get downloads SHASUMS256.txt from
-      # GitHub on every build, bypassing its cache, even when the Electron zip
-      # is cached, so an outage of GitHub fails the packaging. electron-builder
-      # takes them from SHASUMS256.txt-<version> at the root of that cache
-      # instead, and the electron package ships the same checksums, which the
-      # lockfile has verified. Electron is a devDependency of the app package,
-      # freelens/freelens in this checkout.
-      - name: Seed Electron checksums
-        if: steps.electron-build-cache.outputs.cache-hit != 'true'
-        shell: bash
+      # The electron package does not download its binary on install. The
+      # `predev` script of Freelens runs install-electron, and a
+      # `require("electron")` without the binary downloads it, printing a line
+      # on stdout before the path. Installed here, the binary is there for the
+      # sandbox setup below, and `predev` finds it in place.
+      # install.js passes the checksums of the electron package to
+      # @electron/get, so no SHASUMS256.txt is downloaded and the cache needs
+      # no seeding.
+      - name: Install Electron binary
         working-directory: freelens/freelens
-        run: |-
-          mkdir -p ~/.cache/electron
-          node -e '
-            const checksums = require("electron/checksums.json");
-            const lines = Object.entries(checksums).map(([file, sha256]) => `${sha256} *${file}\n`);
-            require("node:fs").writeFileSync(process.argv[1], lines.join(""));
-          ' "$HOME/.cache/electron/SHASUMS256.txt-$electron_version"
+        run: pnpm exec install-electron
 
-      - name: Disable pre post scripts for pnpm
+      # Skipped on an exact cache hit, where actions/cache/save would only warn
+      # that it cannot reserve the key; saved on a miss or a restore-key hit,
+      # also when the install above failed after the download.
+      - name: Save Electron cache
+        if: always() && steps.electron-cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/electron
+          key: ${{ steps.electron-cache-restore.outputs.cache-primary-key }}
+
+      # kubectl and freelens-k8s-proxy, which the app needs to connect to a
+      # cluster. `pnpm dev` does not download them.
+      - name: Build extra resources
+        id: build-resources
         working-directory: freelens
-        run: pnpm config set enablePrePostScripts false --location project
+        run: pnpm --color=always build:resources
+        continue-on-error: true
 
-      # The integration tests drive the packaged Electron app via Playwright's
-      # `_electron` API, which uses Electron's own bundled Chromium, so
-      # Playwright's browsers are never downloaded. `install-deps` still
-      # apt-installs the shared libraries that Chromium (and thus the Electron
-      # app) needs to launch under xvfb. Run the playwright that the app's
-      # pnpm-lock.yaml pins, not `pnpx`, which fetches the latest release.
-      - name: Install Playwright's OS dependencies
+      - name: Build extra resources (retry)
+        id: build-resources-2
+        if: steps.build-resources.outcome == 'failure'
         working-directory: freelens
-        run: pnpm --filter freelens exec playwright install-deps chromium
+        run: pnpm --color=always build:resources
+        continue-on-error: true
 
-      - name: Build app
-        if: steps.electron-build-cache.outputs.cache-hit != 'true'
+      - name: Build extra resources (retry 2)
+        if: steps.build-resources-2.outcome == 'failure'
         working-directory: freelens
-        run: pnpm --color=always --stream build
+        run: pnpm --color=always build:resources
 
-      - name: Copy tests from plugin to app
-        run: |
-          rm -f freelens/freelens/integration/__tests__/*
-          cp integration/__tests__/* freelens/freelens/integration/__tests__
+      - name: Save bundled binaries cache
+        if: steps.binaries-cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: freelens/freelens/binaries
+          key: ${{ steps.binaries-cache-restore.outputs.cache-primary-key }}
 
       - name: Start KinD cluster
         uses: helm/kind-action@v1
@@ -248,78 +261,63 @@ jobs:
           node_image: kindest/node:v${{ env.kubernetes_version }}
           wait: 5m
 
-      - name: Build extra resources
-        id: build-resources
-        if: steps.electron-build-cache.outputs.cache-hit != 'true'
-        working-directory: freelens
-        run: pnpm --color=always build:resources
-        continue-on-error: true
-
-      - name: Build extra resources (retry)
-        id: build-resources-2
-        if: steps.electron-build-cache.outputs.cache-hit != 'true' && steps.build-resources.outcome == 'failure'
-        working-directory: freelens
-        run: pnpm --color=always build:resources
-        continue-on-error: true
-
-      - name: Build extra resources (retry 2)
-        if: steps.electron-build-cache.outputs.cache-hit != 'true' && steps.build-resources-2.outcome == 'failure'
-        working-directory: freelens
-        run: pnpm --color=always build:resources
-
-      - name: Save bundled binaries cache
-        if: steps.electron-build-cache.outputs.cache-hit != 'true' && steps.binaries-cache-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6
-        with:
-          path: freelens/freelens/binaries
-          key: ${{ steps.binaries-cache-restore.outputs.cache-primary-key }}
-
-      - name: Get electron-builder path
-        if: steps.electron-build-cache.outputs.cache-hit != 'true'
-        working-directory: freelens/freelens
+      # FREELENS_INTEGRATION_TESTING_DIR gives Freelens dev a fresh profile; the
+      # app accepts it only under the system's temporary directory. A dev
+      # profile syncs no kubeconfig by default, so the profile is seeded with
+      # one sync entry: a file with the kind cluster alone. The catalog then
+      # lists that cluster and nothing else.
+      - name: Seed the Freelens dev profile
         run: |
-          EB_PATH=$(node -e "console.log(require.resolve('electron-builder/cli'))")
-          echo "ELECTRON_BUILDER_PATH=$EB_PATH" >> $GITHUB_ENV
-
-      # electron-builder collects the modules to package with `pnpm list --prod`,
-      # so app.asar gets only the production dependencies of freelens from the
-      # regular workspace node_modules, as in the release build.
-      - name: Build Electron app
-        if: steps.electron-build-cache.outputs.cache-hit != 'true'
-        working-directory: freelens/freelens
-        run: node "$ELECTRON_BUILDER_PATH" --publish never --linux dir --arm64
+          kubeconfig="${RUNNER_TEMP}/kind-freelens.kubeconfig"
+          kubectl config view --minify --flatten --context kind-freelens > "$kubeconfig"
+          mkdir -p "${FREELENS_INTEGRATION_TESTING_DIR}/FreelensDev"
+          KUBECONFIG_FILE="$kubeconfig" yq -n -o json '.preferences.syncKubeconfigEntries = [{"filePath": strenv(KUBECONFIG_FILE)}]' \
+            > "${FREELENS_INTEGRATION_TESTING_DIR}/FreelensDev/lens-user-store.json"
+          cat "${FREELENS_INTEGRATION_TESTING_DIR}/FreelensDev/lens-user-store.json"
         env:
-          npm_config_user_agent: pnpm
+          FREELENS_INTEGRATION_TESTING_DIR: /tmp/freelens-integration-testing
 
-      # Save only after a successful build (this step is not reached if the
-      # electron-builder run above failed), so the cache never holds a partial
-      # dist directory.
-      - name: Save Electron build cache
-        if: steps.electron-build-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6
+      # Freelens dev, as a developer runs it, with its CDP endpoint on port
+      # 9223. It keeps running in the background for the next steps; its output
+      # is the main log the tests read. Electron's sandbox helper needs to be
+      # setuid root.
+      - name: Start Freelens dev
+        working-directory: freelens
+        run: |
+          chrome_sandbox="$(dirname "$(cd freelens && node -p 'require("electron")')")/chrome-sandbox"
+          sudo chown root:root "$chrome_sandbox"
+          sudo chmod 4755 "$chrome_sandbox"
+          nohup xvfb-run -a pnpm dev > "$FREELENS_MAIN_LOG" 2>&1 &
+          if ! timeout 900 bash -c 'until curl -sf http://127.0.0.1:9223/json/version; do sleep 5; done'; then
+            cat "$FREELENS_MAIN_LOG"
+            exit 1
+          fi
+        env:
+          # In GitHub Actions turbo groups the output of a task and prints it
+          # when the task ends, which a persistent `dev` task never does.
+          TURBO_LOG_ORDER: stream
+          FREELENS_INTEGRATION_TESTING_DIR: /tmp/freelens-integration-testing
+          FREELENS_MAIN_LOG: ${{ runner.temp }}/freelens-dev.log
+
+      - name: Setup node for plugin
+        uses: actions/setup-node@v7
         with:
-          path: freelens/freelens/dist
-          key: ${{ steps.electron-build-cache.outputs.cache-primary-key }}
+          node-version-file: .nvmrc
+          package-manager-cache: false
 
+      # The tests run two sessions against the one app: the install test and
+      # the session of the FluxCD views, which applies the Flux CRDs and the
+      # test objects to the kind cluster named by TEST_KIND_CLUSTER_NAME, and
+      # removes them again.
+      #
+      # The tests are deterministic, so a failure is not retried. A failing view
+      # costs one view timeout.
       - name: Run integration tests
-        id: integration-tests-linux
-        working-directory: freelens
-        run: |
-          sudo chown root:root freelens/dist/linux*-unpacked/chrome-sandbox
-          sudo chmod 4755 freelens/dist/linux*-unpacked/chrome-sandbox
-          timeout 600 xvfb-run -a pnpm --color=always test:integration --reporter=verbose --reporter=github-actions --includeTaskLocation
+        run: timeout 600 pnpm --color=always test:integration --reporter=verbose --reporter=github-actions --includeTaskLocation
         env:
-          DEBUG: pw:browser
+          FREELENS_MAIN_LOG: ${{ runner.temp }}/freelens-dev.log
           TEST_KIND_CLUSTER_NAME: freelens
-        continue-on-error: true
 
-      - name: Run integration tests (retry)
-        if: steps.integration-tests-linux.outcome == 'failure'
-        working-directory: freelens
-        run: |
-          sudo chown root:root freelens/dist/linux*-unpacked/chrome-sandbox
-          sudo chmod 4755 freelens/dist/linux*-unpacked/chrome-sandbox
-          timeout 600 xvfb-run -a pnpm --color=always test:integration --reporter=verbose --reporter=github-actions --includeTaskLocation
-        env:
-          DEBUG: pw:browser
-          TEST_KIND_CLUSTER_NAME: freelens
+      - name: Show Freelens dev output
+        if: always()
+        run: cat "${{ runner.temp }}/freelens-dev.log" || true

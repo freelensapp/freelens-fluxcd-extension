@@ -1,0 +1,14 @@
+# The test objects of the integration tests: one object of every kind of the
+# extension, at the newest API version of integration/fixtures/crds, in a
+# namespace of its own. Nothing reconciles them, so they have no status.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: integration-tests
+resources:
+  - namespace.yaml
+  - controlplane.yaml
+  - helm.yaml
+  - image.yaml
+  - kustomize.yaml
+  - notification.yaml
+  - source.yaml

@@ -1,0 +1,30 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+  name: test
+spec:
+  type: generic
+  address: https://example.com
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: test
+spec:
+  providerRef:
+    name: test
+  eventSources:
+    - kind: Kustomization
+      name: test
+---
+apiVersion: notification.toolkit.fluxcd.io/v1
+kind: Receiver
+metadata:
+  name: test
+spec:
+  type: generic
+  resources:
+    - kind: GitRepository
+      name: test
+  secretRef:
+    name: test
