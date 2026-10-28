@@ -1,0 +1,72 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: test
+spec:
+  interval: 1h
+  url: https://github.com/stefanprodan/podinfo
+  ref:
+    branch: master
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: test
+spec:
+  interval: 1h
+  url: https://stefanprodan.github.io/podinfo
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmChart
+metadata:
+  name: test
+spec:
+  interval: 1h
+  chart: podinfo
+  sourceRef:
+    kind: HelmRepository
+    name: test
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: Bucket
+metadata:
+  name: test
+spec:
+  interval: 1h
+  bucketName: test
+  endpoint: minio.example.com
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: test
+spec:
+  interval: 1h
+  url: oci://ghcr.io/stefanprodan/manifests/podinfo
+  ref:
+    tag: latest
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: ExternalArtifact
+metadata:
+  name: test
+spec:
+  sourceRef:
+    apiVersion: source.extensions.fluxcd.io/v1beta1
+    kind: ArtifactGenerator
+    name: test
+---
+apiVersion: source.extensions.fluxcd.io/v1beta1
+kind: ArtifactGenerator
+metadata:
+  name: test
+spec:
+  sources:
+    - alias: podinfo
+      kind: GitRepository
+      name: test
+  artifacts:
+    - name: test
+      copy:
+        - from: "@podinfo/kustomize/**"
+          to: "@artifact/"

@@ -162,8 +162,8 @@
     },
     {
       // Tests and test support, which import their Vitest functions from
-      // "vitest" explicitly. The integration tests run inside a Freelens
-      // checkout, under its Vitest.
+      // "vitest" explicitly. The integration tests run in Node and drive
+      // Freelens dev over CDP.
       "includes": ["**/integration/**", "**/src/**/*.test.*", "**/test/**"],
       "linter": {
         "rules": {

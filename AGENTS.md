@@ -80,6 +80,7 @@ pnpm type:check                # All of the programs below, in this order
 pnpm type:check:sources        # main and renderer, each with src/common/
 pnpm type:check:tests          # Tests and test support
 pnpm type:check:tooling        # Vite and Vitest configs, build plugins
+pnpm type:check:integration    # Integration tests
 pnpm type:check:environments   # Environment tests
 
 # Linting & formatting
@@ -95,6 +96,7 @@ pnpm knip:check           # Unused files, unused and unlisted dependencies (knip
 
 # Tests
 pnpm test:unit            # vitest
+pnpm test:integration     # vitest, against Freelens dev with a kind cluster
 
 # Build
 pnpm build                # Both Vite runs, without the type check
@@ -110,8 +112,8 @@ pnpm clean:all            # Clean everything (dist, dts, node_modules, tgz)
 ```
 
 Unit tests (`*.test.ts(x)` next to the code) run with Vitest; see "Tests and
-tooling". End-to-end behavior is exercised by the integration tests in
-`.github/workflows/integration-tests.yaml`.
+tooling". The integration tests drive Freelens dev with a kind cluster; see
+"Workflows".
 
 ## Architecture
 
@@ -135,7 +137,8 @@ src/
   renderer/utils.ts                    # Utility functions (getServedStore, getMaybeDetailsUrl, ...)
   common/                              # Code for both processes (none yet; its tsconfig.json only)
 test/stubs/                            # Runtime stub of @freelensapp/extensions for Vitest
-integration/__tests__/                 # Integration tests, run inside a Freelens checkout
+integration/__tests__/                 # Integration tests, run against Freelens dev over CDP, and their shared module
+integration/fixtures/                  # CRDs and test objects of the integration tests
 environment-tests/                     # Probes for the per-environment programs
 build/                                 # Vite plugins: host modules, standard decorators, CSS module declarations
 ```
@@ -784,7 +787,7 @@ problem does not show.
 | `check.yaml`             | `pnpm build`, `pnpm lint:check`, `pnpm knip:check`                            |
 | `unit-tests.yaml`        | `pnpm test:unit`                                                              |
 | `trunk-check.yaml`       | `trunk check --all`                                                           |
-| `integration-tests.yaml` | the integration tests in `integration/`, against a Freelens build             |
+| `integration-tests.yaml` | the integration tests in `integration/`, against Freelens dev                 |
 | `mise-lock-check.yaml`   | on a change to `mise.lock`: no checksum changed for an unchanged tool version |
 
 The type check has a workflow of its own, on pull requests and on pushes to
@@ -793,13 +796,118 @@ tests included, which no build reaches, and a type error shows as its own
 failed check rather than as a failed build. `check.yaml` builds without the
 type check for the same reason, so it does not run twice.
 
-The integration tests run inside a Freelens checkout: the workflow builds the
-extension, packs it with a `.tgz.sha256` checksum next to the tarball, as the
-release publishes it, checks out and packages Freelens, copies
-`integration/__tests__/` into `freelens/integration/__tests__/` and runs them
-there under Freelens's Vitest, with its helpers. The test installs the
-tarball from the extensions page and fails on any error logged by either
-process.
+The integration tests run in this repository, under its own Vitest
+(`vitest.integration.config.ts`, `pnpm test:integration`), against Freelens
+started with `pnpm dev` from a freelensapp/freelens checkout, as in
+freelensapp/freelens-example-extension. They attach to it with Playwright's
+`chromium.connectOverCDP` on the port that script opens (see "Checking the
+Extension in Freelens Dev"), so they need no package of Freelens and no file
+of its checkout; Freelens dev is the only dependency, and it is not in
+`package.json`. `playwright` is a devDependency at the version of Freelens's
+catalog. The workflow builds the extension, checks out Freelens at each
+release tag of its matrix (`v2.0.0`), starts `pnpm dev` there in the
+background under `xvfb-run`, with its output in a file and a fresh profile in
+`FREELENS_INTEGRATION_TESTING_DIR`, waits until the CDP endpoint answers, and
+runs `pnpm test:integration` here. A profile of Freelens dev syncs no
+kubeconfig by default, so the workflow seeds the fresh one with a single sync
+entry, a file with the kind cluster alone, and the catalog lists that cluster
+and nothing else. Every test file is a session of its own on the one app, and
+fails on any error logged by either process:
+
+- `extensions.tests.ts` uninstalls whatever installation of the extension the
+  app has and installs this checkout in place from the Extensions page. It
+  needs no cluster.
+- `fluxcd.tests.ts` opens the kind cluster with the CRDs of every kind and one
+  test object of each, and clicks through the extension's views of every
+  kind: the Overview shows the kind's chart with one object, the list page
+  shows a row for the object, its details show an item of the extension's
+  panel and no error page of the error boundary, and the row's menu lists the
+  extension's items of the kind, Reconcile and Suspend, or none for
+  `ExternalArtifact`; they are not clicked. Each view is an `it` that
+  navigates itself, so that it does not depend on the state another left.
+  They do not check the columns, every field, what a menu action does, or
+  the Custom Resources tree. The session keeps an in-place installation of
+  this checkout that is enabled, and installs it otherwise.
+
+The tests are deterministic, so nothing retries them: the config sets no
+`retry`, and the workflow runs the step once, under `timeout 600`. A retry
+repeats the same failure, and every view waits its full timeout before it
+fails.
+
+The cluster has the CRDs and no controller: `integration/fixtures/crds` is a
+kustomization of the CRD files of the newest Flux the extension supports
+(those of `manifests/crds` in fluxcd/flux2 at its tag) and of the Flux
+Operator release that follows it, by their release URLs. Each kind is served
+in one API version there, the newest, so the pages show that version. Nothing
+reconciles the objects of `integration/fixtures/objects`, which have no status
+and show as Unknown; they need only be valid for the CRDs, and a
+`FluxInstance` must be named `flux`. Moving the tests to a newer Flux means
+new URLs there, and new objects where a kind gains an API version. Vitest runs
+the files one at a time (`fileParallelism: false`), in no set order, and none
+depends on another having run: the session disconnects the kind cluster,
+removes the leftovers of an earlier run (the namespace `integration-tests` and
+the CRDs), applies the CRDs, waits until they are established, applies the
+test objects, in the namespace `integration-tests`, which the kustomization
+creates, and only then connects the cluster, so that the app reads the CRDs
+anew. The session then selects `integration-tests` in the namespace filter of
+the Git Repositories page, which its `KubeObjectListLayout` renders, unless
+the filter already shows it: a new cluster shows only `default`, and the app
+keeps the selection for every namespaced list of the cluster. Without it the
+pages list nothing, and every view fails on its timeout. The session opens no
+page of the host, whose requests can log errors of their own: the Pods page
+asks for pod metrics, and kind has no metrics server. Its teardown disconnects
+the cluster first, so that the app logs no watch error for a CRD deleted under
+it, then deletes the test objects and the CRDs with `--wait`, also when a test
+failed, and then checks the errors.
+
+The sessions reach the app through its renderer only; the main process, and
+with it the application menu, is out of reach of CDP. They navigate the root
+frame, and the cluster frame to a page of the extension, with
+`Renderer.Navigation.navigate` of the extension API: the sidebar entries of
+the kinds are nested under groups that the sidebar renders collapsed. They
+find the kind cluster with `Renderer.Catalog.catalogEntities` by its name,
+`kind-<name>`, connect it by navigating to `/cluster/<id>` and disconnect it
+with the entity's `disconnect()`. `browser.close()` of a browser connected
+over CDP closes only the connection, so a session ends with it and the app
+keeps running. The renderer's console carries the errors of the root frame
+and of every cluster frame; the main log is read from the file that
+`FREELENS_MAIN_LOG` names, from its size when the session started, and every
+line that starts with `error:` counts, also after a task prefix that turbo may
+add, such as `freelens:dev:`. Without the variable only the renderer is
+checked. The workflow sets `TURBO_LOG_ORDER=stream` for `pnpm dev`: in GitHub
+Actions turbo otherwise groups the output of a task until it ends, and the
+persistent `dev` task never ends, so the log would stay empty.
+
+The code the sessions share is in `integration/__tests__/extension-helpers.ts`:
+connecting to the app with the error collector, installing the extension,
+connecting and disconnecting the kind cluster, kubectl, and the selectors. Its
+name does not match `*.tests.ts`, so Vitest does not collect it.
+`integration/tsconfig.json` compiles the directory with Node and the DOM,
+because the callbacks of `page.evaluate` run in the page, and with the types
+of `@freelensapp/extensions`, which declare `globalThis.FreelensExtensionApi`
+for them.
+
+Three variables configure the sessions. `FREELENS_CDP_URL` is the CDP
+endpoint (`http://127.0.0.1:9223` by default), `FREELENS_MAIN_LOG` the main
+log, and `TEST_KIND_CLUSTER_NAME` names the kind cluster (`kind` by default,
+`freelens` in the workflow); every kubectl call names its context,
+`kind-<name>`, so a run never acts on the current context. The checkout to
+install, and the manifests, are found from the location of the helpers.
+Outside CI a session skips with a warning when Freelens dev does not answer or
+the cluster is not reachable; in CI (`CI` set) the run fails instead, so that
+a mistake in the workflow does not turn into a silent skip.
+
+Run locally, the tests act on the profile of Freelens dev, `FreelensDev`,
+which is apart from that of an installed Freelens: they navigate its window,
+leave this checkout installed in place, uninstalling another installation of
+the extension, and leave the kind cluster disconnected, with the namespace
+filter set to `integration-tests`. They touch no other cluster of the
+catalog. The profile lists the kind cluster only once its kubeconfig is in
+"Kubeconfig Syncs" (see "Checking the Extension in Freelens Dev"); without
+it the cluster session fails on the timeout of finding the cluster. A run
+deletes the Flux and Flux Operator CRDs, and with them every Flux object on
+the cluster: run it only against a kind cluster with nothing worth keeping,
+not one that runs Flux.
 
 ## Checking the Extension in Freelens Dev
 
@@ -813,10 +921,11 @@ Freelens before the session connects. Playwright MCP writes its snapshots to
 is already running, the server is listed as connected, but its tools appear
 only in a new session.
 
-Without the MCP server, or until that new session, a `playwright-core` script
-with `chromium.connectOverCDP("http://127.0.0.1:9223")` does the same. End such a
-script by exiting the process; do not close the browser, which belongs to
-Freelens.
+Without the MCP server, or until that new session, a script with
+`chromium.connectOverCDP("http://127.0.0.1:9223")` of `playwright`, a
+devDependency, does the same, as the integration tests do. `browser.close()`
+of such a browser closes only the connection; the app belongs to Freelens and
+keeps running.
 
 A profile of Freelens dev syncs no kubeconfig until one is added in
 "Kubeconfig Syncs" of the Kubernetes preferences, so its catalog lists none of
