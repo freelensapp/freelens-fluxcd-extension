@@ -1,14 +1,10 @@
 # @freelensapp/fluxcd-extension
 
-<!-- markdownlint-disable MD013 -->
-
 [![Home](https://img.shields.io/badge/%F0%9F%8F%A0-freelens.app-02a7a0)](https://freelens.app)
 [![GitHub](https://img.shields.io/github/stars/freelensapp/freelens-fluxcd-extension?style=flat&label=GitHub%20%E2%AD%90)](https://github.com/freelensapp/freelens-fluxcd-extension)
 [![Release](https://img.shields.io/github/v/release/freelensapp/freelens-fluxcd-extension?display_name=tag&sort=semver)](https://github.com/freelensapp/freelens-fluxcd-extension/releases)
 [![Integration tests](https://github.com/freelensapp/freelens-fluxcd-extension/actions/workflows/integration-tests.yaml/badge.svg?branch=main)](https://github.com/freelensapp/freelens-fluxcd-extension/actions/workflows/integration-tests.yaml)
 [![npm](https://img.shields.io/npm/v/@freelensapp/fluxcd-extension.svg)](https://www.npmjs.com/package/@freelensapp/fluxcd-extension)
-
-<!-- markdownlint-enable MD013 -->
 
 ## Overview
 
@@ -53,34 +49,26 @@ directly from the UI.
 Resources managed by the
 [flux-operator](https://github.com/controlplaneio-fluxcd/flux-operator).
 
-<!-- markdownlint-disable MD013 -->
-
-| API Version | Kind | Short Name | Scope | Description |
-| --- | --- | --- | --- | --- |
-| v1 | `FluxInstance` | | Namespaced | Manages the installation and configuration of a Flux instance |
-| v1 | `FluxReport` | | Namespaced | Reports the status and health of a Flux installation |
-| v1 | `ResourceSet` | `rset` | Namespaced | Group of Kubernetes resources managed as a single unit |
-| v1 | `ResourceSetInputProvider` | `rsip` | Namespaced | Provides inputs for `ResourceSet` templating |
-
-<!-- markdownlint-enable MD013 -->
+| API Version | Kind                       | Short Name | Scope      | Description                                                   |
+| ----------- | -------------------------- | ---------- | ---------- | ------------------------------------------------------------- |
+| v1          | `FluxInstance`             |            | Namespaced | Manages the installation and configuration of a Flux instance |
+| v1          | `FluxReport`               |            | Namespaced | Reports the status and health of a Flux installation          |
+| v1          | `ResourceSet`              | `rset`     | Namespaced | Group of Kubernetes resources managed as a single unit        |
+| v1          | `ResourceSetInputProvider` | `rsip`     | Namespaced | Provides inputs for `ResourceSet` templating                  |
 
 ### source.toolkit.fluxcd.io
 
 Resources managed by the
 [source-controller](https://github.com/fluxcd/source-controller).
 
-<!-- markdownlint-disable MD013 -->
-
-| API Version | Kind | Short Name | Scope | Description |
-| --- | --- | --- | --- | --- |
-| v1beta1, v1beta2, v1 | `GitRepository` | `gitrepo` | Namespaced | Defines a Git repository as a source |
-| v1beta2, v1 | `OCIRepository` | `ocirepo` | Namespaced | Defines an OCI artifact repository as a source |
-| v1beta1, v1beta2, v1 | `HelmRepository` | `helmrepo` | Namespaced | Defines a Helm chart repository as a source |
-| v1beta1, v1beta2, v1 | `HelmChart` | `hc` | Namespaced | Defines a Helm chart produced from a source |
-| v1beta1, v1beta2, v1 | `Bucket` | | Namespaced | Defines an S3-compatible bucket as a source |
-| v1 | `ExternalArtifact` | `ea` | Namespaced | An artifact produced by a controller other than source-controller, such as the `ArtifactGenerator` of source-watcher (Flux >= 2.7) |
-
-<!-- markdownlint-enable MD013 -->
+| API Version          | Kind               | Short Name | Scope      | Description                                                                                                                        |
+| -------------------- | ------------------ | ---------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| v1beta1, v1beta2, v1 | `GitRepository`    | `gitrepo`  | Namespaced | Defines a Git repository as a source                                                                                               |
+| v1beta2, v1          | `OCIRepository`    | `ocirepo`  | Namespaced | Defines an OCI artifact repository as a source                                                                                     |
+| v1beta1, v1beta2, v1 | `HelmRepository`   | `helmrepo` | Namespaced | Defines a Helm chart repository as a source                                                                                        |
+| v1beta1, v1beta2, v1 | `HelmChart`        | `hc`       | Namespaced | Defines a Helm chart produced from a source                                                                                        |
+| v1beta1, v1beta2, v1 | `Bucket`           |            | Namespaced | Defines an S3-compatible bucket as a source                                                                                        |
+| v1                   | `ExternalArtifact` | `ea`       | Namespaced | An artifact produced by a controller other than source-controller, such as the `ArtifactGenerator` of source-watcher (Flux >= 2.7) |
 
 ### source.extensions.fluxcd.io
 
@@ -89,39 +77,27 @@ Resources managed by the
 component (Flux >= 2.7). An `ArtifactGenerator` is suspended and resumed by
 its `source.extensions.fluxcd.io/reconcile` annotation.
 
-<!-- markdownlint-disable MD013 -->
-
-| API Version | Kind | Short Name | Scope | Description |
-| --- | --- | --- | --- | --- |
-| v1beta1 | `ArtifactGenerator` | `ag` | Namespaced | Composes and decomposes sources into `ExternalArtifact` objects |
-
-<!-- markdownlint-enable MD013 -->
+| API Version | Kind                | Short Name | Scope      | Description                                                     |
+| ----------- | ------------------- | ---------- | ---------- | --------------------------------------------------------------- |
+| v1beta1     | `ArtifactGenerator` | `ag`       | Namespaced | Composes and decomposes sources into `ExternalArtifact` objects |
 
 ### kustomize.toolkit.fluxcd.io
 
 Resources managed by the
 [kustomize-controller](https://github.com/fluxcd/kustomize-controller).
 
-<!-- markdownlint-disable MD013 -->
-
-| API Version | Kind | Short Name | Scope | Description |
-| --- | --- | --- | --- | --- |
-| v1beta1, v1beta2, v1 | `Kustomization` | `ks` | Namespaced | Builds and applies Kustomize overlays from a source |
-
-<!-- markdownlint-enable MD013 -->
+| API Version          | Kind            | Short Name | Scope      | Description                                         |
+| -------------------- | --------------- | ---------- | ---------- | --------------------------------------------------- |
+| v1beta1, v1beta2, v1 | `Kustomization` | `ks`       | Namespaced | Builds and applies Kustomize overlays from a source |
 
 ### helm.toolkit.fluxcd.io
 
 Resources managed by the
 [helm-controller](https://github.com/fluxcd/helm-controller).
 
-<!-- markdownlint-disable MD013 -->
-
-| API Version | Kind | Short Name | Scope | Description |
-| --- | --- | --- | --- | --- |
-| v2beta1, v2beta2, v2 | `HelmRelease` | `hr` | Namespaced | Manages a Helm release built from a chart source |
-
-<!-- markdownlint-enable MD013 -->
+| API Version          | Kind          | Short Name | Scope      | Description                                      |
+| -------------------- | ------------- | ---------- | ---------- | ------------------------------------------------ |
+| v2beta1, v2beta2, v2 | `HelmRelease` | `hr`       | Namespaced | Manages a Helm release built from a chart source |
 
 ### image.toolkit.fluxcd.io
 
@@ -130,30 +106,22 @@ Resources managed by the
 and
 [image-automation-controller](https://github.com/fluxcd/image-automation-controller).
 
-<!-- markdownlint-disable MD013 -->
-
-| API Version | Kind | Short Name | Scope | Description |
-| --- | --- | --- | --- | --- |
-| v1beta1, v1beta2, v1 | `ImageRepository` | | Namespaced | Scans a container image repository for tags |
-| v1beta1, v1beta2, v1 | `ImagePolicy` | | Namespaced | Selects the latest image based on a policy |
-| v1beta1, v1beta2, v1 | `ImageUpdateAutomation` | | Namespaced | Automates image updates committed back to Git |
-
-<!-- markdownlint-enable MD013 -->
+| API Version          | Kind                    | Short Name | Scope      | Description                                   |
+| -------------------- | ----------------------- | ---------- | ---------- | --------------------------------------------- |
+| v1beta1, v1beta2, v1 | `ImageRepository`       |            | Namespaced | Scans a container image repository for tags   |
+| v1beta1, v1beta2, v1 | `ImagePolicy`           |            | Namespaced | Selects the latest image based on a policy    |
+| v1beta1, v1beta2, v1 | `ImageUpdateAutomation` |            | Namespaced | Automates image updates committed back to Git |
 
 ### notification.toolkit.fluxcd.io
 
 Resources managed by the
 [notification-controller](https://github.com/fluxcd/notification-controller).
 
-<!-- markdownlint-disable MD013 -->
-
-| API Version | Kind | Short Name | Scope | Description |
-| --- | --- | --- | --- | --- |
-| v1beta1, v1beta2, v1beta3 | `Provider` | | Namespaced | Represents a notification or event provider |
-| v1beta1, v1beta2, v1beta3 | `Alert` | | Namespaced | Configures events dispatched to a `Provider` |
-| v1beta1, v1beta2, v1beta3, v1 | `Receiver` | | Namespaced | Defines a webhook receiver to trigger reconciliation |
-
-<!-- markdownlint-enable MD013 -->
+| API Version                   | Kind       | Short Name | Scope      | Description                                          |
+| ----------------------------- | ---------- | ---------- | ---------- | ---------------------------------------------------- |
+| v1beta1, v1beta2, v1beta3     | `Provider` |            | Namespaced | Represents a notification or event provider          |
+| v1beta1, v1beta2, v1beta3     | `Alert`    |            | Namespaced | Configures events dispatched to a `Provider`         |
+| v1beta1, v1beta2, v1beta3, v1 | `Receiver` |            | Namespaced | Defines a webhook receiver to trigger reconciliation |
 
 ## Install
 
@@ -330,5 +298,5 @@ Based on:
 
 - <https://github.com/appvia/lens-fluxcd-extension>
 - <https://github.com/okaufmann/lens-fluxcd-extension>
-</content>
-</invoke>
+  </content>
+  </invoke>

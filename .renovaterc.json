@@ -73,7 +73,7 @@
       "groupName": "Freelens dependencies"
     },
     {
-      "description": "Tools run with pnpm dlx, and the Biome and Prettier that Trunk runs, take the version Freelens runs with pnpm dlx in the scripts of its root package.json on main, except the ones excluded with ! here, which Freelens does not run. The custom datasource has no release dates, so minimumReleaseAge is off.",
+      "description": "Tools run with pnpm dlx, and the Biome that Trunk runs, take the version Freelens runs with pnpm dlx in the scripts of its root package.json on main, except the ones excluded with ! here, which Freelens does not run. The custom datasource has no release dates, so minimumReleaseAge is off.",
       "matchManagers": ["custom.regex"],
       "matchFileNames": ["package.json", ".trunk/trunk.yaml"],
       "matchDatasources": ["npm"],
@@ -111,7 +111,7 @@
       "enabled": false
     },
     {
-      "description": "Group @freelensapp/* with everything that follows Freelens into one PR, so that a nightly of @freelensapp/extensions and the stack it was built with arrive together.",
+      "description": "Group @freelensapp/* with everything that follows Freelens into one PR, so that a release of @freelensapp/extensions and the stack it was built with arrive together.",
       "matchPackageNames": ["@freelensapp/**"],
       "groupName": "Freelens dependencies"
     },
