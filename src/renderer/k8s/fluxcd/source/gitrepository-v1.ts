@@ -35,6 +35,7 @@ export interface GitRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
 export interface GitRepositoryStatus extends FluxCDKubeObjectStatus {
   artifact?: Artifact;
   includedArtifacts?: Artifact[];
+  sourceVerificationFingerprint?: string;
 }
 
 export class GitRepository extends Renderer.K8sApi.LensExtensionKubeObject<
