@@ -186,8 +186,20 @@ function collectErrors(window: Page) {
     }
   };
 
+  // Playwright gives an uncaught value that is not an `Error`, such as an
+  // `Event`, an empty stack and its description as the message, so such an
+  // error is described by its name and message, and its time ties it to the
+  // main log.
   const onPageError = (error: Error) => {
-    errorLogs.push(`[renderer] ${error.stack ?? error.message}`);
+    if (error.stack) {
+      errorLogs.push(`[renderer] ${error.stack}`);
+
+      return;
+    }
+
+    const description = [error.name, error.message].filter(Boolean).join(": ") || "<empty>";
+
+    errorLogs.push(`[renderer] uncaught ${description} without a stack, at ${new Date().toISOString()}`);
   };
 
   // A line of the main log starts with its level, in the file and on the

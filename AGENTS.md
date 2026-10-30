@@ -899,7 +899,9 @@ and the worker that logged it. Its text is the preview of its arguments, which
 is empty for some objects and only the class name for others, such as
 `ErrorEvent`; such an error is described from its arguments, read from the
 page, and an empty one without arguments, which the browser itself logs, gets
-its time, to find it in the main log. The workflow sets
+its time, to find it in the main log. An uncaught value that is not an `Error`
+reaches the session as a page error with an empty stack, and is described by
+its name and message, with its time. The workflow sets
 `TURBO_LOG_ORDER=stream` for `pnpm dev`: in GitHub
 Actions turbo otherwise groups the output of a task until it ends, and the
 persistent `dev` task never ends, so the log would stay empty.
