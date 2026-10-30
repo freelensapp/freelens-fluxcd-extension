@@ -6,7 +6,7 @@ import { Provider } from "../../../k8s/fluxcd/notification/provider-v1beta3";
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, LinkToSecret },
+  Component: { BadgeBoolean, DrawerItem, LinkToSecret, LinkToServiceAccount },
 } = Renderer;
 
 export const ProviderDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Provider>> = observer((props) => {
@@ -33,11 +33,20 @@ export const ProviderDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
       <DrawerItem name="Proxy" hidden={!object.spec.proxy}>
         {object.spec.proxy}
       </DrawerItem>
+      <DrawerItem name="Proxy Configuration" hidden={!object.spec.proxySecretRef}>
+        <LinkToSecret name={object.spec.proxySecretRef?.name} namespace={namespace} />
+      </DrawerItem>
       <DrawerItem name="Credentials" hidden={!object.spec.secretRef}>
         <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
       </DrawerItem>
+      <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
+        <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
+      </DrawerItem>
       <DrawerItem name="TLS Certificate" hidden={!object.spec.certSecretRef}>
         <LinkToSecret name={object.spec.certSecretRef?.name} namespace={namespace} />
+      </DrawerItem>
+      <DrawerItem name="Commit Status Expression" hidden={!object.spec.commitStatusExpr}>
+        {object.spec.commitStatusExpr}
       </DrawerItem>
     </div>
   );
