@@ -51,6 +51,7 @@ export interface ImageUpdateAutomationSpec extends FluxCDKubeObjectSpecWithSuspe
   sourceRef: NamespacedObjectKindReference;
   git?: GitSpec;
   interval: string;
+  policyChangeDelay?: string;
   update?: UpdateStrategy;
   suspend?: boolean;
 }

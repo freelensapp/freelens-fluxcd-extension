@@ -8,8 +8,10 @@ export interface AlertSpec extends FluxCDKubeObjectSpecWithSuspend {
   providerRef: LocalObjectReference;
   eventSeverity?: "info" | "error";
   eventSources: NamespacedObjectKindReference[];
+  inclusionList?: string[];
   eventMetadata?: Record<string, string>;
   exclusionList?: string[];
+  /** Deprecated: use `eventMetadata` instead. */
   summary?: string;
   suspend?: boolean;
 }

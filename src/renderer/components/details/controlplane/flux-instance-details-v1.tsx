@@ -132,8 +132,17 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
             <DrawerItem name="Tenant Default Service Account" hidden={!object.spec.cluster.tenantDefaultServiceAccount}>
               <LinkToServiceAccount name={object.spec.cluster.tenantDefaultServiceAccount} namespace={namespace} />
             </DrawerItem>
+            <DrawerItem name="Multitenant Object Identity" hidden={!object.spec.cluster.multitenantObjectIdentity}>
+              <BadgeBoolean value={object.spec.cluster.multitenantObjectIdentity ?? false} />
+            </DrawerItem>
+            <DrawerItem name="Multitenant Workload Identity" hidden={!object.spec.cluster.multitenantWorkloadIdentity}>
+              <BadgeBoolean value={object.spec.cluster.multitenantWorkloadIdentity ?? false} />
+            </DrawerItem>
+            <DrawerItem name="Object Identity RBAC" hidden={!object.spec.cluster.objectIdentityRBAC}>
+              <BadgeBoolean value={object.spec.cluster.objectIdentityRBAC ?? false} />
+            </DrawerItem>
             <DrawerItem name="Object Level Workload Identity" hidden={!object.spec.cluster.objectLevelWorkloadIdentity}>
-              {object.spec.cluster.objectLevelWorkloadIdentity}
+              <BadgeBoolean value={object.spec.cluster.objectLevelWorkloadIdentity ?? false} />
             </DrawerItem>
             <DrawerItem name="Network Policy">
               <BadgeBoolean value={object.spec.cluster.networkPolicy ?? true} />
@@ -143,6 +152,48 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
             </DrawerItem>
             <DrawerItem name="Size" hidden={!object.spec.cluster.size}>
               {object.spec.cluster.size}
+            </DrawerItem>
+          </>
+        )}
+
+        {(object.spec.spiffe || object.status?.spiffe?.mtls) && (
+          <>
+            <DrawerTitle>SPIFFE</DrawerTitle>
+            <DrawerItem name="Workload API Endpoint" hidden={!object.spec.spiffe}>
+              {object.spec.spiffe?.workloadAPI.endpoint}
+            </DrawerItem>
+            <DrawerItem name="CSI Driver" hidden={!object.spec.spiffe?.workloadAPI.csiDriver}>
+              {object.spec.spiffe?.workloadAPI.csiDriver}
+            </DrawerItem>
+            <DrawerItem name="Broker API Endpoint" hidden={!object.spec.spiffe?.brokerAPI}>
+              {object.spec.spiffe?.brokerAPI?.endpoint}
+            </DrawerItem>
+            <DrawerItem name="Broker API IDs" hidden={!object.spec.spiffe?.brokerAPI}>
+              {object.spec.spiffe?.brokerAPI?.ids.join(", ")}
+            </DrawerItem>
+            <DrawerItem name="mTLS" hidden={!object.spec.spiffe?.mtls}>
+              <BadgeBoolean value={object.spec.spiffe?.mtls?.enabled ?? false} />
+            </DrawerItem>
+            <DrawerItem name="Component ID Template" hidden={!object.spec.spiffe?.mtls}>
+              {object.spec.spiffe?.mtls?.componentIDTemplate}
+            </DrawerItem>
+            <DrawerItem name="Receivers" hidden={!object.spec.spiffe?.mtls?.receivers?.length}>
+              {object.spec.spiffe?.mtls?.receivers?.join(", ")}
+            </DrawerItem>
+            <DrawerItem name="Extra Artifact Clients" hidden={!object.spec.spiffe?.mtls?.extraArtifactClients?.length}>
+              {object.spec.spiffe?.mtls?.extraArtifactClients?.join(", ")}
+            </DrawerItem>
+            <DrawerItem name="Extra Artifact Servers" hidden={!object.spec.spiffe?.mtls?.extraArtifactServers?.length}>
+              {object.spec.spiffe?.mtls?.extraArtifactServers?.join(", ")}
+            </DrawerItem>
+            <DrawerItem name="Extra Notifiers" hidden={!object.spec.spiffe?.mtls?.extraNotifiers?.length}>
+              {object.spec.spiffe?.mtls?.extraNotifiers?.join(", ")}
+            </DrawerItem>
+            <DrawerItem name="Applied mTLS" hidden={!object.status?.spiffe?.mtls}>
+              <BadgeBoolean value={object.status?.spiffe?.mtls?.enabled ?? false} />
+            </DrawerItem>
+            <DrawerItem name="Applied Component ID Template" hidden={!object.status?.spiffe?.mtls?.componentIDTemplate}>
+              {object.status?.spiffe?.mtls?.componentIDTemplate}
             </DrawerItem>
           </>
         )}

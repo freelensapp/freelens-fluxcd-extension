@@ -12,7 +12,8 @@
       flex-grow: 1;
     }
 
-    &.strategy {
+    &.strategy,
+    &.optional {
       flex-grow: 0.4;
     }
 
@@ -26,6 +27,7 @@
       flex-grow: 1;
     }
 
+    &.kind,
     &.namespace {
       flex-grow: 0.5;
     }

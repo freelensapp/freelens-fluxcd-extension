@@ -36,6 +36,15 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
       <DrawerItem name="Provider">
         <LinkToObject objectRef={withFluxKind(object.spec.providerRef, "Provider")} object={object} />
       </DrawerItem>
+      <DrawerItem name="Inclusion List" hidden={!object.spec.inclusionList?.length}>
+        {object.spec.inclusionList?.join(", ")}
+      </DrawerItem>
+      <DrawerItem name="Exclusion List" hidden={!object.spec.exclusionList?.length}>
+        {object.spec.exclusionList?.join(", ")}
+      </DrawerItem>
+      <DrawerItem name="Summary" hidden={!object.spec.summary}>
+        {object.spec.summary}
+      </DrawerItem>
       <DrawerItemLabels
         name="Event Metadata"
         labels={object.spec.eventMetadata ?? {}}

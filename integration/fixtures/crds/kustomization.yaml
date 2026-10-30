@@ -1,19 +1,19 @@
 # The CRDs of every kind of the extension, without the controllers: the
 # integration tests list, open and act on objects that nothing reconciles.
-# The Flux CRDs are the ones of manifests/crds in fluxcd/flux2 at v2.9.6, the
+# The Flux CRDs are the ones of manifests/crds in fluxcd/flux2 at v2.10.0, the
 # newest Flux the extension supports, and the Flux Operator CRDs those of
-# config/crd at v0.61.0, the release that follows it.
+# config/crd at v0.62.1, the release that follows it.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - https://github.com/fluxcd/source-controller/releases/download/v1.9.6/source-controller.crds.yaml
-  - https://github.com/fluxcd/kustomize-controller/releases/download/v1.9.6/kustomize-controller.crds.yaml
-  - https://github.com/fluxcd/helm-controller/releases/download/v1.6.5/helm-controller.crds.yaml
-  - https://github.com/fluxcd/notification-controller/releases/download/v1.9.4/notification-controller.crds.yaml
-  - https://github.com/fluxcd/image-reflector-controller/releases/download/v1.2.5/image-reflector-controller.crds.yaml
-  - https://github.com/fluxcd/image-automation-controller/releases/download/v1.2.5/image-automation-controller.crds.yaml
-  - https://github.com/fluxcd/source-watcher/releases/download/v2.2.4/source-watcher.crds.yaml
-  - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.61.0/config/crd/bases/fluxcd.controlplane.io_fluxinstances.yaml
-  - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.61.0/config/crd/bases/fluxcd.controlplane.io_fluxreports.yaml
-  - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.61.0/config/crd/bases/fluxcd.controlplane.io_resourcesets.yaml
-  - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.61.0/config/crd/bases/fluxcd.controlplane.io_resourcesetinputproviders.yaml
+  - https://github.com/fluxcd/source-controller/releases/download/v1.10.1/source-controller.crds.yaml
+  - https://github.com/fluxcd/kustomize-controller/releases/download/v1.10.1/kustomize-controller.crds.yaml
+  - https://github.com/fluxcd/helm-controller/releases/download/v1.7.1/helm-controller.crds.yaml
+  - https://github.com/fluxcd/notification-controller/releases/download/v1.10.0/notification-controller.crds.yaml
+  - https://github.com/fluxcd/image-reflector-controller/releases/download/v1.3.0/image-reflector-controller.crds.yaml
+  - https://github.com/fluxcd/image-automation-controller/releases/download/v1.3.0/image-automation-controller.crds.yaml
+  - https://github.com/fluxcd/source-watcher/releases/download/v2.3.1/source-watcher.crds.yaml
+  - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_fluxinstances.yaml
+  - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_fluxreports.yaml
+  - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_resourcesets.yaml
+  - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_resourcesetinputproviders.yaml

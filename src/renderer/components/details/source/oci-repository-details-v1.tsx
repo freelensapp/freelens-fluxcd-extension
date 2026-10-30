@@ -21,7 +21,7 @@ export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
           <BadgeBoolean value={!object.spec.suspend} />
         </DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-        <DrawerItem name="Timeout">{object.spec.timeout}</DrawerItem>
+        <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>
         <DrawerItem name="Authentication Provider">{object.spec.provider ?? "generic"}</DrawerItem>
         <DrawerItem name="Registry Login Credentials" hidden={!object.spec.secretRef}>
           <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
@@ -71,6 +71,12 @@ export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
             <DrawerItem name="Provider">{object.spec.verify.provider ?? "cosign"}</DrawerItem>
             <DrawerItem name="Trusted Public Keys" hidden={!object.spec.verify.secretRef}>
               <LinkToSecret name={object.spec.verify.secretRef?.name} namespace={namespace} />
+            </DrawerItem>
+            <DrawerItem name="Trusted Root" hidden={!object.spec.verify.trustedRootSecretRef}>
+              <LinkToSecret name={object.spec.verify.trustedRootSecretRef?.name} namespace={namespace} />
+            </DrawerItem>
+            <DrawerItem name="Source Verification Fingerprint" hidden={!object.status?.sourceVerificationFingerprint}>
+              {object.status?.sourceVerificationFingerprint}
             </DrawerItem>
             <DrawerItem name="OIDC Identity">
               {object.spec.verify.matchOIDCIdentity?.length &&

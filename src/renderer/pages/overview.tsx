@@ -21,9 +21,11 @@ import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta2 } from "../k8s/f
 import { Kustomization as Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization-v1";
 import { Kustomization as Kustomization_v1beta1 } from "../k8s/fluxcd/kustomize/kustomization-v1beta1";
 import { Kustomization as Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/kustomization-v1beta2";
+import { Alert as Alert_v1 } from "../k8s/fluxcd/notification/alert-v1";
 import { Alert as Alert_v1beta1 } from "../k8s/fluxcd/notification/alert-v1beta1";
 import { Alert as Alert_v1beta2 } from "../k8s/fluxcd/notification/alert-v1beta2";
 import { Alert as Alert_v1beta3 } from "../k8s/fluxcd/notification/alert-v1beta3";
+import { Provider as Provider_v1 } from "../k8s/fluxcd/notification/provider-v1";
 import { Provider as Provider_v1beta1 } from "../k8s/fluxcd/notification/provider-v1beta1";
 import { Provider as Provider_v1beta2 } from "../k8s/fluxcd/notification/provider-v1beta2";
 import { Provider as Provider_v1beta3 } from "../k8s/fluxcd/notification/provider-v1beta3";
@@ -82,8 +84,8 @@ const kinds = [
     title: ImageUpdateAutomation_v1.crd.title,
     classes: [ImageUpdateAutomation_v1, ImageUpdateAutomation_v1beta2, ImageUpdateAutomation_v1beta1],
   },
-  { title: Alert_v1beta3.crd.title, classes: [Alert_v1beta3, Alert_v1beta2, Alert_v1beta1] },
-  { title: Provider_v1beta3.crd.title, classes: [Provider_v1beta3, Provider_v1beta2, Provider_v1beta1] },
+  { title: Alert_v1.crd.title, classes: [Alert_v1, Alert_v1beta3, Alert_v1beta2, Alert_v1beta1] },
+  { title: Provider_v1.crd.title, classes: [Provider_v1, Provider_v1beta3, Provider_v1beta2, Provider_v1beta1] },
   { title: Receiver_v1.crd.title, classes: [Receiver_v1, Receiver_v1beta3, Receiver_v1beta2, Receiver_v1beta1] },
   { title: ResourceSet_v1.crd.title, classes: [ResourceSet_v1] },
   { title: ResourceSetInputProvider_v1.crd.title, classes: [ResourceSetInputProvider_v1] },

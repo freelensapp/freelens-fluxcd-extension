@@ -63,6 +63,13 @@ describe("ExternalArtifactDetails", () => {
     expect(screen.getAllByTestId("drawer-item").map((item) => item.textContent)).toContain("Digest: sha256:abc");
   });
 
+  it("shows the exported inputs as YAML", () => {
+    renderDetails(externalArtifact({ status: { exportedInputs: { tenant: "team-a", replicas: 2 } } }));
+
+    expect(screen.getByText("Exported Inputs")).toBeTruthy();
+    expect(screen.getByText(/tenant: team-a/).textContent).toBe("replicas: 2\ntenant: team-a");
+  });
+
   it("renders an object without a spec or a status", () => {
     renderDetails(externalArtifact({}));
 

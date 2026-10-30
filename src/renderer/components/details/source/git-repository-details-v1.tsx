@@ -44,6 +44,9 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
             {": "}
             <LinkToSecret name={object.spec.verify?.secretRef.name} namespace={namespace} />
           </DrawerItem>
+          <DrawerItem name="Source Verification Fingerprint" hidden={!object.status?.sourceVerificationFingerprint}>
+            {object.status?.sourceVerificationFingerprint}
+          </DrawerItem>
           <DrawerItem name="Source Ignore" hidden={!object.spec.ignore}>
             <MonacoEditor
               readOnly

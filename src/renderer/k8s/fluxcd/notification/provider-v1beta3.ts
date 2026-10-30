@@ -4,37 +4,58 @@ import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "..
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
+export type ProviderSpecType =
+  | "slack"
+  | "discord"
+  | "msteams"
+  | "rocket"
+  | "generic"
+  | "generic-hmac"
+  | "github"
+  | "gitlab"
+  | "gitea"
+  | "giteapullrequestcomment"
+  | "bitbucketserver"
+  | "bitbucket"
+  | "azuredevops"
+  | "googlechat"
+  | "googlepubsub"
+  | "webex"
+  | "sentry"
+  | "azureeventhub"
+  | "telegram"
+  | "lark"
+  | "matrix"
+  | "opsgenie"
+  | "alertmanager"
+  | "grafana"
+  | "githubdispatch"
+  | "githubpullrequestcomment"
+  | "gitlabmergerequestcomment"
+  | "pagerduty"
+  | "datadog"
+  | "nats"
+  | "zulip"
+  | "otel"
+  | "zoom"
+  | "incident.io";
+
 export interface ProviderSpec extends FluxCDKubeObjectSpecWithSuspend {
-  type:
-    | "slack"
-    | "discord"
-    | "msteams"
-    | "rocket"
-    | "generic"
-    | "generic-hmac"
-    | "github"
-    | "gitlab"
-    | "bitbucket"
-    | "azuredevops"
-    | "googlechat"
-    | "webex"
-    | "sentry"
-    | "azureeventhub"
-    | "telegram"
-    | "lark"
-    | "matrix"
-    | "opsgenie"
-    | "alertmanager"
-    | "grafana"
-    | "githubdispatch";
+  type: ProviderSpecType;
+  /** Deprecated and not used in v1beta3. */
+  interval?: string;
   channel?: string;
   username?: string;
   address?: string;
   timeout?: string;
+  /** Deprecated: use `proxySecretRef` instead. */
   proxy?: string;
+  proxySecretRef?: LocalObjectReference;
   secretRef?: LocalObjectReference;
+  serviceAccountName?: string;
   certSecretRef?: LocalObjectReference;
   suspend?: boolean;
+  commitStatusExpr?: string;
 }
 
 export interface ProviderStatus extends FluxCDKubeObjectStatus {}

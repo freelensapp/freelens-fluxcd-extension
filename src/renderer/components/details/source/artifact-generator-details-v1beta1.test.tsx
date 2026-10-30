@@ -109,9 +109,40 @@ describe("ArtifactGeneratorDetails", () => {
       ]),
     );
     expect(screen.getAllByRole("row").map((row) => row.textContent)).toEqual([
-      "@podinfo/kustomize/{app}/**@artifact/Overwrite*.md, *.txt",
-      "@podinfo/values.yaml@artifact/values.yamlMerge-",
+      "@podinfo/kustomize/{app}/**@artifact/Overwrite*.md, *.txtNo",
+      "@podinfo/values.yaml@artifact/values.yamlMerge-No",
     ]);
+  });
+
+  it("shows the managed namespaces, the target namespace of an artifact and an optional copy", () => {
+    renderDetails(
+      artifactGenerator({
+        spec: {
+          sources: [],
+          serviceAccountName: "generator",
+          managedNamespaces: { allowedNames: ["ns.startsWith('team-')"], prune: true },
+          artifacts: [
+            {
+              name: "podinfo",
+              namespace: "team-a",
+              inputsFrom: "@podinfo/inputs.yaml",
+              copy: [{ from: "@podinfo/README.md", to: "@artifact/", optional: true }],
+            },
+          ],
+        },
+      }),
+    );
+
+    expect(drawerItems()).toEqual(
+      expect.arrayContaining([
+        "Service Account: generator",
+        "Allowed Names: ns.startsWith('team-')",
+        "Prune: True",
+        "Namespace: team-a",
+        "Inputs From: @podinfo/inputs.yaml",
+      ]),
+    );
+    expect(screen.getByRole("row").textContent).toBe("@podinfo/README.md@artifact/Overwrite-Yes");
   });
 
   it("links each inventory entry to its ExternalArtifact, with its digest and filename", () => {
@@ -132,8 +163,19 @@ describe("ArtifactGeneratorDetails", () => {
         "/apis/source.toolkit.fluxcd.io/v1/namespaces/fluxcd-test/externalartifacts/podinfo",
       ),
     );
-    expect(screen.getByRole("row").textContent).toBe("podinfofluxcd-testsha256:abcabc.tar.gz");
+    expect(screen.getByRole("row").textContent).toBe("ExternalArtifactpodinfofluxcd-testsha256:abcabc.tar.gz");
     expect(drawerItems()).toContain("Observed Sources Digest: sha256:def");
+  });
+
+  it("shows a managed Namespace in the inventory, without a namespace or a filename", () => {
+    renderDetails(
+      artifactGenerator({
+        spec: { sources: [], artifacts: [] },
+        status: { inventory: [{ kind: "Namespace", name: "team-a", digest: "sha256:abc" }] },
+      }),
+    );
+
+    expect(screen.getByRole("row").textContent).toBe("Namespaceteam-a-sha256:abc-");
   });
 
   it("shows the common metadata and whether the annotation disables the reconciliation", () => {

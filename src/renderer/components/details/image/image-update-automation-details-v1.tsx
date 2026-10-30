@@ -27,6 +27,9 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
             <BadgeBoolean value={!object.spec.suspend} />
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
+          <DrawerItem name="Policy Change Delay" hidden={!object.spec.policyChangeDelay}>
+            {object.spec.policyChangeDelay}
+          </DrawerItem>
           <DrawerItem name="Git Repository">
             <LinkToObject objectRef={withServedApiVersion(object.spec.sourceRef)} object={object} />
           </DrawerItem>

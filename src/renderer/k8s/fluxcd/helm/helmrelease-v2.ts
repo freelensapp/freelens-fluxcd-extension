@@ -12,8 +12,7 @@ import {
 import { getRefUrl } from "../utils";
 
 import type { Patch, Selector } from "../../core/types";
-
-type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
+import type { OCIRepositorySpec } from "../source/ocirepository-v1";
 
 export interface HelmReleaseSnapshot {
   apiVersion?: string;
@@ -41,25 +40,44 @@ export interface HelmChartTemplateObjectMeta {
   annotations?: Record<string, string>;
 }
 
-export interface HelmChartTemplateVerification {
-  provider: string;
-  secretRef?: LocalObjectReference;
+export type CrossNamespaceObjectReferenceKind = "HelmRepository" | "GitRepository" | "Bucket";
+
+export interface CrossNamespaceObjectReference {
+  apiVersion?: string;
+  kind: CrossNamespaceObjectReferenceKind;
+  name: string;
+  namespace?: string;
 }
 
-export interface HelmChartTemplateSpec {
-  chart: string;
+/**
+ * The template of the generated object. It has the fields of an `OCIRepositorySpec` inline, every one optional: a
+ * `HelmChart` template uses `interval`, `verify` and `suspend` of them, an `OCIRepository` template all of them, with
+ * `url` required by a validation rule of the CRD. `chart` and `sourceRef` are required, by another rule, unless the
+ * template generates an `OCIRepository`, which in turn forbids them.
+ */
+export interface HelmChartTemplateSpec extends Partial<OCIRepositorySpec> {
+  chart?: string;
   version?: string;
-  sourceRef: NamespacedObjectKindReference;
-  interval?: string;
+  sourceRef?: CrossNamespaceObjectReference;
   reconcileStrategy?: string;
   valuesFiles?: string[];
-  valuesFile?: string;
-  verify?: HelmChartTemplateVerification;
+  ignoreMissingValuesFiles?: boolean;
 }
 
+export type HelmChartTemplateKind = "HelmChart" | "OCIRepository";
+
 export interface HelmChartTemplate {
+  kind?: HelmChartTemplateKind;
   metadata?: HelmChartTemplateObjectMeta;
   spec: HelmChartTemplateSpec;
+}
+
+export type HelmChartReferenceKind = "HelmChart" | "OCIRepository" | "ExternalArtifact";
+
+export interface HelmChartReference {
+  kind: HelmChartReferenceKind;
+  name: string;
+  namespace: string;
 }
 
 export interface IgnoreRule {
@@ -241,13 +259,32 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
     return object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version;
   }
 
-  static getChartRefNamespace(object: HelmRelease): string {
-    return object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace ?? object.getNs()!;
+  /** The kind of the object that `spec.chart` generates, `HelmChart` when the template names none. */
+  static getChartTemplateKind(object: HelmRelease): HelmChartTemplateKind | undefined {
+    if (!object.spec.chart) return;
+    return object.spec.chart.kind ?? "HelmChart";
   }
 
-  static getHelmChartName(object: HelmRelease): string {
-    const ns = HelmRelease.getChartRefNamespace(object);
-    return `${ns}-${object.metadata.name}`;
+  /**
+   * The object that `spec.chart` generates. Once the controller has created it, it is the one of `status.helmChart`:
+   * `<namespace>/<name>` for a `HelmChart` and `<kind>/<namespace>/<name>` for another kind. Before, it is the one
+   * that `GetHelmChartTemplateReference` of helm-controller gives: `<namespace>-<name>` of the HelmRelease, in the
+   * namespace of the HelmRelease, or of the `sourceRef` of a `HelmChart` template.
+   */
+  static getChartTemplateRef(object: HelmRelease): HelmChartReference | undefined {
+    const kind = HelmRelease.getChartTemplateKind(object);
+    if (!kind) return;
+
+    const parts = object.status?.helmChart?.split("/") ?? [];
+    if (parts.length === 2 && kind === "HelmChart") return { kind, namespace: parts[0], name: parts[1] };
+    if (parts.length === 3 && parts[0] === kind) return { kind, namespace: parts[1], name: parts[2] };
+
+    const namespace = object.metadata.namespace ?? "";
+    return {
+      kind,
+      name: `${namespace}-${object.metadata.name}`,
+      namespace: (kind === "HelmChart" && object.spec.chart?.spec.sourceRef?.namespace) || namespace,
+    };
   }
 
   static getHelmReleaseUrl(object: HelmRelease, namespace: string): string {
@@ -273,25 +310,30 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
     return name;
   }
 
+  /**
+   * The source of the chart: `spec.chartRef`, the `sourceRef` of a `HelmChart` template, or the `OCIRepository` that
+   * an `OCIRepository` template generates, which has no `sourceRef`.
+   */
+  static getSourceRef(object: HelmRelease): NamespacedObjectKindReference | undefined {
+    if (!object.spec.chart) return object.spec.chartRef;
+    if (HelmRelease.getChartTemplateKind(object) === "OCIRepository") return HelmRelease.getChartTemplateRef(object);
+    return object.spec.chart.spec.sourceRef;
+  }
+
   static getSourceRefUrl(object: HelmRelease): string | undefined {
-    const ref = object.spec.chart?.spec.sourceRef ?? object.spec.chartRef;
+    const ref = HelmRelease.getSourceRef(object);
     if (!ref) return;
     return getRefUrl(ref, object);
   }
 
   static getSourceRefName(object: HelmRelease): string | undefined {
-    return object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name;
+    return HelmRelease.getSourceRef(object)?.name;
   }
 
   static getSourceRefText(object: HelmRelease): string {
-    return [
-      object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind,
-      ": ",
-      (object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace)
-        ? `${object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace}/`
-        : "",
-      HelmRelease.getSourceRefName(object) ?? "-",
-    ].join("");
+    const ref = HelmRelease.getSourceRef(object);
+    if (!ref) return "-";
+    return [ref.kind, ": ", ref.namespace ? `${ref.namespace}/` : "", ref.name].join("");
   }
 }
 
