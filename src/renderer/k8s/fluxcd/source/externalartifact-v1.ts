@@ -12,6 +12,7 @@ export interface ExternalArtifactSpec {
 export interface ExternalArtifactStatus {
   artifact?: Artifact;
   conditions?: Condition[];
+  exportedInputs?: Record<string, unknown>;
 }
 
 /**

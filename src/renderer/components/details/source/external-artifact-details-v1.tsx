@@ -4,6 +4,7 @@ import React from "react";
 import { ExternalArtifact } from "../../../k8s/fluxcd/source/externalartifact-v1";
 import { getMaybeDetailsUrl } from "../../../utils";
 import { StatusArtifact } from "../../status-artifact";
+import { YamlDump } from "../../yaml-dump";
 
 const { observer } = MobxReact;
 
@@ -12,7 +13,7 @@ const {
 } = Common;
 
 const {
-  Component: { DrawerItem, MaybeLink },
+  Component: { DrawerItem, DrawerTitle, MaybeLink },
 } = Renderer;
 
 export const ExternalArtifactDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ExternalArtifact>> = observer(
@@ -32,6 +33,13 @@ export const ExternalArtifactDetails: React.FC<Renderer.Component.KubeObjectDeta
         </DrawerItem>
 
         <StatusArtifact artifact={object.status?.artifact} />
+
+        {object.status?.exportedInputs && Object.keys(object.status.exportedInputs).length > 0 && (
+          <>
+            <DrawerTitle>Exported Inputs</DrawerTitle>
+            <YamlDump data={object.status.exportedInputs} />
+          </>
+        )}
       </div>
     );
   },
