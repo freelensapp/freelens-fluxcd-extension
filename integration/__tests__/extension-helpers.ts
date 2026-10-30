@@ -59,6 +59,16 @@ const ansiEscapePattern = /\u001b\[[0-9;]*m/g;
 // extension.
 const abortedProxyRequestPattern = /proxy_server\.go:\d+\] Error while proxying request: context canceled$/;
 
+// Freelens dev serves the renderer's modules from the Vite dev server through
+// a route of its main process, which logs a request that fails as a warning:
+// its keep-alive agent at times reuses a socket that the dev server is closing,
+// and the request fails with ECONNRESET. When the module belongs to Monaco's
+// editor worker, which the YAML views start, the worker does not load, and
+// Monaco rethrows its `error` event, an `Event` without a stack. Such a page
+// error is left out when the main log has the failed request; it says nothing
+// about the extension.
+const devFileRouteFailurePattern = /\[DEV-FILE-ROUTE\]: request for \S+ failed: /;
+
 /**
  * A connection to Freelens dev, with the errors that either process logs.
  */
@@ -160,6 +170,10 @@ async function describeConsoleArgs(msg: ConsoleMessage): Promise<string> {
 function collectErrors(window: Page) {
   const errorLogs: string[] = [];
   const pendingDescriptions: Promise<void>[] = [];
+  // The thrown `Event`s, kept apart until the main log tells whether the dev
+  // file route failed a request.
+  const workerLoadErrors: string[] = [];
+  let devFileRouteFailed = false;
   let mainLogOffset = mainLogFile && fs.existsSync(mainLogFile) ? fs.statSync(mainLogFile).size : 0;
 
   // Chromium logs every response that is not a success as "Failed to load
@@ -186,8 +200,25 @@ function collectErrors(window: Page) {
     }
   };
 
+  // Playwright gives an uncaught value that is not an `Error`, such as an
+  // `Event`, an empty stack and its description as the message, so such an
+  // error is described by its name and message, and its time ties it to the
+  // main log.
   const onPageError = (error: Error) => {
-    errorLogs.push(`[renderer] ${error.stack ?? error.message}`);
+    if (error.stack) {
+      errorLogs.push(`[renderer] ${error.stack}`);
+
+      return;
+    }
+
+    const description = [error.name, error.message].filter(Boolean).join(": ") || "<empty>";
+    const text = `[renderer] uncaught ${description} without a stack, at ${new Date().toISOString()}`;
+
+    if (error.message === "Event" && !error.name) {
+      workerLoadErrors.push(text);
+    } else {
+      errorLogs.push(text);
+    }
   };
 
   // A line of the main log starts with its level, in the file and on the
@@ -220,6 +251,10 @@ function collectErrors(window: Page) {
       for (const line of buffer.toString("utf8").split("\n")) {
         const text = line.replaceAll(ansiEscapePattern, "");
 
+        if (devFileRouteFailurePattern.test(text)) {
+          devFileRouteFailed = true;
+        }
+
         if (/^(?:[\w@/.-]+:[\w:-]+: )?\s*error:/.test(text) && !abortedProxyRequestPattern.test(text.trim())) {
           errorLogs.push(`[main] ${text.trim()}`);
         }
@@ -236,7 +271,7 @@ function collectErrors(window: Page) {
     errors: () => {
       readMainLog();
 
-      return [...errorLogs];
+      return devFileRouteFailed ? [...errorLogs] : [...errorLogs, ...workerLoadErrors];
     },
     settle: async () => {
       await Promise.all(pendingDescriptions);
