@@ -28,33 +28,71 @@ export interface CopyOperation {
   to: string;
   exclude?: string[];
   strategy?: CopyStrategy;
+  optional?: boolean;
 }
 
 export interface OutputArtifact {
   name: string;
+  namespace?: string;
+  inputsFrom?: string;
   revision?: string;
   originRevision?: string;
   copy: CopyOperation[];
 }
 
+export interface NamespaceMetadataFromSource {
+  path: string;
+  allowedAnnotations?: Record<string, string>;
+  allowedLabels?: Record<string, string>;
+}
+
+export type NamespaceMetadataFromStrategy = "Reset" | "Override" | "Merge";
+
+export interface NamespaceMetadataFrom {
+  strategy: NamespaceMetadataFromStrategy;
+  namespace: string;
+  annotations?: Record<string, string>;
+  labels?: Record<string, string>;
+}
+
+export interface ManagedNamespacesMetadata {
+  fromSource?: NamespaceMetadataFromSource;
+  from?: NamespaceMetadataFrom[];
+}
+
+export interface ManagedNamespaces {
+  allowedNames: string[];
+  prune: boolean;
+  metadata?: ManagedNamespacesMetadata;
+}
+
 export interface ArtifactGeneratorSpec {
   commonMetadata?: CommonMetadata;
   sources: SourceReference[];
+  serviceAccountName?: string;
   pathPattern?: string;
+  managedNamespaces?: ManagedNamespaces;
   artifacts: OutputArtifact[];
 }
 
-export interface ExternalArtifactReference {
+export type InventoryEntryKind = "ExternalArtifact" | "Namespace";
+
+/**
+ * An object that the ArtifactGenerator manages. An entry without a kind is an ExternalArtifact, as every entry of
+ * source-watcher before v2.3, which lists managed Namespaces too, without a namespace or a filename.
+ */
+export interface InventoryEntry {
+  kind?: InventoryEntryKind;
   name: string;
-  namespace: string;
+  namespace?: string;
   digest: string;
-  filename: string;
+  filename?: string;
 }
 
 export interface ArtifactGeneratorStatus {
   lastHandledReconcileAt?: string;
   conditions?: Condition[];
-  inventory?: ExternalArtifactReference[];
+  inventory?: InventoryEntry[];
   observedSourcesDigest?: string;
 }
 
@@ -87,12 +125,16 @@ export class ArtifactGenerator extends Renderer.K8sApi.LensExtensionKubeObject<
     return getRefUrl(ref, object);
   }
 
-  static getInventoryRefUrl(entry: ExternalArtifactReference, object: ArtifactGenerator): string | undefined {
-    const ref: NamespacedObjectKindReference = {
-      kind: "ExternalArtifact",
-      name: entry.name,
-      namespace: entry.namespace,
-    };
+  static getInventoryKind(entry: InventoryEntry): InventoryEntryKind {
+    return entry.kind ?? "ExternalArtifact";
+  }
+
+  /** The link of an inventory entry: a generated ExternalArtifact, or a managed Namespace of the core group. */
+  static getInventoryRefUrl(entry: InventoryEntry, object: ArtifactGenerator): string | undefined {
+    const ref: NamespacedObjectKindReference =
+      ArtifactGenerator.getInventoryKind(entry) === "Namespace"
+        ? { apiVersion: "v1", kind: "Namespace", name: entry.name }
+        : { kind: "ExternalArtifact", name: entry.name, namespace: entry.namespace };
     return getRefUrl(ref, object);
   }
 }

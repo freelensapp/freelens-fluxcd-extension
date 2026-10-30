@@ -2,7 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import {
   ArtifactGenerator,
-  type ExternalArtifactReference,
+  type InventoryEntry,
   type SourceReference,
   sourceWatcherReconcileAnnotation,
 } from "./artifactgenerator-v1beta1";
@@ -86,16 +86,31 @@ describe("ArtifactGenerator.getSourceRefUrl", () => {
 });
 
 describe("ArtifactGenerator.getInventoryRefUrl", () => {
-  test("links an inventory entry to its ExternalArtifact", () => {
+  test("links an inventory entry without a kind to its ExternalArtifact", () => {
     serveApis(fakeApi("ExternalArtifact", "source.toolkit.fluxcd.io", "v1", "externalartifacts"));
-    const entry: ExternalArtifactReference = {
+    const entry: InventoryEntry = {
       name: "podinfo-manifests",
       namespace: "fluxcd-test",
       digest: "sha256:abc",
       filename: "abc.tar.gz",
     };
+    expect(ArtifactGenerator.getInventoryKind(entry)).toBe("ExternalArtifact");
     expect(ArtifactGenerator.getInventoryRefUrl(entry, artifactGenerator())).toBe(
       "/apis/source.toolkit.fluxcd.io/v1/namespaces/fluxcd-test/externalartifacts/podinfo-manifests",
     );
+  });
+
+  test("links a Namespace entry to the Namespace of the core group", () => {
+    const namespaceApi = {
+      kind: "Namespace",
+      apiVersionWithGroup: "v1",
+      formatUrlForNotListing: ({ name }: { name?: string }) => `/api/v1/namespaces/${name}`,
+    };
+    vi.spyOn(Renderer.K8sApi.apiManager, "getApi").mockImplementation((callback) =>
+      typeof callback === "function" && callback(namespaceApi as never) ? (namespaceApi as never) : undefined,
+    );
+    const entry: InventoryEntry = { kind: "Namespace", name: "team-a", digest: "sha256:abc" };
+    expect(ArtifactGenerator.getInventoryKind(entry)).toBe("Namespace");
+    expect(ArtifactGenerator.getInventoryRefUrl(entry, artifactGenerator())).toBe("/api/v1/namespaces/team-a");
   });
 });
