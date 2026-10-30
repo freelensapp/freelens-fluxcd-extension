@@ -901,7 +901,13 @@ is empty for some objects and only the class name for others, such as
 page, and an empty one without arguments, which the browser itself logs, gets
 its time, to find it in the main log. An uncaught value that is not an `Error`
 reaches the session as a page error with an empty stack, and is described by
-its name and message, with its time. The workflow sets
+its name and message, with its time. One such value is left out, an `Event`
+thrown with no name, when the main log has a request that the dev file route of
+Freelens failed (`[DEV-FILE-ROUTE]: request for … failed`, a warning): the keep-alive
+agent of that route at times reuses a socket that the Vite dev server is
+closing, the request fails with `ECONNRESET`, and when the module belongs to
+Monaco's editor worker, which the YAML views of the details start, the worker
+does not load and Monaco rethrows its `error` event. The workflow sets
 `TURBO_LOG_ORDER=stream` for `pnpm dev`: in GitHub
 Actions turbo otherwise groups the output of a task until it ends, and the
 persistent `dev` task never ends, so the log would stay empty.
