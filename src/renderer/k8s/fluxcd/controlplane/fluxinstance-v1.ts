@@ -31,14 +31,43 @@ export interface CommonMetadata {
 export interface Cluster {
   domain?: string;
   multitenant?: boolean;
+  /** Legacy: use `multitenantObjectIdentity` instead. */
   multitenantWorkloadIdentity?: boolean;
+  multitenantObjectIdentity?: boolean;
   tenantDefaultServiceAccount?: string;
   tenantDefaultDecryptionServiceAccount?: string;
   tenantDefaultKubeConfigServiceAccount?: string;
+  /** Legacy: use `objectIdentityRBAC` instead. */
   objectLevelWorkloadIdentity?: string;
+  objectIdentityRBAC?: boolean;
   networkPolicy?: boolean;
   type?: "kubernetes" | "openshift" | "aws" | "azure" | "gcp";
   size?: "small" | "medium" | "large";
+}
+
+export interface WorkloadAPI {
+  endpoint: string;
+  csiDriver?: string;
+}
+
+export interface BrokerAPI {
+  endpoint: string;
+  ids: string[];
+}
+
+export interface MTLS {
+  enabled: boolean;
+  componentIDTemplate: string;
+  receivers?: string[];
+  extraArtifactClients?: string[];
+  extraArtifactServers?: string[];
+  extraNotifiers?: string[];
+}
+
+export interface SPIFFE {
+  workloadAPI: WorkloadAPI;
+  brokerAPI?: BrokerAPI;
+  mtls?: MTLS;
 }
 
 export interface Sharding {
@@ -79,12 +108,23 @@ export interface FluxInstanceSpec {
   components?: Component[];
   commonMetadata?: CommonMetadata;
   cluster?: Cluster;
+  spiffe?: SPIFFE;
   sharding?: Sharding;
   storage?: Storage;
   kustomize?: Kustomize;
   wait?: boolean;
   migrateResources?: boolean;
   sync?: Sync;
+}
+
+export interface MTLSStatus {
+  enabled: boolean;
+  componentIDTemplate?: string;
+  extraArtifactServers?: string[];
+}
+
+export interface SPIFFEStatus {
+  mtls?: MTLSStatus;
 }
 
 export interface FluxInstanceStatus {
@@ -99,6 +139,7 @@ export interface FluxInstanceStatus {
   lastArtifactRevision?: string;
   components?: ComponentImage[];
   inventory?: ResourceInventory;
+  spiffe?: SPIFFEStatus;
   history?: History;
 }
 
