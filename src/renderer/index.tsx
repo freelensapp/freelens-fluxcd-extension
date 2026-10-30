@@ -18,9 +18,11 @@ import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1beta2 } 
 import { KustomizationDetails as KustomizationDetails_v1 } from "./components/details/kustomize/kustomization-details-v1";
 import { KustomizationDetails as KustomizationDetails_v1beta1 } from "./components/details/kustomize/kustomization-details-v1beta1";
 import { KustomizationDetails as KustomizationDetails_v1beta2 } from "./components/details/kustomize/kustomization-details-v1beta2";
+import { AlertDetails as AlertDetails_v1 } from "./components/details/notification/alert-details-v1";
 import { AlertDetails as AlertDetails_v1beta1 } from "./components/details/notification/alert-details-v1beta1";
 import { AlertDetails as AlertDetails_v1beta2 } from "./components/details/notification/alert-details-v1beta2";
 import { AlertDetails as AlertDetails_v1beta3 } from "./components/details/notification/alert-details-v1beta3";
+import { ProviderDetails as ProviderDetails_v1 } from "./components/details/notification/provider-details-v1";
 import { ProviderDetails as ProviderDetails_v1beta1 } from "./components/details/notification/provider-details-v1beta1";
 import { ProviderDetails as ProviderDetails_v1beta2 } from "./components/details/notification/provider-details-v1beta2";
 import { ProviderDetails as ProviderDetails_v1beta3 } from "./components/details/notification/provider-details-v1beta3";
@@ -70,9 +72,11 @@ import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta2 } from "./k8s/fl
 import { Kustomization as Kustomization_v1 } from "./k8s/fluxcd/kustomize/kustomization-v1";
 import { Kustomization as Kustomization_v1beta1 } from "./k8s/fluxcd/kustomize/kustomization-v1beta1";
 import { Kustomization as Kustomization_v1beta2 } from "./k8s/fluxcd/kustomize/kustomization-v1beta2";
+import { Alert as Alert_v1 } from "./k8s/fluxcd/notification/alert-v1";
 import { Alert as Alert_v1beta1 } from "./k8s/fluxcd/notification/alert-v1beta1";
 import { Alert as Alert_v1beta2 } from "./k8s/fluxcd/notification/alert-v1beta2";
 import { Alert as Alert_v1beta3 } from "./k8s/fluxcd/notification/alert-v1beta3";
+import { Provider as Provider_v1 } from "./k8s/fluxcd/notification/provider-v1";
 import { Provider as Provider_v1beta1 } from "./k8s/fluxcd/notification/provider-v1beta1";
 import { Provider as Provider_v1beta2 } from "./k8s/fluxcd/notification/provider-v1beta2";
 import { Provider as Provider_v1beta3 } from "./k8s/fluxcd/notification/provider-v1beta3";
@@ -122,9 +126,11 @@ import { ImageUpdateAutomationsPage as ImageUpdateAutomationsPage_v1beta2 } from
 import { KustomizationsPage_v1 } from "./pages/kustomize/kustomizations-v1";
 import { KustomizationsPage_v1beta1 } from "./pages/kustomize/kustomizations-v1beta1";
 import { KustomizationsPage_v1beta2 } from "./pages/kustomize/kustomizations-v1beta2";
+import { AlertsPage as AlertsPage_v1 } from "./pages/notifications/alerts-v1";
 import { AlertsPage as AlertsPage_v1beta1 } from "./pages/notifications/alerts-v1beta1";
 import { AlertsPage as AlertsPage_v1beta2 } from "./pages/notifications/alerts-v1beta2";
 import { AlertsPage as AlertsPage_v1beta3 } from "./pages/notifications/alerts-v1beta3";
+import { ProvidersPage as ProvidersPage_v1 } from "./pages/notifications/providers-v1";
 import { ProvidersPage as ProvidersPage_v1beta1 } from "./pages/notifications/providers-v1beta1";
 import { ProvidersPage as ProvidersPage_v1beta2 } from "./pages/notifications/providers-v1beta2";
 import { ProvidersPage as ProvidersPage_v1beta3 } from "./pages/notifications/providers-v1beta3";
@@ -159,6 +165,7 @@ export function FluxCDIcon(props: Renderer.Component.IconProps) {
 }
 
 const AlertsPage = createAvailableVersionPage("Alerts", [
+  { kubeObjectClass: Alert_v1, PageComponent: AlertsPage_v1, version: "v1" },
   { kubeObjectClass: Alert_v1beta3, PageComponent: AlertsPage_v1beta3, version: "v1beta3" },
   { kubeObjectClass: Alert_v1beta2, PageComponent: AlertsPage_v1beta2, version: "v1beta2" },
   { kubeObjectClass: Alert_v1beta1, PageComponent: AlertsPage_v1beta1, version: "v1beta1" },
@@ -256,6 +263,7 @@ const OCIRepositoriesPage = createAvailableVersionPage("OCI Repositories", [
 ]);
 
 const ProvidersPage = createAvailableVersionPage("Providers", [
+  { kubeObjectClass: Provider_v1, PageComponent: ProvidersPage_v1, version: "v1" },
   { kubeObjectClass: Provider_v1beta3, PageComponent: ProvidersPage_v1beta3, version: "v1beta3" },
   { kubeObjectClass: Provider_v1beta2, PageComponent: ProvidersPage_v1beta2, version: "v1beta2" },
   { kubeObjectClass: Provider_v1beta1, PageComponent: ProvidersPage_v1beta1, version: "v1beta1" },
@@ -308,6 +316,7 @@ const specSuspendClasses = [
   Alert_v1beta1,
   Alert_v1beta2,
   Alert_v1beta3,
+  Alert_v1,
   Bucket_v1beta1,
   Bucket_v1beta2,
   Bucket_v1,
@@ -339,6 +348,7 @@ const specSuspendClasses = [
   Provider_v1beta1,
   Provider_v1beta2,
   Provider_v1beta3,
+  Provider_v1,
   Receiver_v1beta1,
   Receiver_v1beta2,
   Receiver_v1beta3,
@@ -759,6 +769,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       components: {},
     },
     {
+      id: "alert",
+      parentId: "notification",
+      target: { pageId: "alert" },
+      title: Alert_v1.crd.title,
+      components: {},
+    },
+    {
       id: "provider",
       parentId: "notification",
       target: { pageId: "provider" },
@@ -777,6 +794,13 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       parentId: "notification",
       target: { pageId: "provider" },
       title: Provider_v1beta3.crd.title,
+      components: {},
+    },
+    {
+      id: "provider",
+      parentId: "notification",
+      target: { pageId: "provider" },
+      title: Provider_v1.crd.title,
       components: {},
     },
     {
@@ -824,6 +848,10 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     Renderer.K8sApi.detailsFor(Alert_v1beta3, {
       priority: 10,
       Details: (props) => <AlertDetails_v1beta3 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Alert_v1, {
+      priority: 10,
+      Details: (props) => <AlertDetails_v1 {...props} />,
     }),
     Renderer.K8sApi.detailsFor(ArtifactGenerator_v1beta1, {
       priority: 10,
@@ -968,6 +996,10 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     Renderer.K8sApi.detailsFor(Provider_v1beta3, {
       priority: 10,
       Details: (props) => <ProviderDetails_v1beta3 {...props} />,
+    }),
+    Renderer.K8sApi.detailsFor(Provider_v1, {
+      priority: 10,
+      Details: (props) => <ProviderDetails_v1 {...props} />,
     }),
     Renderer.K8sApi.detailsFor(Receiver_v1beta1, {
       priority: 10,
