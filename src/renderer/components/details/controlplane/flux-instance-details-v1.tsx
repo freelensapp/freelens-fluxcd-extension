@@ -142,7 +142,7 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
               <BadgeBoolean value={object.spec.cluster.objectIdentityRBAC ?? false} />
             </DrawerItem>
             <DrawerItem name="Object Level Workload Identity" hidden={!object.spec.cluster.objectLevelWorkloadIdentity}>
-              {object.spec.cluster.objectLevelWorkloadIdentity}
+              <BadgeBoolean value={object.spec.cluster.objectLevelWorkloadIdentity ?? false} />
             </DrawerItem>
             <DrawerItem name="Network Policy">
               <BadgeBoolean value={object.spec.cluster.networkPolicy ?? true} />

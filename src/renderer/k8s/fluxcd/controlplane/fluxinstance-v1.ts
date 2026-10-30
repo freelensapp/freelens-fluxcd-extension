@@ -38,7 +38,7 @@ export interface Cluster {
   tenantDefaultDecryptionServiceAccount?: string;
   tenantDefaultKubeConfigServiceAccount?: string;
   /** Legacy: use `objectIdentityRBAC` instead. */
-  objectLevelWorkloadIdentity?: string;
+  objectLevelWorkloadIdentity?: boolean;
   objectIdentityRBAC?: boolean;
   networkPolicy?: boolean;
   type?: "kubernetes" | "openshift" | "aws" | "azure" | "gcp";
