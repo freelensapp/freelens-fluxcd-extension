@@ -180,6 +180,12 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Upgrade CRDs" hidden={!object.spec.upgrade?.crds}>
             {object.spec.upgrade?.crds}
           </DrawerItem>
+          <DrawerItem name="Values Files" hidden={!object.spec.chart?.spec.valuesFiles?.length}>
+            {object.spec.chart?.spec.valuesFiles?.join(", ")}
+          </DrawerItem>
+          <DrawerItem name="Ignore Missing Values Files" hidden={!object.spec.chart?.spec.ignoreMissingValuesFiles}>
+            <BadgeBoolean value={object.spec.chart?.spec.ignoreMissingValuesFiles ?? false} />
+          </DrawerItem>
           <DrawerItem name="Source">
             <MaybeLink to={getMaybeDetailsUrl(HelmRelease.getSourceRefUrl(object))} onClick={stopPropagation}>
               {HelmRelease.getSourceRefText(object)}

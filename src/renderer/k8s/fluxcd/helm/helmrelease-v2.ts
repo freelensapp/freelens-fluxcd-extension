@@ -61,7 +61,7 @@ export interface HelmChartTemplateSpec extends Partial<OCIRepositorySpec> {
   sourceRef?: CrossNamespaceObjectReference;
   reconcileStrategy?: string;
   valuesFiles?: string[];
-  valuesFile?: string;
+  ignoreMissingValuesFiles?: boolean;
 }
 
 export type HelmChartTemplateKind = "HelmChart" | "OCIRepository";
