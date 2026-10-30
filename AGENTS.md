@@ -261,9 +261,14 @@ that serves the version, read from the Go sources and not from memory:
 - Every `+kubebuilder:validation:Enum` is a string-literal union type alias,
   used by the fields that have it: `ReflectionPolicy` in `imagepolicy-v1.ts`,
   `CrossNamespaceSourceReferenceKind` in `kustomization-v1.ts` and
-  `helmrelease-v2.ts`, `SourceReferenceKind` and `CopyStrategy` in
-  `artifactgenerator-v1beta1.ts`. Where the Go field has no named type, the
-  alias takes its name from the struct and the field.
+  `helmrelease-v2.ts`, `HelmChartTemplateKind` and
+  `CrossNamespaceObjectReferenceKind` in `helmrelease-v2.ts`,
+  `OCIRepositoryProvider` in `ocirepository-v1.ts`, `SourceReferenceKind`,
+  `CopyStrategy`, `InventoryEntryKind` and `NamespaceMetadataFromStrategy` in
+  `artifactgenerator-v1beta1.ts`, `ProviderSpecType` in `provider-v1.ts` and
+  `provider-v1beta3.ts`, `AlertSpecEventSeverity` in `alert-v1.ts`. Where the
+  Go field has no named type, the alias takes its name from the struct and the
+  field.
 - A type that `types.ts` shares across versions, such as `Artifact`
   (`meta.Artifact` of fluxcd/pkg for `v1`), has the fields of every version
   it covers, and a field is required only where every version it covers
@@ -846,8 +851,10 @@ fails.
 The cluster has the CRDs and no controller: `integration/fixtures/crds` is a
 kustomization of the CRD files of the newest Flux the extension supports
 (those of `manifests/crds` in fluxcd/flux2 at its tag) and of the Flux
-Operator release that follows it, by their release URLs. Each kind is served
-in one API version there, the newest, so the pages show that version. Nothing
+Operator release that follows it, by their release URLs. A kind can be served
+in more than one API version there, as `Alert` and `Provider` are in `v1` and
+the deprecated `v1beta3`; the pages and the Overview take the newest, so the
+objects are written in that version. Nothing
 reconciles the objects of `integration/fixtures/objects`, which have no status
 and show as Unknown; they need only be valid for the CRDs, and a
 `FluxInstance` must be named `flux`. Moving the tests to a newer Flux means

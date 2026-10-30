@@ -32,7 +32,7 @@ directly from the UI.
 
 - Kubernetes >= 1.24
 - Freelens >= 2.0.0 (for Freelens 1.x, use a 5.x release of this extension)
-- Flux >= v2.0.0, <= 2.9.x
+- Flux >= v2.0.0, <= 2.10.x
 - flux-operator >= v0.6.0
 - kustomize-controller >= v0.1.0
 - helm-controller >= v0.1.0
@@ -119,8 +119,8 @@ Resources managed by the
 
 | API Version                   | Kind       | Short Name | Scope      | Description                                          |
 | ----------------------------- | ---------- | ---------- | ---------- | ---------------------------------------------------- |
-| v1beta1, v1beta2, v1beta3     | `Provider` |            | Namespaced | Represents a notification or event provider          |
-| v1beta1, v1beta2, v1beta3     | `Alert`    |            | Namespaced | Configures events dispatched to a `Provider`         |
+| v1beta1, v1beta2, v1beta3, v1 | `Provider` |            | Namespaced | Represents a notification or event provider          |
+| v1beta1, v1beta2, v1beta3, v1 | `Alert`    |            | Namespaced | Configures events dispatched to a `Provider`         |
 | v1beta1, v1beta2, v1beta3, v1 | `Receiver` |            | Namespaced | Defines a webhook receiver to trigger reconciliation |
 
 ## Install
