@@ -47,9 +47,9 @@ export interface HelmChartTemplateVerification {
 }
 
 export interface HelmChartTemplateSpec {
-  chart: string;
+  chart?: string;
   version?: string;
-  sourceRef: NamespacedObjectKindReference;
+  sourceRef?: NamespacedObjectKindReference;
   interval?: string;
   reconcileStrategy?: string;
   valuesFiles?: string[];
@@ -242,7 +242,7 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
   }
 
   static getChartRefNamespace(object: HelmRelease): string {
-    return object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace ?? object.getNs()!;
+    return object.spec.chart?.spec.sourceRef?.namespace ?? object.spec.chartRef?.namespace ?? object.getNs()!;
   }
 
   static getHelmChartName(object: HelmRelease): string {
@@ -280,15 +280,15 @@ export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<
   }
 
   static getSourceRefName(object: HelmRelease): string | undefined {
-    return object.spec.chart?.spec.sourceRef.name ?? object.spec.chartRef?.name;
+    return object.spec.chart?.spec.sourceRef?.name ?? object.spec.chartRef?.name;
   }
 
   static getSourceRefText(object: HelmRelease): string {
     return [
-      object.spec.chart?.spec.sourceRef.kind ?? object.spec.chartRef?.kind,
+      object.spec.chart?.spec.sourceRef?.kind ?? object.spec.chartRef?.kind,
       ": ",
-      (object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace)
-        ? `${object.spec.chart?.spec.sourceRef.namespace ?? object.spec.chartRef?.namespace}/`
+      (object.spec.chart?.spec.sourceRef?.namespace ?? object.spec.chartRef?.namespace)
+        ? `${object.spec.chart?.spec.sourceRef?.namespace ?? object.spec.chartRef?.namespace}/`
         : "",
       HelmRelease.getSourceRefName(object) ?? "-",
     ].join("");

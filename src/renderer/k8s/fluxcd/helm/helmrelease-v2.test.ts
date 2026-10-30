@@ -85,6 +85,15 @@ describe("HelmRelease.getSourceRefText", () => {
     } as unknown as HelmRelease;
     expect(HelmRelease.getSourceRefText(object)).toBe("OCIRepository: oci");
   });
+
+  test("does not throw for a chart template without a sourceRef", () => {
+    const object = {
+      metadata: { name: "hr", namespace: "apps" },
+      spec: { chart: { kind: "OCIRepository", spec: { url: "oci://ghcr.io/stefanprodan/charts/podinfo" } } },
+    } as unknown as HelmRelease;
+    expect(() => HelmRelease.getSourceRefText(object)).not.toThrow();
+    expect(() => HelmRelease.getSourceRefName(object)).not.toThrow();
+  });
 });
 
 describe("HelmRelease chartRef", () => {
