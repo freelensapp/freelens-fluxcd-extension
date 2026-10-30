@@ -61,13 +61,61 @@ describe("HelmRelease.getReleaseNameShortened", () => {
   });
 });
 
-describe("HelmRelease.getHelmChartName", () => {
-  test("joins the chart namespace and the object name", () => {
+describe("HelmRelease.getChartTemplateRef", () => {
+  test("is undefined without a chart template", () => {
+    const object = { metadata: { name: "hr", namespace: "apps" }, spec: { chartRef: {} } } as unknown as HelmRelease;
+    expect(HelmRelease.getChartTemplateRef(object)).toBeUndefined();
+  });
+
+  test("names a HelmChart after the HelmRelease, in the namespace of the sourceRef, before it is created", () => {
     const object = {
-      metadata: { name: "hr" },
-      spec: { chart: { spec: { sourceRef: { namespace: "flux-system" } } } },
+      metadata: { name: "hr", namespace: "apps" },
+      spec: { chart: { spec: { chart: "podinfo", sourceRef: { kind: "HelmRepository", namespace: "flux-system" } } } },
     } as unknown as HelmRelease;
-    expect(HelmRelease.getHelmChartName(object)).toBe("flux-system-hr");
+    expect(HelmRelease.getChartTemplateRef(object)).toEqual({
+      kind: "HelmChart",
+      name: "apps-hr",
+      namespace: "flux-system",
+    });
+  });
+
+  test("reads a HelmChart from the namespace/name of status.helmChart", () => {
+    const object = {
+      metadata: { name: "hr", namespace: "apps" },
+      spec: { chart: { spec: { chart: "podinfo", sourceRef: { kind: "HelmRepository" } } } },
+      status: { helmChart: "flux-system/flux-system-hr" },
+    } as unknown as HelmRelease;
+    expect(HelmRelease.getChartTemplateRef(object)).toEqual({
+      kind: "HelmChart",
+      name: "flux-system-hr",
+      namespace: "flux-system",
+    });
+  });
+
+  test("reads an OCIRepository from the kind/namespace/name of status.helmChart", () => {
+    const object = {
+      metadata: { name: "hr", namespace: "apps" },
+      spec: { chart: { kind: "OCIRepository", spec: { url: "oci://ghcr.io/stefanprodan/charts/podinfo" } } },
+      status: { helmChart: "OCIRepository/apps/apps-hr" },
+    } as unknown as HelmRelease;
+    expect(HelmRelease.getChartTemplateRef(object)).toEqual({
+      kind: "OCIRepository",
+      name: "apps-hr",
+      namespace: "apps",
+    });
+  });
+
+  test("names an OCIRepository after the HelmRelease, in its namespace, before it is created", () => {
+    const object = {
+      metadata: { name: "hr", namespace: "apps" },
+      spec: { chart: { kind: "OCIRepository", spec: { url: "oci://ghcr.io/stefanprodan/charts/podinfo" } } },
+      status: { helmChart: "apps/apps-hr" },
+    } as unknown as HelmRelease;
+    expect(HelmRelease.getChartTemplateRef(object)).toEqual({
+      kind: "OCIRepository",
+      name: "apps-hr",
+      namespace: "apps",
+    });
   });
 });
 
@@ -86,13 +134,13 @@ describe("HelmRelease.getSourceRefText", () => {
     expect(HelmRelease.getSourceRefText(object)).toBe("OCIRepository: oci");
   });
 
-  test("does not throw for a chart template without a sourceRef", () => {
+  test("formats the OCIRepository that an OCIRepository chart template generates", () => {
     const object = {
       metadata: { name: "hr", namespace: "apps" },
       spec: { chart: { kind: "OCIRepository", spec: { url: "oci://ghcr.io/stefanprodan/charts/podinfo" } } },
     } as unknown as HelmRelease;
-    expect(() => HelmRelease.getSourceRefText(object)).not.toThrow();
-    expect(() => HelmRelease.getSourceRefName(object)).not.toThrow();
+    expect(HelmRelease.getSourceRefText(object)).toBe("OCIRepository: apps/apps-hr");
+    expect(HelmRelease.getSourceRefName(object)).toBe("apps-hr");
   });
 });
 

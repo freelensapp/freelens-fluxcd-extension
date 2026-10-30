@@ -91,6 +91,17 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
 
     const valuesYaml = dump(object.spec.values, defaultYamlDumpOptions);
 
+    const chartTemplateKind = HelmRelease.getChartTemplateKind(object);
+    const chartTemplateRef = HelmRelease.getChartTemplateRef(object);
+    const chartName = object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart;
+    const chartOciRef = object.spec.chart?.spec.ref;
+    // The field that takes precedence: the digest, then the semver range, then the tag.
+    const chartOciRefText =
+      (chartOciRef?.digest && `digest: ${chartOciRef.digest}`) ||
+      (chartOciRef?.semver && `semver: ${chartOciRef.semver}`) ||
+      (chartOciRef?.tag && `tag: ${chartOciRef.tag}`) ||
+      undefined;
+
     const images = object.spec.postRenderers
       ?.filter((a) => a?.kustomize)
       ?.map((a) => a?.kustomize)
@@ -116,8 +127,20 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Helm Chart" hidden={!object.spec.chartRef}>
             <LinkToObject objectRef={withServedApiVersion(object.spec.chartRef)} object={object} />
           </DrawerItem>
-          <DrawerItem name="Chart Name">
-            {object.status?.history?.[0]?.chartName ?? object.spec.chart?.spec.chart}
+          <DrawerItem name="Chart Kind" hidden={!chartTemplateKind}>
+            {chartTemplateKind}
+          </DrawerItem>
+          <DrawerItem name="Generated Object" hidden={!chartTemplateRef}>
+            <LinkToObject objectRef={withServedApiVersion(chartTemplateRef)} object={object} />
+          </DrawerItem>
+          <DrawerItem name="Chart URL" hidden={!object.spec.chart?.spec.url}>
+            {object.spec.chart?.spec.url}
+          </DrawerItem>
+          <DrawerItem name="Chart Reference" hidden={!chartOciRefText}>
+            {chartOciRefText}
+          </DrawerItem>
+          <DrawerItem name="Chart Name" hidden={!chartName}>
+            {chartName}
           </DrawerItem>
           <DrawerItem name="Chart Version">
             {object.status?.history?.[0]?.chartVersion ?? object.spec.chart?.spec.version}
