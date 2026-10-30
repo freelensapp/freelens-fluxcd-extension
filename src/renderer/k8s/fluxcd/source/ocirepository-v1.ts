@@ -22,23 +22,30 @@ export interface OIDCIdentityMatch {
 }
 
 export interface OCIRepositoryVerification {
-  provider: "cosign";
+  provider: "cosign" | "notation";
   secretRef?: LocalObjectReference;
   matchOIDCIdentity?: OIDCIdentityMatch[];
+  trustedRootSecretRef?: LocalObjectReference;
 }
 
+export type OCIRepositoryProvider = "generic" | "aws" | "azure" | "gcp";
+
 export interface OCIRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
+  // Optional in the Go type since source-controller v1.10, so that a HelmRelease can embed the struct, and required
+  // by a validation rule of the OCIRepository CRD.
   url: string;
   ref?: OCIRepositoryRef;
   layerSelector?: OCILayerSelector;
-  provider?: "generic" | "aws" | "azure" | "gcp";
+  provider?: OCIRepositoryProvider;
   secretRef?: LocalObjectReference;
   verify?: OCIRepositoryVerification;
   serviceAccountName?: string;
   certSecretRef?: LocalObjectReference;
   proxySecretRef?: LocalObjectReference;
+  // Required by a validation rule of the CRD, as url.
   interval: string;
   timeout?: string;
+  ignore?: string;
   insecure?: boolean;
   suspend?: boolean;
 }
@@ -48,6 +55,7 @@ export interface OCIRepositoryStatus extends FluxCDKubeObjectStatus {
   artifact?: Artifact;
   observedIgnore?: string;
   observedLayerSelector?: OCILayerSelector;
+  sourceVerificationFingerprint?: string;
 }
 
 export class OCIRepository extends Renderer.K8sApi.LensExtensionKubeObject<
