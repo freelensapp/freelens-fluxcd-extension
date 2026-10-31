@@ -10,7 +10,9 @@ import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsU
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
+import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
+import { YamlDump } from "../../yaml-dump";
 import styles from "./kustomization-details.module.scss";
 
 const { observer } = MobxReact;
@@ -20,6 +22,7 @@ const {
     Badge,
     BadgeBoolean,
     DrawerItem,
+    DrawerItemLabels,
     DrawerTitle,
     Icon,
     LinkToConfigMap,
@@ -123,8 +126,29 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           <DrawerItem name="Target Namespace" hidden={!object.spec.targetNamespace}>
             <LinkToNamespace namespace={object.spec.targetNamespace} />
           </DrawerItem>
+          <DrawerItem name="Name Prefix" hidden={!object.spec.namePrefix}>
+            {object.spec.namePrefix}
+          </DrawerItem>
+          <DrawerItem name="Name Suffix" hidden={!object.spec.nameSuffix}>
+            {object.spec.nameSuffix}
+          </DrawerItem>
+          <DrawerItem name="Components" hidden={!object.spec.components?.length}>
+            {object.spec.components?.join(", ")}
+          </DrawerItem>
+          <DrawerItem name="Ignore Missing Components" hidden={!object.spec.ignoreMissingComponents}>
+            <BadgeBoolean value={object.spec.ignoreMissingComponents ?? false} />
+          </DrawerItem>
+          <DrawerItem name="Build Metadata" hidden={!object.spec.buildMetadata?.length}>
+            {object.spec.buildMetadata?.join(", ")}
+          </DrawerItem>
           <DrawerItem name="Prune">
             <BadgeBoolean value={object.spec.prune ?? false} />
+          </DrawerItem>
+          <DrawerItem name="Deletion Policy" hidden={!object.spec.deletionPolicy}>
+            {object.spec.deletionPolicy}
+          </DrawerItem>
+          <DrawerItem name="Wait">
+            <BadgeBoolean value={object.spec.wait ?? false} />
           </DrawerItem>
           <DrawerItem name="Timeout" hidden={!object.spec.timeout}>
             {object.spec.timeout}
@@ -132,6 +156,16 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           <DrawerItem name="Force">
             <BadgeBoolean value={object.spec.force ?? false} />
           </DrawerItem>
+          <DrawerItemLabels
+            name="Common Labels"
+            labels={object.spec.commonMetadata?.labels ?? {}}
+            hidden={!object.spec.commonMetadata?.labels}
+          />
+          <DrawerItemLabels
+            name="Common Annotations"
+            labels={object.spec.commonMetadata?.annotations ?? {}}
+            hidden={!object.spec.commonMetadata?.annotations}
+          />
           <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
             <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
           </DrawerItem>
@@ -140,6 +174,18 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             {kubeConfigConfigMapName && <LinkToConfigMap name={kubeConfigConfigMapName} namespace={namespace} />}
           </DrawerItem>
           <DrawerItem name="Last Applied Revision">{object.status?.lastAppliedRevision}</DrawerItem>
+          <DrawerItem name="Last Applied Origin Revision" hidden={!object.status?.lastAppliedOriginRevision}>
+            {object.status?.lastAppliedOriginRevision}
+          </DrawerItem>
+          <DrawerItem
+            name="Last Attempted Revision"
+            hidden={
+              !object.status?.lastAttemptedRevision ||
+              object.status.lastAttemptedRevision === object.status.lastAppliedRevision
+            }
+          >
+            {object.status?.lastAttemptedRevision}
+          </DrawerItem>
 
           {object.spec.dependsOn && (
             <div>
@@ -157,6 +203,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                     </DrawerItem>
                     <DrawerItem name="Namespace">
                       <LinkToNamespace namespace={dependency.namespace ?? namespace} />
+                    </DrawerItem>
+                    <DrawerItem name="Ready Expression" hidden={!dependency.readyExpr}>
+                      <YamlDump data={dependency.readyExpr} />
                     </DrawerItem>
                     <DrawerItem name="Revision" hidden={!reference?.status?.lastAppliedRevision}>
                       {reference?.status?.lastAppliedRevision}
@@ -210,6 +259,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           {object.spec.postBuild && (
             <div className={styles.substitution}>
               <DrawerTitle>Post Build Variable Substitution</DrawerTitle>
+              <DrawerItem name="Strategy" hidden={!object.spec.postBuild.substituteStrategy}>
+                {object.spec.postBuild.substituteStrategy}
+              </DrawerItem>
               {object.spec.postBuild.substituteFrom?.map((substituteFrom) => {
                 const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
                 const name = substituteFrom.name;
@@ -229,6 +281,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
                       >
                         {name}
                       </MaybeLink>
+                    </DrawerItem>
+                    <DrawerItem name="Optional" hidden={!substituteFrom.optional}>
+                      <BadgeBoolean value={substituteFrom.optional ?? false} />
                     </DrawerItem>
                     <div className="DrawerItem">Variables</div>
                     <MonacoEditor
@@ -279,6 +334,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             <div>
               <DrawerTitle>Decryption</DrawerTitle>
               <DrawerItem name="Provider">{object.spec.decryption.provider}</DrawerItem>
+              <DrawerItem name="Service Account" hidden={!object.spec.decryption.serviceAccountName}>
+                <LinkToServiceAccount name={object.spec.decryption.serviceAccountName} namespace={namespace} />
+              </DrawerItem>
               <DrawerItem name="Secret Name" hidden={!object.spec.decryption.secretRef}>
                 {object.spec.decryption.secretRef && (
                   <LinkToSecret name={object.spec.decryption.secretRef.name} namespace={namespace} />
@@ -334,7 +392,52 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             </div>
           )}
 
+          {object.spec.healthCheckExprs && (
+            <div>
+              <DrawerTitle>Health Check Expressions</DrawerTitle>
+              {object.spec.healthCheckExprs.map((healthCheck) => (
+                <div key={Renderer.Util.createReactKey(healthCheck)}>
+                  <div className={styles.title}>
+                    <Icon small material="list" />
+                  </div>
+                  <DrawerItem name="API Version">{healthCheck.apiVersion}</DrawerItem>
+                  <DrawerItem name="Kind" hidden={!healthCheck.kind}>
+                    {healthCheck.kind}
+                  </DrawerItem>
+                  <DrawerItem name="Current">
+                    <YamlDump data={healthCheck.current} />
+                  </DrawerItem>
+                  <DrawerItem name="In Progress" hidden={!healthCheck.inProgress}>
+                    <YamlDump data={healthCheck.inProgress} />
+                  </DrawerItem>
+                  <DrawerItem name="Failed" hidden={!healthCheck.failed}>
+                    <YamlDump data={healthCheck.failed} />
+                  </DrawerItem>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {object.spec.ignore && (
+            <div>
+              <DrawerTitle>Drift Detection Ignore Rules</DrawerTitle>
+              {object.spec.ignore.map((rule) => (
+                <div key={Renderer.Util.createReactKey(rule)}>
+                  <div className={styles.title}>
+                    <Icon small material="list" />
+                  </div>
+                  <DrawerItem name="Paths">{rule.paths.join(", ")}</DrawerItem>
+                  <DrawerItem name="Target" hidden={!rule.target}>
+                    <YamlDump data={rule.target} />
+                  </DrawerItem>
+                </div>
+              ))}
+            </div>
+          )}
+
           <StatusInventory inventory={object.status?.inventory} object={object} />
+
+          <StatusHistory history={object.status?.history} />
         </div>
       </>
     );
