@@ -62,6 +62,15 @@ describe("FluxCDExtension", () => {
       }
     }
   });
+
+  it("gives every model class the apiBase of its own version and plural", () => {
+    for (const modelClass of modelClasses) {
+      expect(modelClass.crd?.apiVersions).toHaveLength(1);
+      expect(modelClass.apiBase, describeClass(modelClass)).toBe(
+        `/apis/${modelClass.crd?.apiVersions[0]}/${modelClass.crd?.plural}`,
+      );
+    }
+  });
 });
 
 // The element that a registered function component returns when called with

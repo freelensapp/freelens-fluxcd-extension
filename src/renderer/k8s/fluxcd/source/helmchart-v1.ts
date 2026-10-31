@@ -33,7 +33,7 @@ export class HelmChart extends Renderer.K8sApi.LensExtensionKubeObject<
 
   static readonly kind = "HelmChart";
   static readonly namespaced = true;
-  static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1/helmrepositories";
+  static readonly apiBase = "/apis/source.toolkit.fluxcd.io/v1/helmcharts";
 
   static readonly crd = {
     apiVersions: ["source.toolkit.fluxcd.io/v1"],
