@@ -1,9 +1,19 @@
 import { Renderer } from "@freelensapp/extensions";
 
 import type { GitRepositoryRef } from "../source/gitrepository-v1";
-import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus, NamespacedObjectKindReference } from "../types";
+import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
 
+type LabelSelector = Renderer.K8sApi.LabelSelector;
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
+
+export type CrossNamespaceSourceReferenceKind = "GitRepository";
+
+export interface CrossNamespaceSourceReference {
+  apiVersion?: string;
+  kind: CrossNamespaceSourceReferenceKind;
+  name: string;
+  namespace?: string;
+}
 
 export interface GitCheckoutSpec {
   ref: GitRepositoryRef;
@@ -14,14 +24,18 @@ export interface CommitUser {
   email: string;
 }
 
+export type SigningKeyType = "gpg" | "ssh";
+
 export interface SigningKey {
   secretRef: LocalObjectReference;
+  type?: SigningKeyType;
 }
 
 export interface CommitSpec {
   author: CommitUser;
   signingKey?: SigningKey;
   messageTemplate?: string;
+  messageTemplateValues?: Record<string, string>;
 }
 
 export interface PushSpec {
@@ -36,8 +50,10 @@ export interface GitSpec {
   push?: PushSpec;
 }
 
+export type UpdateStrategyName = "Setters";
+
 export interface UpdateStrategy {
-  strategy?: string;
+  strategy?: UpdateStrategyName;
   path?: string;
 }
 
@@ -47,11 +63,14 @@ export interface ImageRef {
   digest?: string;
 }
 
+export type ObservedPolicies = Record<string, ImageRef>;
+
 export interface ImageUpdateAutomationSpec extends FluxCDKubeObjectSpecWithSuspend {
-  sourceRef: NamespacedObjectKindReference;
+  sourceRef: CrossNamespaceSourceReference;
   git?: GitSpec;
   interval: string;
   policyChangeDelay?: string;
+  policySelector?: LabelSelector;
   update?: UpdateStrategy;
   suspend?: boolean;
 }
@@ -60,7 +79,8 @@ export interface ImageUpdateAutomationStatus extends FluxCDKubeObjectStatus {
   lastAutomationRunTime?: string;
   lastPushCommit?: string;
   lastPushTime?: string;
-  observedPolicies?: Record<string, ImageRef>;
+  observedPolicies?: ObservedPolicies;
+  observedSourceRevision?: string;
 }
 
 export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObject<
