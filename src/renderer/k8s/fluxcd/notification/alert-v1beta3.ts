@@ -1,13 +1,14 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus, NamespacedObjectKindReference } from "../types";
+import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
+import type { AlertSpecEventSeverity, CrossNamespaceObjectReference } from "./alert-v1";
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
 export interface AlertSpec extends FluxCDKubeObjectSpecWithSuspend {
   providerRef: LocalObjectReference;
-  eventSeverity?: "info" | "error";
-  eventSources: NamespacedObjectKindReference[];
+  eventSeverity?: AlertSpecEventSeverity;
+  eventSources: CrossNamespaceObjectReference[];
   inclusionList?: string[];
   eventMetadata?: Record<string, string>;
   exclusionList?: string[];
@@ -16,6 +17,7 @@ export interface AlertSpec extends FluxCDKubeObjectSpecWithSuspend {
   suspend?: boolean;
 }
 
+// The API has no status. An object stored by an earlier version can still have one.
 export interface AlertStatus extends FluxCDKubeObjectStatus {}
 
 export class Alert extends Renderer.K8sApi.LensExtensionKubeObject<

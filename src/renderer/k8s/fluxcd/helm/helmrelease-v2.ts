@@ -1,26 +1,36 @@
 import { Renderer } from "@freelensapp/extensions";
 import {
+  type CustomHealthCheck,
+  type DependencyReference,
   type FluxCDKubeObjectCRD,
   type FluxCDKubeObjectSpecWithSuspend,
   type FluxCDKubeObjectStatus,
   Image,
-  JSON6902Patch,
   type KubeConfigReference,
   NamespacedObjectKindReference,
-  NamespacedObjectReference,
+  type ResourceInventory,
 } from "../types";
 import { getRefUrl } from "../utils";
 
 import type { Patch, Selector } from "../../core/types";
 import type { OCIRepositorySpec } from "../source/ocirepository-v1";
 
-export interface HelmReleaseSnapshot {
+export type ReleaseAction = "install" | "upgrade" | "rollback" | "uninstall" | "uninstall-remediation";
+
+export interface TestHookStatus {
+  lastStarted?: string;
+  lastCompleted?: string;
+  phase?: string;
+}
+
+export interface Snapshot {
   apiVersion?: string;
   digest: string;
   name: string;
   namespace: string;
   version: number;
   status: string;
+  action?: ReleaseAction;
   chartName: string;
   chartVersion: string;
   appVersion?: string;
@@ -28,11 +38,9 @@ export interface HelmReleaseSnapshot {
   firstDeployed: string;
   lastDeployed: string;
   deleted?: string;
-  testHooks?: {
-    lastStarted?: string;
-    lastCompleted?: string;
-    phase?: string;
-  }[];
+  /** The test hooks by their name. */
+  testHooks?: Record<string, TestHookStatus | null>;
+  ociDigest?: string;
 }
 
 export interface HelmChartTemplateObjectMeta {
@@ -49,6 +57,8 @@ export interface CrossNamespaceObjectReference {
   namespace?: string;
 }
 
+export type HelmChartTemplateSpecReconcileStrategy = "ChartVersion" | "Revision";
+
 /**
  * The template of the generated object. It has the fields of an `OCIRepositorySpec` inline, every one optional: a
  * `HelmChart` template uses `interval`, `verify` and `suspend` of them, an `OCIRepository` template all of them, with
@@ -59,7 +69,7 @@ export interface HelmChartTemplateSpec extends Partial<OCIRepositorySpec> {
   chart?: string;
   version?: string;
   sourceRef?: CrossNamespaceObjectReference;
-  reconcileStrategy?: string;
+  reconcileStrategy?: HelmChartTemplateSpecReconcileStrategy;
   valuesFiles?: string[];
   ignoreMissingValuesFiles?: boolean;
 }
@@ -85,9 +95,26 @@ export interface IgnoreRule {
   target?: Selector;
 }
 
+export type DriftDetectionMode = "enabled" | "warn" | "disabled";
+
 export interface DriftDetection {
-  mode?: string;
+  mode?: DriftDetectionMode;
   ignore?: IgnoreRule[];
+}
+
+export type CRDsPolicy = "Skip" | "Create" | "CreateReplace";
+
+export type ServerSideApplyMode = "enabled" | "disabled" | "auto";
+
+export type ChartNameChangeStrategy = "InPlaceUpdate" | "Reinstall";
+
+export type RemediationStrategy = "rollback" | "uninstall";
+
+export type InstallStrategyName = "RemediateOnFailure" | "RetryOnFailure";
+
+export interface InstallStrategy {
+  name: InstallStrategyName;
+  retryInterval?: string;
 }
 
 export interface InstallRemediation {
@@ -98,35 +125,51 @@ export interface InstallRemediation {
 
 export interface Install {
   timeout?: string;
+  strategy?: InstallStrategy;
   remediation?: InstallRemediation;
+  disableTakeOwnership?: boolean;
   disableWait?: boolean;
   disableWaitForJobs?: boolean;
   disableHooks?: boolean;
   disableOpenAPIValidation?: boolean;
+  disableSchemaValidation?: boolean;
   replace?: boolean;
   skipCRDs?: boolean;
-  crds?: "Skip" | "Create" | "CreateReplace";
+  crds?: CRDsPolicy;
   createNamespace?: boolean;
+  serverSideApply?: boolean;
+}
+
+export type UpgradeStrategyName = "RemediateOnFailure" | "RetryOnFailure";
+
+export interface UpgradeStrategy {
+  name: UpgradeStrategyName;
+  retryInterval?: string;
 }
 
 export interface UpgradeRemediation {
   retries?: number;
   ignoreTestFailures?: boolean;
   remediateLastFailure?: boolean;
-  strategy?: "rollback" | "uninstall";
+  strategy?: RemediationStrategy;
 }
 
 export interface Upgrade {
   timeout?: string;
+  strategy?: UpgradeStrategy;
   remediation?: UpgradeRemediation;
+  disableTakeOwnership?: boolean;
   disableWait?: boolean;
   disableWaitForJobs?: boolean;
   disableHooks?: boolean;
   disableOpenAPIValidation?: boolean;
+  disableSchemaValidation?: boolean;
   force?: boolean;
   preserveValues?: boolean;
   cleanupOnFail?: boolean;
-  crds?: "Skip" | "Create" | "CreateReplace";
+  crds?: CRDsPolicy;
+  serverSideApply?: ServerSideApplyMode;
+  chartNameChangeStrategy?: ChartNameChangeStrategy;
 }
 
 export interface Filter {
@@ -149,33 +192,51 @@ export interface Rollback {
   recreate?: boolean;
   force?: boolean;
   cleanupOnFail?: boolean;
+  serverSideApply?: ServerSideApplyMode;
 }
+
+export type UninstallDeletionPropagation = "background" | "foreground" | "orphan";
 
 export interface Uninstall {
   timeout?: string;
   disableHooks?: boolean;
   keepHistory?: boolean;
   disableWait?: boolean;
-  deletionPropagation?: "background" | "foreground" | "orphan";
+  deletionPropagation?: UninstallDeletionPropagation;
 }
 
+export type ValuesReferenceKind = "Secret" | "ConfigMap";
+
+/** `meta.ValuesReference` of fluxcd/pkg. */
 export interface ValuesReference {
-  kind: string;
+  kind: ValuesReferenceKind;
   name: string;
   valuesKey?: string;
   targetPath?: string;
   optional?: boolean;
+  literal?: boolean;
 }
 
 export interface Kustomize {
   patches?: Patch[];
-  patchesStrategicMerge?: string[];
-  patchesJson6902?: JSON6902Patch[];
   images?: Image[];
+}
+
+export interface CommonMetadata {
+  annotations?: Record<string, string>;
+  labels?: Record<string, string>;
 }
 
 export interface PostRenderer {
   kustomize?: Kustomize;
+}
+
+export type PostRenderStrategy = "nohooks" | "combined" | "separate";
+
+export type WaitStrategyName = "poller" | "legacy";
+
+export interface WaitStrategy {
+  name: WaitStrategyName;
 }
 
 export type CrossNamespaceSourceReferenceKind = "OCIRepository" | "HelmChart" | "ExternalArtifact";
@@ -196,7 +257,7 @@ export interface HelmReleaseSpec extends FluxCDKubeObjectSpecWithSuspend {
   releaseName?: string;
   targetNamespace?: string;
   storageNamespace?: string;
-  dependsOn?: NamespacedObjectReference[];
+  dependsOn?: DependencyReference[];
   timeout?: string;
   maxHistory?: number;
   serviceAccountName?: string;
@@ -209,26 +270,35 @@ export interface HelmReleaseSpec extends FluxCDKubeObjectSpecWithSuspend {
   uninstall?: Uninstall;
   valuesFrom?: ValuesReference[];
   values?: Record<string, any>;
+  commonMetadata?: CommonMetadata;
   postRenderers?: PostRenderer[];
+  postRenderStrategy?: PostRenderStrategy;
+  waitStrategy?: WaitStrategy;
+  healthCheckExprs?: CustomHealthCheck[];
 }
+
+export type HelmReleaseStatusLastAttemptedReleaseAction = "install" | "upgrade";
 
 export interface HelmReleaseStatus extends FluxCDKubeObjectStatus {
   observedPostRenderersDigest?: string;
-  lastAppliedRevision?: string;
-  lastAttemptedRevision?: string;
-  lastAttemptedValuesChecksum?: string;
-  lastReleaseRevision?: string;
+  observedCommonMetadataDigest?: string;
+  lastAttemptedGeneration?: number;
   helmChart?: string;
+  storageNamespace?: string;
+  history?: Snapshot[];
+  inventory?: ResourceInventory;
+  lastAttemptedReleaseAction?: HelmReleaseStatusLastAttemptedReleaseAction;
+  lastAttemptedReleaseActionDuration?: string;
   failures?: number;
   installFailures?: number;
   upgradeFailures?: number;
-  storageNamespace?: string;
-  history?: HelmReleaseSnapshot[];
-  lastAttemptedGeneration?: number;
+  lastAttemptedRevision?: string;
+  lastAttemptedRevisionDigest?: string;
+  lastAttemptedValuesChecksum?: string;
+  lastReleaseRevision?: number;
   lastAttemptedConfigDigest?: string;
-  lastAttemptedReleaseAction?: string;
-  lastHandledForceAt?: string;
   lastHandledResetAt?: string;
+  lastHandledForceAt?: string;
 }
 
 export class HelmRelease extends Renderer.K8sApi.LensExtensionKubeObject<

@@ -1,29 +1,60 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus, NamespacedObjectKindReference } from "../types";
+import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
+import type { CrossNamespaceObjectReference } from "./alert-v1";
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
+export type ReceiverSpecType =
+  | "generic"
+  | "generic-hmac"
+  | "generic-oidc"
+  | "github"
+  | "gitlab"
+  | "bitbucket"
+  | "harbor"
+  | "dockerhub"
+  | "quay"
+  | "gcr"
+  | "nexus"
+  | "acr"
+  | "cdevents";
+
+export interface ReceiverResource extends CrossNamespaceObjectReference {
+  filter?: string;
+}
+
+export interface OIDCVariable {
+  name: string;
+  expression: string;
+}
+
+export interface OIDCValidation {
+  expression: string;
+  message: string;
+}
+
+export interface OIDCProvider {
+  issuerURL: string;
+  audience?: string;
+  variables?: OIDCVariable[];
+  validations: OIDCValidation[];
+}
+
 export interface ReceiverSpec extends FluxCDKubeObjectSpecWithSuspend {
-  type:
-    | "generic"
-    | "generic-hmac"
-    | "github"
-    | "gitlab"
-    | "bitbucket"
-    | "harbor"
-    | "dockerhub"
-    | "quay"
-    | "gcr"
-    | "nexus"
-    | "acr";
+  type: ReceiverSpecType;
+  interval?: string;
   events?: string[];
-  resources: NamespacedObjectKindReference[];
+  resources: ReceiverResource[];
+  resourceFilter?: string;
   secretRef?: LocalObjectReference;
+  oidcProviders?: OIDCProvider[];
   suspend?: boolean;
 }
 
-export interface ReceiverStatus extends FluxCDKubeObjectStatus {}
+export interface ReceiverStatus extends FluxCDKubeObjectStatus {
+  webhookPath?: string;
+}
 
 export class Receiver extends Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,

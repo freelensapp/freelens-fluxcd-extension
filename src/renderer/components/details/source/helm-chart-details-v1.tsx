@@ -8,11 +8,12 @@ import { StatusArtifact } from "../../status-artifact";
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, LinkToObject },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, LinkToObject, LinkToSecret },
 } = Renderer;
 
 export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmChart>> = observer((props) => {
   const { object } = props;
+  const namespace = object.getNs();
 
   return (
     <div>
@@ -34,6 +35,28 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
             </DrawerItem>
           ))}
       </DrawerItem>
+      <DrawerItem name="Ignore Missing Values Files" hidden={object.spec.ignoreMissingValuesFiles === undefined}>
+        <BadgeBoolean value={object.spec.ignoreMissingValuesFiles} />
+      </DrawerItem>
+
+      {object.spec.verify && (
+        <div>
+          <DrawerTitle>Trusted Public Keys</DrawerTitle>
+          <DrawerItem name="Provider">{object.spec.verify.provider}</DrawerItem>
+          <DrawerItem name="Trusted Public Keys" hidden={!object.spec.verify.secretRef}>
+            <LinkToSecret name={object.spec.verify.secretRef?.name} namespace={namespace} />
+          </DrawerItem>
+          <DrawerItem name="OIDC Identity" hidden={!object.spec.verify.matchOIDCIdentity?.length}>
+            {object.spec.verify.matchOIDCIdentity?.map((match) => (
+              <div key={`${match.issuer}-${match.subject}`}>
+                <DrawerTitle>Match</DrawerTitle>
+                <DrawerItem name="Issuer">{match.issuer}</DrawerItem>
+                <DrawerItem name="Subject">{match.subject}</DrawerItem>
+              </div>
+            ))}
+          </DrawerItem>
+        </div>
+      )}
 
       <StatusArtifact artifact={object.status?.artifact} />
     </div>

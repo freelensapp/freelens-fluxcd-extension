@@ -14,6 +14,24 @@ export interface NamespacedObjectKindReference extends NamespacedObjectReference
   kind: string;
 }
 
+/** `meta.DependencyReference` of fluxcd/pkg. */
+export interface DependencyReference extends NamespacedObjectReference {
+  readyExpr?: string;
+}
+
+/** `kustomize.HealthCheckExpressions` of fluxcd/pkg. */
+export interface HealthCheckExpressions {
+  current: string;
+  inProgress?: string;
+  failed?: string;
+}
+
+/** `kustomize.CustomHealthCheck` of fluxcd/pkg. */
+export interface CustomHealthCheck extends HealthCheckExpressions {
+  apiVersion: string;
+  kind?: string;
+}
+
 export interface NamespaceSelector {
   matchLabels?: Record<string, string>;
 }

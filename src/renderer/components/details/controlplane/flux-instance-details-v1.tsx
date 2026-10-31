@@ -9,7 +9,7 @@ import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
 import styles from "./flux-instance-details.module.scss";
 
-import type { FluxInstance } from "../../../k8s/fluxcd/controlplane/fluxinstance-v1";
+import type { ComponentImage, FluxInstance } from "../../../k8s/fluxcd/controlplane/fluxinstance-v1";
 
 const { observer } = MobxReact;
 
@@ -31,9 +31,9 @@ const {
 } = Renderer;
 
 const componentsSortable = {
-  name: (component: any) => component.name,
-  repository: (component: any) => component.repository,
-  tag: (component: any) => component.tag,
+  name: (component: ComponentImage) => component.name,
+  repository: (component: ComponentImage) => component.repository,
+  tag: (component: ComponentImage) => component.tag,
 };
 
 const ComponentsSortableNames = createEnumFromKeys(componentsSortable);
@@ -132,6 +132,18 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
             <DrawerItem name="Tenant Default Service Account" hidden={!object.spec.cluster.tenantDefaultServiceAccount}>
               <LinkToServiceAccount name={object.spec.cluster.tenantDefaultServiceAccount} namespace={namespace} />
             </DrawerItem>
+            <DrawerItem
+              name="Tenant Default Decryption Service Account"
+              hidden={!object.spec.cluster.tenantDefaultDecryptionServiceAccount}
+            >
+              {object.spec.cluster.tenantDefaultDecryptionServiceAccount}
+            </DrawerItem>
+            <DrawerItem
+              name="Tenant Default KubeConfig Service Account"
+              hidden={!object.spec.cluster.tenantDefaultKubeConfigServiceAccount}
+            >
+              {object.spec.cluster.tenantDefaultKubeConfigServiceAccount}
+            </DrawerItem>
             <DrawerItem name="Multitenant Object Identity" hidden={!object.spec.cluster.multitenantObjectIdentity}>
               <BadgeBoolean value={object.spec.cluster.multitenantObjectIdentity ?? false} />
             </DrawerItem>
@@ -194,6 +206,12 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
             </DrawerItem>
             <DrawerItem name="Applied Component ID Template" hidden={!object.status?.spiffe?.mtls?.componentIDTemplate}>
               {object.status?.spiffe?.mtls?.componentIDTemplate}
+            </DrawerItem>
+            <DrawerItem
+              name="Applied Extra Artifact Servers"
+              hidden={!object.status?.spiffe?.mtls?.extraArtifactServers?.length}
+            >
+              {object.status?.spiffe?.mtls?.extraArtifactServers?.join(", ")}
             </DrawerItem>
           </>
         )}

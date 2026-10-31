@@ -4,31 +4,22 @@ import type { AccessFrom, Artifact, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeO
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
-export interface HelmRepositoryRef {
-  branch?: string;
-  tag?: string;
-  semver?: string;
-  commit?: string;
-  name?: string;
-}
+export type HelmRepositorySpecType = "default" | "oci";
 
-export interface HelmRepositoryInclude {
-  repository: LocalObjectReference;
-  fromPath: string;
-  toPath: string;
-}
+export type HelmRepositorySpecProvider = "generic" | "aws" | "azure" | "gcp";
 
 export interface HelmRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   url: string;
   secretRef?: LocalObjectReference;
+  certSecretRef?: LocalObjectReference;
   passCredentials?: boolean;
   interval?: string;
+  insecure?: boolean;
   timeout?: string;
   suspend?: boolean;
   accessFrom?: AccessFrom;
-  // source.toolkit.fluxcd.io/v1
-  type?: "helm" | "oci";
-  provider?: "generic" | "aws" | "azure" | "gcp";
+  type?: HelmRepositorySpecType;
+  provider?: HelmRepositorySpecProvider;
 }
 
 export interface HelmRepositoryStatus extends FluxCDKubeObjectStatus {

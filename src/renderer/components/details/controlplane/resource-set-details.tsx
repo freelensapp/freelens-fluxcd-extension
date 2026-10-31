@@ -21,11 +21,37 @@ const {
     DrawerTitle,
     DurationAbsoluteTimestamp,
     Icon,
+    LinkToConfigMap,
     LinkToNamespace,
     LinkToObject,
+    LinkToSecret,
     LinkToServiceAccount,
   },
 } = Renderer;
+
+// An external checksum reference has the form "Kind/namespace/name".
+const ExternalChecksumRef: React.FC<{ value: string }> = ({ value }) => {
+  const [kind, namespace, name, ...rest] = value.split("/");
+  if (!name || rest.length > 0) {
+    return <>{value}</>;
+  }
+  switch (kind) {
+    case "ConfigMap":
+      return (
+        <>
+          {kind}: <LinkToConfigMap name={name} namespace={namespace} />
+        </>
+      );
+    case "Secret":
+      return (
+        <>
+          {kind}: <LinkToSecret name={name} namespace={namespace} />
+        </>
+      );
+    default:
+      return <>{value}</>;
+  }
+};
 
 export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ResourceSet>> = observer(
   (props) => {
@@ -56,6 +82,10 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
         </DrawerItem>
         <DrawerItem name="Wait">
           <BadgeBoolean value={object.spec.wait ?? false} />
+        </DrawerItem>
+        <DrawerItem name="Input Strategy">{object.spec.inputStrategy?.name ?? "Flatten (default)"}</DrawerItem>
+        <DrawerItem name="Include Empty Providers" hidden={object.spec.inputStrategy?.name !== "Permute"}>
+          <BadgeBoolean value={object.spec.inputStrategy?.includeEmptyProviders ?? false} />
         </DrawerItem>
         <DrawerItemLabels
           name="Common Labels"
@@ -119,7 +149,17 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                   {inputsFrom.kind}
                 </DrawerItem>
                 <DrawerItem name="Name" hidden={!inputsFrom.name}>
-                  <LinkToServiceAccount name={inputsFrom.name} namespace={namespace} />
+                  {inputsFrom.name && (
+                    <LinkToObject
+                      objectRef={{
+                        apiVersion: inputsFrom.apiVersion ?? "fluxcd.controlplane.io/v1",
+                        kind: inputsFrom.kind ?? "ResourceSetInputProvider",
+                        name: inputsFrom.name,
+                        namespace,
+                      }}
+                      object={object}
+                    />
+                  )}
                 </DrawerItem>
                 <DrawerItem name="Selector" hidden={!inputsFrom.selector}>
                   <DrawerItemLabels name="Match Labels" labels={inputsFrom.selector?.matchLabels ?? {}} />
@@ -175,6 +215,39 @@ export const ResourceSetDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
 
         <DrawerItem name="Resources Template" hidden={!object.spec?.resourcesTemplate}>
           <YamlDump data={object.spec?.resourcesTemplate} />
+        </DrawerItem>
+
+        {object.spec?.steps && object.spec.steps.length > 0 && (
+          <div>
+            <DrawerTitle>Steps</DrawerTitle>
+            {object.spec.steps.map((step, index) => (
+              <div key={step.name}>
+                <div className={styles.title}>
+                  <Icon small material="list" /> {index + 1}
+                </div>
+                <DrawerItem name="Name">{step.name}</DrawerItem>
+                <DrawerItem name="Timeout" hidden={!step.timeout}>
+                  {step.timeout}
+                </DrawerItem>
+                {step.resources?.map((resource, resourceIndex) => (
+                  <DrawerItem name={`Resource ${resourceIndex + 1}`} key={Renderer.Util.createReactKey(resource)}>
+                    <YamlDump data={resource} />
+                  </DrawerItem>
+                ))}
+                <DrawerItem name="Resources Template" hidden={!step.resourcesTemplate}>
+                  <YamlDump data={step.resourcesTemplate} />
+                </DrawerItem>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <DrawerItem name="External Checksum References" hidden={!object.status?.externalChecksumRefs?.length}>
+          {object.status?.externalChecksumRefs?.map((ref) => (
+            <div key={ref}>
+              <ExternalChecksumRef value={ref} />
+            </div>
+          ))}
         </DrawerItem>
 
         <StatusInventory inventory={object.status?.inventory} object={object} />

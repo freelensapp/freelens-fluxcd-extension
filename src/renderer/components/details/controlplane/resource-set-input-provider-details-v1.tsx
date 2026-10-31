@@ -13,11 +13,14 @@ const { observer } = MobxReact;
 
 const {
   Component: {
+    Badge,
     BadgeBoolean,
     DrawerItem,
+    DrawerItemLabels,
     DrawerTitle,
     DurationAbsoluteTimestamp,
     Icon,
+    LinkToNamespace,
     LinkToSecret,
     LinkToServiceAccount,
     Table,
@@ -84,6 +87,56 @@ export const ResourceSetInputProviderDetails: React.FC<
       <DrawerItem name="Certificate Secret Reference" hidden={!object.spec?.certSecretRef}>
         <LinkToSecret name={object.spec?.certSecretRef?.name} namespace={namespace} />
       </DrawerItem>
+      <DrawerItem
+        name="Insecure"
+        hidden={
+          !object.spec.insecure && object.spec.type !== "ExternalService" && object.spec.type !== "OCIArtifactTag"
+        }
+      >
+        <BadgeBoolean value={object.spec.insecure ?? false} />
+      </DrawerItem>
+
+      {object.spec.selectors && object.spec.selectors.length > 0 && (
+        <div>
+          <DrawerTitle>Selectors</DrawerTitle>
+          {object.spec.selectors.map((selector, index) => (
+            <div key={Renderer.Util.createReactKey(selector)}>
+              <div className={styles.title}>
+                <Icon small material="list" />
+                <span>{index + 1}</span>
+              </div>
+              <DrawerItem name="Name" hidden={!selector.name}>
+                {selector.name}
+              </DrawerItem>
+              <DrawerItem name="Namespace">
+                {selector.namespace === "*" ? (
+                  "All namespaces"
+                ) : (
+                  <LinkToNamespace namespace={selector.namespace || namespace} />
+                )}
+              </DrawerItem>
+              <DrawerItemLabels
+                name="Match Labels"
+                labels={selector.matchLabels ?? {}}
+                hidden={!selector.matchLabels || Object.keys(selector.matchLabels).length === 0}
+              />
+              <DrawerItem name="Match Expressions" hidden={!selector.matchExpressions?.length}>
+                {selector.matchExpressions?.map((expr) => (
+                  <div key={Renderer.Util.createReactKey(expr)}>
+                    <DrawerItem name="Key">{expr.key}</DrawerItem>
+                    <DrawerItem name="Operator">{expr.operator}</DrawerItem>
+                    <DrawerItem name="Values" hidden={!expr.values || expr.values.length === 0}>
+                      {expr.values?.map((value) => (
+                        <Badge key={value} label={value} />
+                      ))}
+                    </DrawerItem>
+                  </div>
+                ))}
+              </DrawerItem>
+            </div>
+          ))}
+        </div>
+      )}
 
       {object.spec?.defaultValues && Object.keys(object.spec.defaultValues).length > 0 && (
         <>
@@ -106,6 +159,12 @@ export const ResourceSetInputProviderDetails: React.FC<
           </DrawerItem>
           <DrawerItem name="Exclude Tag" hidden={!object.spec.filter.excludeTag}>
             {object.spec.filter.excludeTag}
+          </DrawerItem>
+          <DrawerItem name="Include Environment" hidden={!object.spec.filter.includeEnvironment}>
+            {object.spec.filter.includeEnvironment}
+          </DrawerItem>
+          <DrawerItem name="Exclude Environment" hidden={!object.spec.filter.excludeEnvironment}>
+            {object.spec.filter.excludeEnvironment}
           </DrawerItem>
           <DrawerItem name="Labels" hidden={!object.spec.filter.labels || object.spec.filter.labels.length === 0}>
             {object.spec.filter.labels?.join(", ")}
@@ -173,6 +232,7 @@ export const ResourceSetInputProviderDetails: React.FC<
           <DrawerTitle>Next Schedule</DrawerTitle>
           <DrawerItem name="Cron">{object.status.nextSchedule.cron}</DrawerItem>
           <DrawerItem name="Time Zone">{object.status.nextSchedule.timeZone || "UTC"}</DrawerItem>
+          <DrawerItem name="Window">{object.status.nextSchedule.window || "0s"}</DrawerItem>
           <DrawerItem name="When">
             <DurationAbsoluteTimestamp timestamp={object.status.nextSchedule.when} />
           </DrawerItem>

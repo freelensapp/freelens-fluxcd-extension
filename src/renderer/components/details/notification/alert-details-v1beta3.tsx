@@ -18,12 +18,12 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
       <DrawerItem name="Resumed">
         <BadgeBoolean value={!object.spec.suspend} />
       </DrawerItem>
-      <DrawerItem name="Event Severity">{object.spec.eventSeverity}</DrawerItem>
+      <DrawerItem name="Event Severity">{object.spec.eventSeverity ?? "info"}</DrawerItem>
       <DrawerItem name="Event Sources">
         {object.spec.eventSources.map((eventSource) => {
           const badge = <Badge label={`${eventSource.kind}:${eventSource.name}`} />;
           return (
-            <DrawerItem key={`${eventSource.kind}:${eventSource.name}`} name="">
+            <DrawerItem key={Renderer.Util.createReactKey(eventSource)} name="">
               {eventSource.name === "*" ? (
                 badge
               ) : (

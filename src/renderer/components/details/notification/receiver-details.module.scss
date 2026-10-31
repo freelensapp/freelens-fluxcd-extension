@@ -1,6 +1,38 @@
 @use "../../../vars";
 
 .details {
+  .webhookPath {
+    font-family: var(--font-monospace, monospace);
+    word-break: break-all;
+    user-select: text;
+  }
+
+  .expression {
+    font-family: var(--font-monospace, monospace);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .title {
+    margin-top: vars.$margin * 2;
+    margin-bottom: vars.$margin;
+
+    span {
+      margin-left: vars.$gap;
+      font-weight: bold;
+      word-break: break-all;
+    }
+  }
+
+  .validation {
+    display: flex;
+    flex-direction: column;
+
+    & + .validation {
+      margin-top: vars.$margin;
+    }
+  }
+
   .resources {
     :global(.TableCell) {
       &.kind {
@@ -13,6 +45,14 @@
 
       &.namespace {
         flex-grow: 0.5;
+      }
+
+      &.matchLabels {
+        flex-grow: 0.7;
+      }
+
+      &.filter {
+        flex-grow: 0.7;
       }
     }
   }

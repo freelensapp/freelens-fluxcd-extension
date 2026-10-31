@@ -10,7 +10,16 @@ import styles from "./git-repository-details.module.scss";
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, LinkToObject, LinkToSecret, MonacoEditor },
+  Component: {
+    BadgeBoolean,
+    DrawerItem,
+    DrawerTitle,
+    Icon,
+    LinkToObject,
+    LinkToSecret,
+    LinkToServiceAccount,
+    MonacoEditor,
+  },
 } = Renderer;
 
 export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<GitRepository>> = observer(
@@ -39,10 +48,19 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
           <DrawerItem name="Git Credentials" hidden={!object.spec.secretRef}>
             <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
           </DrawerItem>
-          <DrawerItem name="Verify OpenPGP signature" hidden={!object.spec.verify}>
-            {object.spec.verify?.mode ?? "unknown"}
+          <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
+            <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
+          </DrawerItem>
+          <DrawerItem name="Proxy Configuration" hidden={!object.spec.proxySecretRef}>
+            <LinkToSecret name={object.spec.proxySecretRef?.name} namespace={namespace} />
+          </DrawerItem>
+          <DrawerItem name="Verify Commit Signature" hidden={!object.spec.verify}>
+            {object.spec.verify?.mode ?? "HEAD"}
             {": "}
             <LinkToSecret name={object.spec.verify?.secretRef.name} namespace={namespace} />
+          </DrawerItem>
+          <DrawerItem name="Source Verification Mode" hidden={!object.status?.sourceVerificationMode}>
+            {object.status?.sourceVerificationMode}
           </DrawerItem>
           <DrawerItem name="Source Verification Fingerprint" hidden={!object.status?.sourceVerificationFingerprint}>
             {object.status?.sourceVerificationFingerprint}
@@ -66,6 +84,11 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
           </DrawerItem>
           <DrawerItem name="Recurse Submodules">
             <BadgeBoolean value={object.spec.recurseSubmodules ?? false} />
+          </DrawerItem>
+          <DrawerItem name="Sparse Checkout" hidden={!object.spec.sparseCheckout?.length}>
+            {object.spec.sparseCheckout?.map((directory) => (
+              <div key={directory}>{directory}</div>
+            ))}
           </DrawerItem>
 
           {object.spec.include && (
