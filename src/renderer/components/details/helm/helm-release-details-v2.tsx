@@ -3,11 +3,13 @@ import { Base64 } from "js-base64";
 import { dump } from "js-yaml";
 import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
-import { HelmRelease, HelmReleaseSnapshot, type HelmReleaseStore } from "../../../k8s/fluxcd/helm/helmrelease-v2";
+import { HelmRelease, type HelmReleaseStore, type Snapshot } from "../../../k8s/fluxcd/helm/helmrelease-v2";
 import { withFluxKind, withServedApiVersion } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
+import { StatusInventory } from "../../status-inventory";
+import { YamlDump } from "../../yaml-dump";
 import styles from "./helm-release-details.module.scss";
 
 import type { Patch } from "../../../k8s/core/types";
@@ -23,6 +25,7 @@ const {
     Badge,
     BadgeBoolean,
     DrawerItem,
+    DrawerItemLabels,
     DrawerTitle,
     DurationAbsoluteTimestamp,
     Icon,
@@ -41,11 +44,11 @@ const {
 } = Renderer;
 
 const historySortable = {
-  version: (snapshot: HelmReleaseSnapshot) => snapshot.version,
-  lastDeployed: (snapshot: HelmReleaseSnapshot) => snapshot.lastDeployed,
-  chartVersion: (snapshot: HelmReleaseSnapshot) => snapshot.chartVersion,
-  appVersion: (snapshot: HelmReleaseSnapshot) => snapshot.appVersion,
-  status: (snapshot: HelmReleaseSnapshot) => snapshot.status,
+  version: (snapshot: Snapshot) => snapshot.version,
+  lastDeployed: (snapshot: Snapshot) => snapshot.lastDeployed,
+  chartVersion: (snapshot: Snapshot) => snapshot.chartVersion,
+  appVersion: (snapshot: Snapshot) => snapshot.appVersion,
+  status: (snapshot: Snapshot) => snapshot.status,
 };
 
 const historySortByNames = createEnumFromKeys(historySortable);
@@ -174,12 +177,50 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Drift Detection" hidden={!object.spec.driftDetection?.mode}>
             {object.spec.driftDetection?.mode}
           </DrawerItem>
+          <DrawerItem name="Wait Strategy" hidden={!object.spec.waitStrategy}>
+            {object.spec.waitStrategy?.name}
+          </DrawerItem>
+          <DrawerItem name="Post Render Strategy" hidden={!object.spec.postRenderStrategy}>
+            {object.spec.postRenderStrategy}
+          </DrawerItem>
+          <DrawerItem name="Install Strategy" hidden={!object.spec.install?.strategy}>
+            {object.spec.install?.strategy?.name}
+            {object.spec.install?.strategy?.retryInterval &&
+              ` (retry interval: ${object.spec.install.strategy.retryInterval})`}
+          </DrawerItem>
           <DrawerItem name="Install CRDs" hidden={!object.spec.install?.crds}>
             {object.spec.install?.crds}
+          </DrawerItem>
+          <DrawerItem name="Install Server-Side Apply" hidden={object.spec.install?.serverSideApply === undefined}>
+            <BadgeBoolean value={object.spec.install?.serverSideApply ?? false} />
+          </DrawerItem>
+          <DrawerItem name="Upgrade Strategy" hidden={!object.spec.upgrade?.strategy}>
+            {object.spec.upgrade?.strategy?.name}
+            {object.spec.upgrade?.strategy?.retryInterval &&
+              ` (retry interval: ${object.spec.upgrade.strategy.retryInterval})`}
           </DrawerItem>
           <DrawerItem name="Upgrade CRDs" hidden={!object.spec.upgrade?.crds}>
             {object.spec.upgrade?.crds}
           </DrawerItem>
+          <DrawerItem name="Upgrade Server-Side Apply" hidden={!object.spec.upgrade?.serverSideApply}>
+            {object.spec.upgrade?.serverSideApply}
+          </DrawerItem>
+          <DrawerItem name="Chart Name Change Strategy" hidden={!object.spec.upgrade?.chartNameChangeStrategy}>
+            {object.spec.upgrade?.chartNameChangeStrategy}
+          </DrawerItem>
+          <DrawerItem name="Rollback Server-Side Apply" hidden={!object.spec.rollback?.serverSideApply}>
+            {object.spec.rollback?.serverSideApply}
+          </DrawerItem>
+          <DrawerItemLabels
+            name="Common Labels"
+            labels={object.spec.commonMetadata?.labels ?? {}}
+            hidden={!object.spec.commonMetadata?.labels}
+          />
+          <DrawerItemLabels
+            name="Common Annotations"
+            labels={object.spec.commonMetadata?.annotations ?? {}}
+            hidden={!object.spec.commonMetadata?.annotations}
+          />
           <DrawerItem name="Values Files" hidden={!object.spec.chart?.spec.valuesFiles?.length}>
             {object.spec.chart?.spec.valuesFiles?.join(", ")}
           </DrawerItem>
@@ -218,8 +259,11 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                     <DrawerItem name="Namespace">
                       <LinkToNamespace namespace={dependency.namespace ?? namespace} />
                     </DrawerItem>
-                    <DrawerItem name="Revision" hidden={!reference?.status?.lastAppliedRevision}>
-                      {reference?.status?.lastAppliedRevision}
+                    <DrawerItem name="Ready Expression" hidden={!dependency.readyExpr}>
+                      <YamlDump data={dependency.readyExpr} />
+                    </DrawerItem>
+                    <DrawerItem name="Chart Version" hidden={!reference?.status?.history?.[0]?.chartVersion}>
+                      {reference?.status?.history?.[0]?.chartVersion}
                     </DrawerItem>
                     <DrawerItem name="Condition" hidden={!reference}>
                       {reference ? (
@@ -271,7 +315,10 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                       {valueFrom.targetPath}
                     </DrawerItem>
                     <DrawerItem name="Optional" hidden={!valueFrom.optional}>
-                      {valueFrom.optional}
+                      <BadgeBoolean value={valueFrom.optional ?? false} />
+                    </DrawerItem>
+                    <DrawerItem name="Literal" hidden={!valueFrom.literal}>
+                      <BadgeBoolean value={valueFrom.literal ?? false} />
                     </DrawerItem>
                     <MonacoEditor
                       readOnly
@@ -341,6 +388,32 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             </div>
           )}
 
+          {object.spec.healthCheckExprs && (
+            <div>
+              <DrawerTitle>Health Check Expressions</DrawerTitle>
+              {object.spec.healthCheckExprs.map((healthCheck) => (
+                <div key={Renderer.Util.createReactKey(healthCheck)}>
+                  <div className={styles.title}>
+                    <Icon small material="list" />
+                  </div>
+                  <DrawerItem name="API Version">{healthCheck.apiVersion}</DrawerItem>
+                  <DrawerItem name="Kind" hidden={!healthCheck.kind}>
+                    {healthCheck.kind}
+                  </DrawerItem>
+                  <DrawerItem name="Current">
+                    <YamlDump data={healthCheck.current} />
+                  </DrawerItem>
+                  <DrawerItem name="In Progress" hidden={!healthCheck.inProgress}>
+                    <YamlDump data={healthCheck.inProgress} />
+                  </DrawerItem>
+                  <DrawerItem name="Failed" hidden={!healthCheck.failed}>
+                    <YamlDump data={healthCheck.failed} />
+                  </DrawerItem>
+                </div>
+              ))}
+            </div>
+          )}
+
           {object.status?.history && (
             <div className={styles.history}>
               <DrawerTitle>History</DrawerTitle>
@@ -379,6 +452,8 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
               </Table>
             </div>
           )}
+
+          <StatusInventory inventory={object.status?.inventory} object={object} />
         </div>
       </>
     );
