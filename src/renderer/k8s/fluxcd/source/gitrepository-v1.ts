@@ -18,24 +18,41 @@ export interface GitRepositoryInclude {
   toPath?: string;
 }
 
+export type GitVerificationMode = "head" | "HEAD" | "Tag" | "TagAndHEAD";
+
+export interface GitRepositoryVerification {
+  mode?: GitVerificationMode;
+  secretRef: LocalObjectReference;
+}
+
+export type GitRepositorySpecProvider = "generic" | "aws" | "azure" | "github";
+
 export interface GitRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   url: string;
   secretRef?: LocalObjectReference;
-  provider?: "generic" | "aws" | "azure" | "github";
+  provider?: GitRepositorySpecProvider;
+  serviceAccountName?: string;
   interval: string;
   timeout?: string;
   ref?: GitRepositoryRef;
-  verify?: { mode?: string; secretRef: LocalObjectReference };
+  verify?: GitRepositoryVerification;
+  proxySecretRef?: LocalObjectReference;
   ignore?: string;
   suspend?: boolean;
   recurseSubmodules?: boolean;
   include?: GitRepositoryInclude[];
+  sparseCheckout?: string[];
 }
 
 export interface GitRepositoryStatus extends FluxCDKubeObjectStatus {
   artifact?: Artifact;
   includedArtifacts?: Artifact[];
+  observedIgnore?: string;
+  observedRecurseSubmodules?: boolean;
+  observedInclude?: GitRepositoryInclude[];
+  observedSparseCheckout?: string[];
   sourceVerificationFingerprint?: string;
+  sourceVerificationMode?: GitVerificationMode;
 }
 
 export class GitRepository extends Renderer.K8sApi.LensExtensionKubeObject<

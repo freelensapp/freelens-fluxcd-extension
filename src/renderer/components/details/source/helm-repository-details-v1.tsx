@@ -30,8 +30,14 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
         <DrawerItem name="Authentication Credentials" hidden={!object.spec.secretRef}>
           <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
         </DrawerItem>
+        <DrawerItem name="TLS Certificate" hidden={!object.spec.certSecretRef}>
+          <LinkToSecret name={object.spec.certSecretRef?.name} namespace={namespace} />
+        </DrawerItem>
         <DrawerItem name="Pass Credentials" hidden={object.spec.passCredentials === undefined}>
           <BadgeBoolean value={object.spec.passCredentials} />
+        </DrawerItem>
+        <DrawerItem name="Insecure Container Registry" hidden={object.spec.insecure === undefined}>
+          <BadgeBoolean value={object.spec.insecure} />
         </DrawerItem>
 
         <StatusArtifact artifact={object.status?.artifact} />

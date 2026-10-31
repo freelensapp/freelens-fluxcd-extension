@@ -4,21 +4,39 @@ import type { Artifact, FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus 
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
+export type BucketSTSSpecProvider = "aws" | "ldap";
+
+export interface BucketSTSSpec {
+  provider: BucketSTSSpecProvider;
+  endpoint: string;
+  secretRef?: LocalObjectReference;
+  certSecretRef?: LocalObjectReference;
+}
+
+export type BucketSpecProvider = "generic" | "aws" | "gcp" | "azure";
+
 export interface BucketSpec extends FluxCDKubeObjectSpecWithSuspend {
-  provider?: "generic" | "aws" | "azure" | "gcp";
+  provider?: BucketSpecProvider;
   bucketName: string;
   endpoint: string;
+  sts?: BucketSTSSpec;
   insecure?: boolean;
   region?: string;
+  prefix?: string;
   secretRef?: LocalObjectReference;
+  serviceAccountName?: string;
+  certSecretRef?: LocalObjectReference;
+  proxySecretRef?: LocalObjectReference;
   interval: string;
   timeout?: string;
+  ignore?: string;
   suspend?: boolean;
 }
 
 export interface BucketStatus extends FluxCDKubeObjectStatus {
   url?: string;
   artifact?: Artifact;
+  observedIgnore?: string;
 }
 
 export class Bucket extends Renderer.K8sApi.LensExtensionKubeObject<
