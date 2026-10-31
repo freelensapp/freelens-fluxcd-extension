@@ -7,15 +7,17 @@ import { createEnumFromKeys } from "../../../utils";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import styles from "./receiver-details.module.scss";
 
-import type { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
+import type { ReceiverResource } from "../../../k8s/fluxcd/notification/receiver-v1";
 
 const { observer } = MobxReact;
 
 const {
   Component: {
+    Badge,
     BadgeBoolean,
     DrawerItem,
     DrawerTitle,
+    Icon,
     LinkToNamespace,
     LinkToObject,
     LinkToSecret,
@@ -28,9 +30,9 @@ const {
 } = Renderer;
 
 const resourceSortable = {
-  kind: (resource: NamespacedObjectKindReference) => resource.kind,
-  name: (resource: NamespacedObjectKindReference) => resource.name,
-  namespace: (resource: NamespacedObjectKindReference) => resource.namespace,
+  kind: (resource: ReceiverResource) => resource.kind,
+  name: (resource: ReceiverResource) => resource.name,
+  namespace: (resource: ReceiverResource) => resource.namespace,
 };
 
 const resourceSortByNames = createEnumFromKeys(resourceSortable);
@@ -40,9 +42,14 @@ const resourceSortByDefault: { sortBy: keyof typeof resourceSortable; orderBy: R
   orderBy: "asc",
 };
 
+/** `DefaultOIDCAudience` of notification-controller. */
+const defaultOIDCAudience = "notification-controller";
+
 export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Receiver>> = observer((props) => {
   const { object } = props;
   const namespace = object.getNs();
+  const hasMatchLabels = object.spec.resources.some((resource) => resource?.matchLabels);
+  const hasFilter = object.spec.resources.some((resource) => resource?.filter);
 
   return (
     <>
@@ -51,6 +58,10 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
           <BadgeBoolean value={!object.spec.suspend} />
         </DrawerItem>
         <DrawerItem name="Type">{object.spec.type}</DrawerItem>
+        <DrawerItem name="Webhook Path" hidden={!object.status?.webhookPath}>
+          <span className={styles.webhookPath}>{object.status?.webhookPath}</span>
+        </DrawerItem>
+        <DrawerItem name="Interval">{object.spec.interval ?? "10m"}</DrawerItem>
         <DrawerItem name="Events" hidden={!object.spec.events?.length}>
           {object.spec.events?.map((event) => (
             <DrawerItem key={event} name="">
@@ -58,9 +69,42 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
             </DrawerItem>
           ))}
         </DrawerItem>
+        <DrawerItem name="Resource Filter" hidden={!object.spec.resourceFilter}>
+          <code className={styles.expression}>{object.spec.resourceFilter}</code>
+        </DrawerItem>
         <DrawerItem name="Credentials" hidden={!object.spec.secretRef}>
           <LinkToSecret name={object.spec.secretRef?.name} namespace={namespace} />
         </DrawerItem>
+
+        {object.spec.oidcProviders && object.spec.oidcProviders.length > 0 && (
+          <div>
+            <DrawerTitle>OIDC Providers</DrawerTitle>
+            {object.spec.oidcProviders.map((provider) => (
+              <div key={provider.issuerURL}>
+                <div className={styles.title}>
+                  <Icon small material="key" />
+                  <span>{provider.issuerURL}</span>
+                </div>
+                <DrawerItem name="Audience">{provider.audience || defaultOIDCAudience}</DrawerItem>
+                <DrawerItem name="Variables" hidden={!provider.variables?.length}>
+                  {provider.variables?.map((variable) => (
+                    <DrawerItem key={variable.name} name={variable.name}>
+                      <code className={styles.expression}>{variable.expression}</code>
+                    </DrawerItem>
+                  ))}
+                </DrawerItem>
+                <DrawerItem name="Validations">
+                  {provider.validations.map((validation) => (
+                    <div key={Renderer.Util.createReactKey(validation)} className={styles.validation}>
+                      <code className={styles.expression}>{validation.expression}</code>
+                      <span>{validation.message}</span>
+                    </div>
+                  ))}
+                </DrawerItem>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className={styles.resources}>
           <DrawerTitle>Resources</DrawerTitle>
@@ -82,20 +126,38 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
               <TableCell className={styles.namespace} sortBy={resourceSortByNames.namespace}>
                 Namespace
               </TableCell>
+              {hasMatchLabels && <TableCell className={styles.matchLabels}>Match Labels</TableCell>}
+              {hasFilter && <TableCell className={styles.filter}>Filter</TableCell>}
             </TableHead>
             {object.spec.resources.map((resource) => {
               if (!resource) return null;
               return (
-                <TableRow key={`${resource.kind}-${resource.name}`} sortItem={resource} nowrap>
+                <TableRow key={Renderer.Util.createReactKey(resource)} sortItem={resource} nowrap>
                   <TableCell className={styles.kind}>
                     <WithTooltip tooltip={<ObjectRefTooltip objectRef={resource} />}>{resource.kind}</WithTooltip>
                   </TableCell>
                   <TableCell className={styles.name}>
-                    <LinkToObject objectRef={withServedApiVersion(resource)} object={object} />
+                    {resource.name === "*" ? (
+                      resource.name
+                    ) : (
+                      <LinkToObject objectRef={withServedApiVersion(resource)} object={object} />
+                    )}
                   </TableCell>
                   <TableCell className={styles.namespace}>
                     <LinkToNamespace namespace={resource.namespace ?? namespace} />
                   </TableCell>
+                  {hasMatchLabels && (
+                    <TableCell className={styles.matchLabels}>
+                      {Object.entries(resource.matchLabels ?? {}).map(([key, value]) => (
+                        <Badge key={key} label={`${key}=${value}`} />
+                      ))}
+                    </TableCell>
+                  )}
+                  {hasFilter && (
+                    <TableCell className={styles.filter}>
+                      <WithTooltip>{resource.filter}</WithTooltip>
+                    </TableCell>
+                  )}
                 </TableRow>
               );
             })}
