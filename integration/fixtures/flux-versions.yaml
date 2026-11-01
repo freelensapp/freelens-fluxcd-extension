@@ -85,21 +85,21 @@ flux:
       - https://github.com/fluxcd/image-automation-controller/releases/download/v1.3.0/image-automation-controller.crds.yaml
       - https://github.com/fluxcd/source-watcher/releases/download/v2.3.1/source-watcher.crds.yaml
     objects:
-      - gitrepository-v1.yaml
-      - helmrepository-v1.yaml
-      - helmchart-v1.yaml
+      - gitrepository-v1.flux-v2.10.0.yaml
+      - helmrepository-v1.flux-v2.10.0.yaml
+      - helmchart-v1.flux-v2.10.0.yaml
       - bucket-v1.yaml
       - ocirepository-v1.yaml
       - externalartifact-v1.yaml
       - artifactgenerator-v1beta1.yaml
-      - kustomization-v1.yaml
-      - helmrelease-v2.yaml
+      - kustomization-v1.flux-v2.10.0.yaml
+      - helmrelease-v2.flux-v2.10.0.yaml
       - imagerepository-v1.yaml
       - imagepolicy-v1.yaml
       - imageupdateautomation-v1.yaml
       - provider-v1.yaml
       - alert-v1.yaml
-      - receiver-v1.yaml
+      - receiver-v1.flux-v2.10.0.yaml
 
 # The Flux Operator, the same with every Flux version: the release that
 # followed the newest Flux above.

@@ -3,10 +3,25 @@ kind: ResourceSet
 metadata:
   name: test
 spec:
+  inputStrategy:
+    name: Permute
+    includeEmptyProviders: true
   inputs:
     - name: test
-  resources:
-    - apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: << inputs.name >>
+  inputsFrom:
+    - kind: ResourceSetInputProvider
+      name: test
+  steps:
+    - name: config
+      timeout: 1m
+      resources:
+        - apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: << inputs.test.name >>
+    - name: secrets
+      resourcesTemplate: |
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: << inputs.test.name >>

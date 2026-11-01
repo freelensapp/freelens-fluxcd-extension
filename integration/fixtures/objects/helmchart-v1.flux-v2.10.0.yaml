@@ -1,0 +1,21 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmChart
+metadata:
+  name: test
+spec:
+  interval: 1h
+  chart: podinfo
+  sourceRef:
+    kind: HelmRepository
+    name: test
+  valuesFiles:
+    - values.yaml
+    - values-production.yaml
+  ignoreMissingValuesFiles: true
+  verify:
+    provider: cosign
+    secretRef:
+      name: test-cosign-public-keys
+    matchOIDCIdentity:
+      - issuer: ^https://token\.actions\.githubusercontent\.com$
+        subject: ^https://github\.com/stefanprodan/podinfo.*$

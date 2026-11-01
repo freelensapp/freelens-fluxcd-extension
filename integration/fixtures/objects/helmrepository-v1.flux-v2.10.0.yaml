@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: test
+spec:
+  interval: 1h
+  type: oci
+  url: oci://registry.example.com/stefanprodan/charts
+  insecure: true
+  certSecretRef:
+    name: test-registry-ca
