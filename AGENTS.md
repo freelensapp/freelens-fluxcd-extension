@@ -138,7 +138,7 @@ src/
   common/                              # Code for both processes (none yet; its tsconfig.json only)
 test/stubs/                            # Runtime stub of @freelensapp/extensions for Vitest
 integration/__tests__/                 # Integration tests, run against Freelens dev over CDP, and their shared module
-integration/fixtures/                  # Flux versions, CRD URLs and test objects of the integration tests
+integration/fixtures/                  # Flux versions, CRD URLs, test objects and the objects they refer to
 environment-tests/                     # Probes for the per-environment programs
 build/                                 # Vite plugins: host modules, standard decorators, CSS module declarations
 ```
@@ -859,7 +859,8 @@ the kind cluster, removes the leftovers of an earlier run (the namespace
 `fluxcd.controlplane.io`, which an earlier run of another Flux version may
 have applied), applies the CRDs of its Flux version by their URLs, waits
 until they are established, creates the namespace `integration-tests`,
-applies the test objects there, and only then connects the cluster, so that
+applies there the objects of `integration/fixtures/resources` that the test
+objects refer to, then the test objects, and only then connects the cluster, so that
 the app reads the CRDs anew. The session then selects `integration-tests` in the namespace filter of
 the Git Repositories page, which its `KubeObjectListLayout` renders, unless
 the filter already shows it: a new cluster shows only `default`, and the app
@@ -869,7 +870,8 @@ page of the host, whose requests can log errors of their own: the Pods page
 asks for pod metrics, and kind has no metrics server. Its teardown stops
 collecting the errors first, then disconnects the cluster, so that the app
 logs no watch error for a CRD deleted under it, then deletes the namespace,
-with the test objects, and the CRDs with `--wait`, also when a test failed,
+with the test objects and the objects they refer to, and the CRDs with
+`--wait`, also when a test failed,
 and then checks the
 errors. The app refreshes the cluster's permissions while it disconnects it,
 and when the refresh loses the race, its requests fail on its own proxy
@@ -979,11 +981,23 @@ details panels hide an item whose field is missing, so a variant is what
 renders the items of the newer fields in the integration tests. A file that
 only one Flux version lists, and the objects of the Flux Operator, whose
 CRDs are the same for every Flux version, take the fields directly and have
-no variant. The objects need only be valid for the CRDs: a reference may name
-an object that does not exist, and `status` stays empty, so the items that
-come from it stay hidden. Check an object with
-`kubectl apply --dry-run=server` against the CRDs of every Flux version that
-lists it.
+no variant. The objects need only be valid for the CRDs, and `status` stays
+empty, so the items that come from it stay hidden. A reference that only
+links to an object, such as `sourceRef` or `dependsOn`, may name one that does
+not exist. Check an object with `kubectl apply --dry-run=server` against the
+CRDs of every Flux version that lists it.
+
+A reference whose object a details panel reads, such as the ConfigMaps and
+Secrets of `valuesFrom` and `postBuild.substituteFrom`, names an object that
+exists, so that the panel shows its contents. The views are a happy path, and
+for a missing object Chromium logs the 404 of the request as a console error,
+which fails the session. Such objects are plain Kubernetes objects with no
+model, so they are not in `objects/`, which has one file per model: they are
+in `integration/fixtures/resources`, one object per file, named after its
+kind and name (`configmap-test-values.yaml`), and the top-level `resources`
+list of the map names every file. The session applies them for every Flux
+version, in `integration-tests`, after it creates the namespace and before
+the test objects, and its teardown deletes them with the namespace.
 
 Two checks keep this complete:
 
@@ -991,9 +1005,11 @@ Two checks keep this complete:
   model under `src/renderer/k8s/fluxcd/` has no object of its kind and
   version that some Flux version lists, when an object has no model or is
   listed nowhere, when a Flux version lists two objects of a kind, when a
-  variant is not listed by the Flux version it names, and when the workflow
-  matrix differs from the map. The model of an object file is the part of its
-  name before the first `.`, so a variant counts for its model.
+  variant is not listed by the Flux version it names, when a file of
+  `resources/` is not in `resources` or a listed one does not exist, and when
+  the workflow matrix differs from the map. The model of an object file is
+  the part of its name before the first `.`, so a variant counts for its
+  model.
 - The details view of `fluxcd.tests.ts` fails when the page shows an object
   in another version than its file's, that is, when the map lists an object
   in a version the page does not pick on that Flux.

@@ -8,6 +8,17 @@
 # A variant, <model>.flux-<version>.yaml, is the same object with the fields
 # that only the CRDs of that Flux version have, and that version lists it in
 # place of <model>.yaml.
+#
+# The plain Kubernetes objects that the test objects refer to and the details
+# panels read, such as the ConfigMaps of `valuesFrom` and `substituteFrom`,
+# are in resources/, one object per file, and every file is in `resources`.
+# The session applies them for every Flux version, in the namespace of the
+# test objects, before the test objects.
+resources:
+  - configmap-test-vars.yaml
+  - configmap-test-values.yaml
+  - secret-test-image.yaml
+
 flux:
   v2.0.0:
     crds:

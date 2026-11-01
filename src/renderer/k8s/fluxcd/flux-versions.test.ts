@@ -12,6 +12,7 @@ interface FixtureSet {
 }
 
 interface FluxVersions {
+  resources: string[];
   flux: Record<string, FixtureSet>;
   fluxOperator: FixtureSet;
 }
@@ -60,6 +61,12 @@ const objectSources = import.meta.glob<string>("../../../../integration/fixtures
 const testObjects = new Map(
   Object.entries(objectSources).map(([file, source]) => [file.replace(/^.*\//, ""), load(source) as TestObject]),
 );
+
+// The files of the objects that the test objects refer to, such as
+// `configmap-test-values.yaml`, which every Flux version applies.
+const resourceFiles = Object.keys(
+  import.meta.glob("../../../../integration/fixtures/resources/*.yaml", { query: "?raw", import: "default" }),
+).map((file) => file.replace(/^.*\//, ""));
 
 // The model of a test object file: the part of its name before the first `.`.
 const modelOf = (file: string) => file.replace(/\..*$/, "");
@@ -114,6 +121,11 @@ describe("the Flux versions of the integration tests", () => {
         expect(fluxVersions.flux[version]?.objects, file).toContain(file);
       }
     }
+  });
+
+  it("list every object that the test objects refer to, and only existing ones", () => {
+    expect(resourceFiles.length).toBeGreaterThan(0);
+    expect([...fluxVersions.resources].sort()).toEqual([...resourceFiles].sort());
   });
 
   it.each(fixtureSets)("list for %s existing objects, one per kind", (_name, { objects }) => {

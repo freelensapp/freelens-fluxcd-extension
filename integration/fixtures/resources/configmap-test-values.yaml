@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-values
+data:
+  values.yaml: |
+    replicaCount: 2
+    resources:
+      limits:
+        memory: 256Mi
+      requests:
+        cpu: 100m
