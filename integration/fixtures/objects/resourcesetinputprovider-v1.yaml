@@ -1,0 +1,8 @@
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSetInputProvider
+metadata:
+  name: test
+spec:
+  type: Static
+  defaultValues:
+    name: test

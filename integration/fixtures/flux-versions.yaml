@@ -1,0 +1,112 @@
+# The Flux versions of the integration tests, a job of the workflow matrix
+# each, chosen so that every model version of the extension is the newest one
+# that some Flux serves (see "Flux versions of the integration tests" in
+# AGENTS.md). Each lists the CRDs of `manifests/crds` in fluxcd/flux2 at its
+# tag, and the test objects from objects/, one per kind, in the version that
+# the page of the kind picks on it.
+flux:
+  v2.0.0:
+    crds:
+      - https://github.com/fluxcd/source-controller/releases/download/v1.0.0/source-controller.crds.yaml
+      - https://github.com/fluxcd/kustomize-controller/releases/download/v1.0.0/kustomize-controller.crds.yaml
+      - https://github.com/fluxcd/helm-controller/releases/download/v0.35.0/helm-controller.crds.yaml
+      - https://github.com/fluxcd/notification-controller/releases/download/v1.0.0/notification-controller.crds.yaml
+      - https://github.com/fluxcd/image-reflector-controller/releases/download/v0.29.0/image-reflector-controller.crds.yaml
+      - https://github.com/fluxcd/image-automation-controller/releases/download/v0.35.0/image-automation-controller.crds.yaml
+    objects:
+      - gitrepository-v1.yaml
+      - helmrepository-v1beta2.yaml
+      - helmchart-v1beta2.yaml
+      - bucket-v1beta2.yaml
+      - ocirepository-v1beta2.yaml
+      - kustomization-v1.yaml
+      - helmrelease-v2beta1.yaml
+      - imagerepository-v1beta2.yaml
+      - imagepolicy-v1beta2.yaml
+      - imageupdateautomation-v1beta1.yaml
+      - provider-v1beta2.yaml
+      - alert-v1beta2.yaml
+      - receiver-v1.yaml
+  v2.2.0:
+    crds:
+      - https://github.com/fluxcd/source-controller/releases/download/v1.2.2/source-controller.crds.yaml
+      - https://github.com/fluxcd/kustomize-controller/releases/download/v1.2.0/kustomize-controller.crds.yaml
+      - https://github.com/fluxcd/helm-controller/releases/download/v0.37.0/helm-controller.crds.yaml
+      - https://github.com/fluxcd/notification-controller/releases/download/v1.2.2/notification-controller.crds.yaml
+      - https://github.com/fluxcd/image-reflector-controller/releases/download/v0.31.1/image-reflector-controller.crds.yaml
+      - https://github.com/fluxcd/image-automation-controller/releases/download/v0.37.0/image-automation-controller.crds.yaml
+    objects:
+      - gitrepository-v1.yaml
+      - helmrepository-v1beta2.yaml
+      - helmchart-v1beta2.yaml
+      - bucket-v1beta2.yaml
+      - ocirepository-v1beta2.yaml
+      - kustomization-v1.yaml
+      - helmrelease-v2beta2.yaml
+      - imagerepository-v1beta2.yaml
+      - imagepolicy-v1beta2.yaml
+      - imageupdateautomation-v1beta1.yaml
+      - provider-v1beta3.yaml
+      - alert-v1beta3.yaml
+      - receiver-v1.yaml
+  v2.3.0:
+    crds:
+      - https://github.com/fluxcd/source-controller/releases/download/v1.3.0/source-controller.crds.yaml
+      - https://github.com/fluxcd/kustomize-controller/releases/download/v1.3.0/kustomize-controller.crds.yaml
+      - https://github.com/fluxcd/helm-controller/releases/download/v1.0.1/helm-controller.crds.yaml
+      - https://github.com/fluxcd/notification-controller/releases/download/v1.3.0/notification-controller.crds.yaml
+      - https://github.com/fluxcd/image-reflector-controller/releases/download/v0.32.0/image-reflector-controller.crds.yaml
+      - https://github.com/fluxcd/image-automation-controller/releases/download/v0.38.0/image-automation-controller.crds.yaml
+    objects:
+      - gitrepository-v1.yaml
+      - helmrepository-v1.yaml
+      - helmchart-v1.yaml
+      - bucket-v1beta2.yaml
+      - ocirepository-v1beta2.yaml
+      - kustomization-v1.yaml
+      - helmrelease-v2.yaml
+      - imagerepository-v1beta2.yaml
+      - imagepolicy-v1beta2.yaml
+      - imageupdateautomation-v1beta2.yaml
+      - provider-v1beta3.yaml
+      - alert-v1beta3.yaml
+      - receiver-v1.yaml
+  v2.10.0:
+    crds:
+      - https://github.com/fluxcd/source-controller/releases/download/v1.10.1/source-controller.crds.yaml
+      - https://github.com/fluxcd/kustomize-controller/releases/download/v1.10.1/kustomize-controller.crds.yaml
+      - https://github.com/fluxcd/helm-controller/releases/download/v1.7.1/helm-controller.crds.yaml
+      - https://github.com/fluxcd/notification-controller/releases/download/v1.10.0/notification-controller.crds.yaml
+      - https://github.com/fluxcd/image-reflector-controller/releases/download/v1.3.0/image-reflector-controller.crds.yaml
+      - https://github.com/fluxcd/image-automation-controller/releases/download/v1.3.0/image-automation-controller.crds.yaml
+      - https://github.com/fluxcd/source-watcher/releases/download/v2.3.1/source-watcher.crds.yaml
+    objects:
+      - gitrepository-v1.yaml
+      - helmrepository-v1.yaml
+      - helmchart-v1.yaml
+      - bucket-v1.yaml
+      - ocirepository-v1.yaml
+      - externalartifact-v1.yaml
+      - artifactgenerator-v1beta1.yaml
+      - kustomization-v1.yaml
+      - helmrelease-v2.yaml
+      - imagerepository-v1.yaml
+      - imagepolicy-v1.yaml
+      - imageupdateautomation-v1.yaml
+      - provider-v1.yaml
+      - alert-v1.yaml
+      - receiver-v1.yaml
+
+# The Flux Operator, the same with every Flux version: the release that
+# followed the newest Flux above.
+fluxOperator:
+  crds:
+    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_fluxinstances.yaml
+    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_fluxreports.yaml
+    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_resourcesets.yaml
+    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_resourcesetinputproviders.yaml
+  objects:
+    - fluxinstance-v1.yaml
+    - fluxreport-v1.yaml
+    - resourceset-v1.yaml
+    - resourcesetinputprovider-v1.yaml

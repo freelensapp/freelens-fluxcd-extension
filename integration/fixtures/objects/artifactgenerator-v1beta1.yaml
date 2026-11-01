@@ -1,0 +1,14 @@
+apiVersion: source.extensions.fluxcd.io/v1beta1
+kind: ArtifactGenerator
+metadata:
+  name: test
+spec:
+  sources:
+    - alias: podinfo
+      kind: GitRepository
+      name: test
+  artifacts:
+    - name: test
+      copy:
+        - from: "@podinfo/kustomize/**"
+          to: "@artifact/"

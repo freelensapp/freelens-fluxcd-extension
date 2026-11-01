@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - "*"
+      - "**"
   workflow_dispatch: {}
 
 permissions:
@@ -18,14 +18,22 @@ env:
 
 jobs:
   test-integration:
-    name: "integration tests with Freelens ${{ matrix.freelens_version }}"
+    name: "integration tests with Freelens ${{ matrix.freelens_version }} and Flux ${{ matrix.flux_version }}"
 
     strategy:
       fail-fast: false
       matrix:
-        include:
-          # The Freelens releases the extension supports, by their tags.
-          - freelens_version: v2.0.0
+        # The Freelens releases the extension supports, by their tags.
+        freelens_version:
+          - v2.0.0
+        # Every Flux version of integration/fixtures/flux-versions.yaml, which
+        # has the CRDs and test objects of each; flux-versions.test.ts checks
+        # that the lists match.
+        flux_version:
+          - v2.0.0
+          - v2.2.0
+          - v2.3.0
+          - v2.10.0
 
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
@@ -306,9 +314,9 @@ jobs:
           package-manager-cache: false
 
       # The tests run two sessions against the one app: the install test and
-      # the session of the FluxCD views, which applies the Flux CRDs and the
-      # test objects to the kind cluster named by TEST_KIND_CLUSTER_NAME, and
-      # removes them again.
+      # the session of the FluxCD views, which applies the CRDs and the test
+      # objects of the Flux version named by TEST_FLUX_VERSION to the kind
+      # cluster named by TEST_KIND_CLUSTER_NAME, and removes them again.
       #
       # The tests are deterministic, so a failure is not retried. A failing view
       # costs one view timeout.
@@ -316,8 +324,20 @@ jobs:
         run: timeout 600 pnpm --color=always test:integration --reporter=verbose --reporter=github-actions --includeTaskLocation
         env:
           FREELENS_MAIN_LOG: ${{ runner.temp }}/freelens-dev.log
+          TEST_FLUX_VERSION: ${{ matrix.flux_version }}
           TEST_KIND_CLUSTER_NAME: freelens
 
       - name: Show Freelens dev output
         if: always()
         run: cat "${{ runner.temp }}/freelens-dev.log" || true
+
+  # The one check that branch rules require, whatever the matrix has: it
+  # fails when a job of the matrix failed or was cancelled.
+  integration-tests:
+    name: integration tests
+    needs: test-integration
+    if: always()
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Check the result of the matrix
+        run: test "${{ needs.test-integration.result }}" = success

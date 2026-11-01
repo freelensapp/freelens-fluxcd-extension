@@ -1,0 +1,14 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: test
+spec:
+  interval: 1h
+  sourceRef:
+    kind: GitRepository
+    name: test
+  git:
+    commit:
+      author:
+        name: Flux
+        email: flux@example.com

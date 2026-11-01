@@ -1,0 +1,7 @@
+apiVersion: notification.toolkit.fluxcd.io/v1
+kind: Provider
+metadata:
+  name: test
+spec:
+  type: generic
+  address: https://example.com
