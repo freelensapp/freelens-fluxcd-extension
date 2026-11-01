@@ -10,42 +10,28 @@ import { HelmRelease as HelmRelease_v2 } from "../k8s/fluxcd/helm/helmrelease-v2
 import { HelmRelease as HelmRelease_v2beta1 } from "../k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "../k8s/fluxcd/helm/helmrelease-v2beta2";
 import { ImagePolicy as ImagePolicy_v1 } from "../k8s/fluxcd/image/imagepolicy-v1";
-import { ImagePolicy as ImagePolicy_v1beta1 } from "../k8s/fluxcd/image/imagepolicy-v1beta1";
 import { ImagePolicy as ImagePolicy_v1beta2 } from "../k8s/fluxcd/image/imagepolicy-v1beta2";
 import { ImageRepository as ImageRepository_v1 } from "../k8s/fluxcd/image/imagerepository-v1";
-import { ImageRepository as ImageRepository_v1beta1 } from "../k8s/fluxcd/image/imagerepository-v1beta1";
 import { ImageRepository as ImageRepository_v1beta2 } from "../k8s/fluxcd/image/imagerepository-v1beta2";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v1 } from "../k8s/fluxcd/image/imageupdateautomation-v1";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta1 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta1";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta2 } from "../k8s/fluxcd/image/imageupdateautomation-v1beta2";
 import { Kustomization as Kustomization_v1 } from "../k8s/fluxcd/kustomize/kustomization-v1";
-import { Kustomization as Kustomization_v1beta1 } from "../k8s/fluxcd/kustomize/kustomization-v1beta1";
-import { Kustomization as Kustomization_v1beta2 } from "../k8s/fluxcd/kustomize/kustomization-v1beta2";
 import { Alert as Alert_v1 } from "../k8s/fluxcd/notification/alert-v1";
-import { Alert as Alert_v1beta1 } from "../k8s/fluxcd/notification/alert-v1beta1";
 import { Alert as Alert_v1beta2 } from "../k8s/fluxcd/notification/alert-v1beta2";
 import { Alert as Alert_v1beta3 } from "../k8s/fluxcd/notification/alert-v1beta3";
 import { Provider as Provider_v1 } from "../k8s/fluxcd/notification/provider-v1";
-import { Provider as Provider_v1beta1 } from "../k8s/fluxcd/notification/provider-v1beta1";
 import { Provider as Provider_v1beta2 } from "../k8s/fluxcd/notification/provider-v1beta2";
 import { Provider as Provider_v1beta3 } from "../k8s/fluxcd/notification/provider-v1beta3";
 import { Receiver as Receiver_v1 } from "../k8s/fluxcd/notification/receiver-v1";
-import { Receiver as Receiver_v1beta1 } from "../k8s/fluxcd/notification/receiver-v1beta1";
-import { Receiver as Receiver_v1beta2 } from "../k8s/fluxcd/notification/receiver-v1beta2";
-import { Receiver as Receiver_v1beta3 } from "../k8s/fluxcd/notification/receiver-v1beta3";
 import { ArtifactGenerator as ArtifactGenerator_v1beta1 } from "../k8s/fluxcd/source/artifactgenerator-v1beta1";
 import { Bucket as Bucket_v1 } from "../k8s/fluxcd/source/bucket-v1";
-import { Bucket as Bucket_v1beta1 } from "../k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "../k8s/fluxcd/source/bucket-v1beta2";
 import { ExternalArtifact as ExternalArtifact_v1 } from "../k8s/fluxcd/source/externalartifact-v1";
 import { GitRepository as GitRepository_v1 } from "../k8s/fluxcd/source/gitrepository-v1";
-import { GitRepository as GitRepository_v1beta1 } from "../k8s/fluxcd/source/gitrepository-v1beta1";
-import { GitRepository as GitRepository_v1beta2 } from "../k8s/fluxcd/source/gitrepository-v1beta2";
 import { HelmChart as HelmChart_v1 } from "../k8s/fluxcd/source/helmchart-v1";
-import { HelmChart as HelmChart_v1beta1 } from "../k8s/fluxcd/source/helmchart-v1beta1";
 import { HelmChart as HelmChart_v1beta2 } from "../k8s/fluxcd/source/helmchart-v1beta2";
 import { HelmRepository as HelmRepository_v1 } from "../k8s/fluxcd/source/helmrepository-v1";
-import { HelmRepository as HelmRepository_v1beta1 } from "../k8s/fluxcd/source/helmrepository-v1beta1";
 import { HelmRepository as HelmRepository_v1beta2 } from "../k8s/fluxcd/source/helmrepository-v1beta2";
 import { OCIRepository as OCIRepository_v1 } from "../k8s/fluxcd/source/ocirepository-v1";
 import { OCIRepository as OCIRepository_v1beta2 } from "../k8s/fluxcd/source/ocirepository-v1beta2";
@@ -63,30 +49,30 @@ const {
  * the first version the cluster serves is used (see `getServedStore`).
  */
 const kinds = [
-  { title: Kustomization_v1.crd.title, classes: [Kustomization_v1, Kustomization_v1beta2, Kustomization_v1beta1] },
+  { title: Kustomization_v1.crd.title, classes: [Kustomization_v1] },
   { title: HelmRelease_v2.crd.title, classes: [HelmRelease_v2, HelmRelease_v2beta2, HelmRelease_v2beta1] },
-  { title: GitRepository_v1.crd.title, classes: [GitRepository_v1, GitRepository_v1beta2, GitRepository_v1beta1] },
+  { title: GitRepository_v1.crd.title, classes: [GitRepository_v1] },
   {
     title: HelmRepository_v1.crd.title,
-    classes: [HelmRepository_v1, HelmRepository_v1beta2, HelmRepository_v1beta1],
+    classes: [HelmRepository_v1, HelmRepository_v1beta2],
   },
-  { title: HelmChart_v1.crd.title, classes: [HelmChart_v1, HelmChart_v1beta2, HelmChart_v1beta1] },
-  { title: Bucket_v1.crd.title, classes: [Bucket_v1, Bucket_v1beta2, Bucket_v1beta1] },
+  { title: HelmChart_v1.crd.title, classes: [HelmChart_v1, HelmChart_v1beta2] },
+  { title: Bucket_v1.crd.title, classes: [Bucket_v1, Bucket_v1beta2] },
   { title: OCIRepository_v1.crd.title, classes: [OCIRepository_v1, OCIRepository_v1beta2] },
   { title: ExternalArtifact_v1.crd.title, classes: [ExternalArtifact_v1] },
   { title: ArtifactGenerator_v1beta1.crd.title, classes: [ArtifactGenerator_v1beta1] },
   {
     title: ImageRepository_v1.crd.title,
-    classes: [ImageRepository_v1, ImageRepository_v1beta2, ImageRepository_v1beta1],
+    classes: [ImageRepository_v1, ImageRepository_v1beta2],
   },
-  { title: ImagePolicy_v1.crd.title, classes: [ImagePolicy_v1, ImagePolicy_v1beta2, ImagePolicy_v1beta1] },
+  { title: ImagePolicy_v1.crd.title, classes: [ImagePolicy_v1, ImagePolicy_v1beta2] },
   {
     title: ImageUpdateAutomation_v1.crd.title,
     classes: [ImageUpdateAutomation_v1, ImageUpdateAutomation_v1beta2, ImageUpdateAutomation_v1beta1],
   },
-  { title: Alert_v1.crd.title, classes: [Alert_v1, Alert_v1beta3, Alert_v1beta2, Alert_v1beta1] },
-  { title: Provider_v1.crd.title, classes: [Provider_v1, Provider_v1beta3, Provider_v1beta2, Provider_v1beta1] },
-  { title: Receiver_v1.crd.title, classes: [Receiver_v1, Receiver_v1beta3, Receiver_v1beta2, Receiver_v1beta1] },
+  { title: Alert_v1.crd.title, classes: [Alert_v1, Alert_v1beta3, Alert_v1beta2] },
+  { title: Provider_v1.crd.title, classes: [Provider_v1, Provider_v1beta3, Provider_v1beta2] },
+  { title: Receiver_v1.crd.title, classes: [Receiver_v1] },
   { title: ResourceSet_v1.crd.title, classes: [ResourceSet_v1] },
   { title: ResourceSetInputProvider_v1.crd.title, classes: [ResourceSetInputProvider_v1] },
 ];

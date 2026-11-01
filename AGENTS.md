@@ -147,7 +147,7 @@ Build output goes to `dist/`: `main.js`, `renderer.js` and `renderer.css`, with
 source maps. `main` and `renderer` in `package.json` point at the two entries.
 
 FluxCD CRDs are versioned. Each resource has one file per API version (e.g.
-`gitrepository-v1.ts`, `gitrepository-v1beta2.ts`) under the matching controller
+`helmchart-v1.ts`, `helmchart-v1beta2.ts`) under the matching controller
 directory in `src/renderer/k8s/fluxcd/`.
 
 ## CRD KubeObject Pattern

@@ -7,42 +7,28 @@ import { HelmReleaseDetails as HelmReleaseDetails_v2 } from "./components/detail
 import { HelmReleaseDetails as HelmReleaseDetails_v2beta1 } from "./components/details/helm/helm-release-details-v2beta1";
 import { HelmReleaseDetails as HelmReleaseDetails_v2beta2 } from "./components/details/helm/helm-release-details-v2beta2";
 import { ImagePolicyDetails as ImagePolicyDetails_v1 } from "./components/details/image/image-policy-details-v1";
-import { ImagePolicyDetails as ImagePolicyDetails_v1beta1 } from "./components/details/image/image-policy-details-v1beta1";
 import { ImagePolicyDetails as ImagePolicyDetails_v1beta2 } from "./components/details/image/image-policy-details-v1beta2";
 import { ImageRepositoryDetails as ImageRepositoryDetails_v1 } from "./components/details/image/image-repository-details-v1";
-import { ImageRepositoryDetails as ImageRepositoryDetails_v1beta1 } from "./components/details/image/image-repository-details-v1beta1";
 import { ImageRepositoryDetails as ImageRepositoryDetails_v1beta2 } from "./components/details/image/image-repository-details-v1beta2";
 import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1 } from "./components/details/image/image-update-automation-details-v1";
 import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1beta1 } from "./components/details/image/image-update-automation-details-v1beta1";
 import { ImageUpdateAutomationDetails as ImageUpdateAutomationDetails_v1beta2 } from "./components/details/image/image-update-automation-details-v1beta2";
 import { KustomizationDetails as KustomizationDetails_v1 } from "./components/details/kustomize/kustomization-details-v1";
-import { KustomizationDetails as KustomizationDetails_v1beta1 } from "./components/details/kustomize/kustomization-details-v1beta1";
-import { KustomizationDetails as KustomizationDetails_v1beta2 } from "./components/details/kustomize/kustomization-details-v1beta2";
 import { AlertDetails as AlertDetails_v1 } from "./components/details/notification/alert-details-v1";
-import { AlertDetails as AlertDetails_v1beta1 } from "./components/details/notification/alert-details-v1beta1";
 import { AlertDetails as AlertDetails_v1beta2 } from "./components/details/notification/alert-details-v1beta2";
 import { AlertDetails as AlertDetails_v1beta3 } from "./components/details/notification/alert-details-v1beta3";
 import { ProviderDetails as ProviderDetails_v1 } from "./components/details/notification/provider-details-v1";
-import { ProviderDetails as ProviderDetails_v1beta1 } from "./components/details/notification/provider-details-v1beta1";
 import { ProviderDetails as ProviderDetails_v1beta2 } from "./components/details/notification/provider-details-v1beta2";
 import { ProviderDetails as ProviderDetails_v1beta3 } from "./components/details/notification/provider-details-v1beta3";
 import { ReceiverDetails as ReceiverDetails_v1 } from "./components/details/notification/receiver-details-v1";
-import { ReceiverDetails as ReceiverDetails_v1beta1 } from "./components/details/notification/receiver-details-v1beta1";
-import { ReceiverDetails as ReceiverDetails_v1beta2 } from "./components/details/notification/receiver-details-v1beta2";
-import { ReceiverDetails as ReceiverDetails_v1beta3 } from "./components/details/notification/receiver-details-v1beta3";
 import { ArtifactGeneratorDetails as ArtifactGeneratorDetails_v1beta1 } from "./components/details/source/artifact-generator-details-v1beta1";
 import { BucketDetails as BucketDetails_v1 } from "./components/details/source/bucket-details-v1";
-import { BucketDetails as BucketDetails_v1beta1 } from "./components/details/source/bucket-details-v1beta1";
 import { BucketDetails as BucketDetails_v1beta2 } from "./components/details/source/bucket-details-v1beta2";
 import { ExternalArtifactDetails as ExternalArtifactDetails_v1 } from "./components/details/source/external-artifact-details-v1";
 import { GitRepositoryDetails as GitRepositoryDetails_v1 } from "./components/details/source/git-repository-details-v1";
-import { GitRepositoryDetails as GitRepositoryDetails_v1beta1 } from "./components/details/source/git-repository-details-v1beta1";
-import { GitRepositoryDetails as GitRepositoryDetails_v1beta2 } from "./components/details/source/git-repository-details-v1beta2";
 import { HelmChartDetails as HelmChartDetails_v1 } from "./components/details/source/helm-chart-details-v1";
-import { HelmChartDetails as HelmChartDetails_v1beta1 } from "./components/details/source/helm-chart-details-v1beta1";
 import { HelmChartDetails as HelmChartDetails_v1beta2 } from "./components/details/source/helm-chart-details-v1beta2";
 import { HelmRepositoryDetails as HelmRepositoryDetails_v1 } from "./components/details/source/helm-repository-details-v1";
-import { HelmRepositoryDetails as HelmRepositoryDetails_v1beta1 } from "./components/details/source/helm-repository-details-v1beta1";
 import { HelmRepositoryDetails as HelmRepositoryDetails_v1beta2 } from "./components/details/source/helm-repository-details-v1beta2";
 import { OCIRepositoryDetails as OCIRepositoryDetails_v1 } from "./components/details/source/oci-repository-details-v1";
 import { OCIRepositoryDetails as OCIRepositoryDetails_v1beta2 } from "./components/details/source/oci-repository-details-v1beta2";
@@ -61,45 +47,31 @@ import { HelmRelease as HelmRelease_v2 } from "./k8s/fluxcd/helm/helmrelease-v2"
 import { HelmRelease as HelmRelease_v2beta1 } from "./k8s/fluxcd/helm/helmrelease-v2beta1";
 import { HelmRelease as HelmRelease_v2beta2 } from "./k8s/fluxcd/helm/helmrelease-v2beta2";
 import { ImagePolicy as ImagePolicy_v1 } from "./k8s/fluxcd/image/imagepolicy-v1";
-import { ImagePolicy as ImagePolicy_v1beta1 } from "./k8s/fluxcd/image/imagepolicy-v1beta1";
 import { ImagePolicy as ImagePolicy_v1beta2 } from "./k8s/fluxcd/image/imagepolicy-v1beta2";
 import { ImageRepository as ImageRepository_v1 } from "./k8s/fluxcd/image/imagerepository-v1";
-import { ImageRepository as ImageRepository_v1beta1 } from "./k8s/fluxcd/image/imagerepository-v1beta1";
 import { ImageRepository as ImageRepository_v1beta2 } from "./k8s/fluxcd/image/imagerepository-v1beta2";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v1 } from "./k8s/fluxcd/image/imageupdateautomation-v1";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta1 } from "./k8s/fluxcd/image/imageupdateautomation-v1beta1";
 import { ImageUpdateAutomation as ImageUpdateAutomation_v1beta2 } from "./k8s/fluxcd/image/imageupdateautomation-v1beta2";
 import { Kustomization as Kustomization_v1 } from "./k8s/fluxcd/kustomize/kustomization-v1";
-import { Kustomization as Kustomization_v1beta1 } from "./k8s/fluxcd/kustomize/kustomization-v1beta1";
-import { Kustomization as Kustomization_v1beta2 } from "./k8s/fluxcd/kustomize/kustomization-v1beta2";
 import { Alert as Alert_v1 } from "./k8s/fluxcd/notification/alert-v1";
-import { Alert as Alert_v1beta1 } from "./k8s/fluxcd/notification/alert-v1beta1";
 import { Alert as Alert_v1beta2 } from "./k8s/fluxcd/notification/alert-v1beta2";
 import { Alert as Alert_v1beta3 } from "./k8s/fluxcd/notification/alert-v1beta3";
 import { Provider as Provider_v1 } from "./k8s/fluxcd/notification/provider-v1";
-import { Provider as Provider_v1beta1 } from "./k8s/fluxcd/notification/provider-v1beta1";
 import { Provider as Provider_v1beta2 } from "./k8s/fluxcd/notification/provider-v1beta2";
 import { Provider as Provider_v1beta3 } from "./k8s/fluxcd/notification/provider-v1beta3";
 import { Receiver as Receiver_v1 } from "./k8s/fluxcd/notification/receiver-v1";
-import { Receiver as Receiver_v1beta1 } from "./k8s/fluxcd/notification/receiver-v1beta1";
-import { Receiver as Receiver_v1beta2 } from "./k8s/fluxcd/notification/receiver-v1beta2";
-import { Receiver as Receiver_v1beta3 } from "./k8s/fluxcd/notification/receiver-v1beta3";
 import {
   ArtifactGenerator as ArtifactGenerator_v1beta1,
   sourceWatcherReconcileAnnotation,
 } from "./k8s/fluxcd/source/artifactgenerator-v1beta1";
 import { Bucket as Bucket_v1 } from "./k8s/fluxcd/source/bucket-v1";
-import { Bucket as Bucket_v1beta1 } from "./k8s/fluxcd/source/bucket-v1beta1";
 import { Bucket as Bucket_v1beta2 } from "./k8s/fluxcd/source/bucket-v1beta2";
 import { ExternalArtifact as ExternalArtifact_v1 } from "./k8s/fluxcd/source/externalartifact-v1";
 import { GitRepository as GitRepository_v1 } from "./k8s/fluxcd/source/gitrepository-v1";
-import { GitRepository as GitRepository_v1beta1 } from "./k8s/fluxcd/source/gitrepository-v1beta1";
-import { GitRepository as GitRepository_v1beta2 } from "./k8s/fluxcd/source/gitrepository-v1beta2";
 import { HelmChart as HelmChart_v1 } from "./k8s/fluxcd/source/helmchart-v1";
-import { HelmChart as HelmChart_v1beta1 } from "./k8s/fluxcd/source/helmchart-v1beta1";
 import { HelmChart as HelmChart_v1beta2 } from "./k8s/fluxcd/source/helmchart-v1beta2";
 import { HelmRepository as HelmRepository_v1 } from "./k8s/fluxcd/source/helmrepository-v1";
-import { HelmRepository as HelmRepository_v1beta1 } from "./k8s/fluxcd/source/helmrepository-v1beta1";
 import { HelmRepository as HelmRepository_v1beta2 } from "./k8s/fluxcd/source/helmrepository-v1beta2";
 import { OCIRepository as OCIRepository_v1 } from "./k8s/fluxcd/source/ocirepository-v1";
 import { OCIRepository as OCIRepository_v1beta2 } from "./k8s/fluxcd/source/ocirepository-v1beta2";
@@ -115,43 +87,29 @@ import { HelmReleasesPage as HelmReleasesPage_v2 } from "./pages/helm/helmreleas
 import { HelmReleasesPage as HelmReleasesPage_v2beta1 } from "./pages/helm/helmreleases-v2beta1";
 import { HelmReleasesPage as HelmReleasesPage_v2beta2 } from "./pages/helm/helmreleases-v2beta2";
 import { ImagePoliciesPage as ImagePoliciesPage_v1 } from "./pages/image/imagepolicies-v1";
-import { ImagePoliciesPage as ImagePoliciesPage_v1beta1 } from "./pages/image/imagepolicies-v1beta1";
 import { ImagePoliciesPage as ImagePoliciesPage_v1beta2 } from "./pages/image/imagepolicies-v1beta2";
 import { ImageRepositoriesPage as ImageRepositoriesPage_v1 } from "./pages/image/imagerepositories-v1";
-import { ImageRepositoriesPage as ImageRepositoriesPage_v1beta1 } from "./pages/image/imagerepositories-v1beta1";
 import { ImageRepositoriesPage as ImageRepositoriesPage_v1beta2 } from "./pages/image/imagerepositories-v1beta2";
 import { ImageUpdateAutomationsPage as ImageUpdateAutomationsPage_v1 } from "./pages/image/imageupdateautomations-v1";
 import { ImageUpdateAutomationsPage as ImageUpdateAutomationsPage_v1beta1 } from "./pages/image/imageupdateautomations-v1beta1";
 import { ImageUpdateAutomationsPage as ImageUpdateAutomationsPage_v1beta2 } from "./pages/image/imageupdateautomations-v1beta2";
 import { KustomizationsPage_v1 } from "./pages/kustomize/kustomizations-v1";
-import { KustomizationsPage_v1beta1 } from "./pages/kustomize/kustomizations-v1beta1";
-import { KustomizationsPage_v1beta2 } from "./pages/kustomize/kustomizations-v1beta2";
 import { AlertsPage as AlertsPage_v1 } from "./pages/notifications/alerts-v1";
-import { AlertsPage as AlertsPage_v1beta1 } from "./pages/notifications/alerts-v1beta1";
 import { AlertsPage as AlertsPage_v1beta2 } from "./pages/notifications/alerts-v1beta2";
 import { AlertsPage as AlertsPage_v1beta3 } from "./pages/notifications/alerts-v1beta3";
 import { ProvidersPage as ProvidersPage_v1 } from "./pages/notifications/providers-v1";
-import { ProvidersPage as ProvidersPage_v1beta1 } from "./pages/notifications/providers-v1beta1";
 import { ProvidersPage as ProvidersPage_v1beta2 } from "./pages/notifications/providers-v1beta2";
 import { ProvidersPage as ProvidersPage_v1beta3 } from "./pages/notifications/providers-v1beta3";
 import { ReceiversPage as ReceiversPage_v1 } from "./pages/notifications/receivers-v1";
-import { ReceiversPage as ReceiversPage_v1beta1 } from "./pages/notifications/receivers-v1beta1";
-import { ReceiversPage as ReceiversPage_v1beta2 } from "./pages/notifications/receivers-v1beta2";
-import { ReceiversPage as ReceiversPage_v1beta3 } from "./pages/notifications/receivers-v1beta3";
 import { FluxCDOverviewPage } from "./pages/overview";
 import { ArtifactGeneratorsPage as ArtifactGeneratorsPage_v1beta1 } from "./pages/source/artifactgenerators-v1beta1";
 import { BucketsPage as BucketsPage_v1 } from "./pages/source/buckets-v1";
-import { BucketsPage as BucketsPage_v1beta1 } from "./pages/source/buckets-v1beta1";
 import { BucketsPage as BucketsPage_v1beta2 } from "./pages/source/buckets-v1beta2";
 import { ExternalArtifactsPage as ExternalArtifactsPage_v1 } from "./pages/source/externalartifacts-v1";
 import { GitRepositoriesPage as GitRepositoriesPage_v1 } from "./pages/source/gitrepositories-v1";
-import { GitRepositoriesPage as GitRepositoriesPage_v1beta1 } from "./pages/source/gitrepositories-v1beta1";
-import { GitRepositoriesPage as GitRepositoriesPage_v1beta2 } from "./pages/source/gitrepositories-v1beta2";
 import { HelmChartsPage as HelmChartsPage_v1 } from "./pages/source/helmcharts-v1";
-import { HelmChartsPage as HelmChartsPage_v1beta1 } from "./pages/source/helmcharts-v1beta1";
 import { HelmChartsPage as HelmChartsPage_v1beta2 } from "./pages/source/helmcharts-v1beta2";
 import { HelmRepositoriesPage as HelmRepositoriesPage_v1 } from "./pages/source/helmrepositories-v1";
-import { HelmRepositoriesPage as HelmRepositoriesPage_v1beta1 } from "./pages/source/helmrepositories-v1beta1";
 import { HelmRepositoriesPage as HelmRepositoriesPage_v1beta2 } from "./pages/source/helmrepositories-v1beta2";
 import { OCIRepositoriesPage as OCIRepositoriesPage_v1 } from "./pages/source/ocirepositories-v1";
 import { OCIRepositoriesPage as OCIRepositoriesPage_v1beta2 } from "./pages/source/ocirepositories-v1beta2";
@@ -168,7 +126,6 @@ const AlertsPage = createAvailableVersionPage("Alerts", [
   { kubeObjectClass: Alert_v1, PageComponent: AlertsPage_v1, version: "v1" },
   { kubeObjectClass: Alert_v1beta3, PageComponent: AlertsPage_v1beta3, version: "v1beta3" },
   { kubeObjectClass: Alert_v1beta2, PageComponent: AlertsPage_v1beta2, version: "v1beta2" },
-  { kubeObjectClass: Alert_v1beta1, PageComponent: AlertsPage_v1beta1, version: "v1beta1" },
 ]);
 
 const ArtifactGeneratorsPage = createAvailableVersionPage("Artifact Generators", [
@@ -178,7 +135,6 @@ const ArtifactGeneratorsPage = createAvailableVersionPage("Artifact Generators",
 const BucketsPage = createAvailableVersionPage("Buckets", [
   { kubeObjectClass: Bucket_v1, PageComponent: BucketsPage_v1, version: "v1" },
   { kubeObjectClass: Bucket_v1beta2, PageComponent: BucketsPage_v1beta2, version: "v1beta2" },
-  { kubeObjectClass: Bucket_v1beta1, PageComponent: BucketsPage_v1beta1, version: "v1beta1" },
 ]);
 
 const ExternalArtifactsPage = createAvailableVersionPage("External Artifacts", [
@@ -195,14 +151,11 @@ const FluxReportsPage = createAvailableVersionPage("Flux Reports", [
 
 const GitRepositoriesPage = createAvailableVersionPage("Git Repositories", [
   { kubeObjectClass: GitRepository_v1, PageComponent: GitRepositoriesPage_v1, version: "v1" },
-  { kubeObjectClass: GitRepository_v1beta2, PageComponent: GitRepositoriesPage_v1beta2, version: "v1beta2" },
-  { kubeObjectClass: GitRepository_v1beta1, PageComponent: GitRepositoriesPage_v1beta1, version: "v1beta1" },
 ]);
 
 const HelmChartsPage = createAvailableVersionPage("Helm Charts", [
   { kubeObjectClass: HelmChart_v1, PageComponent: HelmChartsPage_v1, version: "v1" },
   { kubeObjectClass: HelmChart_v1beta2, PageComponent: HelmChartsPage_v1beta2, version: "v1beta2" },
-  { kubeObjectClass: HelmChart_v1beta1, PageComponent: HelmChartsPage_v1beta1, version: "v1beta1" },
 ]);
 
 const HelmReleasesPage = createAvailableVersionPage("Helm Releases", [
@@ -214,13 +167,11 @@ const HelmReleasesPage = createAvailableVersionPage("Helm Releases", [
 const HelmRepositoriesPage = createAvailableVersionPage("Helm Repositories", [
   { kubeObjectClass: HelmRepository_v1, PageComponent: HelmRepositoriesPage_v1, version: "v1" },
   { kubeObjectClass: HelmRepository_v1beta2, PageComponent: HelmRepositoriesPage_v1beta2, version: "v1beta2" },
-  { kubeObjectClass: HelmRepository_v1beta1, PageComponent: HelmRepositoriesPage_v1beta1, version: "v1beta1" },
 ]);
 
 const ImagePoliciesPage = createAvailableVersionPage("Image Policies", [
   { kubeObjectClass: ImagePolicy_v1, PageComponent: ImagePoliciesPage_v1, version: "v1" },
   { kubeObjectClass: ImagePolicy_v1beta2, PageComponent: ImagePoliciesPage_v1beta2, version: "v1beta2" },
-  { kubeObjectClass: ImagePolicy_v1beta1, PageComponent: ImagePoliciesPage_v1beta1, version: "v1beta1" },
 ]);
 
 const ImageRepositoriesPage = createAvailableVersionPage("Image Repositories", [
@@ -229,11 +180,6 @@ const ImageRepositoriesPage = createAvailableVersionPage("Image Repositories", [
     kubeObjectClass: ImageRepository_v1beta2,
     PageComponent: ImageRepositoriesPage_v1beta2,
     version: "v1beta2",
-  },
-  {
-    kubeObjectClass: ImageRepository_v1beta1,
-    PageComponent: ImageRepositoriesPage_v1beta1,
-    version: "v1beta1",
   },
 ]);
 
@@ -253,8 +199,6 @@ const ImageUpdateAutomationsPage = createAvailableVersionPage("Image Update Auto
 
 const KustomizationsPage = createAvailableVersionPage("Kustomizations", [
   { kubeObjectClass: Kustomization_v1, PageComponent: KustomizationsPage_v1, version: "v1" },
-  { kubeObjectClass: Kustomization_v1beta2, PageComponent: KustomizationsPage_v1beta2, version: "v1beta2" },
-  { kubeObjectClass: Kustomization_v1beta1, PageComponent: KustomizationsPage_v1beta1, version: "v1beta1" },
 ]);
 
 const OCIRepositoriesPage = createAvailableVersionPage("OCI Repositories", [
@@ -266,14 +210,10 @@ const ProvidersPage = createAvailableVersionPage("Providers", [
   { kubeObjectClass: Provider_v1, PageComponent: ProvidersPage_v1, version: "v1" },
   { kubeObjectClass: Provider_v1beta3, PageComponent: ProvidersPage_v1beta3, version: "v1beta3" },
   { kubeObjectClass: Provider_v1beta2, PageComponent: ProvidersPage_v1beta2, version: "v1beta2" },
-  { kubeObjectClass: Provider_v1beta1, PageComponent: ProvidersPage_v1beta1, version: "v1beta1" },
 ]);
 
 const ReceiversPage = createAvailableVersionPage("Receivers", [
   { kubeObjectClass: Receiver_v1, PageComponent: ReceiversPage_v1, version: "v1" },
-  { kubeObjectClass: Receiver_v1beta3, PageComponent: ReceiversPage_v1beta3, version: "v1beta3" },
-  { kubeObjectClass: Receiver_v1beta2, PageComponent: ReceiversPage_v1beta2, version: "v1beta2" },
-  { kubeObjectClass: Receiver_v1beta1, PageComponent: ReceiversPage_v1beta1, version: "v1beta1" },
 ]);
 
 const ResourceSetsPage = createAvailableVersionPage("Resource Sets", [
@@ -313,45 +253,32 @@ const availableVersionPages = [
 
 // The kinds that `spec.suspend` suspends, every version: each gets Reconcile and the spec Suspend/Resume item.
 const specSuspendClasses = [
-  Alert_v1beta1,
   Alert_v1beta2,
   Alert_v1beta3,
   Alert_v1,
-  Bucket_v1beta1,
   Bucket_v1beta2,
   Bucket_v1,
-  GitRepository_v1beta1,
-  GitRepository_v1beta2,
   GitRepository_v1,
-  HelmChart_v1beta1,
   HelmChart_v1beta2,
   HelmChart_v1,
   HelmRelease_v2beta1,
   HelmRelease_v2beta2,
   HelmRelease_v2,
-  HelmRepository_v1beta1,
   HelmRepository_v1beta2,
   HelmRepository_v1,
   ImagePolicy_v1beta2,
   ImagePolicy_v1,
-  ImageRepository_v1beta1,
   ImageRepository_v1beta2,
   ImageRepository_v1,
   ImageUpdateAutomation_v1beta1,
   ImageUpdateAutomation_v1beta2,
   ImageUpdateAutomation_v1,
-  Kustomization_v1beta1,
-  Kustomization_v1beta2,
   Kustomization_v1,
   OCIRepository_v1beta2,
   OCIRepository_v1,
-  Provider_v1beta1,
   Provider_v1beta2,
   Provider_v1beta3,
   Provider_v1,
-  Receiver_v1beta1,
-  Receiver_v1beta2,
-  Receiver_v1beta3,
   Receiver_v1,
 ];
 
@@ -555,20 +482,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "kustomization",
       parentId: "kustomize",
       target: { pageId: "kustomization" },
-      title: Kustomization_v1beta1.crd.title,
-      components: {},
-    },
-    {
-      id: "kustomization",
-      parentId: "kustomize",
-      target: { pageId: "kustomization" },
-      title: Kustomization_v1beta2.crd.title,
-      components: {},
-    },
-    {
-      id: "kustomization",
-      parentId: "kustomize",
-      target: { pageId: "kustomization" },
       title: Kustomization_v1.crd.title,
       components: {},
     },
@@ -605,20 +518,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       parentId: "fluxcd",
       target: { pageId: "gitrepository" },
       title: "Source",
-      components: {},
-    },
-    {
-      id: "gitrepository",
-      parentId: "source",
-      target: { pageId: "gitrepository" },
-      title: GitRepository_v1beta1.crd.title,
-      components: {},
-    },
-    {
-      id: "gitrepository",
-      parentId: "source",
-      target: { pageId: "gitrepository" },
-      title: GitRepository_v1beta2.crd.title,
       components: {},
     },
     {
@@ -681,13 +580,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "imagerepository",
       parentId: "image",
       target: { pageId: "imagerepository" },
-      title: ImageRepository_v1beta1.crd.title,
-      components: {},
-    },
-    {
-      id: "imagerepository",
-      parentId: "image",
-      target: { pageId: "imagerepository" },
       title: ImageRepository_v1beta2.crd.title,
       components: {},
     },
@@ -696,13 +588,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       parentId: "image",
       target: { pageId: "imagerepository" },
       title: ImageRepository_v1beta2.crd.title,
-      components: {},
-    },
-    {
-      id: "imagepolicy",
-      parentId: "image",
-      target: { pageId: "imagepolicy" },
-      title: ImagePolicy_v1beta1.crd.title,
       components: {},
     },
     {
@@ -751,13 +636,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "alert",
       parentId: "notification",
       target: { pageId: "alert" },
-      title: Alert_v1beta1.crd.title,
-      components: {},
-    },
-    {
-      id: "alert",
-      parentId: "notification",
-      target: { pageId: "alert" },
       title: Alert_v1beta2.crd.title,
       components: {},
     },
@@ -773,13 +651,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       parentId: "notification",
       target: { pageId: "alert" },
       title: Alert_v1.crd.title,
-      components: {},
-    },
-    {
-      id: "provider",
-      parentId: "notification",
-      target: { pageId: "provider" },
-      title: Provider_v1beta1.crd.title,
       components: {},
     },
     {
@@ -807,27 +678,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       id: "receiver",
       parentId: "notification",
       target: { pageId: "receiver" },
-      title: Receiver_v1beta1.crd.title,
-      components: {},
-    },
-    {
-      id: "receiver",
-      parentId: "notification",
-      target: { pageId: "receiver" },
-      title: Receiver_v1beta2.crd.title,
-      components: {},
-    },
-    {
-      id: "receiver",
-      parentId: "notification",
-      target: { pageId: "receiver" },
-      title: Receiver_v1beta3.crd.title,
-      components: {},
-    },
-    {
-      id: "receiver",
-      parentId: "notification",
-      target: { pageId: "receiver" },
       title: Receiver_v1.crd.title,
       components: {},
     },
@@ -837,10 +687,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
   customResources = availableVersionPages.flatMap((page) => page.kubeObjectClasses);
 
   kubeObjectDetailItems: Renderer.LensExtension["kubeObjectDetailItems"] = [
-    Renderer.K8sApi.detailsFor(Alert_v1beta1, {
-      priority: 10,
-      Details: (props) => <AlertDetails_v1beta1 {...props} />,
-    }),
     Renderer.K8sApi.detailsFor(Alert_v1beta2, {
       priority: 10,
       Details: (props) => <AlertDetails_v1beta2 {...props} />,
@@ -856,10 +702,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     Renderer.K8sApi.detailsFor(ArtifactGenerator_v1beta1, {
       priority: 10,
       Details: (props) => <ArtifactGeneratorDetails_v1beta1 {...props} />,
-    }),
-    Renderer.K8sApi.detailsFor(Bucket_v1beta1, {
-      priority: 10,
-      Details: (props) => <BucketDetails_v1beta1 {...props} />,
     }),
     Renderer.K8sApi.detailsFor(Bucket_v1beta2, {
       priority: 10,
@@ -881,21 +723,9 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       priority: 10,
       Details: (props) => <FluxReportDetails_v1 {...props} />,
     }),
-    Renderer.K8sApi.detailsFor(GitRepository_v1beta1, {
-      priority: 10,
-      Details: (props) => <GitRepositoryDetails_v1beta1 {...props} />,
-    }),
-    Renderer.K8sApi.detailsFor(GitRepository_v1beta2, {
-      priority: 10,
-      Details: (props) => <GitRepositoryDetails_v1beta2 {...props} />,
-    }),
     Renderer.K8sApi.detailsFor(GitRepository_v1, {
       priority: 10,
       Details: (props) => <GitRepositoryDetails_v1 {...props} />,
-    }),
-    Renderer.K8sApi.detailsFor(HelmChart_v1beta1, {
-      priority: 10,
-      Details: (props) => <HelmChartDetails_v1beta1 {...props} />,
     }),
     Renderer.K8sApi.detailsFor(HelmChart_v1beta2, {
       priority: 10,
@@ -917,10 +747,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       priority: 10,
       Details: (props) => <HelmReleaseDetails_v2 {...props} />,
     }),
-    Renderer.K8sApi.detailsFor(HelmRepository_v1beta1, {
-      priority: 10,
-      Details: (props) => <HelmRepositoryDetails_v1beta1 {...props} />,
-    }),
     Renderer.K8sApi.detailsFor(HelmRepository_v1beta2, {
       priority: 10,
       Details: (props) => <HelmRepositoryDetails_v1beta2 {...props} />,
@@ -929,10 +755,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       priority: 10,
       Details: (props) => <HelmRepositoryDetails_v1 {...props} />,
     }),
-    Renderer.K8sApi.detailsFor(ImagePolicy_v1beta1, {
-      priority: 10,
-      Details: (props) => <ImagePolicyDetails_v1beta1 {...props} />,
-    }),
     Renderer.K8sApi.detailsFor(ImagePolicy_v1beta2, {
       priority: 10,
       Details: (props) => <ImagePolicyDetails_v1beta2 {...props} />,
@@ -940,10 +762,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     Renderer.K8sApi.detailsFor(ImagePolicy_v1, {
       priority: 10,
       Details: (props) => <ImagePolicyDetails_v1 {...props} />,
-    }),
-    Renderer.K8sApi.detailsFor(ImageRepository_v1beta1, {
-      priority: 10,
-      Details: (props) => <ImageRepositoryDetails_v1beta1 {...props} />,
     }),
     Renderer.K8sApi.detailsFor(ImageRepository_v1beta2, {
       priority: 10,
@@ -965,14 +783,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       priority: 10,
       Details: (props) => <ImageUpdateAutomationDetails_v1 {...props} />,
     }),
-    Renderer.K8sApi.detailsFor(Kustomization_v1beta1, {
-      priority: 10,
-      Details: (props) => <KustomizationDetails_v1beta1 {...props} />,
-    }),
-    Renderer.K8sApi.detailsFor(Kustomization_v1beta2, {
-      priority: 10,
-      Details: (props) => <KustomizationDetails_v1beta2 {...props} />,
-    }),
     Renderer.K8sApi.detailsFor(Kustomization_v1, {
       priority: 10,
       Details: (props) => <KustomizationDetails_v1 {...props} />,
@@ -985,10 +795,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
       priority: 10,
       Details: (props) => <OCIRepositoryDetails_v1 {...props} />,
     }),
-    Renderer.K8sApi.detailsFor(Provider_v1beta1, {
-      priority: 10,
-      Details: (props) => <ProviderDetails_v1beta1 {...props} />,
-    }),
     Renderer.K8sApi.detailsFor(Provider_v1beta2, {
       priority: 10,
       Details: (props) => <ProviderDetails_v1beta2 {...props} />,
@@ -1000,18 +806,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
     Renderer.K8sApi.detailsFor(Provider_v1, {
       priority: 10,
       Details: (props) => <ProviderDetails_v1 {...props} />,
-    }),
-    Renderer.K8sApi.detailsFor(Receiver_v1beta1, {
-      priority: 10,
-      Details: (props) => <ReceiverDetails_v1beta1 {...props} />,
-    }),
-    Renderer.K8sApi.detailsFor(Receiver_v1beta2, {
-      priority: 10,
-      Details: (props) => <ReceiverDetails_v1beta2 {...props} />,
-    }),
-    Renderer.K8sApi.detailsFor(Receiver_v1beta3, {
-      priority: 10,
-      Details: (props) => <ReceiverDetails_v1beta3 {...props} />,
     }),
     Renderer.K8sApi.detailsFor(Receiver_v1, {
       priority: 10,
@@ -1039,10 +833,6 @@ export default class FluxCDExtension extends Renderer.LensExtension {
         MenuItem: (props) => <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={kubeObjectClass} />,
       }),
     ]),
-    // ImagePolicy v1beta1 has no `spec.suspend`, and gets Reconcile only.
-    Renderer.K8sApi.menuItemFor(ImagePolicy_v1beta1, {
-      MenuItem: (props) => <FluxCDObjectReconcileMenuItem {...props} resource={ImagePolicy_v1beta1} />,
-    }),
     ...annotationSuspendClasses.flatMap(({ kubeObjectClass, annotation }) => [
       Renderer.K8sApi.menuItemFor<InstanceType<typeof kubeObjectClass>>(kubeObjectClass, {
         MenuItem: (props) => <FluxCDObjectReconcileMenuItem {...props} resource={kubeObjectClass} />,
