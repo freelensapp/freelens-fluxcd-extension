@@ -138,7 +138,7 @@ src/
   common/                              # Code for both processes (none yet; its tsconfig.json only)
 test/stubs/                            # Runtime stub of @freelensapp/extensions for Vitest
 integration/__tests__/                 # Integration tests, run against Freelens dev over CDP, and their shared module
-integration/fixtures/                  # CRDs and test objects of the integration tests
+integration/fixtures/                  # Flux versions, CRD URLs and test objects of the integration tests
 environment-tests/                     # Probes for the per-environment programs
 build/                                 # Vite plugins: host modules, standard decorators, CSS module declarations
 ```
@@ -795,14 +795,14 @@ problem does not show.
 
 ### Workflows
 
-| Workflow                 | Runs                                                                          |
-| ------------------------ | ----------------------------------------------------------------------------- |
-| `type-check.yaml`        | `pnpm type:check`                                                             |
-| `check.yaml`             | `pnpm build`, `pnpm lint:check`, `pnpm knip:check`                            |
-| `unit-tests.yaml`        | `pnpm test:unit`                                                              |
-| `trunk-check.yaml`       | `trunk check --all`                                                           |
-| `integration-tests.yaml` | the integration tests in `integration/`, against Freelens dev                 |
-| `mise-lock-check.yaml`   | on a change to `mise.lock`: no checksum changed for an unchanged tool version |
+| Workflow                 | Runs                                                                            |
+| ------------------------ | ------------------------------------------------------------------------------- |
+| `type-check.yaml`        | `pnpm type:check`                                                               |
+| `check.yaml`             | `pnpm build`, `pnpm lint:check`, `pnpm knip:check`                              |
+| `unit-tests.yaml`        | `pnpm test:unit`                                                                |
+| `trunk-check.yaml`       | `trunk check --all`                                                             |
+| `integration-tests.yaml` | the integration tests in `integration/`, against Freelens dev, per Flux version |
+| `mise-lock-check.yaml`   | on a change to `mise.lock`: no checksum changed for an unchanged tool version   |
 
 The type check has a workflow of its own, on pull requests and on pushes to
 `main`, as in Freelens. It runs every program, tests, tooling and environment
@@ -818,8 +818,10 @@ freelensapp/freelens-example-extension. They attach to it with Playwright's
 Extension in Freelens Dev"), so they need no package of Freelens and no file
 of its checkout; Freelens dev is the only dependency, and it is not in
 `package.json`. `playwright` is a devDependency at the version of Freelens's
-catalog. The workflow builds the extension, checks out Freelens at each
-release tag of its matrix (`v2.0.0`), starts `pnpm dev` there in the
+catalog. The workflow runs a job for each Freelens release tag of its matrix
+(`v2.0.0`) and each Flux version (see "Flux versions of the integration
+tests"). A job builds the extension, checks out Freelens at the tag, starts
+`pnpm dev` there in the
 background under `xvfb-run`, with its output in a file and a fresh profile in
 `FREELENS_INTEGRATION_TESTING_DIR`, waits until the CDP endpoint answers, and
 runs `pnpm test:integration` here. A profile of Freelens dev syncs no
@@ -831,11 +833,13 @@ fails on any error logged by either process:
 - `extensions.tests.ts` uninstalls whatever installation of the extension the
   app has and installs this checkout in place from the Extensions page. It
   needs no cluster.
-- `fluxcd.tests.ts` opens the kind cluster with the CRDs of every kind and one
-  test object of each, and clicks through the extension's views of every
-  kind: the Overview shows the kind's chart with one object, the list page
-  shows a row for the object, its details show an item of the extension's
-  panel and no error page of the error boundary, and the row's menu lists the
+- `fluxcd.tests.ts` opens the kind cluster with the CRDs of one Flux version
+  and of the Flux Operator, and one test object of each kind they have, and
+  clicks through the extension's views of every such kind: the Overview shows
+  the kind's chart with one object, the list page shows a row for the object,
+  its details show an item of the extension's panel and no error page of the
+  error boundary, with the object in the API version of its file, and the
+  row's menu lists the
   extension's items of the kind, Reconcile and Suspend, or none for
   `ExternalArtifact`; they are not clicked. Each view is an `it` that
   navigates itself, so that it does not depend on the state another left.
@@ -848,24 +852,18 @@ The tests are deterministic, so nothing retries them: the config sets no
 repeats the same failure, and every view waits its full timeout before it
 fails.
 
-The cluster has the CRDs and no controller: `integration/fixtures/crds` is a
-kustomization of the CRD files of the newest Flux the extension supports
-(those of `manifests/crds` in fluxcd/flux2 at its tag) and of the Flux
-Operator release that follows it, by their release URLs. A kind can be served
-in more than one API version there, as `Alert` and `Provider` are in `v1` and
-the deprecated `v1beta3`; the pages and the Overview take the newest, so the
-objects are written in that version. Nothing
-reconciles the objects of `integration/fixtures/objects`, which have no status
-and show as Unknown; they need only be valid for the CRDs, and a
-`FluxInstance` must be named `flux`. Moving the tests to a newer Flux means
-new URLs there, and new objects where a kind gains an API version. Vitest runs
-the files one at a time (`fileParallelism: false`), in no set order, and none
-depends on another having run: the session disconnects the kind cluster,
-removes the leftovers of an earlier run (the namespace `integration-tests` and
-the CRDs), applies the CRDs, waits until they are established, applies the
-test objects, in the namespace `integration-tests`, which the kustomization
-creates, and only then connects the cluster, so that the app reads the CRDs
-anew. The session then selects `integration-tests` in the namespace filter of
+The cluster has the CRDs and no controller. Nothing reconciles the objects of
+`integration/fixtures/objects`, which have no status and show as Unknown;
+they need only be valid for the CRDs, and a `FluxInstance` must be named
+`flux`. Vitest runs the files one at a time (`fileParallelism: false`), in no
+set order, and none depends on another having run: the session disconnects
+the kind cluster, removes the leftovers of an earlier run (the namespace
+`integration-tests` and every CRD of a group under `fluxcd.io` or
+`fluxcd.controlplane.io`, which an earlier run of another Flux version may
+have applied), applies the CRDs of its Flux version by their URLs, waits
+until they are established, creates the namespace `integration-tests`,
+applies the test objects there, and only then connects the cluster, so that
+the app reads the CRDs anew. The session then selects `integration-tests` in the namespace filter of
 the Git Repositories page, which its `KubeObjectListLayout` renders, unless
 the filter already shows it: a new cluster shows only `default`, and the app
 keeps the selection for every namespaced list of the cluster. Without it the
@@ -873,8 +871,9 @@ pages list nothing, and every view fails on its timeout. The session opens no
 page of the host, whose requests can log errors of their own: the Pods page
 asks for pod metrics, and kind has no metrics server. Its teardown stops
 collecting the errors first, then disconnects the cluster, so that the app
-logs no watch error for a CRD deleted under it, then deletes the test objects
-and the CRDs with `--wait`, also when a test failed, and then checks the
+logs no watch error for a CRD deleted under it, then deletes the namespace,
+with the test objects, and the CRDs with `--wait`, also when a test failed,
+and then checks the
 errors. The app refreshes the cluster's permissions while it disconnects it,
 and when the refresh loses the race, its requests fail on its own proxy
 (`[AUTHORIZATION-REVIEW]`, `[AUTHORIZATION-NAMESPACE-REVIEW]`,
@@ -928,9 +927,11 @@ because the callbacks of `page.evaluate` run in the page, and with the types
 of `@freelensapp/extensions`, which declare `globalThis.FreelensExtensionApi`
 for them.
 
-Three variables configure the sessions. `FREELENS_CDP_URL` is the CDP
+Four variables configure the sessions. `FREELENS_CDP_URL` is the CDP
 endpoint (`http://127.0.0.1:9223` by default), `FREELENS_MAIN_LOG` the main
-log, and `TEST_KIND_CLUSTER_NAME` names the kind cluster (`kind` by default,
+log, `TEST_FLUX_VERSION` the Flux version (the newest of
+`flux-versions.yaml` by default, the job's in the workflow), and
+`TEST_KIND_CLUSTER_NAME` names the kind cluster (`kind` by default,
 `freelens` in the workflow); every kubectl call names its context,
 `kind-<name>`, so a run never acts on the current context. The checkout to
 install, and the manifests, are found from the location of the helpers.
@@ -949,6 +950,45 @@ it the cluster session fails on the timeout of finding the cluster. A run
 deletes the Flux and Flux Operator CRDs, and with them every Flux object on
 the cluster: run it only against a kind cluster with nothing worth keeping,
 not one that runs Flux.
+
+### Flux versions of the integration tests
+
+A page takes the newest version of its kind that the cluster serves, so a
+model version is used only on a Flux whose newest version of the kind it is,
+and only an integration test against that Flux reaches its page, details
+panel and menu items. The integration tests run against several Flux
+versions, chosen so that each model version is the newest one of its kind on
+at least one of them; a version may be covered by several.
+
+`integration/fixtures/flux-versions.yaml` lists, for each Flux version, the
+URLs of its CRDs, those of `manifests/crds` in fluxcd/flux2 at its tag, and
+its test objects, one per kind it has, in the version its page picks there.
+The Flux Operator has one entry of its own, the same for every Flux version.
+A test object is a file of `integration/fixtures/objects`, named after the
+model it tests (`helmrelease-v2beta1.yaml` for `helmrelease-v2beta1.ts`), and
+one file serves every Flux version that picks the same model version. The
+`flux_version` list of the workflow matrix is the list of the map's keys, a
+job each, and the job `integration tests`, which branch rules require,
+fails when one of them did.
+
+Two checks keep this complete:
+
+- `src/renderer/k8s/fluxcd/flux-versions.test.ts`, a unit test, fails when a
+  model under `src/renderer/k8s/fluxcd/` has no object of its kind and
+  version that some Flux version lists, when an object has no model or is
+  listed nowhere, when a Flux version lists two objects of a kind, and when
+  the workflow matrix differs from the map.
+- The details view of `fluxcd.tests.ts` fails when the page shows an object
+  in another version than its file's, that is, when the map lists an object
+  in a version the page does not pick on that Flux.
+
+The supported range is Flux v2.0.0 and newer. A new Flux that adds an API
+version, or makes one the newest of its kind, goes into the map with its
+objects; the newest entry follows the newest Flux the extension supports.
+When the oldest Flux versions are dropped, their entries go, and so does
+each model that no remaining entry picks, with its page, details panel,
+registrations and object, as freelensapp/freelens-fluxcd-extension#351 did
+for the versions that no Flux from v2.0.0 on picks.
 
 ## Checking the Extension in Freelens Dev
 

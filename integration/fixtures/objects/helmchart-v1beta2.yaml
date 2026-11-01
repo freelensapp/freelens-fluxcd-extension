@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmChart
+metadata:
+  name: test
+spec:
+  interval: 1h
+  chart: podinfo
+  sourceRef:
+    kind: HelmRepository
+    name: test

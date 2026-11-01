@@ -3,9 +3,10 @@
  * Licensed under MIT License. See LICENSE in root directory for more information.
  */
 
-// One session with the CRDs of the newest Flux and the Flux Operator, which
-// serve one API version of each kind, and one test object of every kind. The
-// session disconnects the kind cluster, sets up the CRDs, connects the cluster
+// One session with the CRDs of one Flux version, TEST_FLUX_VERSION or the
+// newest of integration/fixtures/flux-versions.yaml, and of the Flux Operator,
+// and a test object of every kind that the version has, in the API version
+// that the page of the kind picks on it. The session disconnects the kind cluster, sets up the CRDs, connects the cluster
 // again, so that the app reads the CRDs anew, and leaves the cluster
 // disconnected; it does not depend on another test file having run.
 
@@ -14,6 +15,8 @@ import {
   appReady,
   connectApp,
   disconnectKindCluster,
+  expectDetailsApiVersion,
+  fluxVersion,
   installExtension,
   menuItemTitles,
   openDetails,
@@ -23,6 +26,7 @@ import {
   openRowMenu,
   setUpCluster,
   tearDownCluster,
+  testObjects,
   waitForMenuItem,
 } from "./extension-helpers";
 
@@ -36,8 +40,6 @@ interface KindView {
   pageId: string;
   /** The `crd.title` of the kind's models, the title of its Overview chart; none for a kind the Overview leaves out. */
   chart?: string;
-  /** The name of the test object in `integration/fixtures/objects`. */
-  name: string;
   /** An item that the extension's details panel shows for the test object. */
   detailsItem: string;
   /** The extension's items in the row menu; none for a kind that its controller does not reconcile. */
@@ -46,18 +48,16 @@ interface KindView {
 
 const reconcileAndSuspend = ["Reconcile", "Suspend"];
 
-const kinds: KindView[] = [
+const kindViews: KindView[] = [
   {
     kind: "FluxInstance",
     pageId: "fluxinstance",
-    name: "flux",
     detailsItem: "Reconciliation Enabled",
     menuItems: reconcileAndSuspend,
   },
   {
     kind: "FluxReport",
     pageId: "fluxreport",
-    name: "flux",
     detailsItem: "Reconciliation Enabled",
     menuItems: reconcileAndSuspend,
   },
@@ -65,7 +65,6 @@ const kinds: KindView[] = [
     kind: "ResourceSet",
     pageId: "resourceset",
     chart: "Resource Sets",
-    name: "test",
     detailsItem: "Reconciliation Enabled",
     menuItems: reconcileAndSuspend,
   },
@@ -73,7 +72,6 @@ const kinds: KindView[] = [
     kind: "ResourceSetInputProvider",
     pageId: "resourcesetinputprovider",
     chart: "Resource Set Input Providers",
-    name: "test",
     detailsItem: "Reconciliation Enabled",
     menuItems: reconcileAndSuspend,
   },
@@ -81,7 +79,6 @@ const kinds: KindView[] = [
     kind: "Kustomization",
     pageId: "kustomization",
     chart: "Kustomizations",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -89,7 +86,6 @@ const kinds: KindView[] = [
     kind: "HelmRelease",
     pageId: "helmrelease",
     chart: "Helm Releases",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -97,7 +93,6 @@ const kinds: KindView[] = [
     kind: "GitRepository",
     pageId: "gitrepository",
     chart: "Git Repositories",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -105,7 +100,6 @@ const kinds: KindView[] = [
     kind: "HelmRepository",
     pageId: "helmrepository",
     chart: "Helm Repositories",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -113,7 +107,6 @@ const kinds: KindView[] = [
     kind: "HelmChart",
     pageId: "helmchart",
     chart: "Helm Charts",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -121,7 +114,6 @@ const kinds: KindView[] = [
     kind: "Bucket",
     pageId: "bucket",
     chart: "Buckets",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -129,7 +121,6 @@ const kinds: KindView[] = [
     kind: "OCIRepository",
     pageId: "ocirepository",
     chart: "OCI Repositories",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -137,7 +128,6 @@ const kinds: KindView[] = [
     kind: "ExternalArtifact",
     pageId: "externalartifact",
     chart: "External Artifacts",
-    name: "test",
     detailsItem: "Source",
     menuItems: [],
   },
@@ -145,7 +135,6 @@ const kinds: KindView[] = [
     kind: "ArtifactGenerator",
     pageId: "artifactgenerator",
     chart: "Artifact Generators",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -153,7 +142,6 @@ const kinds: KindView[] = [
     kind: "ImageRepository",
     pageId: "imagerepository",
     chart: "Image Repositories",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -161,7 +149,6 @@ const kinds: KindView[] = [
     kind: "ImagePolicy",
     pageId: "imagepolicy",
     chart: "Image Policies",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -169,7 +156,6 @@ const kinds: KindView[] = [
     kind: "ImageUpdateAutomation",
     pageId: "imageupdateautomation",
     chart: "Image Update Automations",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -177,7 +163,6 @@ const kinds: KindView[] = [
     kind: "Alert",
     pageId: "alert",
     chart: "Alerts",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -185,7 +170,6 @@ const kinds: KindView[] = [
     kind: "Provider",
     pageId: "provider",
     chart: "Providers",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
@@ -193,16 +177,26 @@ const kinds: KindView[] = [
     kind: "Receiver",
     pageId: "receiver",
     chart: "Receivers",
-    name: "test",
     detailsItem: "Resumed",
     menuItems: reconcileAndSuspend,
   },
 ];
 
+// The kinds of the session's test objects, each with its object.
+const kinds = testObjects().map((object) => {
+  const view = kindViews.find(({ kind }) => kind === object.kind);
+
+  if (!view) {
+    throw new Error(`fluxcd.tests.ts has no view of ${object.kind}`);
+  }
+
+  return { ...view, ...object };
+});
+
 // The titles of every menu item of the extension, to tell them from the host's.
 const extensionMenuItems = ["Reconcile", "Suspend", "Resume"];
 
-describe.skipIf(!(await appReady({ cluster: true })))("FluxCD views", () => {
+describe.skipIf(!(await appReady({ cluster: true })))(`FluxCD views with Flux ${fluxVersion}`, () => {
   let session: AppSession | undefined;
   let frame: Frame;
 
@@ -250,11 +244,15 @@ describe.skipIf(!(await appReady({ cluster: true })))("FluxCD views", () => {
     await openListPage(frame, pageId, name);
   });
 
-  it.each(kinds)("shows the details of the $kind test object", async ({ pageId, name, detailsItem }) => {
-    const row = await openListPage(frame, pageId, name);
+  it.each(kinds)(
+    "shows the details of the $kind test object, in $apiVersion",
+    async ({ pageId, name, apiVersion, detailsItem }) => {
+      const row = await openListPage(frame, pageId, name);
 
-    await openDetails(frame, row, name, detailsItem);
-  });
+      await openDetails(frame, row, name, detailsItem);
+      await expectDetailsApiVersion(frame, apiVersion);
+    },
+  );
 
   it.each(kinds)("shows the extension's menu items for the $kind test object", async ({ pageId, name, menuItems }) => {
     const row = await openListPage(frame, pageId, name);

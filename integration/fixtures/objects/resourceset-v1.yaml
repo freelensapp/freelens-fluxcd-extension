@@ -1,0 +1,12 @@
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSet
+metadata:
+  name: test
+spec:
+  inputs:
+    - name: test
+  resources:
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: << inputs.name >>
