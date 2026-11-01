@@ -3,7 +3,7 @@ name: Mise Lock Check
 on:
   pull_request:
     branches:
-      - main
+      - "**"
     paths:
       - .nvmrc
       - mise.lock
