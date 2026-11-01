@@ -1,5 +1,6 @@
 import { type Common, Renderer } from "@freelensapp/extensions";
 import { isReconcileDisabled } from "../k8s/fluxcd/utils";
+import { patchObject } from "./patch-object";
 
 const {
   Component: { MenuItem, Icon },
@@ -34,29 +35,31 @@ export function FluxCDObjectAnnotationSuspendResumeMenuItem(props: FluxCDObjectA
   const store = resource.getStore<FluxCDKubeObjectWithMetadata>();
   if (!store) return <></>;
 
-  const suspend = async () => {
-    await store.patch(
-      object,
-      {
-        metadata: {
-          annotations: { [annotation]: "disabled" },
+  const suspend = () =>
+    patchObject("suspend", object, () =>
+      store.patch(
+        object,
+        {
+          metadata: {
+            annotations: { [annotation]: "disabled" },
+          },
         },
-      },
-      "merge",
+        "merge",
+      ),
     );
-  };
 
-  const resume = async () => {
-    await store.patch(
-      object,
-      {
-        metadata: {
-          annotations: { [annotation]: "enabled" },
+  const resume = () =>
+    patchObject("resume", object, () =>
+      store.patch(
+        object,
+        {
+          metadata: {
+            annotations: { [annotation]: "enabled" },
+          },
         },
-      },
-      "merge",
+        "merge",
+      ),
     );
-  };
 
   if (!isReconcileDisabled(object, annotation)) {
     return (
