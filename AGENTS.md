@@ -800,6 +800,7 @@ problem does not show.
 | `trunk-check.yaml`       | `trunk check --all`                                                             |
 | `integration-tests.yaml` | the integration tests in `integration/`, against Freelens dev, per Flux version |
 | `mise-lock-check.yaml`   | on a change to `mise.lock`: no checksum changed for an unchanged tool version   |
+| `cleanup-cache.yaml`     | on a closed pull request: deletes the caches of its merge ref                   |
 
 The type check has a workflow of its own, on pull requests and on pushes to
 `main`, as in Freelens. It runs every program, tests, tooling and environment

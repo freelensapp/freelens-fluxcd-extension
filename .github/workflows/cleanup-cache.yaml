@@ -1,0 +1,36 @@
+name: Cleanup cache
+
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  actions: write
+
+jobs:
+  cleanup-cache:
+    name: cleanup cache
+
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge
+
+    steps:
+      # An empty --ref lists the caches of every ref, main included.
+      - name: Check the ref
+        run: |
+          if [[ ! ${BRANCH} =~ ^refs/pull/[0-9]+/merge$ ]]; then
+            echo "::error::Refusing to delete the caches of '${BRANCH}'"
+            exit 1
+          fi
+
+      - name: Cleanup cache
+        run: |
+          gh cache list --ref "${BRANCH}" --limit 100 --json id,ref --jq '.[] | select(.ref == env.BRANCH) | .id' \
+            | xargs -n1 -r -t gh cache delete
+        continue-on-error: true
