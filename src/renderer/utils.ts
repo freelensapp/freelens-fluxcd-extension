@@ -33,6 +33,42 @@ export function getServedStore(kubeObjectClasses: (typeof Renderer.K8sApi.LensEx
   return undefined;
 }
 
+/**
+ * Tells whether the request of a `KubeApi` failed because the object does not exist. The host rejects with a
+ * `JsonApiErrorParsed` whose (TypeScript-private) `error` is the `Status` that the API server returned, with `code`
+ * 404 for an object that is not there.
+ */
+function isNotFoundError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null || !("error" in error)) return false;
+  const status = error.error;
+  return typeof status === "object" && status !== null && "code" in status && status.code === 404;
+}
+
+interface DataSourceApi {
+  get(descriptor: { name: string; namespace?: string }): Promise<{ data?: Partial<Record<string, string>> } | null>;
+}
+
+/**
+ * Returns the `data` of a ConfigMap or Secret that a Flux object takes values or variables from, or `undefined` when it
+ * cannot be read, so that the caller goes on with the next source. A missing source is a valid state (`optional: true`,
+ * or not created yet), so its 404 is not reported; any other error is logged as a warning. The 404 of a source that
+ * does not exist is still logged by Chromium as a failed request.
+ */
+export async function getSourceData(
+  api: DataSourceApi,
+  name: string,
+  namespace?: string,
+): Promise<Partial<Record<string, string>> | undefined> {
+  try {
+    return (await api.get({ name, namespace }))?.data;
+  } catch (error) {
+    if (!isNotFoundError(error)) {
+      console.warn(`[@freelensapp/fluxcd-extension]: cannot read ${namespace}/${name}: ${String(error)}`);
+    }
+    return undefined;
+  }
+}
+
 export function getHeight(data?: string): number {
   const lineHeight = 18;
   if (!data) return lineHeight;

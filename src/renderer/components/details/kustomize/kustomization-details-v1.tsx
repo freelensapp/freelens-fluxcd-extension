@@ -6,7 +6,13 @@ import { useEffect, useState } from "react";
 import { Kustomization, type KustomizationStore } from "../../../k8s/fluxcd/kustomize/kustomization-v1";
 import { NamespacedObjectKindReference } from "../../../k8s/fluxcd/types";
 import { getRefUrl, withFluxKind } from "../../../k8s/fluxcd/utils";
-import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
+import {
+  createEnumFromKeys,
+  defaultYamlDumpOptions,
+  getHeight,
+  getMaybeDetailsUrl,
+  getSourceData,
+} from "../../../utils";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
@@ -74,12 +80,12 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
           const name = substituteFrom.name;
 
-          const variablesObject = await api.get({ name, namespace });
-          if (!variablesObject) continue;
+          const data = await getSourceData(api, name, namespace);
+          if (!data) continue;
 
           const variablesFrom: Record<string, string> = {};
 
-          for (let [key, value] of Object.entries(variablesObject.data)) {
+          for (let [key, value] of Object.entries(data)) {
             if (value === undefined) continue;
             if (substituteFrom.kind.toLowerCase() === "secret" && Base64.isValid(value)) {
               variablesFrom[key] = Base64.decode(value);

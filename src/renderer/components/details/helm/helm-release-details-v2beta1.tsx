@@ -5,7 +5,13 @@ import * as MobxReact from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelmRelease, HelmReleaseSnapshot } from "../../../k8s/fluxcd/helm/helmrelease-v2beta1";
 import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
-import { createEnumFromKeys, defaultYamlDumpOptions, getHeight, getMaybeDetailsUrl } from "../../../utils";
+import {
+  createEnumFromKeys,
+  defaultYamlDumpOptions,
+  getHeight,
+  getMaybeDetailsUrl,
+  getSourceData,
+} from "../../../utils";
 import { SpecPatches } from "../../spec-patches";
 import styles from "./helm-release-details.module.scss";
 
@@ -69,9 +75,7 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
           const name = valueFrom.name;
           const valuesKey = valueFrom.valuesKey ?? "values.yaml";
-          const valuesObject = await api.get({ name, namespace: ns });
-          if (!valuesObject) continue;
-          const valuesYaml = valuesObject?.data?.[valuesKey];
+          const valuesYaml = (await getSourceData(api, name, ns))?.[valuesKey];
           if (!valuesYaml) continue;
           if (valueFrom.kind.toLowerCase() === "secret" && Base64.isValid(valuesYaml)) {
             valuesFromYamlResult[`${ns}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
