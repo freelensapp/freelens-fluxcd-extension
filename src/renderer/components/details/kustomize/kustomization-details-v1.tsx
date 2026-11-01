@@ -179,7 +179,9 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             {kubeConfigSecretName && <LinkToSecret name={kubeConfigSecretName} namespace={namespace} />}
             {kubeConfigConfigMapName && <LinkToConfigMap name={kubeConfigConfigMapName} namespace={namespace} />}
           </DrawerItem>
-          <DrawerItem name="Last Applied Revision">{object.status?.lastAppliedRevision}</DrawerItem>
+          <DrawerItem name="Last Applied Revision" hidden={!object.status?.lastAppliedRevision}>
+            {object.status?.lastAppliedRevision}
+          </DrawerItem>
           <DrawerItem name="Last Applied Origin Revision" hidden={!object.status?.lastAppliedOriginRevision}>
             {object.status?.lastAppliedOriginRevision}
           </DrawerItem>

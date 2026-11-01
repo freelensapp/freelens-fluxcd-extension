@@ -92,7 +92,7 @@ describe("KustomizationDetails", () => {
     expect(unhandledRejections).toEqual([]);
   });
 
-  describe("Last Attempted Revision", () => {
+  describe("Last Applied and Last Attempted Revision", () => {
     const revisionItems = (status: { lastAppliedRevision?: string; lastAttemptedRevision?: string }) => {
       const object = kustomization([]);
       object.status = status;
@@ -103,28 +103,27 @@ describe("KustomizationDetails", () => {
         .filter((item) => item?.startsWith("Last A"));
     };
 
-    it("is hidden when it equals the Last Applied Revision", () => {
+    it("hides the Last Attempted Revision when it equals the Last Applied Revision", () => {
       expect(revisionItems({ lastAppliedRevision: "main@sha1:abc", lastAttemptedRevision: "main@sha1:abc" })).toEqual([
         "Last Applied Revision: main@sha1:abc",
       ]);
     });
 
-    it("is shown when it differs from the Last Applied Revision", () => {
+    it("shows both when they differ", () => {
       expect(revisionItems({ lastAppliedRevision: "main@sha1:abc", lastAttemptedRevision: "main@sha1:def" })).toEqual([
         "Last Applied Revision: main@sha1:abc",
         "Last Attempted Revision: main@sha1:def",
       ]);
     });
 
-    it("is shown when nothing has been applied yet", () => {
+    it("shows the Last Attempted Revision alone when nothing has been applied yet", () => {
       expect(revisionItems({ lastAttemptedRevision: "main@sha1:def" })).toEqual([
-        "Last Applied Revision: ",
         "Last Attempted Revision: main@sha1:def",
       ]);
     });
 
-    it("is hidden without an attempt", () => {
-      expect(revisionItems({})).toEqual(["Last Applied Revision: "]);
+    it("hides both without a revision", () => {
+      expect(revisionItems({})).toEqual([]);
     });
   });
 });
