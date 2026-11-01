@@ -723,11 +723,17 @@ overrides are specific to how the extension is laid out:
   editor, before `pnpm type:check` does; it does not see Node globals such as
   `Buffer` or `process`, which only the type check catches.
 
-Every path in an override starts with `**/`. Trunk runs Biome from a sandbox
-outside the repository, with `--config-path` pointing back at `biome.jsonc`,
-and there a path anchored at the repository root matches no file, so the
-override silently does nothing. A plain `biome check` matches both forms, so
-only `trunk check` shows the difference.
+Every path in an override starts with `**/`. Trunk runs Biome on a copy of the
+files in a sandbox outside the repository, and there a path anchored at the
+repository root matches no file, so the override silently does nothing. A
+plain `biome check` matches both forms, so only `trunk check` shows the
+difference.
+
+The Biome commands in `.trunk/trunk.yaml` let Biome find the copy of
+`biome.jsonc` in the sandbox rather than pass `--config-path`. Biome 2.6.4
+ignores every parser option when the config is given explicitly, with
+`--config-path` or `BIOME_CONFIG_PATH`, so a parser option set in
+`biome.jsonc` would have no effect under Trunk.
 
 In that sandbox, Biome also cannot apply `vcs.useIgnoreFile`: since 2.5.15 it
 matches every target against the repository's `.gitignore` and panics on a
