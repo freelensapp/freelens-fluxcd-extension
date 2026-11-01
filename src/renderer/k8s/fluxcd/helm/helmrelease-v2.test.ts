@@ -5,59 +5,133 @@ import {
   type CrossNamespaceSourceReferenceKind,
   HelmRelease,
 } from "./helmrelease-v2";
+import { HelmRelease as HelmRelease_v2beta1 } from "./helmrelease-v2beta1";
+import { HelmRelease as HelmRelease_v2beta2 } from "./helmrelease-v2beta2";
 
-describe("HelmRelease.getAppVersion / getChartVersion", () => {
-  test("reads the app version from the newest history entry", () => {
-    const object = { status: { history: [{ appVersion: "1.2.3" }] } } as unknown as HelmRelease;
-    expect(HelmRelease.getAppVersion(object)).toBe("1.2.3");
+// The helpers that every version has, with the same code, run for each of them. The objects are partial, and each
+// version's helper takes its own model, so they are passed as `never`.
+describe.each([
+  { version: "v2", model: HelmRelease },
+  { version: "v2beta2", model: HelmRelease_v2beta2 },
+  { version: "v2beta1", model: HelmRelease_v2beta1 },
+])("HelmRelease $version", ({ model }) => {
+  const object = (data: Record<string, unknown>) => data as never;
+
+  describe("getAppVersion / getChartVersion", () => {
+    test("reads the app version from the newest history entry", () => {
+      expect(model.getAppVersion(object({ status: { history: [{ appVersion: "1.2.3" }] } }))).toBe("1.2.3");
+    });
+
+    test("prefers the history chart version over the spec version", () => {
+      const helmRelease = object({
+        status: { history: [{ chartVersion: "2.0.0" }] },
+        spec: { chart: { spec: { version: "1.0.0" } } },
+      });
+      expect(model.getChartVersion(helmRelease)).toBe("2.0.0");
+    });
+
+    test("falls back to the spec chart version when there is no history", () => {
+      const helmRelease = object({ status: {}, spec: { chart: { spec: { version: "1.0.0" } } } });
+      expect(model.getChartVersion(helmRelease)).toBe("1.0.0");
+    });
   });
 
-  test("prefers the history chart version over the spec version", () => {
-    const object = {
-      status: { history: [{ chartVersion: "2.0.0" }] },
-      spec: { chart: { spec: { version: "1.0.0" } } },
-    } as unknown as HelmRelease;
-    expect(HelmRelease.getChartVersion(object)).toBe("2.0.0");
+  describe("getReleaseName", () => {
+    test("uses spec.releaseName when set", () => {
+      const helmRelease = object({ metadata: { name: "hr" }, spec: { releaseName: "custom" } });
+      expect(model.getReleaseName(helmRelease)).toBe("custom");
+    });
+
+    test("prefixes the target namespace when there is no release name", () => {
+      const helmRelease = object({ metadata: { name: "hr" }, spec: { targetNamespace: "apps" } });
+      expect(model.getReleaseName(helmRelease)).toBe("apps-hr");
+    });
+
+    test("falls back to the metadata name", () => {
+      expect(model.getReleaseName(object({ metadata: { name: "hr" }, spec: {} }))).toBe("hr");
+    });
   });
 
-  test("falls back to the spec chart version when there is no history", () => {
-    const object = { status: {}, spec: { chart: { spec: { version: "1.0.0" } } } } as unknown as HelmRelease;
-    expect(HelmRelease.getChartVersion(object)).toBe("1.0.0");
+  describe("getReleaseNameShortened", () => {
+    test("leaves short names untouched", () => {
+      expect(model.getReleaseNameShortened(object({ metadata: { name: "short" }, spec: {} }))).toBe("short");
+    });
+
+    test("truncates and appends a hash for names longer than 53 characters", () => {
+      const name = "a".repeat(60);
+      const result = model.getReleaseNameShortened(object({ metadata: { name }, spec: {} }));
+      expect(result).toMatch(/^a{40}-[0-9a-f]{12}$/);
+      expect(result.length).toBe(53);
+      // The first 12 hex digits of the SHA-256 of the name, as helm-controller
+      // computes the storage name.
+      expect(result).toBe(`${"a".repeat(40)}-11ee391211c6`);
+    });
+  });
+
+  describe("getHelmReleaseUrl", () => {
+    test("links the release in the namespace it is given", () => {
+      const helmRelease = object({ metadata: { name: "hr" }, spec: { releaseName: "podinfo" } });
+      expect(model.getHelmReleaseUrl(helmRelease, "apps")).toBe("/helm/releases/apps/podinfo");
+    });
+
+    test("links the release in its storage namespace", () => {
+      const helmRelease = object({
+        metadata: { name: "hr" },
+        spec: { storageNamespace: "helm", targetNamespace: "apps" },
+      });
+      expect(model.getHelmReleaseUrl(helmRelease, "flux-system")).toBe("/helm/releases/helm/apps-hr");
+    });
+  });
+
+  describe("getSourceRefText / getSourceRefName", () => {
+    test("formats the chart source ref", () => {
+      const helmRelease = object({
+        spec: { chart: { spec: { sourceRef: { kind: "HelmRepository", namespace: "flux-system", name: "repo" } } } },
+      });
+      expect(model.getSourceRefText(helmRelease)).toBe("HelmRepository: flux-system/repo");
+      expect(model.getSourceRefName(helmRelease)).toBe("repo");
+    });
+
+    test("falls back to chartRef when there is no inline chart", () => {
+      const helmRelease = object({ spec: { chartRef: { kind: "OCIRepository", name: "oci" } } });
+      expect(model.getSourceRefText(helmRelease)).toBe("OCIRepository: oci");
+      expect(model.getSourceRefName(helmRelease)).toBe("oci");
+    });
   });
 });
 
-describe("HelmRelease.getReleaseName", () => {
-  test("uses spec.releaseName when set", () => {
-    const object = { metadata: { name: "hr" }, spec: { releaseName: "custom" } } as unknown as HelmRelease;
-    expect(HelmRelease.getReleaseName(object)).toBe("custom");
+// The helpers of the beta versions that v2 replaced with getChartTemplateRef.
+describe.each([
+  { version: "v2beta2", model: HelmRelease_v2beta2 },
+  { version: "v2beta1", model: HelmRelease_v2beta1 },
+])("HelmRelease $version getChartRefNamespace / getHelmChartName", ({ model }) => {
+  // An instance of the stub's base class, whose getNs() the fallback calls.
+  const object = (data: Record<string, unknown>) => new model(data as never);
+
+  test("takes the namespace of the chart's sourceRef", () => {
+    const helmRelease = object({
+      metadata: { name: "hr", namespace: "apps" },
+      spec: { chart: { spec: { chart: "podinfo", sourceRef: { kind: "HelmRepository", namespace: "flux-system" } } } },
+    });
+    expect(model.getChartRefNamespace(helmRelease as never)).toBe("flux-system");
+    expect(model.getHelmChartName(helmRelease as never)).toBe("flux-system-hr");
   });
 
-  test("prefixes the target namespace when there is no release name", () => {
-    const object = { metadata: { name: "hr" }, spec: { targetNamespace: "apps" } } as unknown as HelmRelease;
-    expect(HelmRelease.getReleaseName(object)).toBe("apps-hr");
+  test("takes the namespace of the chartRef", () => {
+    const helmRelease = object({
+      metadata: { name: "hr", namespace: "apps" },
+      spec: { chartRef: { kind: "OCIRepository", name: "podinfo", namespace: "sources" } },
+    });
+    expect(model.getChartRefNamespace(helmRelease as never)).toBe("sources");
   });
 
-  test("falls back to the metadata name", () => {
-    const object = { metadata: { name: "hr" }, spec: {} } as unknown as HelmRelease;
-    expect(HelmRelease.getReleaseName(object)).toBe("hr");
-  });
-});
-
-describe("HelmRelease.getReleaseNameShortened", () => {
-  test("leaves short names untouched", () => {
-    const object = { metadata: { name: "short" }, spec: {} } as unknown as HelmRelease;
-    expect(HelmRelease.getReleaseNameShortened(object)).toBe("short");
-  });
-
-  test("truncates and appends a hash for names longer than 53 characters", () => {
-    const name = "a".repeat(60);
-    const object = { metadata: { name }, spec: {} } as unknown as HelmRelease;
-    const result = HelmRelease.getReleaseNameShortened(object);
-    expect(result).toMatch(/^a{40}-[0-9a-f]{12}$/);
-    expect(result.length).toBe(53);
-    // The first 12 hex digits of the SHA-256 of the name, as helm-controller
-    // computes the storage name.
-    expect(result).toBe(`${"a".repeat(40)}-11ee391211c6`);
+  test("falls back to the namespace of the HelmRelease", () => {
+    const helmRelease = object({
+      metadata: { name: "hr", namespace: "apps" },
+      spec: { chart: { spec: { chart: "podinfo", sourceRef: { kind: "HelmRepository" } } } },
+    });
+    expect(model.getChartRefNamespace(helmRelease as never)).toBe("apps");
+    expect(model.getHelmChartName(helmRelease as never)).toBe("apps-hr");
   });
 });
 
@@ -120,20 +194,6 @@ describe("HelmRelease.getChartTemplateRef", () => {
 });
 
 describe("HelmRelease.getSourceRefText", () => {
-  test("formats the chart source ref", () => {
-    const object = {
-      spec: { chart: { spec: { sourceRef: { kind: "HelmRepository", namespace: "flux-system", name: "repo" } } } },
-    } as unknown as HelmRelease;
-    expect(HelmRelease.getSourceRefText(object)).toBe("HelmRepository: flux-system/repo");
-  });
-
-  test("falls back to chartRef when there is no inline chart", () => {
-    const object = {
-      spec: { chartRef: { kind: "OCIRepository", name: "oci" } },
-    } as unknown as HelmRelease;
-    expect(HelmRelease.getSourceRefText(object)).toBe("OCIRepository: oci");
-  });
-
   test("formats the OCIRepository that an OCIRepository chart template generates", () => {
     const object = {
       metadata: { name: "hr", namespace: "apps" },

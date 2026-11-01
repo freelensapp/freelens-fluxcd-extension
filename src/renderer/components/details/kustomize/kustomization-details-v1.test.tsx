@@ -91,4 +91,40 @@ describe("KustomizationDetails", () => {
     expect(warn.mock.calls[0][0]).toContain("fluxcd-test/forbidden");
     expect(unhandledRejections).toEqual([]);
   });
+
+  describe("Last Attempted Revision", () => {
+    const revisionItems = (status: { lastAppliedRevision?: string; lastAttemptedRevision?: string }) => {
+      const object = kustomization([]);
+      object.status = status;
+      renderDetails(object);
+      return screen
+        .getAllByTestId("drawer-item")
+        .map((item) => item.textContent)
+        .filter((item) => item?.startsWith("Last A"));
+    };
+
+    it("is hidden when it equals the Last Applied Revision", () => {
+      expect(revisionItems({ lastAppliedRevision: "main@sha1:abc", lastAttemptedRevision: "main@sha1:abc" })).toEqual([
+        "Last Applied Revision: main@sha1:abc",
+      ]);
+    });
+
+    it("is shown when it differs from the Last Applied Revision", () => {
+      expect(revisionItems({ lastAppliedRevision: "main@sha1:abc", lastAttemptedRevision: "main@sha1:def" })).toEqual([
+        "Last Applied Revision: main@sha1:abc",
+        "Last Attempted Revision: main@sha1:def",
+      ]);
+    });
+
+    it("is shown when nothing has been applied yet", () => {
+      expect(revisionItems({ lastAttemptedRevision: "main@sha1:def" })).toEqual([
+        "Last Applied Revision: ",
+        "Last Attempted Revision: main@sha1:def",
+      ]);
+    });
+
+    it("is hidden without an attempt", () => {
+      expect(revisionItems({})).toEqual(["Last Applied Revision: "]);
+    });
+  });
 });
