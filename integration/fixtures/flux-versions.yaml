@@ -3,7 +3,11 @@
 # that some Flux serves (see "Flux versions of the integration tests" in
 # AGENTS.md). Each lists the CRDs of `manifests/crds` in fluxcd/flux2 at its
 # tag, and the test objects from objects/, one per kind, in the version that
-# the page of the kind picks on it.
+# the page of the kind picks on it. A file serves every Flux version that
+# lists it, so it has only the fields that the oldest of their CRDs knows.
+# A variant, <model>.flux-<version>.yaml, is the same object with the fields
+# that only the CRDs of that Flux version have, and that version lists it in
+# place of <model>.yaml.
 flux:
   v2.0.0:
     crds:

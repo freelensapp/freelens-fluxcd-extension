@@ -968,13 +968,32 @@ one file serves every Flux version that picks the same model version. The
 job each, and the job `integration tests`, which branch rules require,
 fails when one of them did.
 
+`kubectl apply` validates an object strictly against the CRD, so a field
+that the CRD of one of the Flux versions lacks fails the job of that version.
+A file that several Flux versions list has only the fields that the oldest of
+their CRDs knows. The fields that only a newer Flux has go into a variant,
+`<model>.flux-<version>.yaml` (`kustomization-v1.flux-v2.10.0.yaml`): the
+same object, with the kind, API version and name of `<model>.yaml`, plus the
+new fields, and that Flux version lists it in place of `<model>.yaml`. The
+details panels hide an item whose field is missing, so a variant is what
+renders the items of the newer fields in the integration tests. A file that
+only one Flux version lists, and the objects of the Flux Operator, whose
+CRDs are the same for every Flux version, take the fields directly and have
+no variant. The objects need only be valid for the CRDs: a reference may name
+an object that does not exist, and `status` stays empty, so the items that
+come from it stay hidden. Check an object with
+`kubectl apply --dry-run=server` against the CRDs of every Flux version that
+lists it.
+
 Two checks keep this complete:
 
 - `src/renderer/k8s/fluxcd/flux-versions.test.ts`, a unit test, fails when a
   model under `src/renderer/k8s/fluxcd/` has no object of its kind and
   version that some Flux version lists, when an object has no model or is
-  listed nowhere, when a Flux version lists two objects of a kind, and when
-  the workflow matrix differs from the map.
+  listed nowhere, when a Flux version lists two objects of a kind, when a
+  variant is not listed by the Flux version it names, and when the workflow
+  matrix differs from the map. The model of an object file is the part of its
+  name before the first `.`, so a variant counts for its model.
 - The details view of `fluxcd.tests.ts` fails when the page shows an object
   in another version than its file's, that is, when the map lists an object
   in a version the page does not pick on that Flux.
