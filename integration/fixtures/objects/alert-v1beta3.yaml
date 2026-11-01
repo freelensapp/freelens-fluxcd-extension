@@ -1,0 +1,10 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: test
+spec:
+  providerRef:
+    name: test
+  eventSources:
+    - kind: Kustomization
+      name: test

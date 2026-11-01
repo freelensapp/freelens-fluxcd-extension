@@ -1,0 +1,9 @@
+# A FluxInstance must be named flux.
+apiVersion: fluxcd.controlplane.io/v1
+kind: FluxInstance
+metadata:
+  name: flux
+spec:
+  distribution:
+    version: 2.10.x
+    registry: ghcr.io/fluxcd

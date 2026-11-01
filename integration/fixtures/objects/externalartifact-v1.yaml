@@ -1,0 +1,9 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: ExternalArtifact
+metadata:
+  name: test
+spec:
+  sourceRef:
+    apiVersion: source.extensions.fluxcd.io/v1beta1
+    kind: ArtifactGenerator
+    name: test

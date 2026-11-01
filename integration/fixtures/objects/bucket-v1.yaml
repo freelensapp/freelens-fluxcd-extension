@@ -1,0 +1,8 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: Bucket
+metadata:
+  name: test
+spec:
+  interval: 1h
+  bucketName: test
+  endpoint: minio.example.com

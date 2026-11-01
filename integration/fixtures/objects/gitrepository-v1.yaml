@@ -1,0 +1,9 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: test
+spec:
+  interval: 1h
+  url: https://github.com/stefanprodan/podinfo
+  ref:
+    branch: master

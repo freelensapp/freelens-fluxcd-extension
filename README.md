@@ -296,6 +296,9 @@ the cluster the tests are skipped.
 
 Optional variables:
 
+- `TEST_FLUX_VERSION`: the Flux version whose CRDs and test objects the tests
+  use, one of `integration/fixtures/flux-versions.yaml`, the newest by
+  default. CI runs every one of them.
 - `TEST_KIND_CLUSTER_NAME`: the kind cluster, `kind` by default, used
   through the context `kind-<name>`.
 - `FREELENS_CDP_URL`: the CDP endpoint of Freelens dev,

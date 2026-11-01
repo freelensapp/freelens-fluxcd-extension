@@ -12,6 +12,7 @@
 import { spawnSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { load } from "js-yaml";
 import { chromium } from "playwright";
 
 import type { Browser, ConsoleMessage, Frame, Locator, Page } from "playwright";
@@ -33,12 +34,74 @@ const mainLogFile = process.env.FREELENS_MAIN_LOG;
 // The kind cluster the sessions run against.
 export const kindClusterName = process.env.TEST_KIND_CLUSTER_NAME || "kind";
 
-// The namespace of the test objects, created by the fixtures.
+// The namespace of the test objects, created by the session.
 const testNamespace = "integration-tests";
 
-// The CRDs of every kind of the extension, and the test objects.
-const crdsDir = path.join(extensionDir, "integration", "fixtures", "crds");
-const objectsDir = path.join(extensionDir, "integration", "fixtures", "objects");
+const fixturesDir = path.join(extensionDir, "integration", "fixtures");
+const objectsDir = path.join(fixturesDir, "objects");
+
+/** The CRDs of a release, by their URLs, and its test objects, by their files in `objects/`. */
+interface FixtureSet {
+  crds: string[];
+  objects: string[];
+}
+
+/** `integration/fixtures/flux-versions.yaml`. */
+export interface FluxVersions {
+  flux: Record<string, FixtureSet>;
+  fluxOperator: FixtureSet;
+}
+
+export const fluxVersions = load(fs.readFileSync(path.join(fixturesDir, "flux-versions.yaml"), "utf8")) as FluxVersions;
+
+const compareVersions = (a: string, b: string) => a.localeCompare(b, "en", { numeric: true });
+
+// The Flux version of the session: the one of the job of the workflow matrix,
+// or the newest of the map.
+export const fluxVersion =
+  process.env.TEST_FLUX_VERSION || Object.keys(fluxVersions.flux).sort(compareVersions).at(-1) || "";
+
+/** A test object of the session, as its file in `objects/` has it. */
+export interface TestObject {
+  kind: string;
+  apiVersion: string;
+  name: string;
+}
+
+/**
+ * The CRDs and the test objects of the Flux version, with those of the Flux
+ * Operator.
+ */
+function fixtureSet(version: string): FixtureSet {
+  const set = fluxVersions.flux[version];
+
+  if (!set) {
+    throw new Error(
+      `Flux ${version} is not in flux-versions.yaml, which has ${Object.keys(fluxVersions.flux).join(", ")}`,
+    );
+  }
+
+  return {
+    crds: [...set.crds, ...fluxVersions.fluxOperator.crds],
+    objects: [...set.objects, ...fluxVersions.fluxOperator.objects],
+  };
+}
+
+/**
+ * The test objects of the session's Flux version, with those of the Flux
+ * Operator.
+ */
+export function testObjects(): TestObject[] {
+  return fixtureSet(fluxVersion).objects.map((file) => {
+    const object = load(fs.readFileSync(path.join(objectsDir, file), "utf8")) as {
+      kind: string;
+      apiVersion: string;
+      metadata: { name: string };
+    };
+
+    return { kind: object.kind, apiVersion: object.apiVersion, name: object.metadata.name };
+  });
+}
 
 // The package name with `@` dropped and `/` turned into `--`
 // (`sanitizeExtensionName` in Freelens's `lens-extension.ts`).
@@ -611,29 +674,49 @@ function kubectl(...args: string[]): string {
 }
 
 /**
- * Removes what an earlier run left, then applies the CRDs and, once they are
- * established, the test objects.
+ * Deletes every CRD of a Flux or Flux Operator group, of whichever Flux
+ * version an earlier run applied: another version can have CRDs that the
+ * session's lacks.
  */
-export function setUpCluster() {
-  kubectl("delete", "namespace", testNamespace, "--ignore-not-found", "--wait");
-  kubectl("delete", "-k", crdsDir, "--ignore-not-found", "--wait");
+function deleteFluxCrds() {
+  const crds = kubectl("get", "crd", "-o", "jsonpath={range .items[*]}{.metadata.name}{'\\n'}{end}")
+    .split("\n")
+    .filter((name) => /\.fluxcd\.(io|controlplane\.io)$/.test(name))
+    .map((name) => `crd/${name}`);
 
-  // `kubectl wait` takes no kustomization, so it waits for the CRDs by the
-  // names that the apply prints.
-  const crds = kubectl("apply", "-k", crdsDir, "-o", "name").trim().split("\n");
-
-  kubectl("wait", "--for=condition=Established", ...crds, "--timeout=120s");
-  kubectl("apply", "-k", objectsDir);
+  if (crds.length > 0) {
+    kubectl("delete", ...crds, "--wait");
+  }
 }
 
 /**
- * Deletes the test objects and the CRDs.
+ * Removes what an earlier run left, then applies the CRDs of the session's
+ * Flux version and, once they are established, its test objects.
+ */
+export function setUpCluster() {
+  const { crds, objects } = fixtureSet(fluxVersion);
+
+  kubectl("delete", "namespace", testNamespace, "--ignore-not-found", "--wait");
+  deleteFluxCrds();
+
+  // The apply prints the names of the CRDs, which `kubectl wait` takes.
+  const crdNames = kubectl("apply", "-o", "name", ...crds.flatMap((url) => ["-f", url]))
+    .trim()
+    .split("\n");
+
+  kubectl("wait", "--for=condition=Established", ...crdNames, "--timeout=120s");
+  kubectl("create", "namespace", testNamespace);
+  kubectl("apply", "-n", testNamespace, ...objects.flatMap((file) => ["-f", path.join(objectsDir, file)]));
+}
+
+/**
+ * Deletes the test objects, with their namespace, and the CRDs.
  */
 export function tearDownCluster() {
   try {
-    kubectl("delete", "-k", objectsDir, "--ignore-not-found", "--wait");
+    kubectl("delete", "namespace", testNamespace, "--ignore-not-found", "--wait");
   } finally {
-    kubectl("delete", "-k", crdsDir, "--ignore-not-found", "--wait");
+    deleteFluxCrds();
   }
 }
 
@@ -702,6 +785,21 @@ export async function openDetails(frame: Frame, row: Locator, name: string, item
 
   await details.locator(".DrawerItem .name").getByText(itemName, { exact: true }).first().waitFor(viewTimeout);
   await expectNoErrorPage(details, "The details drawer");
+}
+
+/**
+ * Throws unless the open details drawer shows its object in the API version.
+ * The host keeps the API link of the object in the `kube-details` parameter
+ * of the cluster frame's URL, in the version of the store that the page took
+ * the object from, so it tells which model version the page picked.
+ */
+export async function expectDetailsApiVersion(frame: Frame, apiVersion: string) {
+  const search = await frame.evaluate(() => window.location.search);
+  const apiLink = new URLSearchParams(search).get("kube-details") ?? "";
+
+  if (!apiLink.startsWith(`/apis/${apiVersion}/`)) {
+    throw new Error(`The details drawer shows ${apiLink || "no object"}, not an object of ${apiVersion}`);
+  }
 }
 
 /**
