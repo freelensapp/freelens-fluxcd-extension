@@ -35,11 +35,11 @@ describe("StatusArtifact", () => {
     ]);
   });
 
-  it("shows the checksum of a v1beta1 artifact, and no digest or metadata", () => {
+  it("shows the checksum of a v1beta2 artifact, and no digest or metadata", () => {
     const artifact: Artifact = {
-      path: "gitrepository/default/podinfo/abc.tar.gz",
-      url: "http://source-controller.flux-system.svc.cluster.local./gitrepository/default/podinfo/abc.tar.gz",
-      revision: "main/abc",
+      path: "helmchart/default/podinfo/podinfo-6.0.0.tgz",
+      url: "http://source-controller.flux-system.svc.cluster.local./helmchart/default/podinfo/podinfo-6.0.0.tgz",
+      revision: "6.0.0",
       checksum: "0123456789abcdef",
       lastUpdateTime: "2026-10-11T12:00:00Z",
     };
@@ -49,13 +49,13 @@ describe("StatusArtifact", () => {
     expect(items()).toEqual([
       `Path: ${artifact.path}`,
       `URL: ${artifact.url}`,
-      "Revision: main/abc",
+      "Revision: 6.0.0",
       "Checksum: 0123456789abcdef",
       "Last Update Time: 2026-10-11T12:00:00Z",
     ]);
   });
 
-  it("hides the revision of an artifact that has none, which v1beta1 and v1beta2 allow", () => {
+  it("hides the revision of an artifact that has none, which v1beta2 allows", () => {
     const artifact: Artifact = {
       path: "bucket/default/podinfo/abc.tar.gz",
       url: "http://source-controller.flux-system.svc.cluster.local./bucket/default/podinfo/abc.tar.gz",

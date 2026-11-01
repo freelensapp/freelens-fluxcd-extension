@@ -1,10 +1,9 @@
 import { Renderer } from "@freelensapp/extensions";
 import { describe, expect, it } from "vitest";
-import { AlertDetails as AlertDetails_v1beta2 } from "./components/details/notification/alert-details-v1beta2";
 import { AlertDetails as AlertDetails_v1beta3 } from "./components/details/notification/alert-details-v1beta3";
 import { ProviderDetails as ProviderDetails_v1 } from "./components/details/notification/provider-details-v1";
 import { Alert as Alert_v1 } from "./k8s/fluxcd/notification/alert-v1";
-import { Alert as Alert_v1beta1 } from "./k8s/fluxcd/notification/alert-v1beta1";
+import { Alert as Alert_v1beta2 } from "./k8s/fluxcd/notification/alert-v1beta2";
 import { Provider as Provider_v1beta3 } from "./k8s/fluxcd/notification/provider-v1beta3";
 import { ExternalArtifact as ExternalArtifact_v1 } from "./k8s/fluxcd/source/externalartifact-v1";
 import { GitRepository as GitRepository_v1 } from "./k8s/fluxcd/source/gitrepository-v1";
@@ -16,13 +15,13 @@ import { FluxCDObjectSpecSuspendResumeMenuItem } from "./menus/fluxcd-object-spe
 // At runtime the helpers check no types and return the registration.
 describe("the typed registration helpers", () => {
   it("reject the details panel of another version of the kind", () => {
-    const registration = Renderer.K8sApi.detailsFor(Alert_v1beta1, {
+    const registration = Renderer.K8sApi.detailsFor(Alert_v1beta2, {
       priority: 10,
-      // @ts-expect-error The panel of v1beta2 for the objects of v1beta1, told apart by their `declare apiVersion`.
-      Details: (props) => <AlertDetails_v1beta2 {...props} />,
+      // @ts-expect-error The panel of v1beta3 for the objects of v1beta2, told apart by their `declare apiVersion`.
+      Details: (props) => <AlertDetails_v1beta3 {...props} />,
     });
 
-    expect(registration.apiVersions).toEqual(["notification.toolkit.fluxcd.io/v1beta1"]);
+    expect(registration.apiVersions).toEqual(["notification.toolkit.fluxcd.io/v1beta2"]);
   });
 
   it("reject the details panel of v1beta3 for v1, and of v1 for v1beta3", () => {

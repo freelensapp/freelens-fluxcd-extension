@@ -61,14 +61,14 @@ Resources managed by the
 Resources managed by the
 [source-controller](https://github.com/fluxcd/source-controller).
 
-| API Version          | Kind               | Short Name | Scope      | Description                                                                                                                        |
-| -------------------- | ------------------ | ---------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| v1beta1, v1beta2, v1 | `GitRepository`    | `gitrepo`  | Namespaced | Defines a Git repository as a source                                                                                               |
-| v1beta2, v1          | `OCIRepository`    | `ocirepo`  | Namespaced | Defines an OCI artifact repository as a source                                                                                     |
-| v1beta1, v1beta2, v1 | `HelmRepository`   | `helmrepo` | Namespaced | Defines a Helm chart repository as a source                                                                                        |
-| v1beta1, v1beta2, v1 | `HelmChart`        | `hc`       | Namespaced | Defines a Helm chart produced from a source                                                                                        |
-| v1beta1, v1beta2, v1 | `Bucket`           |            | Namespaced | Defines an S3-compatible bucket as a source                                                                                        |
-| v1                   | `ExternalArtifact` | `ea`       | Namespaced | An artifact produced by a controller other than source-controller, such as the `ArtifactGenerator` of source-watcher (Flux >= 2.7) |
+| API Version | Kind               | Short Name | Scope      | Description                                                                                                                        |
+| ----------- | ------------------ | ---------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| v1          | `GitRepository`    | `gitrepo`  | Namespaced | Defines a Git repository as a source                                                                                               |
+| v1beta2, v1 | `OCIRepository`    | `ocirepo`  | Namespaced | Defines an OCI artifact repository as a source                                                                                     |
+| v1beta2, v1 | `HelmRepository`   | `helmrepo` | Namespaced | Defines a Helm chart repository as a source                                                                                        |
+| v1beta2, v1 | `HelmChart`        | `hc`       | Namespaced | Defines a Helm chart produced from a source                                                                                        |
+| v1beta2, v1 | `Bucket`           |            | Namespaced | Defines an S3-compatible bucket as a source                                                                                        |
+| v1          | `ExternalArtifact` | `ea`       | Namespaced | An artifact produced by a controller other than source-controller, such as the `ArtifactGenerator` of source-watcher (Flux >= 2.7) |
 
 ### source.extensions.fluxcd.io
 
@@ -86,9 +86,9 @@ its `source.extensions.fluxcd.io/reconcile` annotation.
 Resources managed by the
 [kustomize-controller](https://github.com/fluxcd/kustomize-controller).
 
-| API Version          | Kind            | Short Name | Scope      | Description                                         |
-| -------------------- | --------------- | ---------- | ---------- | --------------------------------------------------- |
-| v1beta1, v1beta2, v1 | `Kustomization` | `ks`       | Namespaced | Builds and applies Kustomize overlays from a source |
+| API Version | Kind            | Short Name | Scope      | Description                                         |
+| ----------- | --------------- | ---------- | ---------- | --------------------------------------------------- |
+| v1          | `Kustomization` | `ks`       | Namespaced | Builds and applies Kustomize overlays from a source |
 
 ### helm.toolkit.fluxcd.io
 
@@ -108,8 +108,8 @@ and
 
 | API Version          | Kind                    | Short Name | Scope      | Description                                   |
 | -------------------- | ----------------------- | ---------- | ---------- | --------------------------------------------- |
-| v1beta1, v1beta2, v1 | `ImageRepository`       |            | Namespaced | Scans a container image repository for tags   |
-| v1beta1, v1beta2, v1 | `ImagePolicy`           |            | Namespaced | Selects the latest image based on a policy    |
+| v1beta2, v1          | `ImageRepository`       |            | Namespaced | Scans a container image repository for tags   |
+| v1beta2, v1          | `ImagePolicy`           |            | Namespaced | Selects the latest image based on a policy    |
 | v1beta1, v1beta2, v1 | `ImageUpdateAutomation` |            | Namespaced | Automates image updates committed back to Git |
 
 ### notification.toolkit.fluxcd.io
@@ -117,11 +117,11 @@ and
 Resources managed by the
 [notification-controller](https://github.com/fluxcd/notification-controller).
 
-| API Version                   | Kind       | Short Name | Scope      | Description                                          |
-| ----------------------------- | ---------- | ---------- | ---------- | ---------------------------------------------------- |
-| v1beta1, v1beta2, v1beta3, v1 | `Provider` |            | Namespaced | Represents a notification or event provider          |
-| v1beta1, v1beta2, v1beta3, v1 | `Alert`    |            | Namespaced | Configures events dispatched to a `Provider`         |
-| v1beta1, v1beta2, v1beta3, v1 | `Receiver` |            | Namespaced | Defines a webhook receiver to trigger reconciliation |
+| API Version          | Kind       | Short Name | Scope      | Description                                          |
+| -------------------- | ---------- | ---------- | ---------- | ---------------------------------------------------- |
+| v1beta2, v1beta3, v1 | `Provider` |            | Namespaced | Represents a notification or event provider          |
+| v1beta2, v1beta3, v1 | `Alert`    |            | Namespaced | Configures events dispatched to a `Provider`         |
+| v1                   | `Receiver` |            | Namespaced | Defines a webhook receiver to trigger reconciliation |
 
 ## Install
 
