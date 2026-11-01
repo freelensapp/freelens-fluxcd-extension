@@ -238,6 +238,11 @@ export const Renderer = {
     // The host links the namespace to its selection.
     NamespaceSelectBadge: ({ namespace }: { namespace?: string }) =>
       React.createElement(React.Fragment, null, namespace),
+    // The host shows a notification and returns its disposer; a test spies on
+    // the function it expects.
+    Notifications: {
+      error: (_message: unknown) => () => {},
+    },
     // The host draws the chart with Chart.js; a test checks what is around it.
     PieChart: () => null,
     // The host shows the time since the timestamp, which changes with the time.

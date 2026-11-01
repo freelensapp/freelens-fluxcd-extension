@@ -1,4 +1,5 @@
 import { type Common, Renderer } from "@freelensapp/extensions";
+import { patchObject } from "./patch-object";
 
 import type { FluxCDKubeObjectSpecWithSuspend } from "../k8s/fluxcd/types";
 
@@ -29,29 +30,31 @@ export function FluxCDObjectSpecSuspendResumeMenuItem(props: FluxCDObjectSpecSus
   const store = resource.getStore<FluxCDKubeObjectWithSuspend>();
   if (!store) return <></>;
 
-  const suspend = async () => {
-    await store.patch(
-      object,
-      {
-        spec: {
-          suspend: true,
+  const suspend = () =>
+    patchObject("suspend", object, () =>
+      store.patch(
+        object,
+        {
+          spec: {
+            suspend: true,
+          },
         },
-      },
-      "merge",
+        "merge",
+      ),
     );
-  };
 
-  const resume = async () => {
-    await store.patch(
-      object,
-      {
-        spec: {
-          suspend: false,
+  const resume = () =>
+    patchObject("resume", object, () =>
+      store.patch(
+        object,
+        {
+          spec: {
+            suspend: false,
+          },
         },
-      },
-      "merge",
+        "merge",
+      ),
     );
-  };
 
   if (object.spec.suspend) {
     return (

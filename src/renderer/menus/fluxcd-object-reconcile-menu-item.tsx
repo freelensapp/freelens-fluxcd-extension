@@ -1,4 +1,5 @@
 import { type Common, Renderer } from "@freelensapp/extensions";
+import { patchObject } from "./patch-object";
 
 const {
   Component: { MenuItem, Icon },
@@ -31,17 +32,18 @@ export function FluxCDObjectReconcileMenuItem(props: FluxCDObjectReconcileMenuIt
   const store = resource.getStore<FluxCDKubeObjectWithMetadata>();
   if (!store) return <></>;
 
-  const reconcile = async () => {
-    await store.patch(
-      object,
-      {
-        metadata: {
-          annotations: { "reconcile.fluxcd.io/requestedAt": new Date().toISOString() },
+  const reconcile = () =>
+    patchObject("reconcile", object, () =>
+      store.patch(
+        object,
+        {
+          metadata: {
+            annotations: { "reconcile.fluxcd.io/requestedAt": new Date().toISOString() },
+          },
         },
-      },
-      "merge",
+        "merge",
+      ),
     );
-  };
 
   return (
     <MenuItem onClick={reconcile} disabled={isSuspended(object)}>
