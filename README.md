@@ -34,12 +34,12 @@ directly from the UI.
 - Freelens >= 2.0.0 (for Freelens 1.x, use a 5.x release of this extension)
 - Flux >= v2.0.0, <= 2.10.x
 - flux-operator >= v0.6.0
-- kustomize-controller >= v0.1.0
-- helm-controller >= v0.1.0
-- image-automation-controller >= v0.14.0
-- image-reflector-controller >= v0.11.0
-- notification-controller >= v0.1.0
-- source-controller >= v0.1.0
+- kustomize-controller >= v1.0.0
+- helm-controller >= v0.35.0
+- image-automation-controller >= v0.35.0
+- image-reflector-controller >= v0.29.0
+- notification-controller >= v1.0.0
+- source-controller >= v1.0.0
 - source-watcher >= v2.0.0 (optional, for `ArtifactGenerator`)
 
 ## Supported APIs
