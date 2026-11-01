@@ -210,9 +210,21 @@ export const Renderer = {
     KubeObjectListLayout,
     // The host links the name to the details of the namespace, Secret or ServiceAccount.
     LinkToNamespace: ({ namespace }: { namespace?: string }) => React.createElement(React.Fragment, null, namespace),
-    // The host links the reference to its details; a test reads the name.
-    LinkToObject: ({ objectRef }: { objectRef?: { name?: string } }) =>
-      React.createElement(React.Fragment, null, objectRef?.name),
+    // As the host's: the name, linked to the details of the link that `lookupApiLink` gives the reference, and
+    // not linked without one.
+    LinkToObject: ({
+      objectRef,
+      object,
+    }: {
+      objectRef?: StubObjectReference;
+      object?: { metadata?: { namespace?: string } };
+    }) => {
+      if (!objectRef) return null;
+      const link = apiManager.lookupApiLink(objectRef, object);
+      return link
+        ? React.createElement("a", { href: Renderer.Navigation.getDetailsUrl(link) }, objectRef.name)
+        : React.createElement(React.Fragment, null, objectRef.name);
+    },
     LinkToSecret: ({ name }: { name?: string }) => React.createElement(React.Fragment, null, name),
     LinkToServiceAccount: ({ name }: { name?: string }) => React.createElement(React.Fragment, null, name),
     // A link where `to` is set, and its text only otherwise, as in the host.

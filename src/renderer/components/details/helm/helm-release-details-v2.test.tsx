@@ -92,4 +92,39 @@ describe("HelmReleaseDetails", () => {
     expect(warn.mock.calls[0][0]).toContain("fluxcd-test/forbidden");
     expect(unhandledRejections).toEqual([]);
   });
+
+  it("shows the badge of an optional source of values", async () => {
+    vi.spyOn(Renderer.K8sApi.configMapApi, "get").mockResolvedValue({
+      data: { "values.yaml": "replicaCount: 2\n" },
+    } as never);
+
+    renderDetails(helmRelease([{ kind: "ConfigMap", name: "values", optional: true }]));
+
+    await screen.findByText(/replicaCount/);
+    expect(screen.getAllByTestId("drawer-item").map((item) => item.textContent)).toContain("Optional: True");
+  });
+
+  it("shows the chart version of a dependency, and no revision, which v2 does not have", () => {
+    const dependency = new HelmRelease({
+      apiVersion: "helm.toolkit.fluxcd.io/v2",
+      kind: "HelmRelease",
+      metadata: { name: "redis", namespace: "fluxcd-test" },
+      spec: { interval: "10m", chartRef: { kind: "OCIRepository", name: "redis" } },
+      // A v2beta1 field that a v2 object does not have; the panel must not read it.
+      status: { lastAppliedRevision: "18.0.0", history: [{ chartVersion: "19.6.4" }] },
+    } as unknown as ConstructorParameters<typeof HelmRelease>[0]);
+    const getByName = vi.fn((name: string, namespace: string) =>
+      name === "redis" && namespace === "fluxcd-test" ? dependency : undefined,
+    );
+    vi.spyOn(HelmRelease, "getStore").mockReturnValue({ getByName } as never);
+    const object = helmRelease([]);
+    object.spec.dependsOn = [{ name: "redis" }];
+
+    renderDetails(object);
+
+    const items = screen.getAllByTestId("drawer-item").map((item) => item.textContent);
+    expect(items).toContain("Chart Version: 19.6.4");
+    expect(items.filter((item) => item?.includes("18.0.0"))).toEqual([]);
+    expect(getByName).toHaveBeenCalledWith("redis", "fluxcd-test");
+  });
 });
