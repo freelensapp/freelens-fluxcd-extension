@@ -128,12 +128,21 @@ const abortedProxyRequestPattern = /proxy_server\.go:\d+\] Error while proxying 
 // Freelens dev serves the renderer's modules from the Vite dev server through
 // a route of its main process, which logs a request that fails as a warning:
 // its keep-alive agent at times reuses a socket that the dev server is closing,
-// and the request fails with ECONNRESET. When the module belongs to Monaco's
-// editor worker, which the YAML views start, the worker does not load, and
-// Monaco rethrows its `error` event, an `Event` without a stack. Such a page
-// error is left out when the main log has the failed request; it says nothing
-// about the extension.
-const devFileRouteFailurePattern = /\[DEV-FILE-ROUTE\]: request for \S+ failed: /;
+// and the request fails with ECONNRESET. The route answers it with a 502, which
+// Chromium logs as "Failed to load resource"; such an error is left out when
+// the main log has the failed request for its URL. When the module belongs to
+// Monaco's editor worker, which the YAML views start, the worker does not
+// load, and Monaco rethrows its `error` event, an `Event` without a stack. Such
+// a page error is left out when the main log has a failed request. When the
+// module belongs to the cluster frame, the frame does not render, and
+// `openKindCluster` loads it again. None of it says anything about the
+// extension.
+const devFileRouteFailurePattern = /\[DEV-FILE-ROUTE\]: request for (\S+) failed: /;
+
+const badGatewayPattern = /^Failed to load resource: the server responded with a status of 502\b/;
+
+/** The path of a URL, without its query, as the dev file route logs it. */
+const urlPath = (url: string) => (URL.canParse(url) ? new URL(url).pathname : url.replace(/[?#].*$/, ""));
 
 /**
  * A connection to Freelens dev, with the errors that either process logs.
@@ -144,6 +153,8 @@ export interface AppSession {
   window: Page;
   /** The errors logged so far. */
   errors(): string[];
+  /** The paths of the requests that the dev file route failed so far, in order, one entry per failure. */
+  devFileRouteFailures(): string[];
   /** Stops collecting errors; returns every error logged until then. */
   stopCollecting(): Promise<string[]>;
   /** Stops collecting errors, unless stopped already, and closes the connection; returns every error collected. */
@@ -239,7 +250,11 @@ function collectErrors(window: Page) {
   // The thrown `Event`s, kept apart until the main log tells whether the dev
   // file route failed a request.
   const workerLoadErrors: string[] = [];
-  let devFileRouteFailed = false;
+  // The 502s, kept apart until the main log tells whether the dev file route
+  // failed the request for their URL.
+  const badGatewayErrors: { path: string; text: string }[] = [];
+  // The paths of the requests that the dev file route failed.
+  const devFileRouteFailures: string[] = [];
   let mainLogOffset = mainLogFile && fs.existsSync(mainLogFile) ? fs.statSync(mainLogFile).size : 0;
 
   // Chromium logs every response that is not a success as "Failed to load
@@ -254,6 +269,13 @@ function collectErrors(window: Page) {
       const worker = msg.worker();
       const location = `${url ? ` (${url}:${lineNumber}:${columnNumber})` : ""}${worker ? ` (worker ${worker.url()})` : ""}`;
       const text = msg.text().replaceAll(ansiEscapePattern, "");
+
+      if (url && badGatewayPattern.test(text)) {
+        badGatewayErrors.push({ path: urlPath(url), text: `[renderer] ${text}${location}` });
+
+        return;
+      }
+
       const index = errorLogs.push(`[renderer] ${text}${location}`) - 1;
 
       if (!text.trim() || /^[A-Z]\w*$/.test(text)) {
@@ -317,8 +339,10 @@ function collectErrors(window: Page) {
       for (const line of buffer.toString("utf8").split("\n")) {
         const text = line.replaceAll(ansiEscapePattern, "");
 
-        if (devFileRouteFailurePattern.test(text)) {
-          devFileRouteFailed = true;
+        const devFileRouteFailure = devFileRouteFailurePattern.exec(text);
+
+        if (devFileRouteFailure?.[1]) {
+          devFileRouteFailures.push(urlPath(devFileRouteFailure[1]));
         }
 
         if (/^(?:[\w@/.-]+:[\w:-]+: )?\s*error:/.test(text) && !abortedProxyRequestPattern.test(text.trim())) {
@@ -337,7 +361,17 @@ function collectErrors(window: Page) {
     errors: () => {
       readMainLog();
 
-      return devFileRouteFailed ? [...errorLogs] : [...errorLogs, ...workerLoadErrors];
+      const failedPaths = new Set(devFileRouteFailures);
+      const unexplainedBadGateways = badGatewayErrors
+        .filter(({ path }) => !failedPaths.has(path))
+        .map(({ text }) => text);
+
+      return [...errorLogs, ...unexplainedBadGateways, ...(failedPaths.size ? [] : workerLoadErrors)];
+    },
+    devFileRouteFailures: () => {
+      readMainLog();
+
+      return [...devFileRouteFailures];
     },
     settle: async () => {
       await Promise.all(pendingDescriptions);
@@ -380,6 +414,7 @@ export async function connectApp(): Promise<AppSession> {
       browser,
       window,
       errors: collector.errors,
+      devFileRouteFailures: collector.devFileRouteFailures,
       stopCollecting,
       close: async () => {
         const errors = await stopCollecting();
@@ -580,9 +615,16 @@ export async function disconnectKindCluster({ window }: AppSession) {
  * Connects the kind cluster, selects the namespace of the test objects, and
  * returns the cluster's frame, where the extension's pages, details and menus
  * render.
+ *
+ * When the frame does not render and the dev file route of Freelens dev has
+ * failed a request since the cluster was opened, a module of the frame did not
+ * load (see `devFileRouteFailurePattern`), and the frame is loaded once more.
+ * A frame that does not render for any other reason fails on the timeout.
  */
-export async function openKindCluster({ window }: AppSession): Promise<Frame> {
+export async function openKindCluster(session: AppSession): Promise<Frame> {
+  const { window } = session;
   const id = await kindClusterId(window);
+  const failuresBefore = session.devFileRouteFailures().length;
 
   await navigate(window, `/cluster/${id}`);
 
@@ -593,7 +635,22 @@ export async function openKindCluster({ window }: AppSession): Promise<Frame> {
     throw new Error(`No iframe for kind-${kindClusterName}`);
   }
 
-  await frame.waitForSelector("[data-testid=cluster-sidebar]", viewTimeout);
+  const sidebarSelector = "[data-testid=cluster-sidebar]";
+
+  try {
+    await frame.waitForSelector(sidebarSelector, viewTimeout);
+  } catch (error) {
+    const failures = session.devFileRouteFailures().slice(failuresBefore);
+
+    if (failures.length === 0) {
+      throw error;
+    }
+
+    console.log(`reload the frame of kind-${kindClusterName}: the dev file route failed ${failures.join(", ")}`);
+    await frame.goto(frame.url(), viewTimeout);
+    await frame.waitForSelector(sidebarSelector, viewTimeout);
+  }
+
   await selectTestNamespace(frame);
 
   return frame;

@@ -854,7 +854,10 @@ fails on any error logged by either process:
 The tests are deterministic, so nothing retries them: the config sets no
 `retry`, and the workflow runs the step once, under `timeout 600`. A retry
 repeats the same failure, and every view waits its full timeout before it
-fails.
+fails. The one exception is the cluster frame, which `openKindCluster` loads
+a second time when it did not render and the dev file route of Freelens
+failed a request meanwhile (see below); that failure is of Freelens dev, not
+of a test.
 
 The cluster has the CRDs and no controller. Nothing reconciles the objects of
 `integration/fixtures/objects`, which have no status and show as Unknown;
@@ -919,7 +922,14 @@ Freelens failed (`[DEV-FILE-ROUTE]: request for … failed`, a warning): the kee
 agent of that route at times reuses a socket that the Vite dev server is
 closing, the request fails with `ECONNRESET`, and when the module belongs to
 Monaco's editor worker, which the YAML views of the details start, the worker
-does not load and Monaco rethrows its `error` event. The workflow sets
+does not load and Monaco rethrows its `error` event. The route answers such a
+request with a 502, and Chromium logs `Failed to load resource: the server
+responded with a status of 502`; that error is left out when the main log has
+the failed request for its URL. When the module belongs to the cluster frame,
+such as one of Freelens's own stylesheets, the frame does not render its
+sidebar, and `openKindCluster`, after its timeout, loads the frame again
+once, only if the main log has a failed request since the cluster was
+opened. The workflow sets
 `TURBO_LOG_ORDER=stream` for `pnpm dev`: in GitHub
 Actions turbo otherwise groups the output of a task until it ends, and the
 persistent `dev` task never ends, so the log would stay empty.
