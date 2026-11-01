@@ -1,0 +1,53 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: test
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: podinfo
+      sourceRef:
+        kind: HelmRepository
+        name: test
+  commonMetadata:
+    labels:
+      app.kubernetes.io/part-of: test
+    annotations:
+      example.com/owner: test
+  dependsOn:
+    - name: test-infra
+      readyExpr: dep.status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+  postRenderStrategy: combined
+  waitStrategy:
+    name: poller
+  install:
+    strategy:
+      name: RetryOnFailure
+      retryInterval: 5m
+    serverSideApply: true
+    disableTakeOwnership: true
+    disableSchemaValidation: true
+  upgrade:
+    strategy:
+      name: RetryOnFailure
+      retryInterval: 5m
+    serverSideApply: enabled
+    chartNameChangeStrategy: Reinstall
+  rollback:
+    serverSideApply: auto
+  valuesFrom:
+    - kind: ConfigMap
+      name: test-values
+      optional: true
+    - kind: Secret
+      name: test-image
+      valuesKey: tag
+      targetPath: image.tag
+      literal: true
+  healthCheckExprs:
+    - apiVersion: example.com/v1
+      kind: Database
+      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+      inProgress: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'Unknown')
+      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')

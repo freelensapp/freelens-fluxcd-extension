@@ -11,9 +11,11 @@ export interface OCIRepositoryRef {
   tag?: string;
 }
 
+export type OCILayerSelectorOperation = "extract" | "copy";
+
 export interface OCILayerSelector {
   mediaType?: string;
-  operation?: "extract" | "copy";
+  operation?: OCILayerSelectorOperation;
 }
 
 export interface OIDCIdentityMatch {
@@ -21,8 +23,10 @@ export interface OIDCIdentityMatch {
   subject: string;
 }
 
+export type OCIRepositoryVerificationProvider = "cosign" | "notation";
+
 export interface OCIRepositoryVerification {
-  provider: "cosign" | "notation";
+  provider: OCIRepositoryVerificationProvider;
   secretRef?: LocalObjectReference;
   matchOIDCIdentity?: OIDCIdentityMatch[];
   trustedRootSecretRef?: LocalObjectReference;

@@ -6,7 +6,8 @@
 // One session with the CRDs of one Flux version, TEST_FLUX_VERSION or the
 // newest of integration/fixtures/flux-versions.yaml, and of the Flux Operator,
 // and a test object of every kind that the version has, in the API version
-// that the page of the kind picks on it. The session disconnects the kind cluster, sets up the CRDs, connects the cluster
+// that the page of the kind picks on it, with the objects of resources/ that
+// the test objects refer to. The session disconnects the kind cluster, sets up the CRDs, connects the cluster
 // again, so that the app reads the CRDs anew, and leaves the cluster
 // disconnected; it does not depend on another test file having run.
 

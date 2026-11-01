@@ -1,0 +1,20 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: test
+spec:
+  interval: 1h
+  url: https://dev.azure.com/example/podinfo/_git/podinfo
+  ref:
+    branch: master
+  provider: azure
+  serviceAccountName: flux-git
+  proxySecretRef:
+    name: test-proxy
+  verify:
+    mode: HEAD
+    secretRef:
+      name: test-pgp-public-keys
+  sparseCheckout:
+    - kustomize
+    - charts/podinfo

@@ -1,0 +1,51 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: test
+spec:
+  interval: 1h
+  path: ./kustomize
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: test
+  namePrefix: test-
+  nameSuffix: -v1
+  components:
+    - ../components/hpa
+  ignoreMissingComponents: true
+  buildMetadata:
+    - originAnnotations
+  deletionPolicy: WaitForTermination
+  commonMetadata:
+    labels:
+      app.kubernetes.io/part-of: test
+    annotations:
+      example.com/owner: test
+  dependsOn:
+    - name: test-infra
+      readyExpr: dep.status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+  decryption:
+    provider: sops
+    serviceAccountName: sops
+  postBuild:
+    substituteStrategy: Always
+    substitute:
+      cluster_name: test
+    substituteFrom:
+      - kind: ConfigMap
+        name: test-vars
+        optional: true
+  healthCheckExprs:
+    - apiVersion: example.com/v1
+      kind: Database
+      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+      inProgress: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'Unknown')
+      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+  ignore:
+    - paths:
+        - /spec/replicas
+      target:
+        kind: Deployment
+        name: podinfo

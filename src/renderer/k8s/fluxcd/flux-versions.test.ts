@@ -12,6 +12,7 @@ interface FixtureSet {
 }
 
 interface FluxVersions {
+  resources: string[];
   flux: Record<string, FixtureSet>;
   fluxOperator: FixtureSet;
 }
@@ -49,7 +50,8 @@ const modelClasses = new Map(
   ),
 );
 
-// The test objects, by the name of their file, such as `gitrepository-v1.yaml`.
+// The test objects, by the name of their file, such as `gitrepository-v1.yaml`
+// or its variant for one Flux version, `gitrepository-v1.flux-v2.10.0.yaml`.
 const objectSources = import.meta.glob<string>("../../../../integration/fixtures/objects/*.yaml", {
   query: "?raw",
   import: "default",
@@ -59,6 +61,19 @@ const objectSources = import.meta.glob<string>("../../../../integration/fixtures
 const testObjects = new Map(
   Object.entries(objectSources).map(([file, source]) => [file.replace(/^.*\//, ""), load(source) as TestObject]),
 );
+
+// The files of the objects that the test objects refer to, such as
+// `configmap-test-values.yaml`, which every Flux version applies.
+const resourceFiles = Object.keys(
+  import.meta.glob("../../../../integration/fixtures/resources/*.yaml", { query: "?raw", import: "default" }),
+).map((file) => file.replace(/^.*\//, ""));
+
+// The model of a test object file: the part of its name before the first `.`.
+const modelOf = (file: string) => file.replace(/\..*$/, "");
+
+// The Flux version of a variant, such as `v2.10.0`, or undefined for a file
+// that is not a variant.
+const fluxVersionOf = (file: string) => /^[^.]+\.flux-(.+)\.yaml$/.exec(file)?.[1];
 
 const listedObjects = new Set(fixtureSets.flatMap(([, { objects }]) => objects));
 
@@ -78,20 +93,39 @@ describe("the Flux versions of the integration tests", () => {
   });
 
   it.each([...modelClasses])("test the model %s with an object of its version", (name, kubeObjectClass) => {
-    const file = `${name}.yaml`;
+    const files = [...testObjects.keys()].filter((file) => modelOf(file) === name);
 
-    expect(listedObjects).toContain(file);
-    expect(testObjects.get(file)).toMatchObject({
-      kind: kubeObjectClass.kind,
-      apiVersion: kubeObjectClass.crd?.apiVersions[0],
-    });
+    expect(files.filter((file) => listedObjects.has(file))).not.toEqual([]);
+    for (const file of files) {
+      expect(testObjects.get(file), file).toMatchObject({
+        kind: kubeObjectClass.kind,
+        apiVersion: kubeObjectClass.crd?.apiVersions[0],
+      });
+    }
   });
 
   it("have a model for every test object, and list every test object", () => {
     for (const file of testObjects.keys()) {
-      expect(modelClasses.has(file.replace(/\.yaml$/, ""))).toBe(true);
+      expect(modelClasses.has(modelOf(file)), file).toBe(true);
       expect(listedObjects).toContain(file);
     }
+  });
+
+  it("list a variant of a test object for the Flux version it names", () => {
+    for (const file of testObjects.keys()) {
+      const version = fluxVersionOf(file);
+      if (file !== `${modelOf(file)}.yaml`) {
+        expect(version, file).toBeDefined();
+      }
+      if (version !== undefined) {
+        expect(fluxVersions.flux[version]?.objects, file).toContain(file);
+      }
+    }
+  });
+
+  it("list every object that the test objects refer to, and only existing ones", () => {
+    expect(resourceFiles.length).toBeGreaterThan(0);
+    expect([...fluxVersions.resources].sort()).toEqual([...resourceFiles].sort());
   });
 
   it.each(fixtureSets)("list for %s existing objects, one per kind", (_name, { objects }) => {

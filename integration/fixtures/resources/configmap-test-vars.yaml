@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-vars
+data:
+  cluster_env: test
+  cluster_region: eu-central-1

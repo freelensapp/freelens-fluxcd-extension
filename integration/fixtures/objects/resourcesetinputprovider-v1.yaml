@@ -3,6 +3,16 @@ kind: ResourceSetInputProvider
 metadata:
   name: test
 spec:
-  type: Static
+  type: ExternalArtifact
   defaultValues:
     name: test
+  selectors:
+    - name: test
+    - matchLabels:
+        app: podinfo
+      matchExpressions:
+        - key: environment
+          operator: In
+          values:
+            - staging
+            - production

@@ -1,0 +1,25 @@
+apiVersion: notification.toolkit.fluxcd.io/v1
+kind: Receiver
+metadata:
+  name: test
+spec:
+  type: generic-oidc
+  interval: 30m
+  resourceFilter: req.ref == 'refs/heads/main'
+  oidcProviders:
+    - issuerURL: https://token.actions.githubusercontent.com
+      audience: flux
+      variables:
+        - name: owner
+          expression: claims.repository_owner
+      validations:
+        - expression: vars.owner == 'stefanprodan'
+          message: the token must come from a repository of stefanprodan
+  resources:
+    - kind: GitRepository
+      name: test
+    - kind: GitRepository
+      name: "*"
+      matchLabels:
+        app: podinfo
+      filter: res.metadata.namespace == 'integration-tests'

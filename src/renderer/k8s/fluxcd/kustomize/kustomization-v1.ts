@@ -1,31 +1,42 @@
 import { Renderer } from "@freelensapp/extensions";
 import { getRefUrl } from "../utils";
 
-import type { Patch } from "../../core/types";
+import type { Patch, Selector } from "../../core/types";
 import type {
+  CustomHealthCheck,
+  DependencyReference,
   FluxCDKubeObjectCRD,
   FluxCDKubeObjectSpecWithSuspend,
   FluxCDKubeObjectStatus,
+  History,
   Image,
   KubeConfigReference,
   NamespacedObjectKindReference,
-  NamespacedObjectReference,
   ResourceInventory,
 } from "../types";
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
+export type DecryptionProvider = "sops";
+
 export interface Decryption {
-  provider: string;
+  provider: DecryptionProvider;
+  serviceAccountName?: string;
   secretRef?: LocalObjectReference;
 }
 
+export type SubstituteReferenceKind = "Secret" | "ConfigMap";
+
 export interface SubstituteReference {
-  kind: string;
+  kind: SubstituteReferenceKind;
   name: string;
+  optional?: boolean;
 }
 
+export type SubstituteStrategy = "WithVariables" | "Always";
+
 export interface PostBuild {
+  substituteStrategy?: SubstituteStrategy;
   substitute?: Record<string, string>;
   substituteFrom?: SubstituteReference[];
 }
@@ -39,8 +50,23 @@ export interface CrossNamespaceSourceReference {
   namespace?: string;
 }
 
+export interface CommonMetadata {
+  annotations?: Record<string, string>;
+  labels?: Record<string, string>;
+}
+
+export interface IgnoreRule {
+  paths: string[];
+  target?: Selector;
+}
+
+export type BuildMetadataOption = "originAnnotations" | "transformerAnnotations";
+
+export type KustomizationSpecDeletionPolicy = "MirrorPrune" | "Delete" | "WaitForTermination" | "Orphan";
+
 export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
-  dependsOn?: NamespacedObjectReference[];
+  commonMetadata?: CommonMetadata;
+  dependsOn?: DependencyReference[];
   decryption?: Decryption;
   interval: string;
   retryInterval?: string;
@@ -48,7 +74,10 @@ export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   path?: string;
   postBuild?: PostBuild;
   prune: boolean;
+  deletionPolicy?: KustomizationSpecDeletionPolicy;
   healthChecks?: NamespacedObjectKindReference[];
+  namePrefix?: string;
+  nameSuffix?: string;
   patches?: Patch[];
   images?: Image[];
   serviceAccountName?: string;
@@ -57,12 +86,20 @@ export interface KustomizationSpec extends FluxCDKubeObjectSpecWithSuspend {
   targetNamespace?: string;
   timeout?: string;
   force?: boolean;
+  wait?: boolean;
+  buildMetadata?: BuildMetadataOption[];
+  components?: string[];
+  ignoreMissingComponents?: boolean;
+  healthCheckExprs?: CustomHealthCheck[];
+  ignore?: IgnoreRule[];
 }
 
 export interface KustomizationStatus extends FluxCDKubeObjectStatus {
   lastAppliedRevision?: string;
+  lastAppliedOriginRevision?: string;
   lastAttemptedRevision?: string;
   inventory?: ResourceInventory;
+  history?: History;
 }
 
 export class Kustomization extends Renderer.K8sApi.LensExtensionKubeObject<

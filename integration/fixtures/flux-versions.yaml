@@ -3,7 +3,22 @@
 # that some Flux serves (see "Flux versions of the integration tests" in
 # AGENTS.md). Each lists the CRDs of `manifests/crds` in fluxcd/flux2 at its
 # tag, and the test objects from objects/, one per kind, in the version that
-# the page of the kind picks on it.
+# the page of the kind picks on it. A file serves every Flux version that
+# lists it, so it has only the fields that the oldest of their CRDs knows.
+# A variant, <model>.flux-<version>.yaml, is the same object with the fields
+# that only the CRDs of that Flux version have, and that version lists it in
+# place of <model>.yaml.
+#
+# The plain Kubernetes objects that the test objects refer to and the details
+# panels read, such as the ConfigMaps of `valuesFrom` and `substituteFrom`,
+# are in resources/, one object per file, and every file is in `resources`.
+# The session applies them for every Flux version, in the namespace of the
+# test objects, before the test objects.
+resources:
+  - configmap-test-vars.yaml
+  - configmap-test-values.yaml
+  - secret-test-image.yaml
+
 flux:
   v2.0.0:
     crds:
@@ -81,21 +96,21 @@ flux:
       - https://github.com/fluxcd/image-automation-controller/releases/download/v1.3.0/image-automation-controller.crds.yaml
       - https://github.com/fluxcd/source-watcher/releases/download/v2.3.1/source-watcher.crds.yaml
     objects:
-      - gitrepository-v1.yaml
-      - helmrepository-v1.yaml
-      - helmchart-v1.yaml
+      - gitrepository-v1.flux-v2.10.0.yaml
+      - helmrepository-v1.flux-v2.10.0.yaml
+      - helmchart-v1.flux-v2.10.0.yaml
       - bucket-v1.yaml
       - ocirepository-v1.yaml
       - externalartifact-v1.yaml
       - artifactgenerator-v1beta1.yaml
-      - kustomization-v1.yaml
-      - helmrelease-v2.yaml
+      - kustomization-v1.flux-v2.10.0.yaml
+      - helmrelease-v2.flux-v2.10.0.yaml
       - imagerepository-v1.yaml
       - imagepolicy-v1.yaml
       - imageupdateautomation-v1.yaml
       - provider-v1.yaml
       - alert-v1.yaml
-      - receiver-v1.yaml
+      - receiver-v1.flux-v2.10.0.yaml
 
 # The Flux Operator, the same with every Flux version: the release that
 # followed the newest Flux above.

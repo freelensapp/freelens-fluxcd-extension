@@ -5,10 +5,16 @@ import type { History, ResourceInventory } from "../types";
 
 type Condition = Renderer.K8sApi.Condition;
 
+export type DistributionVariant =
+  | "upstream-alpine"
+  | "enterprise-alpine"
+  | "enterprise-distroless"
+  | "enterprise-distroless-fips";
+
 export interface Distribution {
   version: string;
   registry: string;
-  variant?: "upstream-alpine" | "enterprise-alpine" | "enterprise-distroless" | "enterprise-distroless-fips";
+  variant?: DistributionVariant;
   imagePullSecret?: string;
   artifact?: string;
   artifactPullSecret?: string;
@@ -28,6 +34,10 @@ export interface CommonMetadata {
   annotations?: Record<string, string>;
 }
 
+export type ClusterType = "kubernetes" | "openshift" | "aws" | "azure" | "gcp";
+
+export type ClusterSize = "small" | "medium" | "large";
+
 export interface Cluster {
   domain?: string;
   multitenant?: boolean;
@@ -41,8 +51,8 @@ export interface Cluster {
   objectLevelWorkloadIdentity?: boolean;
   objectIdentityRBAC?: boolean;
   networkPolicy?: boolean;
-  type?: "kubernetes" | "openshift" | "aws" | "azure" | "gcp";
-  size?: "small" | "medium" | "large";
+  type?: ClusterType;
+  size?: ClusterSize;
 }
 
 export interface WorkloadAPI {
@@ -70,10 +80,12 @@ export interface SPIFFE {
   mtls?: MTLS;
 }
 
+export type ShardingStorage = "ephemeral" | "persistent";
+
 export interface Sharding {
   key?: string;
   shards: string[];
-  storage?: "ephemeral" | "persistent";
+  storage?: ShardingStorage;
 }
 
 export interface Storage {
@@ -85,15 +97,19 @@ export interface Kustomize {
   patches?: Patch[];
 }
 
+export type SyncKind = "OCIRepository" | "GitRepository" | "Bucket";
+
+export type SyncProvider = "generic" | "aws" | "azure" | "gcp" | "github";
+
 export interface Sync {
   name?: string;
   interval?: string;
-  kind: "OCIRepository" | "GitRepository" | "Bucket";
+  kind: SyncKind;
   url: string;
   ref: string;
   path: string;
   pullSecret?: string;
-  provider?: "generic" | "aws" | "azure" | "gcp" | "github";
+  provider?: SyncProvider;
 }
 
 export interface ComponentImage {

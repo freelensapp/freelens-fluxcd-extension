@@ -10,13 +10,27 @@ export interface CommonMetadata {
   labels?: Record<string, string>;
 }
 
+export type InputStrategySpecName = "Flatten" | "Permute";
+
 export interface InputStrategySpec {
-  name: "Flatten" | "Permute";
+  name: InputStrategySpecName;
+  includeEmptyProviders?: boolean;
 }
 
+export interface ResourceSetStep {
+  name: string;
+  resources?: any[];
+  resourcesTemplate?: string;
+  timeout?: string;
+}
+
+export type InputProviderReferenceAPIVersion = "fluxcd.controlplane.io/v1";
+
+export type InputProviderReferenceKind = "ResourceSetInputProvider";
+
 export interface InputProviderReference {
-  apiVersion?: "fluxcd.controlplane.io/v1";
-  kind?: "ResourceSetInputProvider";
+  apiVersion?: InputProviderReferenceAPIVersion;
+  kind?: InputProviderReferenceKind;
   name?: string;
   selector?: LabelSelector;
 }
@@ -48,6 +62,7 @@ export interface ResourceSetSpec {
   inputsFrom?: InputProviderReference[];
   resources?: any[];
   resourcesTemplate?: string;
+  steps?: ResourceSetStep[];
   dependsOn?: Dependency[];
   serviceAccountName?: string;
   wait?: boolean;
@@ -58,6 +73,7 @@ export interface ResourceSetStatus {
   conditions?: Condition[];
   inventory?: ResourceInventory;
   lastAppliedRevision?: string;
+  externalChecksumRefs?: string[];
   history?: History;
 }
 

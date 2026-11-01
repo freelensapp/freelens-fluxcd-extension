@@ -4,5 +4,21 @@ metadata:
   name: test
 spec:
   interval: 1h
+  provider: aws
   bucketName: test
-  endpoint: minio.example.com
+  endpoint: s3.amazonaws.com
+  region: us-east-1
+  prefix: manifests/
+  serviceAccountName: flux-bucket
+  certSecretRef:
+    name: test-ca
+  proxySecretRef:
+    name: test-proxy
+  ignore: |
+    # exclude all
+    /*
+    # include deploy dir
+    !/deploy
+  sts:
+    provider: aws
+    endpoint: https://sts.amazonaws.com

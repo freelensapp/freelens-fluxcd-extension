@@ -5,3 +5,6 @@ metadata:
 spec:
   image: ghcr.io/stefanprodan/podinfo
   interval: 1h
+  insecure: true
+  proxySecretRef:
+    name: test-proxy

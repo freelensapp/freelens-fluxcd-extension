@@ -1,6 +1,8 @@
 import { Renderer } from "@freelensapp/extensions";
 
 type Condition = Renderer.K8sApi.Condition;
+type LabelSelector = Renderer.K8sApi.LabelSelector;
+type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
 export interface ResourceSetInput {
   [key: string]: any;
@@ -21,6 +23,8 @@ export interface ResourceSetInputFilter {
   excludeBranch?: string;
   includeTag?: string;
   excludeTag?: string;
+  includeEnvironment?: string;
+  excludeEnvironment?: string;
   labels?: string[];
   limit?: number;
   semver?: string;
@@ -30,34 +34,48 @@ export interface ResourceSetInputSkip {
   labels?: string[];
 }
 
-export interface LocalObjectReference {
-  name: string;
+export interface ExternalArtifactSelector extends LabelSelector {
+  name?: string;
+  namespace?: string;
 }
 
+export type ResourceSetInputProviderSpecType =
+  | "Static"
+  | "GitHubBranch"
+  | "GitHubTag"
+  | "GitHubPullRequest"
+  | "GitLabBranch"
+  | "GitLabTag"
+  | "GitLabMergeRequest"
+  | "GitLabEnvironment"
+  | "AzureDevOpsBranch"
+  | "AzureDevOpsTag"
+  | "AzureDevOpsPullRequest"
+  | "AWSCodeCommitBranch"
+  | "AWSCodeCommitTag"
+  | "AWSCodeCommitPullRequest"
+  | "GiteaBranch"
+  | "GiteaTag"
+  | "GiteaPullRequest"
+  | "OCIArtifactTag"
+  | "ACRArtifactTag"
+  | "ECRArtifactTag"
+  | "GARArtifactTag"
+  | "ExternalService"
+  | "ExternalArtifact";
+
 export interface ResourceSetInputProviderSpec {
-  type:
-    | "Static"
-    | "GitHubBranch"
-    | "GitHubTag"
-    | "GitHubPullRequest"
-    | "GitLabBranch"
-    | "GitLabTag"
-    | "GitLabMergeRequest"
-    | "AzureDevOpsBranch"
-    | "AzureDevOpsTag"
-    | "AzureDevOpsPullRequest"
-    | "OCIArtifactTag"
-    | "ACRArtifactTag"
-    | "ECRArtifactTag"
-    | "GARArtifactTag;";
+  type: ResourceSetInputProviderSpecType;
   url?: string;
   serviceAccountName?: string;
   secretRef?: LocalObjectReference;
   certSecretRef?: LocalObjectReference;
+  insecure?: boolean;
   defaultValues?: ResourceSetInput;
   filter?: ResourceSetInputFilter;
   skip?: ResourceSetInputSkip;
   schedule?: Schedule[];
+  selectors?: ExternalArtifactSelector[];
 }
 
 export interface ResourceSetInputProviderStatus {

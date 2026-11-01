@@ -7,8 +7,24 @@ spec:
   sourceRef:
     kind: GitRepository
     name: test
+  policySelector:
+    matchLabels:
+      app: podinfo
+    matchExpressions:
+      - key: environment
+        operator: In
+        values:
+          - staging
+          - production
   git:
     commit:
       author:
         name: Flux
         email: flux@example.com
+      signingKey:
+        type: ssh
+        secretRef:
+          name: test-signing-key
+      messageTemplate: "Update images in {{ .Values.cluster }}"
+      messageTemplateValues:
+        cluster: test

@@ -120,6 +120,15 @@ const apiManager = {
   },
 };
 
+// The host's API of a core resource that a details panel reads objects of,
+// with the links of the host. Without a host it has no object; a test that
+// needs some spies on `get`.
+const coreResourceApi = (resource: string) => ({
+  get: async (_descriptor: { name: string; namespace?: string }): Promise<unknown> => null,
+  formatUrlForNotListing: ({ name, namespace }: { name?: string; namespace?: string }) =>
+    `/api/v1/namespaces/${namespace}/${resource}/${name}`,
+});
+
 interface DrawerItemProps {
   name?: React.ReactNode;
   hidden?: boolean;
@@ -253,6 +262,8 @@ export const Renderer = {
       limit: 1000,
     },
     apiManager,
+    configMapApi: coreResourceApi("configmaps"),
+    secretsApi: coreResourceApi("secrets"),
     detailsFor,
     menuItemFor,
   },

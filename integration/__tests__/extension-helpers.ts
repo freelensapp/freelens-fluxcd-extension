@@ -39,6 +39,7 @@ const testNamespace = "integration-tests";
 
 const fixturesDir = path.join(extensionDir, "integration", "fixtures");
 const objectsDir = path.join(fixturesDir, "objects");
+const resourcesDir = path.join(fixturesDir, "resources");
 
 /** The CRDs of a release, by their URLs, and its test objects, by their files in `objects/`. */
 interface FixtureSet {
@@ -48,6 +49,8 @@ interface FixtureSet {
 
 /** `integration/fixtures/flux-versions.yaml`. */
 export interface FluxVersions {
+  /** The objects that the test objects refer to, by their files in `resources/`, for every Flux version. */
+  resources: string[];
   flux: Record<string, FixtureSet>;
   fluxOperator: FixtureSet;
 }
@@ -691,7 +694,8 @@ function deleteFluxCrds() {
 
 /**
  * Removes what an earlier run left, then applies the CRDs of the session's
- * Flux version and, once they are established, its test objects.
+ * Flux version and, once they are established, the objects that the test
+ * objects refer to and the test objects.
  */
 export function setUpCluster() {
   const { crds, objects } = fixtureSet(fluxVersion);
@@ -706,11 +710,18 @@ export function setUpCluster() {
 
   kubectl("wait", "--for=condition=Established", ...crdNames, "--timeout=120s");
   kubectl("create", "namespace", testNamespace);
+  kubectl(
+    "apply",
+    "-n",
+    testNamespace,
+    ...fluxVersions.resources.flatMap((file) => ["-f", path.join(resourcesDir, file)]),
+  );
   kubectl("apply", "-n", testNamespace, ...objects.flatMap((file) => ["-f", path.join(objectsDir, file)]));
 }
 
 /**
- * Deletes the test objects, with their namespace, and the CRDs.
+ * Deletes the test objects and the objects they refer to, with their
+ * namespace, and the CRDs.
  */
 export function tearDownCluster() {
   try {
