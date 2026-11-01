@@ -92,4 +92,34 @@ describe("FluxCDObjectAnnotationSuspendResumeMenuItem", () => {
     expect(screen.getByText("Suspend")).toBeTruthy();
     expect(screen.queryByText("Resume")).toBeNull();
   });
+
+  it.each([
+    { annotations: undefined, action: "Suspend" },
+    { annotations: { "fluxcd.controlplane.io/reconcile": "disabled" }, action: "Resume" },
+  ])(
+    "shows a failed $action as an error notification, and leaves no unhandled rejection",
+    async ({ annotations, action }) => {
+      const unhandled = vi.fn();
+      process.on("unhandledRejection", unhandled);
+      try {
+        const error = vi.spyOn(Renderer.Component.Notifications, "error");
+        const patch = serveStore();
+        patch.mockImplementation(() => Promise.reject(new Error("forbidden")));
+        const item = { ...object(annotations), kind: "FluxInstance" } as MenuItemObject;
+
+        renderItem(item, "fluxcd.controlplane.io/reconcile");
+        fireEvent.click(screen.getByText(action));
+
+        await vi.waitFor(() =>
+          expect(error).toHaveBeenCalledExactlyOnceWith(
+            `Failed to ${action.toLowerCase()} FluxInstance fluxcd-test/podinfo: forbidden`,
+          ),
+        );
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(unhandled).not.toHaveBeenCalled();
+      } finally {
+        process.off("unhandledRejection", unhandled);
+      }
+    },
+  );
 });
