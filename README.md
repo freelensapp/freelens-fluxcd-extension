@@ -306,30 +306,6 @@ Optional variables:
 - `FREELENS_MAIN_LOG`: a log of the main process to check for errors, such
   as its `lens.log`. Without it only the renderer's errors are checked.
 
-### Testing the extension with unpublished Freelens
-
-In the Freelens working repository:
-
-```sh
-rm -f *.tgz
-pnpm i
-pnpm build
-pnpm pack -r
-```
-
-Then in the extension repository:
-
-```sh
-echo "overrides:" >> pnpm-workspace.yaml
-for i in ../freelens/*.tgz; do
-  name=$(tar zxOf $i package/package.json | yq -r .name)
-  echo "  \"$name\": $i" >> pnpm-workspace.yaml
-done
-
-pnpm clean:node_modules
-pnpm build
-```
-
 ## License
 
 Copyright (c) 2025-2026 Freelens Authors.
