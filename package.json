@@ -28,7 +28,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "biome": "pnpm dlx @biomejs/biome@2.6.3",
+    "biome": "pnpm dlx @biomejs/biome@2.6.4",
     "biome:check": "pnpm biome check",
     "biome:fix": "pnpm biome check --fix",
     "biome:migrate": "pnpm biome migrate --write",
@@ -74,7 +74,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
-    "electron": "44.10.0",
+    "electron": "44.10.1",
     "esbuild": "0.28.2",
     "js-base64": "^3.9.5",
     "js-yaml": "5.5.0",
