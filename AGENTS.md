@@ -744,8 +744,11 @@ setting on for `pnpm biome` and editors.
 
 Renovate updates Biome, in the `biome` script and in `.trunk/trunk.yaml`, but
 cannot run `biome migrate`. `biome-migrate.yaml` runs it on the Renovate
-branch and commits the migrated `biome.jsonc` there, so that the update and its
-migration are one pull request. The commit is by `github-actions[bot]`, which
+branch, then `biome format --write` with the migrated config, and commits the
+migrated `biome.jsonc` and the reformatted files there, so that the update, its
+migration and the formatting the new version changes are one pull request.
+`--update` stages only tracked files, which are all the formatter touches. The
+commit is by `github-actions[bot]`, which
 `gitIgnoredAuthors` in `.renovaterc.json` lists, so that Renovate does not take
 it for a manual edit and stop updating the branch.
 
