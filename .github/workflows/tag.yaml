@@ -36,14 +36,24 @@ jobs:
         run: |
           echo "version=$(yq -r .version package.json)" >> $GITHUB_OUTPUT
 
-      - name: Check if version is release
+      # X.Y.Z-0, the first prerelease after a premajor, preminor or prepatch
+      # bump, only opens the next version for development and is not published.
+      # A later prerelease, X.Y.Z-1 and on, is released under the `next`
+      # dist-tag.
+      - name: Check if version is to be released
         id: check-version
         run: |
-          if [[ "${{ steps.package-json.outputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
-            echo "is_release=true" >> $GITHUB_OUTPUT
-          else
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Version $VERSION is not X.Y.Z or X.Y.Z-<prerelease>, no tag"
             echo "is_release=false" >> $GITHUB_OUTPUT
+          elif [[ "${BASH_REMATCH[1]}" == "-0" ]]; then
+            echo "Version $VERSION is not for publishing, no tag"
+            echo "is_release=false" >> $GITHUB_OUTPUT
+          else
+            echo "is_release=true" >> $GITHUB_OUTPUT
           fi
+        env:
+          VERSION: ${{ steps.package-json.outputs.version }}
 
       - name: Create tag from the main branch
         if: steps.check-version.outputs.is_release == 'true'
