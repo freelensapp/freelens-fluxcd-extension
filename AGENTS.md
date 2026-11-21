@@ -825,9 +825,9 @@ freelensapp/freelens-example-extension. They attach to it with Playwright's
 Extension in Freelens Dev"), so they need no package of Freelens and no file
 of its checkout; Freelens dev is the only dependency, and it is not in
 `package.json`. `playwright` is a devDependency at the version of Freelens's
-catalog. The workflow runs a job for each Freelens release tag of its matrix
+catalog. The workflow runs a job for the oldest Freelens release tag of its matrix
 (`v2.0.0`) and each Flux version (see "Flux versions of the integration
-tests"). A job builds the extension, checks out Freelens at the tag, starts
+tests"), and one for each newer tag (`v2.1.0`) and the newest Flux version. A job builds the extension, checks out Freelens at the tag, starts
 `pnpm dev` there in the
 background under `xvfb-run`, with its output in a file and a fresh profile in
 `FREELENS_INTEGRATION_TESTING_DIR`, waits until the CDP endpoint answers, and

@@ -34,6 +34,12 @@ jobs:
           - v2.2.0
           - v2.3.0
           - v2.10.0
+        # A newer Freelens release runs against the newest Flux version only;
+        # the Flux versions cover the model versions, which do not depend on
+        # the Freelens release.
+        include:
+          - freelens_version: v2.1.0
+            flux_version: v2.10.0
 
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
