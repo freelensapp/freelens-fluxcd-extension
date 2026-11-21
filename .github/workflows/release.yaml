@@ -143,17 +143,29 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           upload-release-assets: false
 
+      # The same SBOM once more as CycloneDX, for the tools that read only
+      # that format, such as Dependency-Track, as in Freelens's release.
+      - name: Create CycloneDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          upload-artifact: false
+          upload-release-assets: false
+
       - name: Normalize SBOM filename
         shell: bash
         run: |
           for f in *.tgz; do
             mv sbom.spdx.json "${f%.tgz}-spdx.json"
+            mv sbom.cdx.json "${f%.tgz}-cdx.json"
           done
 
       - name: Make checksums
         shell: bash
         run: |
-          for f in *.tgz *-spdx.json; do
+          for f in *.tgz *-spdx.json *-cdx.json; do
             sha256sum "$f" | tee "$f.sha256"
           done
 
@@ -167,3 +179,5 @@ jobs:
             *.tgz.sha256
             *-spdx.json
             *-spdx.json.sha256
+            *-cdx.json
+            *-cdx.json.sha256
