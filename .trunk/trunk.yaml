@@ -13,7 +13,7 @@ plugins:
 runtimes:
   enabled:
     - go@1.21.0
-    - node@24.22.1! # datasource=node-version depName=node
+    - node@24.22.3! # datasource=node-version depName=node
     - python@3.14.4
 # actionlint comes from the maintained fork of kjanat, which continues the
 # releases of rhysd/actionlint after 1.7.12 with the same names of the files,
@@ -114,7 +114,7 @@ lint:
       run_timeout: 1m
   enabled:
     - actionlint@1.17.0
-    - biome@2.6.3! # datasource=npm depName=@biomejs/biome
+    - biome@2.6.8! # datasource=npm depName=@biomejs/biome
     - git-diff-check
     - shellcheck@0.11.0
     - shfmt@3.14.1
