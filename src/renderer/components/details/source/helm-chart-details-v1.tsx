@@ -8,7 +8,7 @@ import { StatusArtifact } from "../../status-artifact";
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, LinkToObject, LinkToSecret },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, DurationAbsoluteTimestamp, LinkToObject, LinkToSecret },
 } = Renderer;
 
 export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmChart>> = observer((props) => {
@@ -20,20 +20,33 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
       <DrawerItem name="Resumed">
         <BadgeBoolean value={!object.spec.suspend} />
       </DrawerItem>
+      <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
+        <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
+      </DrawerItem>
       <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
       <DrawerItem name="Chart">{object.spec.chart}</DrawerItem>
+      <DrawerItem name="Observed Chart Name" hidden={!object.status?.observedChartName}>
+        {object.status?.observedChartName}
+      </DrawerItem>
       <DrawerItem name="Version">{object.spec.version ?? "*"}</DrawerItem>
       <DrawerItem name="Reconcile Strategy">{object.spec.reconcileStrategy ?? "ChartVersion"}</DrawerItem>
       <DrawerItem name="Source">
         <LinkToObject objectRef={withServedApiVersion(object.spec.sourceRef)} object={object} />
       </DrawerItem>
+      <DrawerItem name="Observed Source Artifact Revision" hidden={!object.status?.observedSourceArtifactRevision}>
+        {object.status?.observedSourceArtifactRevision}
+      </DrawerItem>
       <DrawerItem name="Values Files" hidden={!object.spec.valuesFiles?.length}>
-        {object.spec.valuesFiles?.length &&
-          object.spec.valuesFiles.map((file) => (
-            <DrawerItem key={file} name="">
-              {file}
-            </DrawerItem>
-          ))}
+        {object.spec.valuesFiles?.map((file) => (
+          <DrawerItem key={file} name="">
+            {file}
+          </DrawerItem>
+        ))}
+      </DrawerItem>
+      <DrawerItem name="Observed Values Files" hidden={!object.status?.observedValuesFiles?.length}>
+        {object.status?.observedValuesFiles?.map((file) => (
+          <div key={file}>{file}</div>
+        ))}
       </DrawerItem>
       <DrawerItem name="Ignore Missing Values Files" hidden={object.spec.ignoreMissingValuesFiles === undefined}>
         <BadgeBoolean value={object.spec.ignoreMissingValuesFiles} />
@@ -57,6 +70,9 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
           </DrawerItem>
         </div>
       )}
+      <DrawerItem name="Latest Artifact URL" hidden={!object.status?.url}>
+        {object.status?.url}
+      </DrawerItem>
 
       <StatusArtifact artifact={object.status?.artifact} />
     </div>

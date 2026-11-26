@@ -7,7 +7,7 @@ import { StatusArtifact } from "../../status-artifact";
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, LinkToSecret },
+  Component: { BadgeBoolean, DrawerItem, DurationAbsoluteTimestamp, LinkToSecret },
 } = Renderer;
 
 export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmRepository>> = observer(
@@ -20,10 +20,15 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
         <DrawerItem name="Resumed">
           <BadgeBoolean value={!object.spec.suspend} />
         </DrawerItem>
+        <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
+          <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
+        </DrawerItem>
         <DrawerItem name="Interval" hidden={!object.spec.interval}>
           {object.spec.interval}
         </DrawerItem>
         <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>
+        <DrawerItem name="Type">{object.spec.type ?? "default"}</DrawerItem>
+        <DrawerItem name="URL">{object.spec.url}</DrawerItem>
         <DrawerItem name="Authentication Provider" hidden={object.spec.type !== "oci" && !object.spec.provider}>
           {object.spec.provider ?? "generic"}
         </DrawerItem>
@@ -38,6 +43,9 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
         </DrawerItem>
         <DrawerItem name="Insecure Container Registry" hidden={object.spec.insecure === undefined}>
           <BadgeBoolean value={object.spec.insecure} />
+        </DrawerItem>
+        <DrawerItem name="Latest Artifact URL" hidden={!object.status?.url}>
+          {object.status?.url}
         </DrawerItem>
 
         <StatusArtifact artifact={object.status?.artifact} />

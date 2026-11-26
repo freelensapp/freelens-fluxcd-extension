@@ -9,7 +9,15 @@ import styles from "./bucket-details.module.scss";
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, LinkToSecret, LinkToServiceAccount, MonacoEditor },
+  Component: {
+    BadgeBoolean,
+    DrawerItem,
+    DrawerTitle,
+    DurationAbsoluteTimestamp,
+    LinkToSecret,
+    LinkToServiceAccount,
+    MonacoEditor,
+  },
 } = Renderer;
 
 export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Bucket>> = observer((props) => {
@@ -21,9 +29,13 @@ export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<B
       <DrawerItem name="Resumed">
         <BadgeBoolean value={!object.spec.suspend} />
       </DrawerItem>
+      <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
+        <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
+      </DrawerItem>
       <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
       <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>
       <DrawerItem name="Provider">{object.spec.provider ?? "generic"}</DrawerItem>
+      <DrawerItem name="Endpoint">{object.spec.endpoint}</DrawerItem>
       <DrawerItem name="Bucket">{object.spec.bucketName}</DrawerItem>
       <DrawerItem name="Region" hidden={!object.spec.region}>
         {object.spec.region}
@@ -63,6 +75,23 @@ export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<B
           }}
         />
       </DrawerItem>
+      <DrawerItem name="Observed Source Ignore" hidden={!object.status?.observedIgnore}>
+        <MonacoEditor
+          readOnly
+          id="observedIgnore"
+          className={styles.editor}
+          style={{
+            minHeight: getHeight(object.status?.observedIgnore ?? ""),
+          }}
+          value={object.status?.observedIgnore ?? ""}
+          setInitialHeight
+          options={{
+            scrollbar: {
+              alwaysConsumeMouseWheel: false,
+            },
+          }}
+        />
+      </DrawerItem>
 
       {object.spec.sts && (
         <div>
@@ -77,6 +106,9 @@ export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<B
           </DrawerItem>
         </div>
       )}
+      <DrawerItem name="Latest Artifact URL" hidden={!object.status?.url}>
+        {object.status?.url}
+      </DrawerItem>
 
       <StatusArtifact artifact={object.status?.artifact} />
     </div>
