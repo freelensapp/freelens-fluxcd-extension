@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { FluxCDEvents } from "../components/fluxcd-events";
 import { InfoPage } from "../components/info-page";
 import { PieChart } from "../components/pie-chart";
+import { FluxCDStatusCard, type FluxCDStatusCardProps, isOverviewStyleCards } from "../components/status-card";
 import { ResourceSet as ResourceSet_v1 } from "../k8s/fluxcd/controlplane/resourceset-v1";
 import { ResourceSetInputProvider as ResourceSetInputProvider_v1 } from "../k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
 import { HelmRelease as HelmRelease_v2 } from "../k8s/fluxcd/helm/helmrelease-v2";
@@ -76,6 +77,40 @@ const kinds = [
   { title: ResourceSet_v1.crd.title, classes: [ResourceSet_v1] },
   { title: ResourceSetInputProvider_v1.crd.title, classes: [ResourceSetInputProvider_v1] },
 ];
+
+export interface OverviewStatusesProps {
+  extension: Renderer.LensExtension;
+  /** The kinds with objects in the selected namespaces, in the order of the charts. */
+  kinds: { title: string; crd: Renderer.K8sApi.CustomResourceDefinition; objects: FluxCDStatusCardProps["objects"] }[];
+}
+
+/**
+ * A chart per kind, or a card per kind when the user chose the Cards overview style. An observer, so that it renders
+ * again when the user switches.
+ */
+export const OverviewStatuses = observer(({ extension, kinds }: OverviewStatusesProps) => {
+  if (isOverviewStyleCards()) {
+    return (
+      <div className={styles.cards}>
+        {kinds.map(({ title, crd, objects }) => (
+          <FluxCDStatusCard key={title} extension={extension} title={title} objects={objects} crd={crd} />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.overviewStatuses}>
+      <div className={styles.statuses}>
+        {kinds.map(({ title, crd, objects }) => (
+          <div key={title} className={styles.chartColumn}>
+            <PieChart extension={extension} title={title} objects={objects} crd={crd} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+});
 
 export interface FluxCDOverviewPageProps {
   extension: Renderer.LensExtension;
@@ -161,24 +196,19 @@ export const FluxCDOverviewPage = observer(({ extension }: FluxCDOverviewPagePro
           <NamespaceSelectFilter id="overview-namespace-select-filter-input" />
         </header>
 
-        <div className={styles.overviewStatuses}>
-          <div className={styles.statuses}>
-            {stores.map(({ title, store }) => {
-              if (!store) return null;
-              const crd = getCrd(store);
-              if (!crd) return null;
+        <OverviewStatuses
+          extension={extension}
+          kinds={stores.flatMap(({ title, store }) => {
+            if (!store) return [];
+            const crd = getCrd(store);
+            if (!crd) return [];
 
-              const items = store.contextItems;
-              if (!items.length) return null;
+            const objects = store.contextItems;
+            if (!objects.length) return [];
 
-              return (
-                <div key={title} className={styles.chartColumn}>
-                  <PieChart extension={extension} title={title} objects={items} crd={crd} />
-                </div>
-              );
-            })}
-          </div>
-        </div>
+            return [{ title, crd, objects }];
+          })}
+        />
 
         <FluxCDEvents compact compactLimit={100} />
       </div>

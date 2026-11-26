@@ -259,6 +259,30 @@ export const Renderer = {
     PieChart: () => null,
     // The host shows the time since the timestamp, which changes with the time.
     ReactiveDuration: () => null,
+    // The host draws a bar and a legend; a test reads the title, and each
+    // status as its label and count, with its color and tone. With `onClick`
+    // the whole card is a button, as in the host.
+    StatusCard: ({
+      title,
+      statuses,
+      onClick,
+    }: {
+      title: string;
+      statuses: readonly { label: string; count: number; color: string; tone?: string }[];
+      onClick?: () => void;
+    }) =>
+      React.createElement(
+        "div",
+        { "data-testid": "status-card", ...(onClick ? { role: "button", onClick } : {}) },
+        React.createElement("h6", null, title),
+        statuses.map(({ label, count, color, tone }) =>
+          React.createElement(
+            "div",
+            { key: label, "data-testid": "status", "data-color": color, "data-tone": tone },
+            `${label}: ${count}`,
+          ),
+        ),
+      ),
     Table: tablePart(),
     TableCell: tablePart("cell"),
     TableHead: tablePart(),
@@ -303,6 +327,12 @@ export const Renderer = {
 };
 
 export const Common = {
+  App: {
+    Preferences: {
+      // The default of the host; a test spies on it for the other style.
+      getOverviewStyle: (): "cards" | "charts" => "charts",
+    },
+  },
   logger: {
     debug: vi.fn(),
     info: vi.fn(),

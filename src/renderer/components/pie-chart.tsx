@@ -74,7 +74,7 @@ export const getStats = (objects: StatsObject[]) => {
 /**
  * The id of the cluster page of the kind, which is its singular name.
  */
-const getPageId = (crd: Renderer.K8sApi.CustomResourceDefinition) => {
+export const getPageId = (crd: Renderer.K8sApi.CustomResourceDefinition) => {
   return crd.spec.names.singular;
 };
 
