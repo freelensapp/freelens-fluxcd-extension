@@ -162,6 +162,37 @@ describe("getStats", () => {
     expect(stats).toEqual([2, 0, 0, 1, 0]);
     expect(sum(stats)).toBe(objects.length);
   });
+
+  it.each(["Alert", "Provider"])(
+    "counts a %s without conditions, a static object, as ready unless it is suspended",
+    (kind) => {
+      const objects = [
+        object({ kind }),
+        object({ kind, spec: { suspend: false } }),
+        object({ kind, status: {} }),
+        object({ kind, spec: { suspend: true } }),
+      ];
+
+      const stats = getStats(objects);
+
+      expect(stats).toEqual([3, 0, 0, 1, 0]);
+      expect(sum(stats)).toBe(objects.length);
+    },
+  );
+
+  it.each(["Alert", "Provider"])("counts a %s with conditions, of v1beta2, by its Ready condition", (kind) => {
+    const objects = [
+      object({ kind, status: readyCondition("True") }),
+      object({ kind, status: readyCondition("False") }),
+      object({ kind, status: readyCondition("Unknown") }),
+      object({ kind, spec: { suspend: true }, status: readyCondition("True") }),
+    ];
+
+    const stats = getStats(objects);
+
+    expect(stats).toEqual([1, 1, 1, 1, 0]);
+    expect(sum(stats)).toBe(objects.length);
+  });
 });
 
 describe("PieChart", () => {

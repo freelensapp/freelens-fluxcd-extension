@@ -4,6 +4,8 @@ import { FluxReport } from "../k8s/fluxcd/controlplane/fluxreport-v1";
 import { ResourceSet } from "../k8s/fluxcd/controlplane/resourceset-v1";
 import { ResourceSetInputProvider } from "../k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
 import { fluxOperatorReconcileAnnotation } from "../k8s/fluxcd/controlplane/types";
+import { Alert } from "../k8s/fluxcd/notification/alert-v1";
+import { Provider } from "../k8s/fluxcd/notification/provider-v1";
 import { ArtifactGenerator, sourceWatcherReconcileAnnotation } from "../k8s/fluxcd/source/artifactgenerator-v1beta1";
 import { isReconcileDisabled } from "../k8s/fluxcd/utils";
 import styles from "./pie-chart.module.scss";
@@ -38,19 +40,29 @@ const reconcileAnnotations: Partial<Record<string, string>> = {
 };
 
 /**
+ * The kinds whose objects are static from a version on, with no status: Alert
+ * and Provider from `v1beta3` (notification-controller v1.2.0, Flux v2.2.0)
+ * on. Their `v1beta2`, which notification-controller v1.0 and v1.1 reconcile,
+ * has a `Ready` condition.
+ */
+const staticKinds = new Set<string>([Alert.kind, Provider.kind]);
+
+/**
  * The category of an object, in the order of the chart. Each object has
  * exactly one: suspension wins over the status, and an OCI HelmRepository,
- * which has no status to reconcile, is ready. An object can have no spec,
- * as an ExternalArtifact, whose spec has optional fields only. An
- * ArtifactGenerator and the Flux Operator kinds have no `spec.suspend` and
- * are suspended by their reconcile annotation.
+ * which has no status to reconcile, is ready. So is an Alert or a Provider
+ * without conditions, a static object; one with conditions is counted by its
+ * `Ready` condition. An object can have no spec, as an ExternalArtifact,
+ * whose spec has optional fields only. An ArtifactGenerator and the Flux
+ * Operator kinds have no `spec.suspend` and are suspended by their reconcile
+ * annotation.
  */
 const getCategory = (o: StatsObject) => {
   if (o.spec?.suspend === true) return SUSPENDED;
   const annotation = reconcileAnnotations[o.kind];
   if (annotation && isReconcileDisabled(o, annotation)) return SUSPENDED;
   if (o.kind === "HelmRepository" && (o as HelmRepository).spec.type === "oci") return READY;
-  if (!o.status?.conditions) return UNKNOWN;
+  if (!o.status?.conditions) return staticKinds.has(o.kind) ? READY : UNKNOWN;
 
   const ready = o.status.conditions.find((c) => c.type === "Ready")?.status;
   if (ready === "True") return READY;

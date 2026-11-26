@@ -273,9 +273,17 @@ that serves the version, read from the Go sources and not from memory:
   it covers, and a field is required only where every version it covers
   requires it.
 
-A kind that its controller does not reconcile gets no Reconcile or
-Suspend/Resume menu item: `ExternalArtifact` is reconciled by its producer,
-such as source-watcher. A kind with `spec.suspend` gets
+A kind that its controller does not reconcile gets no Reconcile menu item:
+`ExternalArtifact` is reconciled by its producer, such as source-watcher, and
+gets no Suspend/Resume item either. Alert and Provider of `v1beta3` and `v1`
+are static objects from notification-controller v1.2.0 (Flux v2.2.0) on: they
+have no status, and the controller only removes the finalizer of an object
+from before and does not read `reconcile.fluxcd.io/requestedAt`. The event
+server still skips one with `spec.suspend`, so they keep the spec
+Suspend/Resume item, registered from `specSuspendStaticClasses`. Their
+`v1beta2`, the newest version on Flux v2.0 and v2.1, whose
+notification-controller (v1.0 and v1.1) reconciles it and sets its `Ready`
+condition, keeps Reconcile. A kind with `spec.suspend` gets
 `FluxCDObjectSpecSuspendResumeMenuItem`. A kind that an annotation suspends
 instead gets `FluxCDObjectAnnotationSuspendResumeMenuItem`, with the
 annotation as its `annotation` prop, which Suspend sets to `disabled` and
@@ -293,6 +301,13 @@ column and the Suspend/Resume item read it through `isReconcileDisabled`
 object is suspended when the value, lowercased, is `disabled`, as `IsDisabled`
 of source-watcher and of the Flux Operator tells it. `getStats` of the
 Overview chart maps each such kind to its annotation.
+
+`getStats` counts an object without `status.conditions` as Unknown, except
+an object with nothing to reconcile, which is Ready unless it is suspended:
+an OCI HelmRepository, and an Alert or Provider, static from `v1beta3` on.
+An Alert or Provider of `v1beta2` with conditions is counted by its `Ready`
+condition, as any other kind. The charts and the cards of the Overview both
+follow `getStats`.
 
 ## Renderer Components
 
@@ -335,7 +350,8 @@ Overview chart maps each such kind to its annotation.
 - A `kubeObjectMenuItems` `MenuItem` gets `object` and `toolbar` (`Common.Types.KubeObjectMenuItemProps<Kind>`), not
   `Renderer.Component.KubeObjectMenuProps`, the props of the host's whole menu; the registration passes `resource`, and
   the annotation Suspend/Resume item also gets `annotation` (see "CRD KubeObject Pattern"). The shared items are
-  registered from two lists, one entry per class: `specSuspendClasses` gets Reconcile and the spec Suspend/Resume item,
+  registered from three lists, one entry per class: `specSuspendClasses` gets Reconcile and the spec Suspend/Resume
+  item, `specSuspendStaticClasses`, the static Alert and Provider, the spec Suspend/Resume item only, and
   `annotationSuspendClasses` Reconcile and the annotation Suspend/Resume item with its annotation. In the callback of a
   list the class is the union of the list's classes, from which `menuItemFor` would infer one class and reject the
   others, so the call gives the union of their objects as type argument:
@@ -857,7 +873,8 @@ fails on any error logged by either process:
   its details show an item of the extension's panel and no error page of the
   error boundary, with the object in the API version of its file, and the
   row's menu lists the
-  extension's items of the kind, Reconcile and Suspend, or none for
+  extension's items of the kind, Reconcile and Suspend, Suspend only for
+  Alert and Provider of `v1beta3` and `v1`, or none for
   `ExternalArtifact`; they are not clicked. Each view is an `it` that
   navigates itself, so that it does not depend on the state another left.
   They do not check the columns, every field, what a menu action does, or
