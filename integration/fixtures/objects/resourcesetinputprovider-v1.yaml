@@ -8,6 +8,10 @@ spec:
     name: test
   selectors:
     - name: test
+    - name: test
+      namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: integration-tests
     - matchLabels:
         app: podinfo
       matchExpressions:

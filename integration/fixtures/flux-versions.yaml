@@ -116,10 +116,10 @@ flux:
 # followed the newest Flux above.
 fluxOperator:
   crds:
-    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_fluxinstances.yaml
-    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_fluxreports.yaml
-    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_resourcesets.yaml
-    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.62.1/config/crd/bases/fluxcd.controlplane.io_resourcesetinputproviders.yaml
+    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.64.0/config/crd/bases/fluxcd.controlplane.io_fluxinstances.yaml
+    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.64.0/config/crd/bases/fluxcd.controlplane.io_fluxreports.yaml
+    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.64.0/config/crd/bases/fluxcd.controlplane.io_resourcesets.yaml
+    - https://raw.githubusercontent.com/controlplaneio-fluxcd/flux-operator/v0.64.0/config/crd/bases/fluxcd.controlplane.io_resourcesetinputproviders.yaml
   objects:
     - fluxinstance-v1.yaml
     - fluxreport-v1.yaml
