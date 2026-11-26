@@ -55,3 +55,36 @@ describe("OCIRepositoryDetails", () => {
     ]);
   });
 });
+
+const ociRepositoryWithLayerSelector = (layerSelector: Record<string, unknown>) =>
+  new OCIRepository({
+    apiVersion: "source.toolkit.fluxcd.io/v1",
+    kind: "OCIRepository",
+    metadata: { name: "podinfo", namespace: "fluxcd-test" },
+    spec: { interval: "10m", url: "oci://ghcr.io/stefanprodan/manifests/podinfo", layerSelector },
+  } as unknown as ConstructorParameters<typeof OCIRepository>[0]);
+
+const drawerItems = () => screen.getAllByTestId("drawer-item").map((item) => item.textContent);
+
+describe("OCIRepositoryDetails OCI Layer Selector", () => {
+  // Both fields of `OCILayerSelector` are optional: without `mediaType` source-controller selects the first layer,
+  // and without `operation` it extracts the layer (`GetLayerOperation` of `OCIRepository`).
+  it("hides the media type and shows the default operation of an empty layer selector", () => {
+    renderDetails(ociRepositoryWithLayerSelector({}));
+
+    expect(drawerItems().some((item) => item?.startsWith("Media type"))).toBe(false);
+    expect(drawerItems()).toContain("Operation: extract");
+  });
+
+  it("shows the media type and the operation of the layer selector", () => {
+    renderDetails(
+      ociRepositoryWithLayerSelector({
+        mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip",
+        operation: "copy",
+      }),
+    );
+
+    expect(drawerItems()).toContain("Media type: application/vnd.cncf.helm.chart.content.v1.tar+gzip");
+    expect(drawerItems()).toContain("Operation: copy");
+  });
+});
