@@ -23,7 +23,7 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
         {object.spec.eventSources.map((eventSource) => {
           const badge = <Badge label={`${eventSource.kind}:${eventSource.name}`} />;
           return (
-            <DrawerItem key={`${eventSource.kind}:${eventSource.namespace ?? ""}:${eventSource.name}`} name="">
+            <DrawerItem key={Renderer.Util.createReactKey(eventSource)} name="">
               {eventSource.name === "*" ? (
                 badge
               ) : (
