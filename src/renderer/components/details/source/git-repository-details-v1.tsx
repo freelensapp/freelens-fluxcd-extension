@@ -1,11 +1,13 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
-import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1";
+import { GitRepository, type GitRepositoryInclude } from "../../../k8s/fluxcd/source/gitrepository-v1";
 import { withFluxKind } from "../../../k8s/fluxcd/utils";
 import { getHeight } from "../../../utils";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./git-repository-details.module.scss";
+
+import type { Artifact } from "../../../k8s/fluxcd/types";
 
 const { observer } = MobxReact;
 
@@ -23,6 +25,17 @@ const {
   },
 } = Renderer;
 
+// source-controller keeps status.observedInclude and status.includedArtifacts in the order of spec.include, so the
+// entries of the same index are the include of the last successful reconciliation and the artifact it included.
+function getIncludedArtifacts(object: GitRepository): { include?: GitRepositoryInclude; artifact?: Artifact }[] {
+  const observedInclude = object.status?.observedInclude ?? [];
+  const includedArtifacts = object.status?.includedArtifacts ?? [];
+  return Array.from({ length: Math.max(observedInclude.length, includedArtifacts.length) }, (_, index) => ({
+    include: observedInclude[index],
+    artifact: includedArtifacts[index],
+  }));
+}
+
 export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<GitRepository>> = observer(
   (props) => {
     const { object } = props;
@@ -30,6 +43,7 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
 
     const gitRefFull = GitRepository.getGitRefFull(object.spec.ref);
     const gitRevision = GitRepository.getGitRevision(object);
+    const includedArtifacts = getIncludedArtifacts(object);
 
     return (
       <>
@@ -42,6 +56,7 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
           <DrawerItem name="Timeout">{object.spec.timeout}</DrawerItem>
+          <DrawerItem name="URL">{object.spec.url}</DrawerItem>
           <DrawerItem name="Git Ref" hidden={!gitRefFull}>
             {gitRefFull}
           </DrawerItem>
@@ -86,11 +101,39 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
               }}
             />
           </DrawerItem>
+          <DrawerItem name="Observed Source Ignore" hidden={!object.status?.observedIgnore}>
+            <MonacoEditor
+              readOnly
+              id="observedIgnore"
+              className={styles.editor}
+              style={{
+                minHeight: getHeight(object.status?.observedIgnore ?? ""),
+              }}
+              value={object.status?.observedIgnore ?? ""}
+              setInitialHeight
+              options={{
+                scrollbar: {
+                  alwaysConsumeMouseWheel: false,
+                },
+              }}
+            />
+          </DrawerItem>
           <DrawerItem name="Recurse Submodules">
             <BadgeBoolean value={object.spec.recurseSubmodules ?? false} />
           </DrawerItem>
+          <DrawerItem
+            name="Observed Recurse Submodules"
+            hidden={object.status?.observedRecurseSubmodules === undefined}
+          >
+            <BadgeBoolean value={object.status?.observedRecurseSubmodules ?? false} />
+          </DrawerItem>
           <DrawerItem name="Sparse Checkout" hidden={!object.spec.sparseCheckout?.length}>
             {object.spec.sparseCheckout?.map((directory) => (
+              <div key={directory}>{directory}</div>
+            ))}
+          </DrawerItem>
+          <DrawerItem name="Observed Sparse Checkout" hidden={!object.status?.observedSparseCheckout?.length}>
+            {object.status?.observedSparseCheckout?.map((directory) => (
               <div key={directory}>{directory}</div>
             ))}
           </DrawerItem>
@@ -117,6 +160,36 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {includedArtifacts.length > 0 && (
+            <div>
+              <DrawerTitle>Included Artifacts</DrawerTitle>
+              {includedArtifacts.map(({ include, artifact }) => (
+                <div key={Renderer.Util.createReactKey({ include, artifact })}>
+                  <div className={styles.title}>
+                    <Icon small material="list" />
+                  </div>
+                  <DrawerItem name="Git Repository" hidden={!include}>
+                    {include && (
+                      <LinkToObject objectRef={withFluxKind(include.repository, GitRepository.kind)} object={object} />
+                    )}
+                  </DrawerItem>
+                  <DrawerItem name="From Path" hidden={!include?.fromPath}>
+                    {include?.fromPath}
+                  </DrawerItem>
+                  <DrawerItem name="To Path" hidden={!include?.toPath}>
+                    {include?.toPath}
+                  </DrawerItem>
+                  <DrawerItem name="Revision" hidden={!artifact?.revision}>
+                    {artifact?.revision}
+                  </DrawerItem>
+                  <DrawerItem name="Digest" hidden={!artifact?.digest}>
+                    {artifact?.digest}
+                  </DrawerItem>
+                </div>
+              ))}
             </div>
           )}
 
