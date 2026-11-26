@@ -42,3 +42,40 @@ describe("BucketDetails Last Handled Reconcile At", () => {
     expect(drawerItems("Last Handled Reconcile At")).toEqual(["Last Handled Reconcile At: 2026-11-26T12:00:00Z"]);
   });
 });
+
+describe("BucketDetails endpoint", () => {
+  it("shows the endpoint of the bucket next to the endpoint of the Security Token Service", () => {
+    renderDetails(bucket({ sts: { provider: "ldap", endpoint: "https://minio.minio.svc.cluster.local:9000" } }));
+
+    expect(drawerItems("Endpoint")).toEqual([
+      "Endpoint: minio.minio.svc.cluster.local:9000",
+      "Endpoint: https://minio.minio.svc.cluster.local:9000",
+    ]);
+  });
+});
+
+describe("BucketDetails observed fields", () => {
+  it("hides the Observed Source Ignore and the Latest Artifact URL without the status", () => {
+    renderDetails(bucket());
+
+    expect(drawerItems("Observed Source Ignore")).toEqual([]);
+    expect(drawerItems("Latest Artifact URL")).toEqual([]);
+  });
+
+  it("shows the Observed Source Ignore and the Latest Artifact URL", () => {
+    renderDetails(
+      bucket(
+        {},
+        {
+          observedIgnore: "/*\n!/deploy",
+          url: "http://source-controller.flux-system.svc.cluster.local./bucket/fluxcd-test/podinfo/latest.tar.gz",
+        },
+      ),
+    );
+
+    expect(drawerItems("Observed Source Ignore")).toEqual(["Observed Source Ignore: /*\n!/deploy"]);
+    expect(drawerItems("Latest Artifact URL")).toEqual([
+      "Latest Artifact URL: http://source-controller.flux-system.svc.cluster.local./bucket/fluxcd-test/podinfo/latest.tar.gz",
+    ]);
+  });
+});
