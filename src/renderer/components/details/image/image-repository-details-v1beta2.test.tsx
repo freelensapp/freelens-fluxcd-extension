@@ -35,6 +35,14 @@ describe("ImageRepositoryDetails v1beta2", () => {
     expect(drawerItems().some((item) => item?.startsWith("Latest Tags"))).toBe(false);
   });
 
+  // `spec.timeout` is optional, and image-reflector-controller scans with the interval as timeout without it
+  // (`GetTimeout` of `ImageRepository`).
+  it("shows the interval as the default timeout", () => {
+    renderDetails(imageRepository({}));
+
+    expect(drawerItems()).toContain("Timeout: 5m");
+  });
+
   it("lists the latest tags of a scan result", () => {
     renderDetails(imageRepository({ lastScanResult: { tagCount: 2, latestTags: ["6.1.0", "6.0.0"] } }));
 
