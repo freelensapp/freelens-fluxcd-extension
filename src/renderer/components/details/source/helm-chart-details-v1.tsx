@@ -37,12 +37,11 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
         {object.status?.observedSourceArtifactRevision}
       </DrawerItem>
       <DrawerItem name="Values Files" hidden={!object.spec.valuesFiles?.length}>
-        {object.spec.valuesFiles?.length &&
-          object.spec.valuesFiles.map((file) => (
-            <DrawerItem key={file} name="">
-              {file}
-            </DrawerItem>
-          ))}
+        {object.spec.valuesFiles?.map((file) => (
+          <DrawerItem key={file} name="">
+            {file}
+          </DrawerItem>
+        ))}
       </DrawerItem>
       <DrawerItem name="Observed Values Files" hidden={!object.status?.observedValuesFiles?.length}>
         {object.status?.observedValuesFiles?.map((file) => (

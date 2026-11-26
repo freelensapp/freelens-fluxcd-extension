@@ -15,8 +15,8 @@ const {
   Component: {
     BadgeBoolean,
     DrawerItem,
-    DurationAbsoluteTimestamp,
     DrawerTitle,
+    DurationAbsoluteTimestamp,
     Icon,
     LinkToObject,
     LinkToSecret,
