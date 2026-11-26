@@ -198,15 +198,21 @@ nvm install "$(cat .nvmrc)"
 nvm use "$(cat .nvmrc)"
 ```
 
-Install pnpm:
+Install pnpm. `mise install` above already did, otherwise use any other
+installer:
 
 ```sh
-corepack install
-# or
 curl -fsSL https://get.pnpm.io/install.sh | sh -
 # or
+brew install pnpm
+# or
 winget install pnpm.pnpm
+# or
+npm install -g pnpm
 ```
+
+Any recent pnpm works: in this repository it switches itself to the version
+of `packageManager` in `package.json`.
 
 ### Build extension
 

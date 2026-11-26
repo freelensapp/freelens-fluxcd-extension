@@ -94,6 +94,17 @@
       "groupName": "Freelens dependencies"
     },
     {
+      "description": "pnpm in packageManager takes the version in mise.toml of Freelens on main, like the pnpm in mise.toml here, so the two move in one PR: pnpm switches itself to the version of packageManager, and a pnpm from mise of another version makes every CI job download pnpm a second time. The custom datasource has no release dates, so minimumReleaseAge is off.",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["packageManager"],
+      "matchDepNames": ["pnpm"],
+      "overrideDatasource": "custom.freelens-mise",
+      "overridePackageName": "pnpm",
+      "rangeStrategy": "replace",
+      "minimumReleaseAge": "0 days",
+      "groupName": "Freelens dependencies"
+    },
+    {
       "description": "The Node runtime of Trunk takes the version in mise.toml of Freelens on main, like the one in mise.toml here. The custom datasource has no release dates, so minimumReleaseAge is off.",
       "matchManagers": ["custom.regex"],
       "matchFileNames": [".trunk/trunk.yaml"],
