@@ -63,7 +63,7 @@ export class ImagePolicy extends Renderer.K8sApi.LensExtensionKubeObject<
     apiVersions: ["image.toolkit.fluxcd.io/v1"],
     plural: "imagepolicies",
     singular: "imagepolicy",
-    shortNames: [],
+    shortNames: ["imgpol", "imagepol"],
     title: "Image Policies",
   };
 

@@ -78,6 +78,8 @@ export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObje
     apiVersions: ["image.toolkit.fluxcd.io/v1beta2"],
     plural: "imageupdateautomations",
     singular: "imageupdateautomation",
+    // The CRD has short names from image-automation-controller v1.0.0 on, the release that serves v1, which the
+    // page picks over this version.
     shortNames: [],
     title: "Image Update Automations",
   };
