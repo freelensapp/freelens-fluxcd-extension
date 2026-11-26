@@ -84,9 +84,9 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           const valuesYaml = (await getSourceData(api, name, ns))?.[valuesKey];
           if (!valuesYaml) continue;
           if (valueFrom.kind.toLowerCase() === "secret" && Base64.isValid(valuesYaml)) {
-            valuesFromYamlResult[`${ns}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
+            valuesFromYamlResult[`${valueFrom.kind}/${name}/${valuesKey}`] = Base64.decode(valuesYaml);
           } else {
-            valuesFromYamlResult[`${ns}/${name}/${valuesKey}`] = valuesYaml;
+            valuesFromYamlResult[`${valueFrom.kind}/${name}/${valuesKey}`] = valuesYaml;
           }
         }
         if (mounted) setValuesFromYaml(valuesFromYamlResult);
@@ -295,10 +295,10 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                 const api = valueFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
                 const name = valueFrom.name;
                 const valuesKey = valueFrom.valuesKey ?? "values.yaml";
-                const valuesYamlValue = valuesFromYaml[`${namespace}/${name}/${valuesKey}`] ?? "";
+                const valuesYamlValue = valuesFromYaml[`${valueFrom.kind}/${name}/${valuesKey}`] ?? "";
 
                 return (
-                  <div key={`${api}-${name}`}>
+                  <div key={Renderer.Util.createReactKey(valueFrom)}>
                     <div className={styles.title}>
                       <Icon small material="list" />
                     </div>

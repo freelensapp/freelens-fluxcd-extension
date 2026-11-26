@@ -127,3 +127,23 @@ describe("KustomizationDetails", () => {
     });
   });
 });
+
+describe("KustomizationDetails substituteFrom", () => {
+  it("shows the variables of a ConfigMap and a Secret of the same name", async () => {
+    vi.spyOn(Renderer.K8sApi.configMapApi, "get").mockResolvedValue({ data: { cluster_env: "prod" } } as never);
+    vi.spyOn(Renderer.K8sApi.secretsApi, "get").mockResolvedValue({ data: { token: btoa("secret") } } as never);
+    const error = vi.spyOn(console, "error");
+
+    const { container } = renderDetails(
+      kustomization([
+        { kind: "ConfigMap", name: "vars" },
+        { kind: "Secret", name: "vars" },
+      ]),
+    );
+
+    await screen.findByText(/token/);
+    const variables = [...container.querySelectorAll("pre")].map((pre) => pre.textContent);
+    expect(variables).toEqual(["cluster_env: prod", "token: secret"]);
+    expect(error).not.toHaveBeenCalled();
+  });
+});
