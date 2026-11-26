@@ -32,7 +32,7 @@ export interface OCIRepositoryVerification {
   trustedRootSecretRef?: LocalObjectReference;
 }
 
-export type OCIRepositoryProvider = "generic" | "aws" | "azure" | "gcp";
+export type OCIRepositorySpecProvider = "generic" | "aws" | "azure" | "gcp";
 
 export interface OCIRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   // Optional in the Go type since source-controller v1.10, so that a HelmRelease can embed the struct, and required
@@ -40,7 +40,7 @@ export interface OCIRepositorySpec extends FluxCDKubeObjectSpecWithSuspend {
   url: string;
   ref?: OCIRepositoryRef;
   layerSelector?: OCILayerSelector;
-  provider?: OCIRepositoryProvider;
+  provider?: OCIRepositorySpecProvider;
   secretRef?: LocalObjectReference;
   verify?: OCIRepositoryVerification;
   serviceAccountName?: string;

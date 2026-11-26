@@ -88,3 +88,29 @@ describe("OCIRepositoryDetails OCI Layer Selector", () => {
     expect(drawerItems()).toContain("Operation: copy");
   });
 });
+
+const ociRepositoryWith = (spec: Record<string, unknown> = {}, status?: Record<string, unknown>) =>
+  new OCIRepository({
+    apiVersion: "source.toolkit.fluxcd.io/v1",
+    kind: "OCIRepository",
+    metadata: { name: "podinfo", namespace: "fluxcd-test" },
+    spec: { interval: "10m", url: "oci://ghcr.io/stefanprodan/manifests/podinfo", ...spec },
+    status,
+  } as unknown as ConstructorParameters<typeof OCIRepository>[0]);
+
+// The text of each drawer item named `name`, nested ones included.
+const namedItems = (name: string) => drawerItems().filter((text) => text?.startsWith(`${name}: `));
+
+describe("OCIRepositoryDetails Last Handled Reconcile At", () => {
+  it("hides the item without the field", () => {
+    renderDetails(ociRepositoryWith());
+
+    expect(namedItems("Last Handled Reconcile At")).toEqual([]);
+  });
+
+  it("shows the time of the last handled reconcile request", () => {
+    renderDetails(ociRepositoryWith({}, { lastHandledReconcileAt: "2026-11-26T12:00:00Z" }));
+
+    expect(namedItems("Last Handled Reconcile At")).toEqual(["Last Handled Reconcile At: 2026-11-26T12:00:00Z"]);
+  });
+});

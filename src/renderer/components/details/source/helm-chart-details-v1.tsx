@@ -8,7 +8,7 @@ import { StatusArtifact } from "../../status-artifact";
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, LinkToObject, LinkToSecret },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, DurationAbsoluteTimestamp, LinkToObject, LinkToSecret },
 } = Renderer;
 
 export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmChart>> = observer((props) => {
@@ -19,6 +19,9 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
     <div>
       <DrawerItem name="Resumed">
         <BadgeBoolean value={!object.spec.suspend} />
+      </DrawerItem>
+      <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
+        <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
       </DrawerItem>
       <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
       <DrawerItem name="Chart">{object.spec.chart}</DrawerItem>

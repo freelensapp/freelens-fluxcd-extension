@@ -13,6 +13,7 @@ const {
   Component: {
     BadgeBoolean,
     DrawerItem,
+    DurationAbsoluteTimestamp,
     DrawerTitle,
     Icon,
     LinkToObject,
@@ -35,6 +36,9 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
         <div className={styles.details}>
           <DrawerItem name="Resumed">
             <BadgeBoolean value={!object.spec.suspend} />
+          </DrawerItem>
+          <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
+            <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
           <DrawerItem name="Timeout">{object.spec.timeout}</DrawerItem>

@@ -7,7 +7,7 @@ import { StatusArtifact } from "../../status-artifact";
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, LinkToSecret, LinkToServiceAccount },
+  Component: { BadgeBoolean, DrawerItem, DrawerTitle, DurationAbsoluteTimestamp, LinkToSecret, LinkToServiceAccount },
 } = Renderer;
 
 export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<OCIRepository>> = observer(
@@ -19,6 +19,9 @@ export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
       <div>
         <DrawerItem name="Resumed">
           <BadgeBoolean value={!object.spec.suspend} />
+        </DrawerItem>
+        <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
+          <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
         </DrawerItem>
         <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
         <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>

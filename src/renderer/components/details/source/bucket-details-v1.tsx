@@ -9,7 +9,15 @@ import styles from "./bucket-details.module.scss";
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, LinkToSecret, LinkToServiceAccount, MonacoEditor },
+  Component: {
+    BadgeBoolean,
+    DrawerItem,
+    DrawerTitle,
+    DurationAbsoluteTimestamp,
+    LinkToSecret,
+    LinkToServiceAccount,
+    MonacoEditor,
+  },
 } = Renderer;
 
 export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Bucket>> = observer((props) => {
@@ -20,6 +28,9 @@ export const BucketDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<B
     <div>
       <DrawerItem name="Resumed">
         <BadgeBoolean value={!object.spec.suspend} />
+      </DrawerItem>
+      <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
+        <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
       </DrawerItem>
       <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
       <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>
