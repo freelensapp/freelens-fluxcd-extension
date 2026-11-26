@@ -7,9 +7,16 @@ import { FluxInstance } from "./k8s/fluxcd/controlplane/fluxinstance-v1";
 import { FluxReport } from "./k8s/fluxcd/controlplane/fluxreport-v1";
 import { ResourceSet } from "./k8s/fluxcd/controlplane/resourceset-v1";
 import { ResourceSetInputProvider } from "./k8s/fluxcd/controlplane/resourcesetinputprovider-v1";
+import { Alert as Alert_v1 } from "./k8s/fluxcd/notification/alert-v1";
+import { Alert as Alert_v1beta2 } from "./k8s/fluxcd/notification/alert-v1beta2";
+import { Alert as Alert_v1beta3 } from "./k8s/fluxcd/notification/alert-v1beta3";
+import { Provider as Provider_v1 } from "./k8s/fluxcd/notification/provider-v1";
+import { Provider as Provider_v1beta2 } from "./k8s/fluxcd/notification/provider-v1beta2";
+import { Provider as Provider_v1beta3 } from "./k8s/fluxcd/notification/provider-v1beta3";
 import { ArtifactGenerator } from "./k8s/fluxcd/source/artifactgenerator-v1beta1";
 import { FluxCDObjectAnnotationSuspendResumeMenuItem } from "./menus/fluxcd-object-annotation-suspend-resume-menu-item";
 import { FluxCDObjectReconcileMenuItem } from "./menus/fluxcd-object-reconcile-menu-item";
+import { FluxCDObjectSpecSuspendResumeMenuItem } from "./menus/fluxcd-object-spec-suspend-resume-menu-item";
 
 type KubeObjectClass = typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>;
 
@@ -158,6 +165,29 @@ describe("FluxCDExtension.kubeObjectMenuItems", () => {
         resource: kubeObjectClass,
         annotation: "fluxcd.controlplane.io/reconcile",
       });
+    }
+  });
+
+  it("registers Reconcile and the spec Suspend/Resume item for Alert and Provider v1beta2", () => {
+    for (const kubeObjectClass of [Alert_v1beta2, Provider_v1beta2]) {
+      const elements = renderMenuItems(kubeObjectClass);
+
+      expect(elements.map((element) => element.type)).toEqual([
+        FluxCDObjectReconcileMenuItem,
+        FluxCDObjectSpecSuspendResumeMenuItem,
+      ]);
+      for (const element of elements) {
+        expect(element.props).toMatchObject({ resource: kubeObjectClass });
+      }
+    }
+  });
+
+  it("registers only the spec Suspend/Resume item for the static Alert and Provider of v1beta3 and v1", () => {
+    for (const kubeObjectClass of [Alert_v1beta3, Alert_v1, Provider_v1beta3, Provider_v1]) {
+      const elements = renderMenuItems(kubeObjectClass);
+
+      expect(elements.map((element) => element.type)).toEqual([FluxCDObjectSpecSuspendResumeMenuItem]);
+      expect(elements[0].props).toMatchObject({ resource: kubeObjectClass });
     }
   });
 });

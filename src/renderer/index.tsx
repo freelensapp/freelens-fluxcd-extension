@@ -254,8 +254,6 @@ const availableVersionPages = [
 // The kinds that `spec.suspend` suspends, every version: each gets Reconcile and the spec Suspend/Resume item.
 const specSuspendClasses = [
   Alert_v1beta2,
-  Alert_v1beta3,
-  Alert_v1,
   Bucket_v1beta2,
   Bucket_v1,
   GitRepository_v1,
@@ -277,10 +275,16 @@ const specSuspendClasses = [
   OCIRepository_v1beta2,
   OCIRepository_v1,
   Provider_v1beta2,
-  Provider_v1beta3,
-  Provider_v1,
   Receiver_v1,
 ];
+
+// The kinds that `spec.suspend` suspends and that no controller reconciles: each gets the spec Suspend/Resume item
+// only. Alert and Provider are static objects from `v1beta3` on (notification-controller v1.2.0, Flux v2.2.0): they
+// have no status, the controller only removes the finalizer of an object from before, and it does not read the
+// `reconcile.fluxcd.io/requestedAt` annotation, so Reconcile would do nothing. The event server still skips a
+// suspended Alert or Provider. `v1beta2` is in `specSuspendClasses`, as notification-controller v1.0 and v1.1 reconcile
+// it and set its `Ready` condition.
+const specSuspendStaticClasses = [Alert_v1beta3, Alert_v1, Provider_v1beta3, Provider_v1];
 
 // The kinds that an annotation suspends, every version, with the annotation: each gets Reconcile and the
 // annotation Suspend/Resume item.
@@ -833,6 +837,11 @@ export default class FluxCDExtension extends Renderer.LensExtension {
         MenuItem: (props) => <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={kubeObjectClass} />,
       }),
     ]),
+    ...specSuspendStaticClasses.map((kubeObjectClass) =>
+      Renderer.K8sApi.menuItemFor<InstanceType<typeof kubeObjectClass>>(kubeObjectClass, {
+        MenuItem: (props) => <FluxCDObjectSpecSuspendResumeMenuItem {...props} resource={kubeObjectClass} />,
+      }),
+    ),
     ...annotationSuspendClasses.flatMap(({ kubeObjectClass, annotation }) => [
       Renderer.K8sApi.menuItemFor<InstanceType<typeof kubeObjectClass>>(kubeObjectClass, {
         MenuItem: (props) => <FluxCDObjectReconcileMenuItem {...props} resource={kubeObjectClass} />,

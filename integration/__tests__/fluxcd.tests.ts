@@ -43,11 +43,19 @@ interface KindView {
   chart?: string;
   /** An item that the extension's details panel shows for the test object. */
   detailsItem: string;
-  /** The extension's items in the row menu; none for a kind that its controller does not reconcile. */
-  menuItems: string[];
+  /**
+   * The extension's items in the row menu, by the API version of the test object where they differ between versions;
+   * no Reconcile for a kind or version that its controller does not reconcile.
+   */
+  menuItems: string[] | ((apiVersion: string) => string[]);
 }
 
 const reconcileAndSuspend = ["Reconcile", "Suspend"];
+
+// Alert and Provider are static objects from v1beta3 on: notification-controller reconciles only v1beta2, the newest
+// version on Flux v2.0 and v2.1.
+const notificationMenuItems = (apiVersion: string) =>
+  apiVersion === "notification.toolkit.fluxcd.io/v1beta2" ? reconcileAndSuspend : ["Suspend"];
 
 const kindViews: KindView[] = [
   {
@@ -165,14 +173,14 @@ const kindViews: KindView[] = [
     pageId: "alert",
     chart: "Alerts",
     detailsItem: "Resumed",
-    menuItems: reconcileAndSuspend,
+    menuItems: notificationMenuItems,
   },
   {
     kind: "Provider",
     pageId: "provider",
     chart: "Providers",
     detailsItem: "Resumed",
-    menuItems: reconcileAndSuspend,
+    menuItems: notificationMenuItems,
   },
   {
     kind: "Receiver",
@@ -191,7 +199,9 @@ const kinds = testObjects().map((object) => {
     throw new Error(`fluxcd.tests.ts has no view of ${object.kind}`);
   }
 
-  return { ...view, ...object };
+  const menuItems = typeof view.menuItems === "function" ? view.menuItems(object.apiVersion) : view.menuItems;
+
+  return { ...view, ...object, menuItems };
 });
 
 // The titles of every menu item of the extension, to tell them from the host's.
