@@ -27,6 +27,8 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
           {object.spec.interval}
         </DrawerItem>
         <DrawerItem name="Timeout">{object.spec.timeout ?? "60s"}</DrawerItem>
+        <DrawerItem name="Type">{object.spec.type ?? "default"}</DrawerItem>
+        <DrawerItem name="URL">{object.spec.url}</DrawerItem>
         <DrawerItem name="Authentication Provider" hidden={object.spec.type !== "oci" && !object.spec.provider}>
           {object.spec.provider ?? "generic"}
         </DrawerItem>
@@ -41,6 +43,9 @@ export const HelmRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetail
         </DrawerItem>
         <DrawerItem name="Insecure Container Registry" hidden={object.spec.insecure === undefined}>
           <BadgeBoolean value={object.spec.insecure} />
+        </DrawerItem>
+        <DrawerItem name="Latest Artifact URL" hidden={!object.status?.url}>
+          {object.status?.url}
         </DrawerItem>
 
         <StatusArtifact artifact={object.status?.artifact} />

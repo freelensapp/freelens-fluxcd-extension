@@ -4,4 +4,5 @@ metadata:
   name: test
 spec:
   interval: 1h
+  type: default
   url: https://stefanprodan.github.io/podinfo
