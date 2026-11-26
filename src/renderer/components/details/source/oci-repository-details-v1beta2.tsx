@@ -72,15 +72,14 @@ export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
             <DrawerItem name="Trusted Public Keys" hidden={!object.spec.verify.secretRef}>
               <LinkToSecret name={object.spec.verify.secretRef?.name} namespace={namespace} />
             </DrawerItem>
-            <DrawerItem name="OIDC Identity">
-              {object.spec.verify.matchOIDCIdentity?.length &&
-                object.spec.verify.matchOIDCIdentity.map((match) => (
-                  <div key={`${match.issuer}-${match.subject}`}>
-                    <DrawerTitle>Match</DrawerTitle>
-                    <DrawerItem name="Issuer">{match.issuer}</DrawerItem>
-                    <DrawerItem name="Subject">{match.subject}</DrawerItem>
-                  </div>
-                ))}
+            <DrawerItem name="OIDC Identity" hidden={!object.spec.verify.matchOIDCIdentity?.length}>
+              {object.spec.verify.matchOIDCIdentity?.map((match) => (
+                <div key={`${match.issuer}-${match.subject}`}>
+                  <DrawerTitle>Match</DrawerTitle>
+                  <DrawerItem name="Issuer">{match.issuer}</DrawerItem>
+                  <DrawerItem name="Subject">{match.subject}</DrawerItem>
+                </div>
+              ))}
             </DrawerItem>
           </div>
         )}
