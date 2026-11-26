@@ -52,10 +52,10 @@ const staticKinds = new Set<string>([Alert.kind, Provider.kind]);
  * exactly one: suspension wins over the status, and an OCI HelmRepository,
  * which has no status to reconcile, is ready. So is an Alert or a Provider
  * without conditions, a static object; one with conditions is counted by its
- * `Ready` condition. An object can have no spec,
- * as an ExternalArtifact, whose spec has optional fields only. An
- * ArtifactGenerator and the Flux Operator kinds have no `spec.suspend` and
- * are suspended by their reconcile annotation.
+ * `Ready` condition. An object can have no spec, as an ExternalArtifact,
+ * whose spec has optional fields only. An ArtifactGenerator and the Flux
+ * Operator kinds have no `spec.suspend` and are suspended by their reconcile
+ * annotation.
  */
 const getCategory = (o: StatsObject) => {
   if (o.spec?.suspend === true) return SUSPENDED;
