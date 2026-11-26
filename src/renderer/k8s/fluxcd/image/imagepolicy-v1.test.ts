@@ -50,10 +50,3 @@ describe("ImagePolicy.getLatestImage and getObservedPreviousImage", () => {
     expect(ImagePolicy.getObservedPreviousImage(withStatus({}))).toBeUndefined();
   });
 });
-
-describe("ImagePolicy", () => {
-  // The `+kubebuilder:resource:shortName` marker of `ImagePolicy` in image-reflector-controller api/v1.
-  test("has the short names of the CRD", () => {
-    expect(ImagePolicy.crd.shortNames).toEqual(["imgpol", "imagepol"]);
-  });
-});

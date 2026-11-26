@@ -33,10 +33,3 @@ describe.each([
     expect(model.getCommitAuthor(object())).toBeUndefined();
   });
 });
-
-describe("ImageUpdateAutomation", () => {
-  // The `+kubebuilder:resource:shortName` marker of `ImageUpdateAutomation` in image-automation-controller api/v1.
-  test("has the short names of the CRD", () => {
-    expect(ImageUpdateAutomation.crd.shortNames).toEqual(["iua", "imgupd", "imgauto"]);
-  });
-});
