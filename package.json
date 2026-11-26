@@ -78,7 +78,7 @@
     "esbuild": "0.28.2",
     "js-base64": "^3.9.5",
     "js-yaml": "5.5.0",
-    "jsdom": "30.1.3",
+    "jsdom": "31.0.1",
     "mobx": "7.1.7",
     "mobx-react": "10.0.4",
     "monaco-editor": "0.57.0",
