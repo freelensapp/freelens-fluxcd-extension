@@ -50,7 +50,7 @@ export class ImageRepository extends Renderer.K8sApi.LensExtensionKubeObject<
     apiVersions: ["image.toolkit.fluxcd.io/v1"],
     plural: "imagerepositories",
     singular: "imagerepository",
-    shortNames: [],
+    shortNames: ["imgrepo", "imagerepo"],
     title: "Image Repositories",
   };
 }

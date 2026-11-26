@@ -77,7 +77,7 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
             <>
               <DrawerTitle>Update Strategy</DrawerTitle>
               <DrawerItem name="Strategy">{object.spec.update.strategy}</DrawerItem>
-              <DrawerItem name="Path">{object.spec.update.path}</DrawerItem>
+              <DrawerItem name="Path">{object.spec.update.path || "./"}</DrawerItem>
             </>
           )}
 

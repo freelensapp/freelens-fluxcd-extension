@@ -43,6 +43,8 @@ export class ImageRepository extends Renderer.K8sApi.LensExtensionKubeObject<
     apiVersions: ["image.toolkit.fluxcd.io/v1beta2"],
     plural: "imagerepositories",
     singular: "imagerepository",
+    // The CRD has short names from image-reflector-controller v1.0.0 on, the release that serves v1, which the
+    // page picks over this version.
     shortNames: [],
     title: "Image Repositories",
   };

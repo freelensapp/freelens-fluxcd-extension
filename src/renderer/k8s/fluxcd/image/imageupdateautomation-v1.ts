@@ -99,7 +99,7 @@ export class ImageUpdateAutomation extends Renderer.K8sApi.LensExtensionKubeObje
     apiVersions: ["image.toolkit.fluxcd.io/v1"],
     plural: "imageupdateautomations",
     singular: "imageupdateautomation",
-    shortNames: [],
+    shortNames: ["iua", "imgupd", "imgauto"],
     title: "Image Update Automations",
   };
 

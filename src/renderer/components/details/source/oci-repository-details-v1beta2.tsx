@@ -60,8 +60,10 @@ export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
         {object.spec.layerSelector && (
           <div>
             <DrawerTitle>OCI Layer Selector</DrawerTitle>
-            <DrawerItem name="Media type">{object.spec.layerSelector.mediaType}</DrawerItem>
-            <DrawerItem name="Operation">{object.spec.layerSelector.operation}</DrawerItem>
+            <DrawerItem name="Media type" hidden={!object.spec.layerSelector.mediaType}>
+              {object.spec.layerSelector.mediaType}
+            </DrawerItem>
+            <DrawerItem name="Operation">{object.spec.layerSelector.operation ?? "extract"}</DrawerItem>
           </div>
         )}
 

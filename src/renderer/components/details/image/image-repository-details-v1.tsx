@@ -22,7 +22,7 @@ export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetai
             <BadgeBoolean value={!object.spec.suspend} />
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
-          <DrawerItem name="Timeout">{object.spec.timeout}</DrawerItem>
+          <DrawerItem name="Timeout">{object.spec.timeout ?? object.spec.interval}</DrawerItem>
           <DrawerItem name="Image">{object.spec.image}</DrawerItem>
           <DrawerItem name="Canonical Image Name" hidden={!object.status?.canonicalImageName}>
             {object.status?.canonicalImageName}

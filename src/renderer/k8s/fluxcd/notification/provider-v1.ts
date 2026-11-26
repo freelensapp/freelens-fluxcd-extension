@@ -1,6 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 
-import type { FluxCDKubeObjectSpecWithSuspend, FluxCDKubeObjectStatus } from "../types";
+import type { FluxCDKubeObjectSpecWithSuspend } from "../types";
 
 type LocalObjectReference = Renderer.K8sApi.LocalObjectReference;
 
@@ -55,12 +55,12 @@ export interface ProviderSpec extends FluxCDKubeObjectSpecWithSuspend {
   commitStatusExpr?: string;
 }
 
-// The API has no status. An object stored by an earlier version can still have one.
-export interface ProviderStatus extends FluxCDKubeObjectStatus {}
-
+// The API has no status, and the API server returns none: the CRD has no `status` in the schema of this version,
+// and the API server prunes what the schema of the requested version lacks, also from an object stored with a status
+// by an earlier version.
 export class Provider extends Renderer.K8sApi.LensExtensionKubeObject<
   Renderer.K8sApi.KubeObjectMetadata,
-  ProviderStatus,
+  void,
   ProviderSpec
 > {
   declare kind: "Provider";
