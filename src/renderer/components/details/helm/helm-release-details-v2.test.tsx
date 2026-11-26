@@ -30,7 +30,7 @@ afterEach(() => {
 
 type DetailsProps = Parameters<typeof HelmReleaseDetails>[0];
 
-const helmRelease = (valuesFrom: { kind: string; name: string; optional?: boolean }[]) =>
+const helmRelease = (valuesFrom: { kind: string; name: string; valuesKey?: string; optional?: boolean }[]) =>
   new HelmRelease({
     apiVersion: "helm.toolkit.fluxcd.io/v2",
     kind: "HelmRelease",
@@ -126,5 +126,30 @@ describe("HelmReleaseDetails", () => {
     expect(items).toContain("Chart Version: 19.6.4");
     expect(items.filter((item) => item?.includes("18.0.0"))).toEqual([]);
     expect(getByName).toHaveBeenCalledWith("redis", "fluxcd-test");
+  });
+
+  it("shows the values of a ConfigMap and a Secret of the same name, and of two keys of one source", async () => {
+    vi.spyOn(Renderer.K8sApi.configMapApi, "get").mockResolvedValue({
+      data: { "values.yaml": "from: configmap\n", "other.yaml": "from: other key\n" },
+    } as never);
+    vi.spyOn(Renderer.K8sApi.secretsApi, "get").mockResolvedValue({
+      data: { "values.yaml": btoa("from: secret\n") },
+    } as never);
+    const error = vi.spyOn(console, "error");
+
+    const { container } = renderDetails(
+      helmRelease([
+        { kind: "ConfigMap", name: "values" },
+        { kind: "Secret", name: "values" },
+        { kind: "ConfigMap", name: "values", valuesKey: "other.yaml" },
+      ]),
+    );
+
+    await screen.findByText(/from: secret/);
+    const values = [...container.querySelectorAll("pre")]
+      .map((pre) => pre.textContent)
+      .filter((text) => text?.startsWith("from:"));
+    expect(values).toEqual(["from: configmap\n", "from: secret\n", "from: other key\n"]);
+    expect(error).not.toHaveBeenCalled();
   });
 });

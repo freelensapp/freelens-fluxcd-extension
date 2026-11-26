@@ -94,7 +94,10 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
             }
           }
 
-          substituteFromYamlResult[`${namespace}/${name}`] = dump(variablesFrom, defaultYamlDumpOptions).trimEnd();
+          substituteFromYamlResult[`${substituteFrom.kind}/${name}`] = dump(
+            variablesFrom,
+            defaultYamlDumpOptions,
+          ).trimEnd();
         }
 
         if (mounted) setSubstituteFromYaml(substituteFromYamlResult);
@@ -273,10 +276,10 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
               {object.spec.postBuild.substituteFrom?.map((substituteFrom) => {
                 const api = substituteFrom.kind.toLowerCase() === "secret" ? secretsApi : configMapApi;
                 const name = substituteFrom.name;
-                const substituteFromYamlValue = substituteFromYaml[`${namespace}/${name}`] ?? "";
+                const substituteFromYamlValue = substituteFromYaml[`${substituteFrom.kind}/${name}`] ?? "";
 
                 return (
-                  <div key={name}>
+                  <div key={Renderer.Util.createReactKey(substituteFrom)}>
                     <div className={styles.title}>
                       <Icon small material="list" />
                     </div>
