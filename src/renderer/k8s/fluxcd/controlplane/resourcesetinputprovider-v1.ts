@@ -37,6 +37,7 @@ export interface ResourceSetInputSkip {
 export interface ExternalArtifactSelector extends LabelSelector {
   name?: string;
   namespace?: string;
+  namespaceSelector?: LabelSelector;
 }
 
 export type ResourceSetInputProviderSpecType =

@@ -7,9 +7,17 @@ spec:
   distribution:
     version: 2.10.x
     registry: ghcr.io/fluxcd
+  components:
+    - source-controller
+    - kustomize-controller
+    - helm-controller
+    - notification-controller
+    - source-watcher
   cluster:
     type: kubernetes
     multitenant: true
     tenantDefaultServiceAccount: flux
     tenantDefaultDecryptionServiceAccount: flux-decryption
     tenantDefaultKubeConfigServiceAccount: flux-kubeconfig
+    sourceWatcher:
+      namespaceManager: true

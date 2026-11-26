@@ -11,6 +11,8 @@ import type { ResourceSetInputProvider, Schedule } from "../../../k8s/fluxcd/con
 
 const { observer } = MobxReact;
 
+type LabelSelector = Renderer.K8sApi.LabelSelector;
+
 const {
   Component: {
     Badge,
@@ -47,6 +49,36 @@ const schedulesSortByDefault: {
   orderBy: "asc",
 };
 
+// An empty label selector, without labels or expressions, matches every
+// object, as `namespaceSelector` of a selector does every namespace.
+const isEmptyLabelSelector = (selector: LabelSelector) =>
+  Object.keys(selector.matchLabels ?? {}).length === 0 && !selector.matchExpressions?.length;
+
+// The Match Labels and Match Expressions items of a label selector, each
+// hidden when the selector has none.
+const LabelSelectorItems = ({ selector }: { selector: LabelSelector }) => (
+  <>
+    <DrawerItemLabels
+      name="Match Labels"
+      labels={selector.matchLabels ?? {}}
+      hidden={!selector.matchLabels || Object.keys(selector.matchLabels).length === 0}
+    />
+    <DrawerItem name="Match Expressions" hidden={!selector.matchExpressions?.length}>
+      {selector.matchExpressions?.map((expr) => (
+        <div key={Renderer.Util.createReactKey(expr)}>
+          <DrawerItem name="Key">{expr.key}</DrawerItem>
+          <DrawerItem name="Operator">{expr.operator}</DrawerItem>
+          <DrawerItem name="Values" hidden={!expr.values || expr.values.length === 0}>
+            {expr.values?.map((value) => (
+              <Badge key={value} label={value} />
+            ))}
+          </DrawerItem>
+        </div>
+      ))}
+    </DrawerItem>
+  </>
+);
+
 export const ResourceSetInputProviderDetails: React.FC<
   Renderer.Component.KubeObjectDetailsProps<ResourceSetInputProvider>
 > = observer((props) => {
@@ -67,6 +99,9 @@ export const ResourceSetInputProviderDetails: React.FC<
 
       <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
         <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
+      </DrawerItem>
+      <DrawerItem name="Last Handled Force At" hidden={!object.status?.lastHandledForceAt}>
+        <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledForceAt} />
       </DrawerItem>
 
       <DrawerItem name="Last Exported Revision" hidden={!object.status?.lastExportedRevision}>
@@ -108,31 +143,24 @@ export const ResourceSetInputProviderDetails: React.FC<
               <DrawerItem name="Name" hidden={!selector.name}>
                 {selector.name}
               </DrawerItem>
-              <DrawerItem name="Namespace">
-                {selector.namespace === "*" ? (
-                  "All namespaces"
-                ) : (
-                  <LinkToNamespace namespace={selector.namespace || namespace} />
-                )}
-              </DrawerItem>
-              <DrawerItemLabels
-                name="Match Labels"
-                labels={selector.matchLabels ?? {}}
-                hidden={!selector.matchLabels || Object.keys(selector.matchLabels).length === 0}
-              />
-              <DrawerItem name="Match Expressions" hidden={!selector.matchExpressions?.length}>
-                {selector.matchExpressions?.map((expr) => (
-                  <div key={Renderer.Util.createReactKey(expr)}>
-                    <DrawerItem name="Key">{expr.key}</DrawerItem>
-                    <DrawerItem name="Operator">{expr.operator}</DrawerItem>
-                    <DrawerItem name="Values" hidden={!expr.values || expr.values.length === 0}>
-                      {expr.values?.map((value) => (
-                        <Badge key={value} label={value} />
-                      ))}
-                    </DrawerItem>
-                  </div>
-                ))}
-              </DrawerItem>
+              {selector.namespaceSelector ? (
+                <DrawerItem name="Namespace Selector">
+                  {isEmptyLabelSelector(selector.namespaceSelector) ? (
+                    "All namespaces"
+                  ) : (
+                    <LabelSelectorItems selector={selector.namespaceSelector} />
+                  )}
+                </DrawerItem>
+              ) : (
+                <DrawerItem name="Namespace">
+                  {selector.namespace === "*" ? (
+                    "All namespaces"
+                  ) : (
+                    <LinkToNamespace namespace={selector.namespace || namespace} />
+                  )}
+                </DrawerItem>
+              )}
+              <LabelSelectorItems selector={selector} />
             </div>
           ))}
         </div>

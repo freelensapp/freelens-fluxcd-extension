@@ -53,6 +53,11 @@ export interface Cluster {
   networkPolicy?: boolean;
   type?: ClusterType;
   size?: ClusterSize;
+  sourceWatcher?: SourceWatcher;
+}
+
+export interface SourceWatcher {
+  namespaceManager?: boolean;
 }
 
 export interface WorkloadAPI {

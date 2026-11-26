@@ -165,6 +165,11 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
             <DrawerItem name="Size" hidden={!object.spec.cluster.size}>
               {object.spec.cluster.size}
             </DrawerItem>
+            <DrawerItem name="Source Watcher" hidden={!object.spec.cluster.sourceWatcher}>
+              <DrawerItem name="Namespace Manager">
+                <BadgeBoolean value={object.spec.cluster.sourceWatcher?.namespaceManager ?? false} />
+              </DrawerItem>
+            </DrawerItem>
           </>
         )}
 
