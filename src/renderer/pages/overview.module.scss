@@ -12,6 +12,14 @@
   padding: 16px;
 }
 
+// As the host lays out its own cards: columns at least 200px wide, 16px apart.
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
 .chartColumn {
   display: flex;
   flex-direction: column;
