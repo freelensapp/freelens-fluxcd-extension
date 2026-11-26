@@ -91,12 +91,10 @@ export interface OverviewStatusesProps {
 export const OverviewStatuses = observer(({ extension, kinds }: OverviewStatusesProps) => {
   if (isOverviewStyleCards()) {
     return (
-      <div className={styles.overviewStatuses}>
-        <div className={styles.cards}>
-          {kinds.map(({ title, crd, objects }) => (
-            <FluxCDStatusCard key={title} extension={extension} title={title} objects={objects} crd={crd} />
-          ))}
-        </div>
+      <div className={styles.cards}>
+        {kinds.map(({ title, crd, objects }) => (
+          <FluxCDStatusCard key={title} extension={extension} title={title} objects={objects} crd={crd} />
+        ))}
       </div>
     );
   }

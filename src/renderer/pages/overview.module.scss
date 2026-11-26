@@ -12,12 +12,14 @@
   padding: 16px;
 }
 
-// As the host lays out its own cards: columns at least 200px wide, 16px apart.
+// As the host lays out its own cards: columns at least 200px wide, 16px apart. The cards are panels in
+// `--contentColor` without a border, so they sit on the background of the page, 16px from the header and the events,
+// and not in a panel of their own, where they would show as one.
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-  padding: 16px;
+  gap: vars.$margin * 2;
+  margin: vars.$margin * 2 0;
 }
 
 .chartColumn {
