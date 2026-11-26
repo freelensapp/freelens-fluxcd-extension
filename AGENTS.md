@@ -341,6 +341,14 @@ Overview chart maps each such kind to its annotation.
   The item is then checked against the objects of every class in the list: a kind without `spec.suspend` in
   `specSuspendClasses` fails the type check. A version-specific component is registered with one call per class, as
   the details panels are; a list would pair it with the union of the classes.
+- The Overview follows the Overview style preference of Freelens v2.1.0 (contract C5 of Freelens's `api.md`): with
+  `"cards"` from `Common.App.Preferences.getOverviewStyle()` it shows a `Renderer.Component.StatusCard` per kind
+  (`FluxCDStatusCard` in `src/renderer/components/status-card.tsx`) in place of its `PieChart`, in a grid of columns at
+  least 200px wide, 16px apart, as the host lays out its own cards. Freelens v2.0.0 publishes neither
+  `getOverviewStyle` nor `StatusCard`, while the declaration types both as always present, so `isOverviewStyleCards`
+  reads them as possibly `undefined`, without `as any`, and the Overview shows the charts without either. The
+  preference is observable, so `OverviewStatuses`, which calls it, is an `observer` and switches while it is open.
+  The charts stay as they were, and the statuses of a card are the categories of `getStats`, with colors of the theme.
 - Every page, details panel and menu item renders inside `ErrorBoundary` (`src/renderer/components/error-boundary.tsx`).
   The host has a boundary around the main area of a cluster and around the whole cluster frame, but none around the
   details drawer, which it renders as a portal, or around a menu item of an extension: an error there reaches the

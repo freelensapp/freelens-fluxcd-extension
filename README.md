@@ -24,7 +24,9 @@ conditions, spec fields, and related objects displayed in the detail view.
 While the extension is enabled, these resources are left out of the Custom
 Resources tree of the sidebar, so each is listed once, under "FluxCD".
 Resource menus allow reconciling, suspending, and resuming FluxCD resources
-directly from the UI.
+directly from the UI. On Freelens v2.1.0 and newer, the dashboard follows the
+Overview style preference (Preferences -> Personalization) and shows a card
+per resource kind in place of its pie chart when Cards is chosen.
 
 ![screenshot](docs/images/dashboard.png)
 
