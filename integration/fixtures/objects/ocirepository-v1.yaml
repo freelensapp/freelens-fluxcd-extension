@@ -7,3 +7,8 @@ spec:
   url: oci://ghcr.io/stefanprodan/manifests/podinfo
   ref:
     tag: latest
+  ignore: |
+    # exclude all
+    /*
+    # include deploy dir
+    !/deploy

@@ -114,3 +114,70 @@ describe("OCIRepositoryDetails Last Handled Reconcile At", () => {
     expect(namedItems("Last Handled Reconcile At")).toEqual(["Last Handled Reconcile At: 2026-11-26T12:00:00Z"]);
   });
 });
+
+describe("OCIRepositoryDetails URL and Source Ignore", () => {
+  it("shows the URL and hides the Source Ignore without the field", () => {
+    renderDetails(ociRepositoryWith());
+
+    expect(namedItems("URL")).toEqual(["URL: oci://ghcr.io/stefanprodan/manifests/podinfo"]);
+    expect(namedItems("Source Ignore")).toEqual([]);
+  });
+
+  it("shows the Source Ignore", () => {
+    renderDetails(ociRepositoryWith({ ignore: "/*\n!/deploy" }));
+
+    expect(namedItems("Source Ignore")).toEqual(["Source Ignore: /*\n!/deploy"]);
+  });
+});
+
+describe("OCIRepositoryDetails observed fields", () => {
+  it("hides the observed fields and the Latest Artifact URL without the status", () => {
+    renderDetails(ociRepositoryWith());
+
+    expect(namedItems("Observed Source Ignore")).toEqual([]);
+    expect(screen.queryByText("Observed OCI Layer Selector")).toBeNull();
+    expect(namedItems("Latest Artifact URL")).toEqual([]);
+  });
+
+  it("shows the Observed Source Ignore and the Latest Artifact URL", () => {
+    renderDetails(
+      ociRepositoryWith(
+        {},
+        {
+          observedIgnore: "/*\n!/deploy",
+          url: "http://source-controller.flux-system.svc.cluster.local./ocirepository/fluxcd-test/podinfo/latest.tar.gz",
+        },
+      ),
+    );
+
+    expect(namedItems("Observed Source Ignore")).toEqual(["Observed Source Ignore: /*\n!/deploy"]);
+    expect(namedItems("Latest Artifact URL")).toEqual([
+      "Latest Artifact URL: http://source-controller.flux-system.svc.cluster.local./ocirepository/fluxcd-test/podinfo/latest.tar.gz",
+    ]);
+  });
+
+  it("hides the media type and shows the default operation of an empty observed layer selector", () => {
+    renderDetails(ociRepositoryWith({}, { observedLayerSelector: {} }));
+
+    expect(screen.getByText("Observed OCI Layer Selector")).toBeTruthy();
+    expect(namedItems("Media type")).toEqual([]);
+    expect(namedItems("Operation")).toEqual(["Operation: extract"]);
+  });
+
+  it("shows the media type and the operation of the observed layer selector", () => {
+    renderDetails(
+      ociRepositoryWith(
+        {},
+        {
+          observedLayerSelector: {
+            mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip",
+            operation: "copy",
+          },
+        },
+      ),
+    );
+
+    expect(namedItems("Media type")).toEqual(["Media type: application/vnd.cncf.helm.chart.content.v1.tar+gzip"]);
+    expect(namedItems("Operation")).toEqual(["Operation: copy"]);
+  });
+});
