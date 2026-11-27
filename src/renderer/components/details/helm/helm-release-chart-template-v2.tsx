@@ -2,6 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import { HelmRelease } from "../../../k8s/fluxcd/helm/helmrelease-v2";
 import { getHeight } from "../../../utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import styles from "./helm-release-details.module.scss";
 
 const { observer } = MobxReact;
@@ -30,8 +31,8 @@ export const HelmReleaseOCIRepositoryTemplate = observer(({ object }: { object: 
   return (
     <div>
       <DrawerTitle>OCI Repository Template</DrawerTitle>
-      <DrawerItem name="Resumed">
-        <BadgeBoolean value={!spec.suspend} />
+      <DrawerItem name="Suspended">
+        <BadgeSuspended value={spec.suspend ?? false} />
       </DrawerItem>
       <DrawerItem name="Timeout">{spec.timeout ?? "60s"}</DrawerItem>
       <DrawerItem name="Authentication Provider">{spec.provider ?? "generic"}</DrawerItem>

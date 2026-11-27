@@ -7,6 +7,7 @@ import {
 } from "../../../k8s/fluxcd/source/artifactgenerator-v1beta1";
 import { isReconcileDisabled } from "../../../k8s/fluxcd/utils";
 import { getMaybeDetailsUrl } from "../../../utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import { YamlDump } from "../../yaml-dump";
 import styles from "./artifact-generator-details.module.scss";
 
@@ -39,8 +40,8 @@ export const ArtifactGeneratorDetails: React.FC<Renderer.Component.KubeObjectDet
 
     return (
       <>
-        <DrawerItem name="Resumed">
-          <BadgeBoolean value={!isReconcileDisabled(object, sourceWatcherReconcileAnnotation)} />
+        <DrawerItem name="Suspended">
+          <BadgeSuspended value={isReconcileDisabled(object, sourceWatcherReconcileAnnotation)} />
         </DrawerItem>
         <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
           <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />

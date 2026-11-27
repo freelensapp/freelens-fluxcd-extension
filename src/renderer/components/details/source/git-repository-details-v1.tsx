@@ -4,6 +4,7 @@ import React from "react";
 import { GitRepository, type GitRepositoryInclude } from "../../../k8s/fluxcd/source/gitrepository-v1";
 import { withFluxKind } from "../../../k8s/fluxcd/utils";
 import { getHeight } from "../../../utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./git-repository-details.module.scss";
 
@@ -48,8 +49,8 @@ export const GitRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
     return (
       <>
         <div className={styles.details}>
-          <DrawerItem name="Resumed">
-            <BadgeBoolean value={!object.spec.suspend} />
+          <DrawerItem name="Suspended">
+            <BadgeSuspended value={object.spec.suspend ?? false} />
           </DrawerItem>
           <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
             <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />

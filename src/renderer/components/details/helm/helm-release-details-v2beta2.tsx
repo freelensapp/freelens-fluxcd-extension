@@ -12,6 +12,7 @@ import {
   getMaybeDetailsUrl,
   getSourceData,
 } from "../../../utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import { SpecPatches } from "../../spec-patches";
 import styles from "./helm-release-details.module.scss";
 
@@ -25,7 +26,6 @@ const {
 
 const {
   Component: {
-    BadgeBoolean,
     DrawerItem,
     DrawerTitle,
     DurationAbsoluteTimestamp,
@@ -127,8 +127,8 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="History Last Status" hidden={!object.status?.history?.[0]?.status}>
             {object.status?.history?.[0]?.status}
           </DrawerItem>
-          <DrawerItem name="Resumed">
-            <BadgeBoolean value={!object.spec.suspend} />
+          <DrawerItem name="Suspended">
+            <BadgeSuspended value={object.spec.suspend ?? false} />
           </DrawerItem>
           <DrawerItem name="Chart Interval" hidden={!object.spec.chart?.spec.interval}>
             {object.spec.chart?.spec.interval}

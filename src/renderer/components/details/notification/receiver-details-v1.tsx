@@ -4,6 +4,7 @@ import React from "react";
 import { Receiver } from "../../../k8s/fluxcd/notification/receiver-v1";
 import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys } from "../../../utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import styles from "./receiver-details.module.scss";
 
@@ -14,7 +15,6 @@ const { observer } = MobxReact;
 const {
   Component: {
     Badge,
-    BadgeBoolean,
     DrawerItem,
     DrawerTitle,
     Icon,
@@ -54,8 +54,8 @@ export const ReceiverDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
   return (
     <>
       <div className={styles.details}>
-        <DrawerItem name="Resumed">
-          <BadgeBoolean value={!object.spec.suspend} />
+        <DrawerItem name="Suspended">
+          <BadgeSuspended value={object.spec.suspend ?? false} />
         </DrawerItem>
         <DrawerItem name="Type">{object.spec.type}</DrawerItem>
         <DrawerItem name="Webhook Path" hidden={!object.status?.webhookPath}>

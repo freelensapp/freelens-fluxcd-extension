@@ -5,12 +5,13 @@ import { ImageUpdateAutomation } from "../../../k8s/fluxcd/image/imageupdateauto
 import { GitRepository } from "../../../k8s/fluxcd/source/gitrepository-v1";
 import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
 import { getHeight } from "../../../utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import styles from "./image-update-automation-details.module.scss";
 
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, DrawerTitle, Icon, LinkToObject, LinkToSecret, MonacoEditor },
+  Component: { DrawerItem, DrawerTitle, Icon, LinkToObject, LinkToSecret, MonacoEditor },
 } = Renderer;
 
 export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImageUpdateAutomation>> =
@@ -23,8 +24,8 @@ export const ImageUpdateAutomationDetails: React.FC<Renderer.Component.KubeObjec
     return (
       <>
         <div className={styles.details}>
-          <DrawerItem name="Resumed">
-            <BadgeBoolean value={!object.spec.suspend} />
+          <DrawerItem name="Suspended">
+            <BadgeSuspended value={object.spec.suspend ?? false} />
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
           <DrawerItem name="Git Repository">

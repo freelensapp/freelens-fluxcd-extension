@@ -2,11 +2,12 @@ import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
 import { Provider } from "../../../k8s/fluxcd/notification/provider-v1";
+import { BadgeSuspended } from "../../badge-suspended";
 
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, LinkToSecret, LinkToServiceAccount },
+  Component: { DrawerItem, LinkToSecret, LinkToServiceAccount },
 } = Renderer;
 
 export const ProviderDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Provider>> = observer((props) => {
@@ -15,8 +16,8 @@ export const ProviderDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
 
   return (
     <div>
-      <DrawerItem name="Resumed">
-        <BadgeBoolean value={!object.spec.suspend} />
+      <DrawerItem name="Suspended">
+        <BadgeSuspended value={object.spec.suspend ?? false} />
       </DrawerItem>
       <DrawerItem name="Type">{object.spec.type}</DrawerItem>
       <DrawerItem name="Channel" hidden={!object.spec.channel}>

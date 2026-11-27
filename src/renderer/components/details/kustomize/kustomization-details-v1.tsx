@@ -13,6 +13,7 @@ import {
   getMaybeDetailsUrl,
   getSourceData,
 } from "../../../utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import { ObjectRefTooltip } from "../../object-ref-tooltip";
 import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
@@ -118,8 +119,8 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
     return (
       <>
         <div className={styles.details}>
-          <DrawerItem name="Resumed">
-            <BadgeBoolean value={!object.spec.suspend} />
+          <DrawerItem name="Suspended">
+            <BadgeSuspended value={object.spec.suspend ?? false} />
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
           <DrawerItem name="Retry Interval" hidden={!object.spec.retryInterval}>
