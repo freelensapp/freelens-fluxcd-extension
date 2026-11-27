@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { Renderer } from "@freelensapp/extensions";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HelmRelease } from "../../../k8s/fluxcd/helm/helmrelease-v2";
 import { HelmReleaseDetails } from "./helm-release-details-v2";
@@ -44,6 +44,25 @@ const helmRelease = (valuesFrom: { kind: string; name: string; valuesKey?: strin
 
 const renderDetails = (object: HelmRelease) =>
   render(<HelmReleaseDetails {...({ object } as unknown as DetailsProps)} />);
+
+/** A HelmRelease with the fields of `spec` and `status` added to the minimal one. */
+const helmReleaseWith = (spec: Record<string, unknown>, status?: Record<string, unknown>) =>
+  new HelmRelease({
+    apiVersion: "helm.toolkit.fluxcd.io/v2",
+    kind: "HelmRelease",
+    metadata: { name: "podinfo", namespace: "fluxcd-test" },
+    spec: { interval: "10m", chartRef: { kind: "OCIRepository", name: "podinfo" }, ...spec },
+    status,
+  } as unknown as ConstructorParameters<typeof HelmRelease>[0]);
+
+/** The text of the drawer items of a section, by its title, or `undefined` without the section. */
+const sectionItems = (title: string) => {
+  const section = screen.queryAllByText(title, { exact: true }).at(0)?.parentElement;
+  if (!section) return;
+  return within(section)
+    .queryAllByTestId("drawer-item")
+    .map((item) => item.textContent);
+};
 
 describe("HelmReleaseDetails", () => {
   it("skips a source of values that does not exist and shows the next one", async () => {
@@ -151,5 +170,172 @@ describe("HelmReleaseDetails", () => {
       .filter((text) => text?.startsWith("from:"));
     expect(values).toEqual(["from: configmap\n", "from: secret\n", "from: other key\n"]);
     expect(error).not.toHaveBeenCalled();
+  });
+
+  describe("Install, Upgrade and Rollback", () => {
+    it("shows no section of an action that the spec does not set", () => {
+      renderDetails(helmReleaseWith({}));
+
+      expect(sectionItems("Install")).toBeUndefined();
+      expect(sectionItems("Upgrade")).toBeUndefined();
+      expect(sectionItems("Rollback")).toBeUndefined();
+    });
+
+    it("shows the set fields of install, with the fixed strategy of its remediation", () => {
+      renderDetails(
+        helmReleaseWith({
+          install: {
+            timeout: "10m",
+            strategy: { name: "RetryOnFailure", retryInterval: "2m" },
+            remediation: { retries: 3, ignoreTestFailures: true },
+            disableTakeOwnership: true,
+            disableWait: true,
+            disableWaitForJobs: true,
+            disableHooks: true,
+            disableOpenAPIValidation: true,
+            disableSchemaValidation: true,
+            replace: true,
+            skipCRDs: true,
+            crds: "CreateReplace",
+            createNamespace: true,
+            serverSideApply: false,
+          },
+        }),
+      );
+
+      const items = sectionItems("Install");
+      expect(items).toEqual(
+        expect.arrayContaining([
+          "Timeout: 10m",
+          "Strategy: RetryOnFailure (retry interval: 2m)",
+          "Retries: 3",
+          "Ignore Test Failures: True",
+          "Remediate Last Failure: False",
+          "Strategy: uninstall",
+          "CRDs: CreateReplace",
+          "Skip CRDs: True",
+          "Server-Side Apply: False",
+          "Create Namespace: True",
+          "Replace: True",
+          "Disable Take Ownership: True",
+          "Disable Wait: True",
+          "Disable Wait For Jobs: True",
+          "Disable Hooks: True",
+          "Disable OpenAPI Validation: True",
+          "Disable Schema Validation: True",
+        ]),
+      );
+    });
+
+    it("shows only the set fields of an action, and no remediation without one", () => {
+      renderDetails(helmReleaseWith({ install: { createNamespace: true }, upgrade: { force: true }, rollback: {} }));
+
+      expect(sectionItems("Install")).toEqual(["Create Namespace: True"]);
+      expect(sectionItems("Upgrade")).toEqual(["Force: True"]);
+      expect(sectionItems("Rollback")).toEqual([]);
+    });
+
+    it("shows the set fields of upgrade, and the defaults of its remediation", () => {
+      renderDetails(
+        helmReleaseWith({
+          upgrade: {
+            timeout: "15m",
+            strategy: { name: "RemediateOnFailure" },
+            remediation: { retries: 2 },
+            disableTakeOwnership: true,
+            disableWait: true,
+            disableWaitForJobs: true,
+            disableHooks: true,
+            disableOpenAPIValidation: true,
+            disableSchemaValidation: true,
+            force: true,
+            preserveValues: true,
+            cleanupOnFail: true,
+            crds: "Create",
+            serverSideApply: "auto",
+            chartNameChangeStrategy: "InPlaceUpdate",
+          },
+        }),
+      );
+
+      const items = sectionItems("Upgrade");
+      expect(items).toEqual(
+        expect.arrayContaining([
+          "Timeout: 15m",
+          "Strategy: RemediateOnFailure",
+          // Remediate Last Failure is true by default when retries is above 0, and the strategy is rollback.
+          "Remediation: Retries: 2Remediate Last Failure: TrueStrategy: rollback",
+          "Retries: 2",
+          "Remediate Last Failure: True",
+          "Strategy: rollback",
+          "CRDs: Create",
+          "Server-Side Apply: auto",
+          "Chart Name Change Strategy: InPlaceUpdate",
+          "Force: True",
+          "Preserve Values: True",
+          "Cleanup On Fail: True",
+          "Disable Take Ownership: True",
+          "Disable Wait: True",
+          "Disable Wait For Jobs: True",
+          "Disable Hooks: True",
+          "Disable OpenAPI Validation: True",
+          "Disable Schema Validation: True",
+        ]),
+      );
+    });
+
+    it("shows the remediation of upgrade as set, and unlimited retries", () => {
+      renderDetails(
+        helmReleaseWith({
+          upgrade: { remediation: { retries: -1, remediateLastFailure: false, strategy: "uninstall" } },
+        }),
+      );
+
+      expect(sectionItems("Upgrade")).toEqual([
+        "Remediation: Retries: -1 (unlimited)Remediate Last Failure: FalseStrategy: uninstall",
+        "Retries: -1 (unlimited)",
+        "Remediate Last Failure: False",
+        "Strategy: uninstall",
+      ]);
+    });
+
+    it("shows the remediation of install without retries as 0", () => {
+      renderDetails(helmReleaseWith({ install: { remediation: {} } }));
+
+      expect(sectionItems("Install")).toEqual([
+        "Remediation: Retries: 0Remediate Last Failure: FalseStrategy: uninstall",
+        "Retries: 0",
+        "Remediate Last Failure: False",
+        "Strategy: uninstall",
+      ]);
+    });
+
+    it("shows the set fields of rollback", () => {
+      renderDetails(
+        helmReleaseWith({
+          rollback: {
+            timeout: "5m",
+            disableWait: true,
+            disableWaitForJobs: true,
+            disableHooks: true,
+            recreate: true,
+            force: true,
+            cleanupOnFail: true,
+            serverSideApply: "disabled",
+          },
+        }),
+      );
+
+      expect(sectionItems("Rollback")).toEqual([
+        "Timeout: 5m",
+        "Server-Side Apply: disabled",
+        "Force: True",
+        "Recreate: True",
+        "Cleanup On Fail: True",
+        "Disable Wait: True",
+        "Disable Wait For Jobs: True",
+        "Disable Hooks: True",
+      ]);
+    });
   });
 });

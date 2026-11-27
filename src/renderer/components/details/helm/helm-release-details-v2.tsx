@@ -16,6 +16,7 @@ import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import { StatusInventory } from "../../status-inventory";
 import { YamlDump } from "../../yaml-dump";
+import { HelmReleaseInstall, HelmReleaseRollback, HelmReleaseUpgrade } from "./helm-release-actions-v2";
 import styles from "./helm-release-details.module.scss";
 
 import type { Patch } from "../../../k8s/core/types";
@@ -186,34 +187,6 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           </DrawerItem>
           <DrawerItem name="Post Render Strategy" hidden={!object.spec.postRenderStrategy}>
             {object.spec.postRenderStrategy}
-          </DrawerItem>
-          <DrawerItem name="Install Strategy" hidden={!object.spec.install?.strategy}>
-            {object.spec.install?.strategy?.name}
-            {object.spec.install?.strategy?.retryInterval &&
-              ` (retry interval: ${object.spec.install.strategy.retryInterval})`}
-          </DrawerItem>
-          <DrawerItem name="Install CRDs" hidden={!object.spec.install?.crds}>
-            {object.spec.install?.crds}
-          </DrawerItem>
-          <DrawerItem name="Install Server-Side Apply" hidden={object.spec.install?.serverSideApply === undefined}>
-            <BadgeBoolean value={object.spec.install?.serverSideApply ?? false} />
-          </DrawerItem>
-          <DrawerItem name="Upgrade Strategy" hidden={!object.spec.upgrade?.strategy}>
-            {object.spec.upgrade?.strategy?.name}
-            {object.spec.upgrade?.strategy?.retryInterval &&
-              ` (retry interval: ${object.spec.upgrade.strategy.retryInterval})`}
-          </DrawerItem>
-          <DrawerItem name="Upgrade CRDs" hidden={!object.spec.upgrade?.crds}>
-            {object.spec.upgrade?.crds}
-          </DrawerItem>
-          <DrawerItem name="Upgrade Server-Side Apply" hidden={!object.spec.upgrade?.serverSideApply}>
-            {object.spec.upgrade?.serverSideApply}
-          </DrawerItem>
-          <DrawerItem name="Chart Name Change Strategy" hidden={!object.spec.upgrade?.chartNameChangeStrategy}>
-            {object.spec.upgrade?.chartNameChangeStrategy}
-          </DrawerItem>
-          <DrawerItem name="Rollback Server-Side Apply" hidden={!object.spec.rollback?.serverSideApply}>
-            {object.spec.rollback?.serverSideApply}
           </DrawerItem>
           <DrawerItemLabels
             name="Common Labels"
@@ -417,6 +390,10 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
               ))}
             </div>
           )}
+
+          <HelmReleaseInstall install={object.spec.install} />
+          <HelmReleaseUpgrade upgrade={object.spec.upgrade} />
+          <HelmReleaseRollback rollback={object.spec.rollback} />
 
           {object.status?.history && (
             <div className={styles.history}>
