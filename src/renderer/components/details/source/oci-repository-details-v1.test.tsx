@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { OCIRepository } from "../../../k8s/fluxcd/source/ocirepository-v1";
 import { OCIRepositoryDetails } from "./oci-repository-details-v1";
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
 });
 
 type DetailsProps = Parameters<typeof OCIRepositoryDetails>[0];
@@ -53,6 +54,23 @@ describe("OCIRepositoryDetails", () => {
     expect(oidcIdentityItems().map((item) => item.textContent)).toEqual([
       "OIDC Identity: MatchIssuer: https://token.actions.githubusercontent.comSubject: ^https://github.com/stefanprodan/podinfo.*$",
     ]);
+  });
+
+  // A key joined from the issuer and the subject with `-` was the same for these two.
+  it("renders matches whose issuer and subject join to the same text, with no React key error", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    renderDetails(
+      ociRepository([
+        { issuer: "https://issuer.example.com/a-b", subject: "c" },
+        { issuer: "https://issuer.example.com/a", subject: "b-c" },
+      ]),
+    );
+
+    expect(oidcIdentityItems().map((item) => item.textContent)).toEqual([
+      "OIDC Identity: MatchIssuer: https://issuer.example.com/a-bSubject: cMatchIssuer: https://issuer.example.com/aSubject: b-c",
+    ]);
+    expect(error).not.toHaveBeenCalled();
   });
 });
 
