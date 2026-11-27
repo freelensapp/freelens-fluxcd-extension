@@ -1,5 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
+import { BadgeSuspended } from "../../components/badge-suspended";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { HelmRelease, type HelmReleaseApi } from "../../k8s/fluxcd/helm/helmrelease-v2beta2";
 import { getMaybeDetailsUrl } from "../../utils";
@@ -12,7 +13,7 @@ const {
 } = Common;
 
 const {
-  Component: { Badge, BadgeBoolean, KubeObjectListLayout, KubeObjectAge, MaybeLink, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, KubeObjectListLayout, KubeObjectAge, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = HelmRelease;
@@ -25,7 +26,7 @@ const sortingCallbacks = {
   source: (object: KubeObject) => KubeObject.getSourceRefName(object),
   chartVersion: (object: KubeObject) => KubeObject.getChartVersion(object),
   appVersion: (object: KubeObject) => KubeObject.getAppVersion(object),
-  resumed: (object: KubeObject) => String(!object.spec.suspend),
+  suspended: (object: KubeObject) => String(object.spec.suspend ?? false),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -37,7 +38,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Source", sortBy: "source", className: styles.source },
   { title: "Chart Version", sortBy: "chartVersion" },
   { title: "App Version", sortBy: "appVersion" },
-  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
+  { title: "Suspended", sortBy: "suspended", className: styles.suspended },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -71,7 +72,7 @@ export const HelmReleasesPage = observer((props: HelmReleasesPageProps) => {
             </WithTooltip>,
             <WithTooltip>{KubeObject.getChartVersion(object) ?? "N/A"}</WithTooltip>,
             <WithTooltip>{KubeObject.getAppVersion(object) ?? "N/A"}</WithTooltip>,
-            <BadgeBoolean value={!object.spec.suspend} />,
+            <BadgeSuspended value={object.spec.suspend ?? false} />,
             <Badge
               label={getConditionText(object.status?.conditions, object.spec.suspend)}
               className={getConditionClass(object.status?.conditions, object.spec.suspend)}

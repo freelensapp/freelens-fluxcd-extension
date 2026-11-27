@@ -1,7 +1,7 @@
 declare const classNames: {
   readonly page: "page";
   readonly source: "source";
-  readonly resumed: "resumed";
+  readonly suspended: "suspended";
   readonly chartVersion: "chartVersion";
   readonly appVersion: "appVersion";
   readonly condition: "condition";

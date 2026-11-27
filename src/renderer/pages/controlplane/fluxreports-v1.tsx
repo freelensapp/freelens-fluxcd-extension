@@ -1,5 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
+import { BadgeSuspended } from "../../components/badge-suspended";
 import {
   getConditionClass,
   getConditionText,
@@ -14,15 +15,7 @@ import styles from "./fluxreports.module.scss";
 const { observer } = MobxReact;
 
 const {
-  Component: {
-    Badge,
-    BadgeBoolean,
-    KubeObjectAge,
-    KubeObjectListLayout,
-    NamespaceSelectBadge,
-    ReactiveDuration,
-    WithTooltip,
-  },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, ReactiveDuration, WithTooltip },
 } = Renderer;
 
 const KubeObject = FluxReport;
@@ -37,9 +30,9 @@ const sortingCallbacks = {
     object.spec.reconcilers?.map((r) => r.stats?.failing || 0).reduce((a, b) => a + b, 0) ?? 0,
   running: (object: KubeObject) =>
     object.spec.reconcilers?.map((r) => r.stats?.running || 0).reduce((a, b) => a + b, 0) ?? 0,
-  suspended: (object: KubeObject) =>
+  suspendedObjects: (object: KubeObject) =>
     object.spec.reconcilers?.map((r) => r.stats?.suspended || 0).reduce((a, b) => a + b, 0) ?? 0,
-  enabled: (object: KubeObject) => String(!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
+  suspended: (object: KubeObject) => String(isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   condition: (object: KubeObject) =>
     getConditionText(object.status?.conditions, isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   lastUpdated: (object: KubeObject) => getLastUpdated(object.status?.conditions),
@@ -53,8 +46,8 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Version", sortBy: "version", className: styles.version },
   { title: "Failing", sortBy: "failing", className: styles.failing },
   { title: "Running", sortBy: "running", className: styles.running },
+  { title: "Suspended Objects", sortBy: "suspendedObjects", className: styles.suspendedObjects },
   { title: "Suspended", sortBy: "suspended", className: styles.suspended },
-  { title: "Enabled", sortBy: "enabled", className: styles.enabled },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Last Updated", sortBy: "lastUpdated", className: styles.lastUpdated },
   { title: "Status", sortBy: "status", className: styles.status },
@@ -91,7 +84,7 @@ export const FluxReportsPage = observer((props: FluxReportsPageProps) => {
           <WithTooltip>
             {object.spec.reconcilers?.map((r) => r.stats?.suspended || 0).reduce((a, b) => a + b, 0) ?? "N/A"}
           </WithTooltip>,
-          <BadgeBoolean value={!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
+          <BadgeSuspended value={isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
           <Badge
             label={getConditionText(
               object.status?.conditions,

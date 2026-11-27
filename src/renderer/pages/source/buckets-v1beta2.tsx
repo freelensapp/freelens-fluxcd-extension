@@ -1,5 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
+import { BadgeSuspended } from "../../components/badge-suspended";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { Bucket, type BucketApi } from "../../k8s/fluxcd/source/bucket-v1beta2";
 import styles from "./buckets.module.scss";
@@ -7,7 +8,7 @@ import styles from "./buckets.module.scss";
 const { observer } = MobxReact;
 
 const {
-  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = Bucket;
@@ -19,7 +20,7 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   provider: (object: KubeObject) => object.spec.provider,
   bucket: (object: KubeObject) => object.spec.bucketName,
-  resumed: (object: KubeObject) => String(!object.spec.suspend),
+  suspended: (object: KubeObject) => String(object.spec.suspend ?? false),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   status: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -30,7 +31,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Namespace", sortBy: "namespace" },
   { title: "Provider", sortBy: "provider", className: styles.provider },
   { title: "Bucket", sortBy: "bucket", className: styles.bucket },
-  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
+  { title: "Suspended", sortBy: "suspended", className: styles.suspended },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -58,7 +59,7 @@ export const BucketsPage = observer((props: BucketsPageProps) => {
           <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
           <WithTooltip>{object.spec.provider ?? "generic"}</WithTooltip>,
           <WithTooltip>{object.spec.bucketName}</WithTooltip>,
-          <BadgeBoolean value={!object.spec.suspend} />,
+          <BadgeSuspended value={object.spec.suspend ?? false} />,
           <Badge
             className={getConditionClass(object.status?.conditions, object.spec.suspend)}
             label={getConditionText(object.status?.conditions, object.spec.suspend)}

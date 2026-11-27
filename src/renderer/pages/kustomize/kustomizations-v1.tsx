@@ -1,5 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
+import { BadgeSuspended } from "../../components/badge-suspended";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { Kustomization, type KustomizationApi } from "../../k8s/fluxcd/kustomize/kustomization-v1";
 import { getMaybeDetailsUrl } from "../../utils";
@@ -12,7 +13,7 @@ const {
 } = Common;
 
 const {
-  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = Kustomization;
@@ -24,7 +25,7 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   source: (object: KubeObject) => object.spec.sourceRef.name,
   revision: (object: KubeObject) => object.status?.lastAppliedRevision,
-  resumed: (object: KubeObject) => String(!object.spec.suspend),
+  suspended: (object: KubeObject) => String(object.spec.suspend ?? false),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   status: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -35,7 +36,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Namespace", sortBy: "namespace" },
   { title: "Source", sortBy: "source", className: styles.source },
   { title: "Revision", sortBy: "revision", className: styles.revision },
-  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
+  { title: "Suspended", sortBy: "suspended", className: styles.suspended },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -67,7 +68,7 @@ export const KustomizationsPage_v1 = observer((props: KustomizationsPageProps) =
             </MaybeLink>
           </WithTooltip>,
           <WithTooltip>{KubeObject.getLastAppliedRevision(object) ?? "N/A"}</WithTooltip>,
-          <BadgeBoolean value={!object.spec.suspend} />,
+          <BadgeSuspended value={object.spec.suspend ?? false} />,
           <Badge
             className={getConditionClass(object.status?.conditions, object.spec.suspend)}
             label={getConditionText(object.status?.conditions, object.spec.suspend)}
