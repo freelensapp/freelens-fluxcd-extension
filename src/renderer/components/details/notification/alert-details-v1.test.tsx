@@ -22,6 +22,13 @@ const alert = (eventSources: Record<string, unknown>[]) =>
 
 const renderDetails = (object: Alert) => render(<AlertDetails {...({ object } as unknown as DetailsProps)} />);
 
+// The nested drawer items of the event sources have no name.
+const eventSourceItems = () =>
+  screen
+    .getAllByTestId("drawer-item")
+    .map((item) => item.textContent)
+    .filter((item) => item?.startsWith(": "));
+
 describe("AlertDetails v1", () => {
   // `matchLabels` of `CrossNamespaceObjectReference` tells apart the event sources named * of one kind and
   // namespace.
@@ -35,10 +42,34 @@ describe("AlertDetails v1", () => {
       ]),
     );
 
-    const eventSources = screen
-      .getAllByTestId("drawer-item")
-      .filter((item) => item.textContent === ": GitRepository:*");
-    expect(eventSources).toHaveLength(2);
+    expect(eventSourceItems()).toEqual([
+      ": GitRepository:flux-system/*app=podinfo",
+      ": GitRepository:flux-system/*app=flux",
+    ]);
     expect(error).not.toHaveBeenCalled();
+  });
+
+  it("shows the namespace of an event source that differs from the Alert's", () => {
+    renderDetails(
+      alert([
+        { kind: "GitRepository", name: "*", namespace: "flux-system" },
+        { kind: "Kustomization", name: "*", namespace: "fluxcd-test" },
+        { kind: "HelmRelease", name: "*" },
+      ]),
+    );
+
+    expect(eventSourceItems()).toEqual([": GitRepository:flux-system/*", ": Kustomization:*", ": HelmRelease:*"]);
+  });
+
+  it("shows the matchLabels of an event source as badges", () => {
+    const { container } = renderDetails(
+      alert([{ kind: "GitRepository", name: "*", matchLabels: { app: "podinfo", tier: "frontend" } }]),
+    );
+
+    expect([...container.querySelectorAll("span")].map((badge) => badge.textContent)).toEqual([
+      "GitRepository:*",
+      "app=podinfo",
+      "tier=frontend",
+    ]);
   });
 });

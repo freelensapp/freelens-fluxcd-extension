@@ -8,3 +8,8 @@ spec:
   eventSources:
     - kind: Kustomization
       name: test
+    - kind: GitRepository
+      name: "*"
+      namespace: flux-system
+      matchLabels:
+        app.kubernetes.io/part-of: test

@@ -21,7 +21,11 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
       <DrawerItem name="Event Severity">{object.spec.eventSeverity ?? "info"}</DrawerItem>
       <DrawerItem name="Event Sources">
         {object.spec.eventSources.map((eventSource) => {
-          const badge = <Badge label={`${eventSource.kind}:${eventSource.name}`} />;
+          // The event server takes an empty namespace for the Alert's.
+          const namespace =
+            eventSource.namespace && eventSource.namespace !== object.getNs() ? `${eventSource.namespace}/` : "";
+          const badge = <Badge label={`${eventSource.kind}:${namespace}${eventSource.name}`} />;
+          const matchLabels = Object.entries(eventSource.matchLabels ?? {}).map(([key, value]) => `${key}=${value}`);
           return (
             <DrawerItem key={Renderer.Util.createReactKey(eventSource)} name="">
               {eventSource.name === "*" ? (
@@ -29,6 +33,9 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
               ) : (
                 <LinkToObject objectRef={withServedApiVersion(eventSource)} object={object} content={badge} />
               )}
+              {matchLabels.map((label) => (
+                <Badge key={label} label={label} />
+              ))}
             </DrawerItem>
           );
         })}
