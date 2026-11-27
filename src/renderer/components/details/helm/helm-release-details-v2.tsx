@@ -252,6 +252,42 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Last Deployed" hidden={!object.status?.history?.[0].lastDeployed}>
             <DurationAbsoluteTimestamp timestamp={object.status?.history?.[0].lastDeployed} />
           </DrawerItem>
+          <DrawerItem name="Current Storage Namespace" hidden={!object.status?.storageNamespace}>
+            <LinkToNamespace namespace={object.status?.storageNamespace} />
+          </DrawerItem>
+          <DrawerItem name="Last Attempted Revision" hidden={!object.status?.lastAttemptedRevision}>
+            {object.status?.lastAttemptedRevision}
+          </DrawerItem>
+          <DrawerItem name="Last Attempted Revision Digest" hidden={!object.status?.lastAttemptedRevisionDigest}>
+            {object.status?.lastAttemptedRevisionDigest}
+          </DrawerItem>
+          <DrawerItem name="Last Attempted Release Action" hidden={!object.status?.lastAttemptedReleaseAction}>
+            {object.status?.lastAttemptedReleaseAction}
+          </DrawerItem>
+          <DrawerItem
+            name="Last Attempted Release Action Duration"
+            hidden={!object.status?.lastAttemptedReleaseActionDuration}
+          >
+            {object.status?.lastAttemptedReleaseActionDuration}
+          </DrawerItem>
+          <DrawerItem name="Failures" hidden={!object.status?.failures}>
+            {object.status?.failures}
+          </DrawerItem>
+          <DrawerItem name="Install Failures" hidden={!object.status?.installFailures}>
+            {object.status?.installFailures}
+          </DrawerItem>
+          <DrawerItem name="Upgrade Failures" hidden={!object.status?.upgradeFailures}>
+            {object.status?.upgradeFailures}
+          </DrawerItem>
+          <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
+            <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
+          </DrawerItem>
+          <DrawerItem name="Last Handled Force At" hidden={!object.status?.lastHandledForceAt}>
+            <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledForceAt} />
+          </DrawerItem>
+          <DrawerItem name="Last Handled Reset At" hidden={!object.status?.lastHandledResetAt}>
+            <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledResetAt} />
+          </DrawerItem>
           <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
             {object.status?.conditions?.[0].message}
           </DrawerItem>

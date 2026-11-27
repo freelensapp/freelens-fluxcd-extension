@@ -610,4 +610,64 @@ describe("HelmReleaseDetails", () => {
       );
     });
   });
+
+  describe("Status", () => {
+    const statusItemNames = [
+      "Current Storage Namespace",
+      "Last Attempted Revision",
+      "Last Attempted Revision Digest",
+      "Last Attempted Release Action",
+      "Last Attempted Release Action Duration",
+      "Failures",
+      "Install Failures",
+      "Upgrade Failures",
+      "Last Handled Reconcile At",
+      "Last Handled Force At",
+      "Last Handled Reset At",
+    ];
+
+    it("shows the fields of the status", () => {
+      renderDetails(
+        helmReleaseWith(
+          {},
+          {
+            storageNamespace: "podinfo",
+            failures: 3,
+            installFailures: 1,
+            upgradeFailures: 2,
+            lastAttemptedRevision: "6.5.4+0123456789ab",
+            lastAttemptedRevisionDigest: "sha256:0123456789abcdef",
+            lastAttemptedReleaseAction: "upgrade",
+            lastAttemptedReleaseActionDuration: "12.5s",
+            lastHandledReconcileAt: "2026-11-26T10:00:00Z",
+            lastHandledForceAt: "2026-11-26T11:00:00Z",
+            lastHandledResetAt: "2026-11-26T12:00:00Z",
+          },
+        ),
+      );
+
+      expect(drawerItems()).toEqual(
+        expect.arrayContaining([
+          "Current Storage Namespace: podinfo",
+          "Last Attempted Revision: 6.5.4+0123456789ab",
+          "Last Attempted Revision Digest: sha256:0123456789abcdef",
+          "Last Attempted Release Action: upgrade",
+          "Last Attempted Release Action Duration: 12.5s",
+          "Failures: 3",
+          "Install Failures: 1",
+          "Upgrade Failures: 2",
+          "Last Handled Reconcile At: 2026-11-26T10:00:00Z",
+          "Last Handled Force At: 2026-11-26T11:00:00Z",
+          "Last Handled Reset At: 2026-11-26T12:00:00Z",
+        ]),
+      );
+    });
+
+    it("hides the fields of the status without them, and the counters of failures at zero", () => {
+      renderDetails(helmReleaseWith({}, { failures: 0, installFailures: 0, upgradeFailures: 0 }));
+
+      const names = drawerItems().map((item) => item?.split(": ")[0]);
+      expect(names.filter((name) => statusItemNames.includes(name ?? ""))).toEqual([]);
+    });
+  });
 });
