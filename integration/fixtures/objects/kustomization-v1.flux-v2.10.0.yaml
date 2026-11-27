@@ -26,6 +26,10 @@ spec:
   dependsOn:
     - name: test-infra
       readyExpr: dep.status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+  kubeConfig:
+    secretRef:
+      name: test-kubeconfig
+      key: kubeconfig
   decryption:
     provider: sops
     serviceAccountName: sops

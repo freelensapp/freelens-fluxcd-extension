@@ -111,7 +111,8 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
     const substituteYaml =
       object.spec.postBuild?.substitute && dump(object.spec.postBuild?.substitute, defaultYamlDumpOptions).trimEnd();
 
-    const kubeConfigSecretName = object.spec.kubeConfig?.secretRef?.name;
+    const kubeConfigSecretRef = object.spec.kubeConfig?.secretRef;
+    const kubeConfigSecretName = kubeConfigSecretRef?.name;
     const kubeConfigConfigMapName = object.spec.kubeConfig?.configMapRef?.name;
 
     return (
@@ -181,6 +182,10 @@ export const KustomizationDetails: React.FC<Renderer.Component.KubeObjectDetails
           <DrawerItem name="Kube Config" hidden={!kubeConfigSecretName && !kubeConfigConfigMapName}>
             {kubeConfigSecretName && <LinkToSecret name={kubeConfigSecretName} namespace={namespace} />}
             {kubeConfigConfigMapName && <LinkToConfigMap name={kubeConfigConfigMapName} namespace={namespace} />}
+          </DrawerItem>
+          {/* `SecretKeyReference` of fluxcd/pkg: without a key, the controller reads `value`, then `value.yaml`. */}
+          <DrawerItem name="Kube Config Key" hidden={!kubeConfigSecretName}>
+            {kubeConfigSecretRef?.key || "value or value.yaml (default)"}
           </DrawerItem>
           <DrawerItem name="Last Applied Revision" hidden={!object.status?.lastAppliedRevision}>
             {object.status?.lastAppliedRevision}

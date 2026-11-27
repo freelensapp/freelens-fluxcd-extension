@@ -6,12 +6,16 @@ export interface SemVerPolicy {
   range: string;
 }
 
+export type AlphabeticalPolicyOrder = "asc" | "desc";
+
 export interface AlphabeticalPolicy {
-  order?: "asc" | "desc";
+  order?: AlphabeticalPolicyOrder;
 }
 
+export type NumericalPolicyOrder = "asc" | "desc";
+
 export interface NumericalPolicy {
-  order?: "asc" | "desc";
+  order?: NumericalPolicyOrder;
 }
 
 export interface ImagePolicyChoice {

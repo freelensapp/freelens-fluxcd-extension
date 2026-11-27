@@ -18,6 +18,7 @@ export const ProviderDetails: React.FC<Renderer.Component.KubeObjectDetailsProps
       <DrawerItem name="Resumed">
         <BadgeBoolean value={!object.spec.suspend} />
       </DrawerItem>
+      <DrawerItem name="Type">{object.spec.type}</DrawerItem>
       <DrawerItem name="Channel" hidden={!object.spec.channel}>
         {object.spec.channel}
       </DrawerItem>

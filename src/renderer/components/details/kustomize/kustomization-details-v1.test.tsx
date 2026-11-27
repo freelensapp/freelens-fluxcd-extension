@@ -128,6 +128,36 @@ describe("KustomizationDetails", () => {
   });
 });
 
+describe("KustomizationDetails kubeConfig", () => {
+  const kubeConfigItems = (kubeConfig: Record<string, unknown>) => {
+    const object = kustomization([]);
+    object.spec.kubeConfig = kubeConfig;
+    renderDetails(object);
+    return screen
+      .getAllByTestId("drawer-item")
+      .map((item) => item.textContent)
+      .filter((item) => item?.startsWith("Kube Config"));
+  };
+
+  it("shows the key of the Secret next to it", () => {
+    expect(kubeConfigItems({ secretRef: { name: "cluster", key: "kubeconfig" } })).toEqual([
+      "Kube Config: cluster",
+      "Kube Config Key: kubeconfig",
+    ]);
+  });
+
+  it("shows the default keys of the Secret without a key", () => {
+    expect(kubeConfigItems({ secretRef: { name: "cluster" } })).toEqual([
+      "Kube Config: cluster",
+      "Kube Config Key: value or value.yaml (default)",
+    ]);
+  });
+
+  it("shows no key for a ConfigMap", () => {
+    expect(kubeConfigItems({ configMapRef: { name: "cluster" } })).toEqual(["Kube Config: cluster"]);
+  });
+});
+
 describe("KustomizationDetails substituteFrom", () => {
   it("shows the variables of a ConfigMap and a Secret of the same name", async () => {
     vi.spyOn(Renderer.K8sApi.configMapApi, "get").mockResolvedValue({ data: { cluster_env: "prod" } } as never);

@@ -112,7 +112,7 @@ export const HelmReleaseChartVerification = observer(({ object }: { object: Helm
       </DrawerItem>
       <DrawerItem name="OIDC Identity" hidden={!isOCIRepository || !verify.matchOIDCIdentity?.length}>
         {verify.matchOIDCIdentity?.map((match) => (
-          <div key={`${match.issuer}-${match.subject}`}>
+          <div key={Renderer.Util.createReactKey(match)}>
             <DrawerTitle>Match</DrawerTitle>
             <DrawerItem name="Issuer">{match.issuer}</DrawerItem>
             <DrawerItem name="Subject">{match.subject}</DrawerItem>
