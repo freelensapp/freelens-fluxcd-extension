@@ -61,7 +61,8 @@ export type HelmChartTemplateSpecReconcileStrategy = "ChartVersion" | "Revision"
 
 /**
  * The template of the generated object. It has the fields of an `OCIRepositorySpec` inline, every one optional: a
- * `HelmChart` template uses `interval`, `verify` and `suspend` of them, an `OCIRepository` template all of them, with
+ * `HelmChart` template uses `interval` and the `provider` and `secretRef` of `verify` of them
+ * (`buildHelmChartFromTemplate` of helm-controller), an `OCIRepository` template all of them, with
  * `url` required by a validation rule of the CRD. `chart` and `sourceRef` are required, by another rule, unless the
  * template generates an `OCIRepository`, which in turn forbids them.
  */

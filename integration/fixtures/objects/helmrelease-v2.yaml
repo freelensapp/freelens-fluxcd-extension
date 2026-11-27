@@ -5,8 +5,79 @@ metadata:
 spec:
   interval: 1h
   chart:
+    metadata:
+      labels:
+        app.kubernetes.io/part-of: test
+      annotations:
+        example.com/owner: test
     spec:
       chart: podinfo
       sourceRef:
         kind: HelmRepository
         name: test
+      reconcileStrategy: Revision
+      verify:
+        provider: cosign
+        secretRef:
+          name: test-cosign
+  kubeConfig:
+    secretRef:
+      name: test-kubeconfig
+      key: value.yaml
+  persistentClient: false
+  driftDetection:
+    mode: warn
+    ignore:
+      - paths:
+          - /spec/replicas
+        target:
+          kind: Deployment
+      - paths:
+          - /metadata/annotations
+  install:
+    timeout: 10m
+    remediation:
+      retries: 3
+      ignoreTestFailures: true
+    disableWait: true
+    disableWaitForJobs: true
+    disableHooks: true
+    disableOpenAPIValidation: true
+    replace: true
+    crds: CreateReplace
+    createNamespace: true
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: -1
+      remediateLastFailure: true
+      strategy: uninstall
+    disableWait: true
+    disableWaitForJobs: true
+    disableHooks: true
+    disableOpenAPIValidation: true
+    force: true
+    preserveValues: true
+    cleanupOnFail: true
+    crds: Create
+  test:
+    enable: true
+    timeout: 5m
+    ignoreFailures: true
+    filters:
+      - name: test-smoke
+      - name: test-slow
+        exclude: true
+  rollback:
+    timeout: 10m
+    disableWait: true
+    disableWaitForJobs: true
+    disableHooks: true
+    force: true
+    cleanupOnFail: true
+  uninstall:
+    timeout: 10m
+    disableHooks: true
+    keepHistory: true
+    disableWait: true
+    deletionPropagation: foreground

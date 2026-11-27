@@ -208,7 +208,8 @@ export const Renderer = {
     // The host shows the age of the object, which changes with the time.
     KubeObjectAge: () => null,
     KubeObjectListLayout,
-    // The host links the name to the details of the namespace, Secret or ServiceAccount.
+    // The host links the name to the details of the namespace, ConfigMap, Secret or ServiceAccount.
+    LinkToConfigMap: ({ name }: { name?: string }) => React.createElement(React.Fragment, null, name),
     LinkToNamespace: ({ namespace }: { namespace?: string }) => React.createElement(React.Fragment, null, namespace),
     // As the host's: the name, linked to the details of the link that `lookupApiLink` gives the reference, and
     // not linked without one.

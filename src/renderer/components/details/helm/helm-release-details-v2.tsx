@@ -16,6 +16,14 @@ import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import { StatusInventory } from "../../status-inventory";
 import { YamlDump } from "../../yaml-dump";
+import {
+  HelmReleaseInstall,
+  HelmReleaseRollback,
+  HelmReleaseTest,
+  HelmReleaseUninstall,
+  HelmReleaseUpgrade,
+} from "./helm-release-actions-v2";
+import { HelmReleaseChartVerification, HelmReleaseOCIRepositoryTemplate } from "./helm-release-chart-template-v2";
 import styles from "./helm-release-details.module.scss";
 
 import type { Patch } from "../../../k8s/core/types";
@@ -35,8 +43,10 @@ const {
     DrawerTitle,
     DurationAbsoluteTimestamp,
     Icon,
+    LinkToConfigMap,
     LinkToNamespace,
     LinkToObject,
+    LinkToSecret,
     LinkToServiceAccount,
     MaybeLink,
     MonacoEditor,
@@ -54,7 +64,10 @@ const historySortable = {
   lastDeployed: (snapshot: Snapshot) => snapshot.lastDeployed,
   chartVersion: (snapshot: Snapshot) => snapshot.chartVersion,
   appVersion: (snapshot: Snapshot) => snapshot.appVersion,
+  action: (snapshot: Snapshot) => snapshot.action,
   status: (snapshot: Snapshot) => snapshot.status,
+  deleted: (snapshot: Snapshot) => snapshot.deleted,
+  ociDigest: (snapshot: Snapshot) => snapshot.ociDigest,
 };
 
 const historySortByNames = createEnumFromKeys(historySortable);
@@ -108,6 +121,16 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
       (chartOciRef?.semver && `semver: ${chartOciRef.semver}`) ||
       (chartOciRef?.tag && `tag: ${chartOciRef.tag}`) ||
       undefined;
+
+    const kubeConfigSecretRef = object.spec.kubeConfig?.secretRef;
+    const kubeConfigConfigMapName = object.spec.kubeConfig?.configMapRef?.name;
+
+    // Columns of the History table that only some snapshots have, shown when one has them.
+    const historyHasDeleted = object.status?.history?.some((snapshot) => snapshot.deleted);
+    const historyHasOciDigest = object.status?.history?.some((snapshot) => snapshot.ociDigest);
+    const historyTestHooks = object.status?.history?.filter(
+      (snapshot) => snapshot.testHooks && Object.keys(snapshot.testHooks).length,
+    );
 
     const images = object.spec.postRenderers
       ?.filter((a) => a?.kustomize)
@@ -172,6 +195,17 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
             <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
           </DrawerItem>
+          <DrawerItem name="Kube Config" hidden={!kubeConfigSecretRef && !kubeConfigConfigMapName}>
+            {kubeConfigSecretRef && <LinkToSecret name={kubeConfigSecretRef.name} namespace={namespace} />}
+            {kubeConfigConfigMapName && <LinkToConfigMap name={kubeConfigConfigMapName} namespace={namespace} />}
+          </DrawerItem>
+          {/* The key of the Secret defaults to `value` (`meta.KubeConfigReference`). */}
+          <DrawerItem name="Kube Config Key" hidden={!kubeConfigSecretRef}>
+            {kubeConfigSecretRef?.key ?? "value"}
+          </DrawerItem>
+          <DrawerItem name="Persistent Client" hidden={object.spec.persistentClient === undefined}>
+            <BadgeBoolean value={object.spec.persistentClient ?? true} />
+          </DrawerItem>
           <DrawerItem name="Storage Namespace" hidden={!object.spec.storageNamespace}>
             <LinkToNamespace namespace={object.spec.storageNamespace} />
           </DrawerItem>
@@ -186,34 +220,6 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           </DrawerItem>
           <DrawerItem name="Post Render Strategy" hidden={!object.spec.postRenderStrategy}>
             {object.spec.postRenderStrategy}
-          </DrawerItem>
-          <DrawerItem name="Install Strategy" hidden={!object.spec.install?.strategy}>
-            {object.spec.install?.strategy?.name}
-            {object.spec.install?.strategy?.retryInterval &&
-              ` (retry interval: ${object.spec.install.strategy.retryInterval})`}
-          </DrawerItem>
-          <DrawerItem name="Install CRDs" hidden={!object.spec.install?.crds}>
-            {object.spec.install?.crds}
-          </DrawerItem>
-          <DrawerItem name="Install Server-Side Apply" hidden={object.spec.install?.serverSideApply === undefined}>
-            <BadgeBoolean value={object.spec.install?.serverSideApply ?? false} />
-          </DrawerItem>
-          <DrawerItem name="Upgrade Strategy" hidden={!object.spec.upgrade?.strategy}>
-            {object.spec.upgrade?.strategy?.name}
-            {object.spec.upgrade?.strategy?.retryInterval &&
-              ` (retry interval: ${object.spec.upgrade.strategy.retryInterval})`}
-          </DrawerItem>
-          <DrawerItem name="Upgrade CRDs" hidden={!object.spec.upgrade?.crds}>
-            {object.spec.upgrade?.crds}
-          </DrawerItem>
-          <DrawerItem name="Upgrade Server-Side Apply" hidden={!object.spec.upgrade?.serverSideApply}>
-            {object.spec.upgrade?.serverSideApply}
-          </DrawerItem>
-          <DrawerItem name="Chart Name Change Strategy" hidden={!object.spec.upgrade?.chartNameChangeStrategy}>
-            {object.spec.upgrade?.chartNameChangeStrategy}
-          </DrawerItem>
-          <DrawerItem name="Rollback Server-Side Apply" hidden={!object.spec.rollback?.serverSideApply}>
-            {object.spec.rollback?.serverSideApply}
           </DrawerItem>
           <DrawerItemLabels
             name="Common Labels"
@@ -231,6 +237,20 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Ignore Missing Values Files" hidden={!object.spec.chart?.spec.ignoreMissingValuesFiles}>
             <BadgeBoolean value={object.spec.chart?.spec.ignoreMissingValuesFiles ?? false} />
           </DrawerItem>
+          {/* `ChartVersion` by default; an `OCIRepository` template does not have it. */}
+          <DrawerItem name="Chart Reconcile Strategy" hidden={chartTemplateKind !== "HelmChart"}>
+            {object.spec.chart?.spec.reconcileStrategy ?? "ChartVersion"}
+          </DrawerItem>
+          <DrawerItemLabels
+            name="Chart Labels"
+            labels={object.spec.chart?.metadata?.labels ?? {}}
+            hidden={!object.spec.chart?.metadata?.labels}
+          />
+          <DrawerItemLabels
+            name="Chart Annotations"
+            labels={object.spec.chart?.metadata?.annotations ?? {}}
+            hidden={!object.spec.chart?.metadata?.annotations}
+          />
           <DrawerItem name="Source">
             <MaybeLink to={getMaybeDetailsUrl(HelmRelease.getSourceRefUrl(object))} onClick={stopPropagation}>
               {HelmRelease.getSourceRefText(object)}
@@ -242,9 +262,48 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Last Deployed" hidden={!object.status?.history?.[0].lastDeployed}>
             <DurationAbsoluteTimestamp timestamp={object.status?.history?.[0].lastDeployed} />
           </DrawerItem>
+          <DrawerItem name="Current Storage Namespace" hidden={!object.status?.storageNamespace}>
+            <LinkToNamespace namespace={object.status?.storageNamespace} />
+          </DrawerItem>
+          <DrawerItem name="Last Attempted Revision" hidden={!object.status?.lastAttemptedRevision}>
+            {object.status?.lastAttemptedRevision}
+          </DrawerItem>
+          <DrawerItem name="Last Attempted Revision Digest" hidden={!object.status?.lastAttemptedRevisionDigest}>
+            {object.status?.lastAttemptedRevisionDigest}
+          </DrawerItem>
+          <DrawerItem name="Last Attempted Release Action" hidden={!object.status?.lastAttemptedReleaseAction}>
+            {object.status?.lastAttemptedReleaseAction}
+          </DrawerItem>
+          <DrawerItem
+            name="Last Attempted Release Action Duration"
+            hidden={!object.status?.lastAttemptedReleaseActionDuration}
+          >
+            {object.status?.lastAttemptedReleaseActionDuration}
+          </DrawerItem>
+          <DrawerItem name="Failures" hidden={!object.status?.failures}>
+            {object.status?.failures}
+          </DrawerItem>
+          <DrawerItem name="Install Failures" hidden={!object.status?.installFailures}>
+            {object.status?.installFailures}
+          </DrawerItem>
+          <DrawerItem name="Upgrade Failures" hidden={!object.status?.upgradeFailures}>
+            {object.status?.upgradeFailures}
+          </DrawerItem>
+          <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
+            <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />
+          </DrawerItem>
+          <DrawerItem name="Last Handled Force At" hidden={!object.status?.lastHandledForceAt}>
+            <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledForceAt} />
+          </DrawerItem>
+          <DrawerItem name="Last Handled Reset At" hidden={!object.status?.lastHandledResetAt}>
+            <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledResetAt} />
+          </DrawerItem>
           <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
             {object.status?.conditions?.[0].message}
           </DrawerItem>
+
+          <HelmReleaseOCIRepositoryTemplate object={object} />
+          <HelmReleaseChartVerification object={object} />
 
           {object.spec.dependsOn && (
             <div>
@@ -418,6 +477,56 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
             </div>
           )}
 
+          {object.spec.driftDetection?.ignore && (
+            <div>
+              <DrawerTitle>Drift Detection Ignore Rules</DrawerTitle>
+              {object.spec.driftDetection.ignore.map((rule, index) => (
+                <div key={Renderer.Util.createReactKey(rule)}>
+                  <div className={styles.title}>
+                    <Icon small material="list" /> {index + 1}
+                  </div>
+                  <DrawerItem name="Paths">{rule.paths.join(", ")}</DrawerItem>
+                  {/* Without a target, the paths are ignored for every object of the release. */}
+                  <DrawerItem name="Target">
+                    {rule.target ? (
+                      <>
+                        <DrawerItem name="Group" hidden={!rule.target.group}>
+                          {rule.target.group}
+                        </DrawerItem>
+                        <DrawerItem name="Version" hidden={!rule.target.version}>
+                          {rule.target.version}
+                        </DrawerItem>
+                        <DrawerItem name="Kind" hidden={!rule.target.kind}>
+                          {rule.target.kind}
+                        </DrawerItem>
+                        <DrawerItem name="Name" hidden={!rule.target.name}>
+                          {rule.target.name}
+                        </DrawerItem>
+                        <DrawerItem name="Namespace" hidden={!rule.target.namespace}>
+                          {rule.target.namespace}
+                        </DrawerItem>
+                        <DrawerItem name="Label Selector" hidden={!rule.target.labelSelector}>
+                          {rule.target.labelSelector}
+                        </DrawerItem>
+                        <DrawerItem name="Annotation Selector" hidden={!rule.target.annotationSelector}>
+                          {rule.target.annotationSelector}
+                        </DrawerItem>
+                      </>
+                    ) : (
+                      "all objects"
+                    )}
+                  </DrawerItem>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <HelmReleaseInstall install={object.spec.install} />
+          <HelmReleaseUpgrade upgrade={object.spec.upgrade} />
+          <HelmReleaseRollback rollback={object.spec.rollback} />
+          <HelmReleaseTest test={object.spec.test} />
+          <HelmReleaseUninstall uninstall={object.spec.uninstall} />
+
           {object.status?.history && (
             <div className={styles.history}>
               <DrawerTitle>History</DrawerTitle>
@@ -436,9 +545,14 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                   <TableCell sortBy={historySortByNames.lastDeployed}>Last Deployed</TableCell>
                   <TableCell sortBy={historySortByNames.chartVersion}>Chart Version</TableCell>
                   <TableCell sortBy={historySortByNames.appVersion}>App Version</TableCell>
+                  <TableCell sortBy={historySortByNames.action} className={styles.action}>
+                    Action
+                  </TableCell>
                   <TableCell sortBy={historySortByNames.status} className={styles.status}>
                     Status
                   </TableCell>
+                  {historyHasDeleted && <TableCell sortBy={historySortByNames.deleted}>Deleted</TableCell>}
+                  {historyHasOciDigest && <TableCell sortBy={historySortByNames.ociDigest}>OCI Digest</TableCell>}
                 </TableHead>
                 {object.status?.history?.map((snapshot) => (
                   <TableRow key={`${snapshot.digest}-${snapshot.configDigest}`} sortItem={snapshot} nowrap>
@@ -450,12 +564,44 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                     <TableCell>
                       <WithTooltip>{snapshot.appVersion}</WithTooltip>
                     </TableCell>
+                    <TableCell className={styles.action}>{snapshot.action}</TableCell>
                     <TableCell className={styles.status}>{snapshot.status}</TableCell>
+                    {historyHasDeleted && <TableCell>{snapshot.deleted}</TableCell>}
+                    {historyHasOciDigest && (
+                      <TableCell>
+                        <WithTooltip>{snapshot.ociDigest}</WithTooltip>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </Table>
             </div>
           )}
+
+          {historyTestHooks?.length ? (
+            <div>
+              <DrawerTitle>Test Hooks</DrawerTitle>
+              {historyTestHooks.map((snapshot) =>
+                Object.entries(snapshot.testHooks ?? {}).map(([name, hook]) => (
+                  <div key={`${snapshot.version}-${name}`}>
+                    <div className={styles.title}>
+                      <Icon small material="list" /> {name}
+                    </div>
+                    <DrawerItem name="Release Version">{snapshot.version}</DrawerItem>
+                    <DrawerItem name="Phase" hidden={!hook?.phase}>
+                      {hook?.phase}
+                    </DrawerItem>
+                    <DrawerItem name="Last Started" hidden={!hook?.lastStarted}>
+                      <DurationAbsoluteTimestamp timestamp={hook?.lastStarted} />
+                    </DrawerItem>
+                    <DrawerItem name="Last Completed" hidden={!hook?.lastCompleted}>
+                      <DurationAbsoluteTimestamp timestamp={hook?.lastCompleted} />
+                    </DrawerItem>
+                  </div>
+                )),
+              )}
+            </div>
+          ) : null}
 
           <StatusInventory inventory={object.status?.inventory} object={object} />
         </div>
