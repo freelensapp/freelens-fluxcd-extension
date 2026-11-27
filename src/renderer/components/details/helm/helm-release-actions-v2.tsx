@@ -5,6 +5,8 @@ import type {
   Install,
   InstallRemediation,
   Rollback,
+  Test,
+  Uninstall,
   Upgrade,
   UpgradeRemediation,
 } from "../../../k8s/fluxcd/helm/helmrelease-v2";
@@ -184,6 +186,55 @@ export const HelmReleaseRollback = observer(({ rollback }: { rollback?: Rollback
       </DrawerItem>
       <DrawerItem name="Disable Hooks" hidden={!rollback.disableHooks}>
         <BadgeBoolean value={rollback.disableHooks ?? false} />
+      </DrawerItem>
+    </div>
+  );
+});
+
+export const HelmReleaseTest = observer(({ test }: { test?: Test }) => {
+  if (!test) return null;
+
+  return (
+    <div>
+      <DrawerTitle>Test</DrawerTitle>
+      <DrawerItem name="Enabled">
+        <BadgeBoolean value={test.enable ?? false} />
+      </DrawerItem>
+      <DrawerItem name="Timeout" hidden={!test.timeout}>
+        {test.timeout}
+      </DrawerItem>
+      <DrawerItem name="Ignore Failures" hidden={!test.ignoreFailures}>
+        <BadgeBoolean value={test.ignoreFailures ?? false} />
+      </DrawerItem>
+      <DrawerItem name="Filters" hidden={!test.filters?.length}>
+        {test.filters?.map((filter) => (
+          <DrawerItem name={filter.name} key={filter.name}>
+            {filter.exclude ? "exclude" : "run"}
+          </DrawerItem>
+        ))}
+      </DrawerItem>
+    </div>
+  );
+});
+
+export const HelmReleaseUninstall = observer(({ uninstall }: { uninstall?: Uninstall }) => {
+  if (!uninstall) return null;
+
+  return (
+    <div>
+      <DrawerTitle>Uninstall</DrawerTitle>
+      <DrawerItem name="Timeout" hidden={!uninstall.timeout}>
+        {uninstall.timeout}
+      </DrawerItem>
+      <DrawerItem name="Deletion Propagation">{uninstall.deletionPropagation ?? "background"}</DrawerItem>
+      <DrawerItem name="Keep History" hidden={!uninstall.keepHistory}>
+        <BadgeBoolean value={uninstall.keepHistory ?? false} />
+      </DrawerItem>
+      <DrawerItem name="Disable Wait" hidden={!uninstall.disableWait}>
+        <BadgeBoolean value={uninstall.disableWait ?? false} />
+      </DrawerItem>
+      <DrawerItem name="Disable Hooks" hidden={!uninstall.disableHooks}>
+        <BadgeBoolean value={uninstall.disableHooks ?? false} />
       </DrawerItem>
     </div>
   );

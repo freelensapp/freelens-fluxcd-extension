@@ -338,4 +338,69 @@ describe("HelmReleaseDetails", () => {
       ]);
     });
   });
+
+  describe("Test and Uninstall", () => {
+    it("shows no section of test or uninstall that the spec does not set", () => {
+      renderDetails(helmReleaseWith({}));
+
+      expect(sectionItems("Test")).toBeUndefined();
+      expect(sectionItems("Uninstall")).toBeUndefined();
+    });
+
+    it("shows the fields of test, with each filter", () => {
+      renderDetails(
+        helmReleaseWith({
+          test: {
+            enable: true,
+            timeout: "3m",
+            ignoreFailures: true,
+            filters: [{ name: "smoke" }, { name: "slow", exclude: true }],
+          },
+        }),
+      );
+
+      expect(sectionItems("Test")).toEqual([
+        "Enabled: True",
+        "Timeout: 3m",
+        "Ignore Failures: True",
+        "Filters: smoke: runslow: exclude",
+        "smoke: run",
+        "slow: exclude",
+      ]);
+    });
+
+    it("shows test as disabled by default, and no filters without any", () => {
+      renderDetails(helmReleaseWith({ test: { filters: [] } }));
+
+      expect(sectionItems("Test")).toEqual(["Enabled: False"]);
+    });
+
+    it("shows the set fields of uninstall", () => {
+      renderDetails(
+        helmReleaseWith({
+          uninstall: {
+            timeout: "2m",
+            disableHooks: true,
+            keepHistory: true,
+            disableWait: true,
+            deletionPropagation: "foreground",
+          },
+        }),
+      );
+
+      expect(sectionItems("Uninstall")).toEqual([
+        "Timeout: 2m",
+        "Deletion Propagation: foreground",
+        "Keep History: True",
+        "Disable Wait: True",
+        "Disable Hooks: True",
+      ]);
+    });
+
+    it("shows the default deletion propagation of uninstall", () => {
+      renderDetails(helmReleaseWith({ uninstall: {} }));
+
+      expect(sectionItems("Uninstall")).toEqual(["Deletion Propagation: background"]);
+    });
+  });
 });

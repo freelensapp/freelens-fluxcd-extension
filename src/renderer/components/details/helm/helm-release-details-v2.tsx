@@ -16,7 +16,13 @@ import { SpecPatches } from "../../spec-patches";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../status-conditions";
 import { StatusInventory } from "../../status-inventory";
 import { YamlDump } from "../../yaml-dump";
-import { HelmReleaseInstall, HelmReleaseRollback, HelmReleaseUpgrade } from "./helm-release-actions-v2";
+import {
+  HelmReleaseInstall,
+  HelmReleaseRollback,
+  HelmReleaseTest,
+  HelmReleaseUninstall,
+  HelmReleaseUpgrade,
+} from "./helm-release-actions-v2";
 import styles from "./helm-release-details.module.scss";
 
 import type { Patch } from "../../../k8s/core/types";
@@ -394,6 +400,8 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <HelmReleaseInstall install={object.spec.install} />
           <HelmReleaseUpgrade upgrade={object.spec.upgrade} />
           <HelmReleaseRollback rollback={object.spec.rollback} />
+          <HelmReleaseTest test={object.spec.test} />
+          <HelmReleaseUninstall uninstall={object.spec.uninstall} />
 
           {object.status?.history && (
             <div className={styles.history}>
