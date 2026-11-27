@@ -55,6 +55,9 @@ const helmReleaseWith = (spec: Record<string, unknown>, status?: Record<string, 
     status,
   } as unknown as ConstructorParameters<typeof HelmRelease>[0]);
 
+/** The text of every drawer item of the panel, nested ones included. */
+const drawerItems = () => screen.getAllByTestId("drawer-item").map((item) => item.textContent);
+
 /** The text of the drawer items of a section, by its title, or `undefined` without the section. */
 const sectionItems = (title: string) => {
   const section = screen.queryAllByText(title, { exact: true }).at(0)?.parentElement;
@@ -401,6 +404,74 @@ describe("HelmReleaseDetails", () => {
       renderDetails(helmReleaseWith({ uninstall: {} }));
 
       expect(sectionItems("Uninstall")).toEqual(["Deletion Propagation: background"]);
+    });
+  });
+
+  describe("Client and drift", () => {
+    it("shows the Secret of the kubeConfig with its key, and the persistent client", () => {
+      renderDetails(
+        helmReleaseWith({
+          kubeConfig: { secretRef: { name: "remote-kubeconfig", key: "value.yaml" } },
+          persistentClient: false,
+        }),
+      );
+
+      expect(drawerItems()).toEqual(
+        expect.arrayContaining([
+          "Kube Config: remote-kubeconfig",
+          "Kube Config Key: value.yaml",
+          "Persistent Client: False",
+        ]),
+      );
+    });
+
+    it("shows the default key of the kubeConfig Secret, and the ConfigMap of a kubeConfig", () => {
+      renderDetails(helmReleaseWith({ kubeConfig: { secretRef: { name: "remote-kubeconfig" } } }));
+      expect(drawerItems()).toContain("Kube Config Key: value");
+      cleanup();
+
+      renderDetails(helmReleaseWith({ kubeConfig: { configMapRef: { name: "remote-cluster" } } }));
+      const items = drawerItems();
+      expect(items).toContain("Kube Config: remote-cluster");
+      expect(items.filter((item) => item?.startsWith("Kube Config Key"))).toEqual([]);
+    });
+
+    it("hides the kubeConfig and the persistent client without them", () => {
+      renderDetails(helmReleaseWith({}));
+
+      const items = drawerItems();
+      expect(items.filter((item) => item?.startsWith("Kube Config"))).toEqual([]);
+      expect(items.filter((item) => item?.startsWith("Persistent Client"))).toEqual([]);
+    });
+
+    it("shows each ignore rule of drift detection with its paths and target", () => {
+      renderDetails(
+        helmReleaseWith({
+          driftDetection: {
+            mode: "enabled",
+            ignore: [
+              { paths: ["/spec/replicas"], target: { kind: "Deployment", name: "podinfo" } },
+              { paths: ["/metadata/annotations", "/metadata/labels"] },
+            ],
+          },
+        }),
+      );
+
+      expect(drawerItems()).toContain("Drift Detection: enabled");
+      expect(sectionItems("Drift Detection Ignore Rules")).toEqual([
+        "Paths: /spec/replicas",
+        "Target: Kind: DeploymentName: podinfo",
+        "Kind: Deployment",
+        "Name: podinfo",
+        "Paths: /metadata/annotations, /metadata/labels",
+        "Target: all objects",
+      ]);
+    });
+
+    it("shows no ignore rules of drift detection without any", () => {
+      renderDetails(helmReleaseWith({ driftDetection: { mode: "warn" } }));
+
+      expect(sectionItems("Drift Detection Ignore Rules")).toBeUndefined();
     });
   });
 });

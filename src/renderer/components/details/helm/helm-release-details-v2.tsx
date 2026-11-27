@@ -42,8 +42,10 @@ const {
     DrawerTitle,
     DurationAbsoluteTimestamp,
     Icon,
+    LinkToConfigMap,
     LinkToNamespace,
     LinkToObject,
+    LinkToSecret,
     LinkToServiceAccount,
     MaybeLink,
     MonacoEditor,
@@ -116,6 +118,9 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
       (chartOciRef?.tag && `tag: ${chartOciRef.tag}`) ||
       undefined;
 
+    const kubeConfigSecretRef = object.spec.kubeConfig?.secretRef;
+    const kubeConfigConfigMapName = object.spec.kubeConfig?.configMapRef?.name;
+
     const images = object.spec.postRenderers
       ?.filter((a) => a?.kustomize)
       ?.map((a) => a?.kustomize)
@@ -178,6 +183,17 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           </DrawerItem>
           <DrawerItem name="Service Account" hidden={!object.spec.serviceAccountName}>
             <LinkToServiceAccount name={object.spec.serviceAccountName} namespace={namespace} />
+          </DrawerItem>
+          <DrawerItem name="Kube Config" hidden={!kubeConfigSecretRef && !kubeConfigConfigMapName}>
+            {kubeConfigSecretRef && <LinkToSecret name={kubeConfigSecretRef.name} namespace={namespace} />}
+            {kubeConfigConfigMapName && <LinkToConfigMap name={kubeConfigConfigMapName} namespace={namespace} />}
+          </DrawerItem>
+          {/* The key of the Secret defaults to `value` (`meta.KubeConfigReference`). */}
+          <DrawerItem name="Kube Config Key" hidden={!kubeConfigSecretRef}>
+            {kubeConfigSecretRef?.key ?? "value"}
+          </DrawerItem>
+          <DrawerItem name="Persistent Client" hidden={object.spec.persistentClient === undefined}>
+            <BadgeBoolean value={object.spec.persistentClient ?? true} />
           </DrawerItem>
           <DrawerItem name="Storage Namespace" hidden={!object.spec.storageNamespace}>
             <LinkToNamespace namespace={object.spec.storageNamespace} />
@@ -391,6 +407,50 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                   </DrawerItem>
                   <DrawerItem name="Failed" hidden={!healthCheck.failed}>
                     <YamlDump data={healthCheck.failed} />
+                  </DrawerItem>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {object.spec.driftDetection?.ignore && (
+            <div>
+              <DrawerTitle>Drift Detection Ignore Rules</DrawerTitle>
+              {object.spec.driftDetection.ignore.map((rule, index) => (
+                <div key={Renderer.Util.createReactKey(rule)}>
+                  <div className={styles.title}>
+                    <Icon small material="list" /> {index + 1}
+                  </div>
+                  <DrawerItem name="Paths">{rule.paths.join(", ")}</DrawerItem>
+                  {/* Without a target, the paths are ignored for every object of the release. */}
+                  <DrawerItem name="Target">
+                    {rule.target ? (
+                      <>
+                        <DrawerItem name="Group" hidden={!rule.target.group}>
+                          {rule.target.group}
+                        </DrawerItem>
+                        <DrawerItem name="Version" hidden={!rule.target.version}>
+                          {rule.target.version}
+                        </DrawerItem>
+                        <DrawerItem name="Kind" hidden={!rule.target.kind}>
+                          {rule.target.kind}
+                        </DrawerItem>
+                        <DrawerItem name="Name" hidden={!rule.target.name}>
+                          {rule.target.name}
+                        </DrawerItem>
+                        <DrawerItem name="Namespace" hidden={!rule.target.namespace}>
+                          {rule.target.namespace}
+                        </DrawerItem>
+                        <DrawerItem name="Label Selector" hidden={!rule.target.labelSelector}>
+                          {rule.target.labelSelector}
+                        </DrawerItem>
+                        <DrawerItem name="Annotation Selector" hidden={!rule.target.annotationSelector}>
+                          {rule.target.annotationSelector}
+                        </DrawerItem>
+                      </>
+                    ) : (
+                      "all objects"
+                    )}
                   </DrawerItem>
                 </div>
               ))}
