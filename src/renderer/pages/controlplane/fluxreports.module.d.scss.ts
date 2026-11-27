@@ -3,9 +3,8 @@ declare const classNames: {
   readonly version: "version";
   readonly failing: "failing";
   readonly running: "running";
-  readonly suspendedObjects: "suspendedObjects";
-  readonly lastUpdated: "lastUpdated";
   readonly suspended: "suspended";
+  readonly lastUpdated: "lastUpdated";
   readonly condition: "condition";
   readonly status: "status";
   readonly age: "age";

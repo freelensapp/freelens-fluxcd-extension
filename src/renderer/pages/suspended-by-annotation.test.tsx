@@ -25,7 +25,8 @@ afterEach(() => {
 });
 
 // The kinds without `spec.suspend`, each with its page, its reconcile annotation and the annotation of the other
-// controller, and whether the page has a Suspended column.
+// controller, and whether the page has a Suspended column. The Suspended column of FluxReport is the number of
+// objects that its reconcilers count as suspended, and its Condition column shows a suspended report.
 const pages: {
   kubeObjectClass: typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>;
   Page: React.ComponentType<{ extension: Renderer.LensExtension }>;
@@ -45,7 +46,7 @@ const pages: {
     Page: FluxReportsPage,
     annotation: fluxOperatorReconcileAnnotation,
     otherAnnotation: sourceWatcherReconcileAnnotation,
-    suspendedColumn: true,
+    suspendedColumn: false,
   },
   {
     kubeObjectClass: ResourceSet,

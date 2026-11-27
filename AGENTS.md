@@ -313,9 +313,10 @@ shows `True` or `False` as the host's `BadgeBoolean`, with its colors
 inverted: `False` in the color of success, `True` in that of an error. It
 takes them from `getBooleanText` and `getBooleanClass` of the host, which
 Freelens v2.0.0 publishes, so that it follows the theme. The Suspend/Resume
-item names the action, not the state, and keeps its name. The FluxReport page
-has a `Suspended Objects` column too, the number of objects that its
-reconcilers count as suspended.
+item names the action, not the state, and keeps its name. The FluxReport list
+page has no such column: its `Suspended` column is the number of objects that
+its reconcilers count as suspended, and its `Condition` column already shows
+a suspended report. Its details panel has the `Suspended` item.
 
 `getStats` counts an object without `status.conditions` as Unknown, except
 an object with nothing to reconcile, which is Ready unless it is suspended:
