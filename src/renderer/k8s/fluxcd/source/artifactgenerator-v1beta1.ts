@@ -21,13 +21,13 @@ export interface SourceReference {
   kind: SourceReferenceKind;
 }
 
-export type CopyStrategy = "Overwrite" | "Merge" | "Extract";
+export type CopyOperationStrategy = "Overwrite" | "Merge" | "Extract";
 
 export interface CopyOperation {
   from: string;
   to: string;
   exclude?: string[];
-  strategy?: CopyStrategy;
+  strategy?: CopyOperationStrategy;
   optional?: boolean;
 }
 
