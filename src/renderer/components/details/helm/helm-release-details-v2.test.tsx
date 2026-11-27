@@ -670,4 +670,112 @@ describe("HelmReleaseDetails", () => {
       expect(names.filter((name) => statusItemNames.includes(name ?? ""))).toEqual([]);
     });
   });
+
+  describe("History", () => {
+    const snapshot = (fields: Record<string, unknown>) => ({
+      digest: "sha256:aaaa",
+      name: "podinfo",
+      namespace: "fluxcd-test",
+      status: "deployed",
+      chartName: "podinfo",
+      chartVersion: "6.5.4",
+      appVersion: "6.5.4",
+      configDigest: "sha256:bbbb",
+      firstDeployed: "2026-11-25T10:00:00Z",
+      lastDeployed: "2026-11-25T10:00:00Z",
+      ...fields,
+    });
+
+    const historyRows = () =>
+      screen.getAllByRole("row").map((row) =>
+        within(row)
+          .getAllByRole("cell")
+          .map((cell) => cell.textContent),
+      );
+
+    it("shows the action of each snapshot, and no column of deleted or OCI digest when none has it", () => {
+      renderDetails(
+        helmReleaseWith(
+          {},
+          {
+            history: [
+              snapshot({ version: 2, action: "upgrade", configDigest: "sha256:2" }),
+              snapshot({ version: 1, action: "install", configDigest: "sha256:1", status: "superseded" }),
+            ],
+          },
+        ),
+      );
+
+      expect(screen.getByText("Action")).toBeTruthy();
+      expect(screen.queryByText("Deleted")).toBeNull();
+      expect(screen.queryByText("OCI Digest")).toBeNull();
+      expect(historyRows()).toEqual([
+        ["2", "2026-11-25T10:00:00Z", "6.5.4", "6.5.4", "upgrade", "deployed"],
+        ["1", "2026-11-25T10:00:00Z", "6.5.4", "6.5.4", "install", "superseded"],
+      ]);
+      expect(sectionItems("Test Hooks")).toBeUndefined();
+    });
+
+    it("shows the columns of deleted and OCI digest when a snapshot has them", () => {
+      renderDetails(
+        helmReleaseWith(
+          {},
+          {
+            history: [
+              snapshot({ version: 2, action: "install", configDigest: "sha256:2", ociDigest: "sha256:cccc" }),
+              snapshot({
+                version: 1,
+                action: "uninstall",
+                configDigest: "sha256:1",
+                status: "uninstalled",
+                deleted: "2026-11-25T11:00:00Z",
+              }),
+            ],
+          },
+        ),
+      );
+
+      expect(screen.getByText("Deleted")).toBeTruthy();
+      expect(screen.getByText("OCI Digest")).toBeTruthy();
+      expect(historyRows()).toEqual([
+        ["2", "2026-11-25T10:00:00Z", "6.5.4", "6.5.4", "install", "deployed", "", "sha256:cccc"],
+        ["1", "2026-11-25T10:00:00Z", "6.5.4", "6.5.4", "uninstall", "uninstalled", "2026-11-25T11:00:00Z", ""],
+      ]);
+    });
+
+    it("shows the test hooks of the snapshots that have them", () => {
+      renderDetails(
+        helmReleaseWith(
+          {},
+          {
+            history: [
+              snapshot({
+                version: 2,
+                configDigest: "sha256:2",
+                testHooks: {
+                  "podinfo-grpc-test": {
+                    lastStarted: "2026-11-25T10:01:00Z",
+                    lastCompleted: "2026-11-25T10:02:00Z",
+                    phase: "Succeeded",
+                  },
+                  "podinfo-jwt-test": null,
+                },
+              }),
+              snapshot({ version: 1, configDigest: "sha256:1", testHooks: {} }),
+            ],
+          },
+        ),
+      );
+
+      expect(screen.getByText("podinfo-grpc-test", { exact: false })).toBeTruthy();
+      expect(screen.getByText("podinfo-jwt-test", { exact: false })).toBeTruthy();
+      expect(sectionItems("Test Hooks")).toEqual([
+        "Release Version: 2",
+        "Phase: Succeeded",
+        "Last Started: 2026-11-25T10:01:00Z",
+        "Last Completed: 2026-11-25T10:02:00Z",
+        "Release Version: 2",
+      ]);
+    });
+  });
 });

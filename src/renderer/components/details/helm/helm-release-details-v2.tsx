@@ -64,7 +64,10 @@ const historySortable = {
   lastDeployed: (snapshot: Snapshot) => snapshot.lastDeployed,
   chartVersion: (snapshot: Snapshot) => snapshot.chartVersion,
   appVersion: (snapshot: Snapshot) => snapshot.appVersion,
+  action: (snapshot: Snapshot) => snapshot.action,
   status: (snapshot: Snapshot) => snapshot.status,
+  deleted: (snapshot: Snapshot) => snapshot.deleted,
+  ociDigest: (snapshot: Snapshot) => snapshot.ociDigest,
 };
 
 const historySortByNames = createEnumFromKeys(historySortable);
@@ -121,6 +124,13 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
 
     const kubeConfigSecretRef = object.spec.kubeConfig?.secretRef;
     const kubeConfigConfigMapName = object.spec.kubeConfig?.configMapRef?.name;
+
+    // Columns of the History table that only some snapshots have, shown when one has them.
+    const historyHasDeleted = object.status?.history?.some((snapshot) => snapshot.deleted);
+    const historyHasOciDigest = object.status?.history?.some((snapshot) => snapshot.ociDigest);
+    const historyTestHooks = object.status?.history?.filter(
+      (snapshot) => snapshot.testHooks && Object.keys(snapshot.testHooks).length,
+    );
 
     const images = object.spec.postRenderers
       ?.filter((a) => a?.kustomize)
@@ -535,9 +545,14 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                   <TableCell sortBy={historySortByNames.lastDeployed}>Last Deployed</TableCell>
                   <TableCell sortBy={historySortByNames.chartVersion}>Chart Version</TableCell>
                   <TableCell sortBy={historySortByNames.appVersion}>App Version</TableCell>
+                  <TableCell sortBy={historySortByNames.action} className={styles.action}>
+                    Action
+                  </TableCell>
                   <TableCell sortBy={historySortByNames.status} className={styles.status}>
                     Status
                   </TableCell>
+                  {historyHasDeleted && <TableCell sortBy={historySortByNames.deleted}>Deleted</TableCell>}
+                  {historyHasOciDigest && <TableCell sortBy={historySortByNames.ociDigest}>OCI Digest</TableCell>}
                 </TableHead>
                 {object.status?.history?.map((snapshot) => (
                   <TableRow key={`${snapshot.digest}-${snapshot.configDigest}`} sortItem={snapshot} nowrap>
@@ -549,12 +564,44 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
                     <TableCell>
                       <WithTooltip>{snapshot.appVersion}</WithTooltip>
                     </TableCell>
+                    <TableCell className={styles.action}>{snapshot.action}</TableCell>
                     <TableCell className={styles.status}>{snapshot.status}</TableCell>
+                    {historyHasDeleted && <TableCell>{snapshot.deleted}</TableCell>}
+                    {historyHasOciDigest && (
+                      <TableCell>
+                        <WithTooltip>{snapshot.ociDigest}</WithTooltip>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </Table>
             </div>
           )}
+
+          {historyTestHooks?.length ? (
+            <div>
+              <DrawerTitle>Test Hooks</DrawerTitle>
+              {historyTestHooks.map((snapshot) =>
+                Object.entries(snapshot.testHooks ?? {}).map(([name, hook]) => (
+                  <div key={`${snapshot.version}-${name}`}>
+                    <div className={styles.title}>
+                      <Icon small material="list" /> {name}
+                    </div>
+                    <DrawerItem name="Release Version">{snapshot.version}</DrawerItem>
+                    <DrawerItem name="Phase" hidden={!hook?.phase}>
+                      {hook?.phase}
+                    </DrawerItem>
+                    <DrawerItem name="Last Started" hidden={!hook?.lastStarted}>
+                      <DurationAbsoluteTimestamp timestamp={hook?.lastStarted} />
+                    </DrawerItem>
+                    <DrawerItem name="Last Completed" hidden={!hook?.lastCompleted}>
+                      <DurationAbsoluteTimestamp timestamp={hook?.lastCompleted} />
+                    </DrawerItem>
+                  </div>
+                )),
+              )}
+            </div>
+          ) : null}
 
           <StatusInventory inventory={object.status?.inventory} object={object} />
         </div>

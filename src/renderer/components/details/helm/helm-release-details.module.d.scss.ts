@@ -4,6 +4,7 @@ declare const classNames: {
   readonly editor: "editor";
   readonly history: "history";
   readonly version: "version";
+  readonly action: "action";
   readonly status: "status";
 };
 export = classNames;
