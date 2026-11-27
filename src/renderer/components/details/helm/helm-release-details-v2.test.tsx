@@ -474,4 +474,140 @@ describe("HelmReleaseDetails", () => {
       expect(sectionItems("Drift Detection Ignore Rules")).toBeUndefined();
     });
   });
+
+  describe("Chart template", () => {
+    const helmChartTemplate = (spec: Record<string, unknown>, metadata?: Record<string, unknown>) =>
+      helmReleaseWith({
+        chartRef: undefined,
+        chart: {
+          metadata,
+          spec: { chart: "podinfo", sourceRef: { kind: "HelmRepository", name: "podinfo" }, ...spec },
+        },
+      });
+
+    const ociRepositoryTemplate = (spec: Record<string, unknown>) =>
+      helmReleaseWith({
+        chartRef: undefined,
+        chart: { kind: "OCIRepository", spec: { url: "oci://ghcr.io/stefanprodan/charts/podinfo", ...spec } },
+      });
+
+    it("shows the labels, annotations and reconcile strategy of a HelmChart template", () => {
+      renderDetails(
+        helmChartTemplate(
+          { reconcileStrategy: "Revision" },
+          { labels: { team: "a" }, annotations: { "example.com/owner": "b" } },
+        ),
+      );
+
+      expect(drawerItems()).toEqual(
+        expect.arrayContaining([
+          "Chart Reconcile Strategy: Revision",
+          "Chart Labels: team=a",
+          "Chart Annotations: example.com/owner=b",
+        ]),
+      );
+      expect(sectionItems("OCI Repository Template")).toBeUndefined();
+      expect(sectionItems("Chart Verification")).toBeUndefined();
+    });
+
+    it("shows the default reconcile strategy of a HelmChart template, and no labels or annotations", () => {
+      renderDetails(helmChartTemplate({}));
+
+      const items = drawerItems();
+      expect(items).toContain("Chart Reconcile Strategy: ChartVersion");
+      expect(items.filter((item) => item?.startsWith("Chart Labels"))).toEqual([]);
+      expect(items.filter((item) => item?.startsWith("Chart Annotations"))).toEqual([]);
+    });
+
+    it("shows no reconcile strategy without a chart template", () => {
+      renderDetails(helmReleaseWith({}));
+
+      expect(drawerItems().filter((item) => item?.startsWith("Chart Reconcile Strategy"))).toEqual([]);
+    });
+
+    it("shows only the provider and the Secret of the verification of a HelmChart template", () => {
+      renderDetails(
+        helmChartTemplate({
+          verify: {
+            provider: "notation",
+            secretRef: { name: "keys" },
+            trustedRootSecretRef: { name: "root" },
+            matchOIDCIdentity: [{ issuer: "issuer", subject: "subject" }],
+          },
+        }),
+      );
+
+      expect(sectionItems("Chart Verification")).toEqual(["Provider: notation", "Trusted Public Keys: keys"]);
+    });
+
+    it("shows the fields of an OCIRepository template", () => {
+      renderDetails(
+        ociRepositoryTemplate({
+          ref: { semver: ">=6.0.0", semverFilter: ".*-rc.*" },
+          layerSelector: { mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip", operation: "extract" },
+          provider: "aws",
+          secretRef: { name: "registry" },
+          serviceAccountName: "puller",
+          certSecretRef: { name: "tls" },
+          proxySecretRef: { name: "proxy" },
+          timeout: "2m",
+          ignore: "/*\n!/chart",
+          insecure: true,
+          suspend: true,
+          verify: {
+            provider: "cosign",
+            secretRef: { name: "keys" },
+            trustedRootSecretRef: { name: "root" },
+            matchOIDCIdentity: [{ issuer: "issuer", subject: "subject" }],
+          },
+        }),
+      );
+
+      expect(sectionItems("OCI Repository Template")).toEqual([
+        "Resumed: False",
+        "Timeout: 2m",
+        "Authentication Provider: aws",
+        "Registry Login Credentials: registry",
+        "Image Pull Service Account: puller",
+        "TLS Certificate: tls",
+        "Proxy Configuration: proxy",
+        "Insecure Container Registry: True",
+        "SemVer Filter: .*-rc.*",
+        "Layer Selector: Media type: application/vnd.cncf.helm.chart.content.v1.tar+gzipOperation: extract",
+        "Media type: application/vnd.cncf.helm.chart.content.v1.tar+gzip",
+        "Operation: extract",
+        "Source Ignore: /*\n!/chart",
+      ]);
+      expect(sectionItems("Chart Verification")).toEqual([
+        "Provider: cosign",
+        "Trusted Public Keys: keys",
+        "Trusted Root: root",
+        "OIDC Identity: MatchIssuer: issuerSubject: subject",
+        "Issuer: issuer",
+        "Subject: subject",
+      ]);
+      expect(drawerItems().filter((item) => item?.startsWith("Chart Reconcile Strategy"))).toEqual([]);
+    });
+
+    it("shows the defaults of an OCIRepository template, with the Helm chart layer copied", () => {
+      renderDetails(ociRepositoryTemplate({}));
+
+      expect(sectionItems("OCI Repository Template")).toEqual([
+        "Resumed: True",
+        "Timeout: 60s",
+        "Authentication Provider: generic",
+        "Layer Selector: Media type: application/vnd.cncf.helm.chart.content.v1.tar+gzipOperation: copy",
+        "Media type: application/vnd.cncf.helm.chart.content.v1.tar+gzip",
+        "Operation: copy",
+      ]);
+    });
+
+    it("shows the operation of a layer selector without one as extract", () => {
+      renderDetails(ociRepositoryTemplate({ layerSelector: { mediaType: "application/x-tar" } }));
+
+      expect(sectionItems("OCI Repository Template")).toEqual(
+        expect.arrayContaining(["Media type: application/x-tar", "Operation: extract"]),
+      );
+    });
+  });
 });

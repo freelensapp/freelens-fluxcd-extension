@@ -23,6 +23,7 @@ import {
   HelmReleaseUninstall,
   HelmReleaseUpgrade,
 } from "./helm-release-actions-v2";
+import { HelmReleaseChartVerification, HelmReleaseOCIRepositoryTemplate } from "./helm-release-chart-template-v2";
 import styles from "./helm-release-details.module.scss";
 
 import type { Patch } from "../../../k8s/core/types";
@@ -226,6 +227,20 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Ignore Missing Values Files" hidden={!object.spec.chart?.spec.ignoreMissingValuesFiles}>
             <BadgeBoolean value={object.spec.chart?.spec.ignoreMissingValuesFiles ?? false} />
           </DrawerItem>
+          {/* `ChartVersion` by default; an `OCIRepository` template does not have it. */}
+          <DrawerItem name="Chart Reconcile Strategy" hidden={chartTemplateKind !== "HelmChart"}>
+            {object.spec.chart?.spec.reconcileStrategy ?? "ChartVersion"}
+          </DrawerItem>
+          <DrawerItemLabels
+            name="Chart Labels"
+            labels={object.spec.chart?.metadata?.labels ?? {}}
+            hidden={!object.spec.chart?.metadata?.labels}
+          />
+          <DrawerItemLabels
+            name="Chart Annotations"
+            labels={object.spec.chart?.metadata?.annotations ?? {}}
+            hidden={!object.spec.chart?.metadata?.annotations}
+          />
           <DrawerItem name="Source">
             <MaybeLink to={getMaybeDetailsUrl(HelmRelease.getSourceRefUrl(object))} onClick={stopPropagation}>
               {HelmRelease.getSourceRefText(object)}
@@ -240,6 +255,9 @@ export const HelmReleaseDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
           <DrawerItem name="Last Message" hidden={!object.status?.conditions?.[0].message}>
             {object.status?.conditions?.[0].message}
           </DrawerItem>
+
+          <HelmReleaseOCIRepositoryTemplate object={object} />
+          <HelmReleaseChartVerification object={object} />
 
           {object.spec.dependsOn && (
             <div>
