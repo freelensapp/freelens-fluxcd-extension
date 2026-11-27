@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { BadgeSuspended } from "../../components/badge-suspended";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import {
   ResourceSetInputProvider,
@@ -25,7 +24,6 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   type: (object: KubeObject) => object.spec?.type,
   url: (object: KubeObject) => object.spec?.url,
-  suspended: (object: KubeObject) => String(isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   condition: (object: KubeObject) =>
     getConditionText(object.status?.conditions, isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   status: (object: KubeObject) => getConditionText(object.status?.conditions),
@@ -37,7 +35,6 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Namespace", sortBy: "namespace" },
   { title: "Type", sortBy: "type", className: styles.type },
   { title: "URL", sortBy: "url", className: styles.url },
-  { title: "Suspended", sortBy: "suspended", className: styles.suspended },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -65,7 +62,6 @@ export const ResourceSetInputProvidersPage = observer((props: ResourceSetInputPr
           <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
           <WithTooltip>{object.spec?.type}</WithTooltip>,
           <WithTooltip>{object.spec?.url}</WithTooltip>,
-          <BadgeSuspended value={isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
           <Badge
             className={getConditionClass(
               object.status?.conditions,

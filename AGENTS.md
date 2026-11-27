@@ -299,24 +299,26 @@ Operator kinds, `source.extensions.fluxcd.io/reconcile`
 The Overview chart and the condition badge show an object as suspended by
 its `spec.suspend`, the `suspend` argument of `getConditionText` and
 `getConditionClass`. For a kind suspended by an annotation, they, the
-Suspended column and item and the Suspend/Resume item read it through
+Suspended item and the Suspend/Resume item read it through
 `isReconcileDisabled` (`src/renderer/k8s/fluxcd/utils.ts`) with the annotation
 of the kind: the object is suspended when the value, lowercased, is
 `disabled`, as `IsDisabled` of source-watcher and of the Flux Operator tells
 it. `getStats` of the Overview chart maps each such kind to its annotation.
 
 The list pages and the details panels say whether an object is suspended as
-the `SUSPENDED` column of the `flux` CLI does: a `Suspended` column and a
-`Suspended` item, with `BadgeSuspended` (`src/renderer/components/badge-suspended.tsx`)
-of `spec.suspend`, `false` when unset, or of `isReconcileDisabled`. The badge
-shows `True` or `False` as the host's `BadgeBoolean`, with its colors
-inverted: `False` in the color of success, `True` in that of an error. It
-takes them from `getBooleanText` and `getBooleanClass` of the host, which
+the `SUSPENDED` column of the `flux` CLI does, with `BadgeSuspended`
+(`src/renderer/components/badge-suspended.tsx`). A kind with `spec.suspend`
+has a `Suspended` column on its list page and a `Suspended` item in its
+details panel, both of `spec.suspend`, `false` when unset. A kind suspended by
+an annotation has the `Suspended` item of `isReconcileDisabled` in its details
+panel and no such column on its list page, where its `Condition` column
+already shows a suspended object. The `Suspended` column of the FluxReport
+list page is the number of objects that its reconcilers count as suspended.
+The badge shows `True` or `False` as the host's `BadgeBoolean`, with its
+colors inverted: `False` in the color of success, `True` in that of an error.
+It takes them from `getBooleanText` and `getBooleanClass` of the host, which
 Freelens v2.0.0 publishes, so that it follows the theme. The Suspend/Resume
-item names the action, not the state, and keeps its name. The FluxReport list
-page has no such column: its `Suspended` column is the number of objects that
-its reconcilers count as suspended, and its `Condition` column already shows
-a suspended report. Its details panel has the `Suspended` item.
+item names the action, not the state, and keeps its name.
 
 `getStats` counts an object without `status.conditions` as Unknown, except
 an object with nothing to reconcile, which is Ready unless it is suspended:

@@ -1,6 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
-import { BadgeSuspended } from "../../components/badge-suspended";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { FluxInstance, type FluxInstanceApi } from "../../k8s/fluxcd/controlplane/fluxinstance-v1";
 import { fluxOperatorReconcileAnnotation } from "../../k8s/fluxcd/controlplane/types";
@@ -21,7 +20,6 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   revision: (object: KubeObject) => object.status?.lastAttemptedRevision,
-  suspended: (object: KubeObject) => String(isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   condition: (object: KubeObject) =>
     getConditionText(object.status?.conditions, isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
@@ -32,7 +30,6 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
   { title: "Revision", sortBy: "revision", className: styles.revision },
-  { title: "Suspended", sortBy: "suspended", className: styles.suspended },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -59,7 +56,6 @@ export const FluxInstancesPage = observer((props: FluxInstancesPageProps) => {
           <WithTooltip>{object.getName()}</WithTooltip>,
           <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
           <WithTooltip>{object.status?.lastAttemptedRevision || "N/A"}</WithTooltip>,
-          <BadgeSuspended value={isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
           <Badge
             label={getConditionText(
               object.status?.conditions,
