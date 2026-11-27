@@ -3,12 +3,13 @@ import * as MobxReact from "mobx-react";
 import React from "react";
 import { HelmChart } from "../../../k8s/fluxcd/source/helmchart-v1beta2";
 import { withServedApiVersion } from "../../../k8s/fluxcd/utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import { StatusArtifact } from "../../status-artifact";
 
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, LinkToObject },
+  Component: { DrawerItem, LinkToObject },
 } = Renderer;
 
 export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<HelmChart>> = observer((props) => {
@@ -16,8 +17,8 @@ export const HelmChartDetails: React.FC<Renderer.Component.KubeObjectDetailsProp
 
   return (
     <div>
-      <DrawerItem name="Resumed">
-        <BadgeBoolean value={!object.spec.suspend} />
+      <DrawerItem name="Suspended">
+        <BadgeSuspended value={object.spec.suspend ?? false} />
       </DrawerItem>
       <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
       <DrawerItem name="Chart">{object.spec.chart}</DrawerItem>

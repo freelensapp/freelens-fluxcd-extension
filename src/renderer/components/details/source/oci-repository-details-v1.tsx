@@ -3,6 +3,7 @@ import * as MobxReact from "mobx-react";
 import React from "react";
 import { OCIRepository } from "../../../k8s/fluxcd/source/ocirepository-v1";
 import { getHeight } from "../../../utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import { StatusArtifact } from "../../status-artifact";
 import styles from "./oci-repository-details.module.scss";
 
@@ -27,8 +28,8 @@ export const OCIRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetails
 
     return (
       <div>
-        <DrawerItem name="Resumed">
-          <BadgeBoolean value={!object.spec.suspend} />
+        <DrawerItem name="Suspended">
+          <BadgeSuspended value={object.spec.suspend ?? false} />
         </DrawerItem>
         <DrawerItem name="Last Handled Reconcile At" hidden={!object.status?.lastHandledReconcileAt}>
           <DurationAbsoluteTimestamp timestamp={object.status?.lastHandledReconcileAt} />

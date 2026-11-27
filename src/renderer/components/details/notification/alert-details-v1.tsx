@@ -3,11 +3,12 @@ import * as MobxReact from "mobx-react";
 import React from "react";
 import { Alert } from "../../../k8s/fluxcd/notification/alert-v1";
 import { withFluxKind, withServedApiVersion } from "../../../k8s/fluxcd/utils";
+import { BadgeSuspended } from "../../badge-suspended";
 
 const { observer } = MobxReact;
 
 const {
-  Component: { Badge, BadgeBoolean, DrawerItem, DrawerItemLabels, LinkToObject },
+  Component: { Badge, DrawerItem, DrawerItemLabels, LinkToObject },
 } = Renderer;
 
 export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Alert>> = observer((props) => {
@@ -15,8 +16,8 @@ export const AlertDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<Al
 
   return (
     <div>
-      <DrawerItem name="Resumed">
-        <BadgeBoolean value={!object.spec.suspend} />
+      <DrawerItem name="Suspended">
+        <BadgeSuspended value={object.spec.suspend ?? false} />
       </DrawerItem>
       <DrawerItem name="Event Severity">{object.spec.eventSeverity ?? "info"}</DrawerItem>
       <DrawerItem name="Event Sources">

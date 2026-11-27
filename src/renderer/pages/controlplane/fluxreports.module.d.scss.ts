@@ -5,7 +5,6 @@ declare const classNames: {
   readonly running: "running";
   readonly suspended: "suspended";
   readonly lastUpdated: "lastUpdated";
-  readonly enabled: "enabled";
   readonly condition: "condition";
   readonly status: "status";
   readonly age: "age";

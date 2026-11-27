@@ -3,7 +3,7 @@ declare const classNames: {
   readonly revision: "revision";
   readonly url: "url";
   readonly ref: "ref";
-  readonly resumed: "resumed";
+  readonly suspended: "suspended";
   readonly condition: "condition";
   readonly status: "status";
   readonly age: "age";

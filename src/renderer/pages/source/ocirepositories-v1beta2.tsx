@@ -1,5 +1,6 @@
 import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
+import { BadgeSuspended } from "../../components/badge-suspended";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { OCIRepository, type OCIRepositoryApi } from "../../k8s/fluxcd/source/ocirepository-v1beta2";
 import styles from "./ocirepositories.module.scss";
@@ -7,7 +8,7 @@ import styles from "./ocirepositories.module.scss";
 const { observer } = MobxReact;
 
 const {
-  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = OCIRepository;
@@ -18,7 +19,7 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   url: (object: KubeObject) => object.spec.url,
-  resumed: (object: KubeObject) => String(!object.spec.suspend),
+  suspended: (object: KubeObject) => String(object.spec.suspend ?? false),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   status: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -28,7 +29,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
   { title: "URL", sortBy: "url", className: styles.url },
-  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
+  { title: "Suspended", sortBy: "suspended", className: styles.suspended },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -55,7 +56,7 @@ export const OCIRepositoriesPage = observer((props: OCIRepositoriesPageProps) =>
           <WithTooltip>{object.getName()}</WithTooltip>,
           <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
           <WithTooltip>{object.spec.url}</WithTooltip>,
-          <BadgeBoolean value={!object.spec.suspend} />,
+          <BadgeSuspended value={object.spec.suspend ?? false} />,
           <Badge
             className={getConditionClass(object.status?.conditions, object.spec.suspend)}
             label={getConditionText(object.status?.conditions, object.spec.suspend)}

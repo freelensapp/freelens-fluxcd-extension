@@ -9,7 +9,7 @@ import styles from "./fluxinstances.module.scss";
 const { observer } = MobxReact;
 
 const {
-  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = FluxInstance;
@@ -20,7 +20,6 @@ const sortingCallbacks = {
   name: (object: KubeObject) => object.getName(),
   namespace: (object: KubeObject) => object.getNs(),
   revision: (object: KubeObject) => object.status?.lastAttemptedRevision,
-  enabled: (object: KubeObject) => String(!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   condition: (object: KubeObject) =>
     getConditionText(object.status?.conditions, isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   status: (object: KubeObject) => getStatusMessage(object.status?.conditions),
@@ -31,7 +30,6 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Name", sortBy: "name" },
   { title: "Namespace", sortBy: "namespace" },
   { title: "Revision", sortBy: "revision", className: styles.revision },
-  { title: "Enabled", sortBy: "enabled", className: styles.enabled },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -58,7 +56,6 @@ export const FluxInstancesPage = observer((props: FluxInstancesPageProps) => {
           <WithTooltip>{object.getName()}</WithTooltip>,
           <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
           <WithTooltip>{object.status?.lastAttemptedRevision || "N/A"}</WithTooltip>,
-          <BadgeBoolean value={!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
           <Badge
             label={getConditionText(
               object.status?.conditions,

@@ -3,11 +3,12 @@ import * as MobxReact from "mobx-react";
 import React from "react";
 import { ImagePolicy } from "../../../k8s/fluxcd/image/imagepolicy-v1";
 import { withFluxKind } from "../../../k8s/fluxcd/utils";
+import { BadgeSuspended } from "../../badge-suspended";
 
 const { observer } = MobxReact;
 
 const {
-  Component: { BadgeBoolean, DrawerItem, LinkToObject },
+  Component: { DrawerItem, LinkToObject },
 } = Renderer;
 
 export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsProps<ImagePolicy>> = observer(
@@ -17,8 +18,8 @@ export const ImagePolicyDetails: React.FC<Renderer.Component.KubeObjectDetailsPr
     return (
       <>
         <div>
-          <DrawerItem name="Resumed">
-            <BadgeBoolean value={!object.spec.suspend} />
+          <DrawerItem name="Suspended">
+            <BadgeSuspended value={object.spec.suspend ?? false} />
           </DrawerItem>
           <DrawerItem name="Image Repository">
             <LinkToObject objectRef={withFluxKind(object.spec.imageRepositoryRef, "ImageRepository")} object={object} />

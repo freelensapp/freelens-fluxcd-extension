@@ -4,6 +4,7 @@ import React from "react";
 import { fluxOperatorReconcileAnnotation } from "../../../k8s/fluxcd/controlplane/types";
 import { isReconcileDisabled } from "../../../k8s/fluxcd/utils";
 import { createEnumFromKeys } from "../../../utils";
+import { BadgeSuspended } from "../../badge-suspended";
 import { SpecPatches } from "../../spec-patches";
 import { StatusHistory } from "../../status-history";
 import { StatusInventory } from "../../status-inventory";
@@ -53,8 +54,8 @@ export const FluxInstanceDetails: React.FC<Renderer.Component.KubeObjectDetailsP
 
     return (
       <>
-        <DrawerItem name="Reconciliation Enabled">
-          <BadgeBoolean value={!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />
+        <DrawerItem name="Suspended">
+          <BadgeSuspended value={isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />
         </DrawerItem>
         <DrawerItem name="Reconciliation Interval">
           {object.metadata.annotations?.["fluxcd.controlplane.io/reconcileEvery"] ?? "1h (default)"}

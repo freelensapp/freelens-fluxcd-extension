@@ -25,48 +25,43 @@ afterEach(() => {
 });
 
 // The kinds without `spec.suspend`, each with its page, its reconcile annotation and the annotation of the other
-// controller, and whether the page has an Enabled column.
+// controller. Their pages have no Suspended badge column: the Condition column shows a suspended object. The
+// Suspended column of FluxReport is the number of objects that its reconcilers count as suspended.
 const pages: {
   kubeObjectClass: typeof Renderer.K8sApi.LensExtensionKubeObject<any, any, any>;
   Page: React.ComponentType<{ extension: Renderer.LensExtension }>;
   annotation: string;
   otherAnnotation: string;
-  enabledColumn: boolean;
 }[] = [
   {
     kubeObjectClass: FluxInstance,
     Page: FluxInstancesPage,
     annotation: fluxOperatorReconcileAnnotation,
     otherAnnotation: sourceWatcherReconcileAnnotation,
-    enabledColumn: true,
   },
   {
     kubeObjectClass: FluxReport,
     Page: FluxReportsPage,
     annotation: fluxOperatorReconcileAnnotation,
     otherAnnotation: sourceWatcherReconcileAnnotation,
-    enabledColumn: true,
   },
   {
     kubeObjectClass: ResourceSet,
     Page: ResourceSetsPage,
     annotation: fluxOperatorReconcileAnnotation,
     otherAnnotation: sourceWatcherReconcileAnnotation,
-    enabledColumn: true,
   },
   {
     kubeObjectClass: ResourceSetInputProvider,
     Page: ResourceSetInputProvidersPage,
     annotation: fluxOperatorReconcileAnnotation,
     otherAnnotation: sourceWatcherReconcileAnnotation,
-    enabledColumn: true,
   },
   {
     kubeObjectClass: ArtifactGenerator,
     Page: ArtifactGeneratorsPage,
     annotation: sourceWatcherReconcileAnnotation,
     otherAnnotation: fluxOperatorReconcileAnnotation,
-    enabledColumn: false,
   },
 ];
 
@@ -102,7 +97,8 @@ describe.each(pages)("the page of $kubeObjectClass.kind", (page) => {
 
     expect(screen.getByText("Suspended").className).toBe("info");
     expect(screen.queryByText("Ready")).toBeNull();
-    if (page.enabledColumn) expect(screen.getByText("False")).toBeTruthy();
+    expect(screen.queryByText("True")).toBeNull();
+    expect(screen.queryByText("False")).toBeNull();
   });
 
   it.each([undefined, "enabled", "Enabled"])(
@@ -112,7 +108,8 @@ describe.each(pages)("the page of $kubeObjectClass.kind", (page) => {
 
       expect(screen.getByText("Ready").className).toBe("success");
       expect(screen.queryByText("Suspended")).toBeNull();
-      if (page.enabledColumn) expect(screen.getByText("True")).toBeTruthy();
+      expect(screen.queryByText("False")).toBeNull();
+      expect(screen.queryByText("True")).toBeNull();
     },
   );
 
@@ -121,5 +118,7 @@ describe.each(pages)("the page of $kubeObjectClass.kind", (page) => {
 
     expect(screen.getByText("Ready").className).toBe("success");
     expect(screen.queryByText("Suspended")).toBeNull();
+    expect(screen.queryByText("False")).toBeNull();
+    expect(screen.queryByText("True")).toBeNull();
   });
 });

@@ -1,5 +1,6 @@
 import { Common, Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
+import { BadgeSuspended } from "../../components/badge-suspended";
 import { getConditionClass, getConditionText, getStatusMessage } from "../../components/status-conditions";
 import { HelmChart, type HelmChartApi } from "../../k8s/fluxcd/source/helmchart-v1";
 import { getRefUrl } from "../../k8s/fluxcd/utils";
@@ -13,7 +14,7 @@ const {
 } = Common;
 
 const {
-  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, MaybeLink, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = HelmChart;
@@ -27,7 +28,7 @@ const sortingCallbacks = {
   version: (object: KubeObject) => object.spec.version,
   sourceKind: (object: KubeObject) => object.spec.sourceRef.kind,
   sourceName: (object: KubeObject) => object.spec.sourceRef.name,
-  resumed: (object: KubeObject) => String(!object.spec.suspend),
+  suspended: (object: KubeObject) => String(object.spec.suspend ?? false),
   condition: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   status: (object: KubeObject) => getConditionText(object.status?.conditions, object.spec.suspend),
   age: (object: KubeObject) => object.getCreationTimestamp(),
@@ -40,7 +41,7 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Version", sortBy: "version", className: styles.version },
   { title: "Source Kind", sortBy: "sourceKind", className: styles.sourceKind },
   { title: "Source Name", sortBy: "sourceName", className: styles.sourceName },
-  { title: "Resumed", sortBy: "resumed", className: styles.resumed },
+  { title: "Suspended", sortBy: "suspended", className: styles.suspended },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -74,7 +75,7 @@ export const HelmChartsPage = observer((props: HelmChartsPageProps) => {
               {object.spec.sourceRef?.name}
             </MaybeLink>
           </WithTooltip>,
-          <BadgeBoolean value={!object.spec.suspend} />,
+          <BadgeSuspended value={object.spec.suspend ?? false} />,
           <Badge
             className={getConditionClass(object.status?.conditions, object.spec.suspend)}
             label={getConditionText(object.status?.conditions, object.spec.suspend)}

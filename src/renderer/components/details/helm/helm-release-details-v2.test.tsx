@@ -564,7 +564,7 @@ describe("HelmReleaseDetails", () => {
       );
 
       expect(sectionItems("OCI Repository Template")).toEqual([
-        "Resumed: False",
+        "Suspended: True",
         "Timeout: 2m",
         "Authentication Provider: aws",
         "Registry Login Credentials: registry",
@@ -593,7 +593,7 @@ describe("HelmReleaseDetails", () => {
       renderDetails(ociRepositoryTemplate({}));
 
       expect(sectionItems("OCI Repository Template")).toEqual([
-        "Resumed: True",
+        "Suspended: False",
         "Timeout: 60s",
         "Authentication Provider: generic",
         "Layer Selector: Media type: application/vnd.cncf.helm.chart.content.v1.tar+gzipOperation: copy",

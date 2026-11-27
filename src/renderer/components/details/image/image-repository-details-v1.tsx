@@ -2,6 +2,7 @@ import { Renderer } from "@freelensapp/extensions";
 import * as MobxReact from "mobx-react";
 import React from "react";
 import { ImageRepository } from "../../../k8s/fluxcd/image/imagerepository-v1";
+import { BadgeSuspended } from "../../badge-suspended";
 import { SpecAccessFrom } from "../../spec-access-from";
 
 const { observer } = MobxReact;
@@ -18,8 +19,8 @@ export const ImageRepositoryDetails: React.FC<Renderer.Component.KubeObjectDetai
     return (
       <>
         <div>
-          <DrawerItem name="Resumed">
-            <BadgeBoolean value={!object.spec.suspend} />
+          <DrawerItem name="Suspended">
+            <BadgeSuspended value={object.spec.suspend ?? false} />
           </DrawerItem>
           <DrawerItem name="Interval">{object.spec.interval}</DrawerItem>
           <DrawerItem name="Timeout">{object.spec.timeout ?? object.spec.interval}</DrawerItem>

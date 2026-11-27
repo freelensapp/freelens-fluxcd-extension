@@ -290,6 +290,10 @@ export const Renderer = {
     TableRow: tablePart("row"),
     // The host adds a tooltip to its children.
     WithTooltip: ({ children }: { children?: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+    // The text of the host's `BadgeBoolean`, and its class named after the value, where the host's is the CSS module
+    // class of the same name.
+    getBooleanText: (value?: boolean) => (value === true ? "True" : value === false ? "False" : "-"),
+    getBooleanClass: (value?: boolean) => String(value),
   },
   K8sApi: {
     LensExtensionKubeObject,

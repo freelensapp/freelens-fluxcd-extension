@@ -66,7 +66,9 @@ describe("AlertDetails v1", () => {
       alert([{ kind: "GitRepository", name: "*", matchLabels: { app: "podinfo", tier: "frontend" } }]),
     );
 
+    // The first badge is the one of the Suspended item.
     expect([...container.querySelectorAll("span")].map((badge) => badge.textContent)).toEqual([
+      "False",
       "GitRepository:*",
       "app=podinfo",
       "tier=frontend",

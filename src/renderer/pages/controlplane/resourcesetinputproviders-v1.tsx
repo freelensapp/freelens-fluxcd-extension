@@ -12,7 +12,7 @@ import styles from "./resourcesetinputproviders.module.scss";
 const { observer } = MobxReact;
 
 const {
-  Component: { Badge, BadgeBoolean, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
+  Component: { Badge, KubeObjectAge, KubeObjectListLayout, NamespaceSelectBadge, WithTooltip },
 } = Renderer;
 
 const KubeObject = ResourceSetInputProvider;
@@ -24,7 +24,6 @@ const sortingCallbacks = {
   namespace: (object: KubeObject) => object.getNs(),
   type: (object: KubeObject) => object.spec?.type,
   url: (object: KubeObject) => object.spec?.url,
-  enabled: (object: KubeObject) => String(!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   condition: (object: KubeObject) =>
     getConditionText(object.status?.conditions, isReconcileDisabled(object, fluxOperatorReconcileAnnotation)),
   status: (object: KubeObject) => getConditionText(object.status?.conditions),
@@ -36,7 +35,6 @@ const renderTableHeader: { title: string; sortBy: keyof typeof sortingCallbacks;
   { title: "Namespace", sortBy: "namespace" },
   { title: "Type", sortBy: "type", className: styles.type },
   { title: "URL", sortBy: "url", className: styles.url },
-  { title: "Enabled", sortBy: "enabled", className: styles.enabled },
   { title: "Condition", sortBy: "condition", className: styles.condition },
   { title: "Status", sortBy: "status", className: styles.status },
   { title: "Age", sortBy: "age", className: styles.age },
@@ -64,7 +62,6 @@ export const ResourceSetInputProvidersPage = observer((props: ResourceSetInputPr
           <NamespaceSelectBadge key="namespace" namespace={object.getNs() ?? ""} />,
           <WithTooltip>{object.spec?.type}</WithTooltip>,
           <WithTooltip>{object.spec?.url}</WithTooltip>,
-          <BadgeBoolean value={!isReconcileDisabled(object, fluxOperatorReconcileAnnotation)} />,
           <Badge
             className={getConditionClass(
               object.status?.conditions,

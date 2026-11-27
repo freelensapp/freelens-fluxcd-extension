@@ -195,7 +195,7 @@ describe("ArtifactGeneratorDetails", () => {
     );
 
     expect(drawerItems()).toEqual(
-      expect.arrayContaining(["Resumed: False", "Common Labels: app=podinfo", "Common Annotations: team=dev"]),
+      expect.arrayContaining(["Suspended: True", "Common Labels: app=podinfo", "Common Annotations: team=dev"]),
     );
   });
 
@@ -203,6 +203,6 @@ describe("ArtifactGeneratorDetails", () => {
     renderDetails(artifactGenerator({}));
 
     expect(screen.queryByRole("link")).toBeNull();
-    expect(drawerItems()).toEqual(["Resumed: True"]);
+    expect(drawerItems()).toEqual(["Suspended: False"]);
   });
 });
